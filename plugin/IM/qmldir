@@ -1,0 +1,14 @@
+plugin IM
+AccountContent 0.1 AccountContent.qml
+AccountContentFactory 0.1 AccountContentFactory.qml
+AccountSetupContent 0.1 AccountSetupContent.qml
+AccountSetupDelegate 0.1 AccountSetupDelegate.qml
+Avatar 0.1 Avatar.qml
+ContactPickerDelegate 0.1 ContactPickerDelegate.qml
+ContactPickerView 0.1 ContactPickerView.qml
+ContentRow 0.1 ContentRow.qml
+Title 0.1 Title.qml
+ImageButton 0.1 ImageButton.qml
+PresenceIcon 0.1 PresenceIcon.qml
+SpinBox 0.1 SpinBox.qml
+TextCheckBox 0.1 TextCheckBox.qml

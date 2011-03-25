@@ -1,0 +1,223 @@
+/*
+ * Copyright 2011 Intel Corporation.
+ *
+ * This program is licensed under the terms and conditions of the
+ * Apache License, version 2.0.  The full text of the Apache License is at 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+#include <QDebug>
+
+#include <QtPlugin>
+
+#include "implugin.h"
+
+#include "imfeedmodelfilter.h"
+#include "imservmodel.h"
+
+#include <TelepathyQt4/ContactManager>
+#include <TelepathyQt4/ChannelClassSpecList>
+#include <TelepathyQt4/Types>
+#include <TelepathyQt4/Debug>
+#include <TelepathyQt4Yell/CallChannel>
+#include <TelepathyQt4Yell/ChannelClassSpec>
+
+IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
+{
+    Tp::registerTypes();
+
+
+    qDebug() << "IMPlugin constructor";
+
+    m_tpManager = new TelepathyManager(false);
+    m_protocolsModel = new IMProtocolsModel(this);
+    m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
+    connect(m_tpManager,
+            SIGNAL(accountManagerReady()),
+            SLOT(onAccountManagerReady()));
+
+    m_tpManager->setProtocolNames(m_protocolsModel->protocolNames());
+
+    mClientRegistrar = Tp::ClientRegistrar::create();
+
+    initializeChannelObserver();
+    initializeChannelApprover();
+
+    // install translation catalogs
+    loadTranslator();
+    qApp->installTranslator(&appTranslator);
+
+}
+
+IMPlugin::~IMPlugin()
+{
+    delete m_serviceModel;
+}
+
+QAbstractItemModel *IMPlugin::serviceModel()
+{
+    return m_serviceModel;
+}
+
+QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
+{
+    qDebug() << "IMPlugin::createFeedModel: " << service;
+
+    foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
+        if (account->uniqueIdentifier() == service) {
+            IMFeedModel *model = new IMFeedModel(mObserver, account);
+
+            connect(model, SIGNAL(applicationRunningChanged(bool)),
+                    mChannelApprover, SLOT(setApplicationRunning(bool)));
+            mFeedModels[service] = model;
+            return model;
+        }
+    }
+    return 0;
+}
+
+void IMPlugin::initializeChannelObserver()
+{
+    // setup the channel filters
+    Tp::ChannelClassSpecList channelSpecList;
+
+    channelSpecList.append(Tp::ChannelClassSpec::textChat());
+    channelSpecList.append(Tp::ChannelClassSpec::textChatroom());
+    channelSpecList.append(Tp::ChannelClassSpec::unnamedTextChat());
+    channelSpecList.append(Tpy::ChannelClassSpec::mediaCall());
+    channelSpecList.append(Tpy::ChannelClassSpec::audioCall());
+    channelSpecList.append(Tpy::ChannelClassSpec::videoCall());
+    channelSpecList.append(Tpy::ChannelClassSpec::videoCallWithAudio());
+    channelSpecList.append(Tp::ChannelClassSpec::incomingFileTransfer());
+    channelSpecList.append(Tp::ChannelClassSpec::outgoingFileTransfer());
+
+    // create the channel observer
+    mObserver = new PanelsChannelObserver(channelSpecList, true);
+    Tp::AbstractClientPtr observer(mObserver);
+
+    // register the observer
+    mClientRegistrar->registerClient(observer, "MeeGoIMPanelsObserver");
+}
+
+void IMPlugin::initializeChannelApprover()
+{
+    // create the channel approver
+    mChannelApprover = new IMChannelApprover();
+    Tp::AbstractClientPtr approver(mChannelApprover);
+
+    // register the approver
+    mClientRegistrar->registerClient(approver, "MeeGoIMPanelsApprover");
+}
+
+void IMPlugin::onAccountManagerReady()
+{
+    connect(m_tpManager, SIGNAL(accountReady(Tp::Account*)),
+            m_serviceModel, SLOT(onAccountReady(Tp::Account*)));
+    connect(m_tpManager, SIGNAL(accountReady(Tp::Account*)),
+            this, SLOT(onAccountReady(Tp::Account*)));
+    connect(m_tpManager, SIGNAL(connectionReady(Tp::ConnectionPtr)), this, SLOT(onConnectionReady(Tp::ConnectionPtr)));
+    m_tpManager->initializeAccounts();
+}
+
+void IMPlugin::onAccountReady(Tp::Account *account)
+{
+    if (!account->connection().isNull()) {
+        m_tpManager->initializeConnection(account->connection());
+    }
+}
+
+void IMPlugin::onConnectionReady(Tp::ConnectionPtr conn)
+{
+    // find the account related to the connection and connect
+    // the contact manager to the publication request slot on the model
+    foreach (IMFeedModel *model, mFeedModels) {
+        if (!model->account()->connection().isNull()) {
+            if (model->account()->connection() == conn) {
+                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
+                connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
+                        model, SLOT(onPresencePublicationRequested(Tp::Contacts)));
+                connect(manager.data(), SIGNAL(allKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
+                        model, SLOT(onAllKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)));
+                connect(model, SIGNAL(acceptContact(Tp::AccountPtr,QString)), SLOT(onAcceptContact(Tp::AccountPtr,QString)));
+                connect(model,SIGNAL(rejectContact(Tp::AccountPtr,QString)), SLOT(onRejectContact(Tp::AccountPtr,QString)));
+
+                // Look for friend requests
+                Tp::Contacts contacts = manager->allKnownContacts();
+                QList<Tp::ContactPtr> friendRequests;
+                foreach (Tp::ContactPtr contact, contacts) {
+                    if (contact->publishState() == Tp::Contact::PresenceStateAsk) {
+                        friendRequests.append(contact);
+                    }
+                }
+                // Add the friend requests to the model
+                if (friendRequests.count() > 0) {
+                    model->onPresencePublicationRequested(Tp::Contacts().fromList(friendRequests));
+                }
+            }
+        }
+    }
+}
+
+void IMPlugin::onAcceptContact(Tp::AccountPtr account, QString contactId)
+{
+    foreach (IMFeedModel *model, mFeedModels) {
+        if (model->account()->uniqueIdentifier() == account->uniqueIdentifier()) {
+            if (!model->account()->connection().isNull()) {
+                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
+
+                Tp::Contacts contacts = manager->allKnownContacts();
+                QList<Tp::ContactPtr> contactsToAppend;
+                QList<Tp::ContactPtr>  contactsList = contacts.toList();
+                foreach (Tp::ContactPtr contact, contactsList) {
+                    if (contact->id() == contactId) {
+                        contactsToAppend.append(contact);
+                        break;
+                    }
+                }
+                manager->authorizePresencePublication(contactsToAppend);
+            }
+        }
+    }
+}
+
+void IMPlugin::onRejectContact(Tp::AccountPtr account, QString contactId)
+{
+    foreach (IMFeedModel *model, mFeedModels) {
+        if (model->account()->uniqueIdentifier() == account->uniqueIdentifier()) {
+            if (!model->account()->connection().isNull()) {
+                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
+
+                Tp::Contacts contacts = manager->allKnownContacts();
+                QList<Tp::ContactPtr> contactsToAppend;
+                QList<Tp::ContactPtr>  contactsList = contacts.toList();
+                foreach (Tp::ContactPtr contact, contactsList) {
+                    if (contact->id() == contactId) {
+                        contactsToAppend.append(contact);
+                        break;
+                    }
+                }
+                manager->removePresencePublication(contactsToAppend);
+            }
+        }
+    }
+}
+
+McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QString &searchText)
+{
+    qDebug() << "IMPlugin::createSearchModel: " << service << "searchText: " << searchText;
+
+    if (mFeedModels.contains(service)) {
+        IMFeedModelFilter *filter = new IMFeedModelFilter(mFeedModels[service], this);
+        filter->setSearchText(searchText);
+        return filter;
+    }
+    return 0;
+}
+
+void IMPlugin::loadTranslator()
+{
+    appTranslator.load("meego-app-im_" + QLocale::system().name() + ".qm",
+                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+}
+
+Q_EXPORT_PLUGIN2(im_panels_plugin, IMPlugin)

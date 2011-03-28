@@ -105,18 +105,18 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
             if(item->incomingTransfer()) {
                 return contactColor(item->contact()->id());
             } else {
-                return mBubbleColor[3];
+                return mBubbleColor[mBubbleColor.count()-1];
             }
         }
         else if (conversationItem) {
             if(conversationItem->type() == Tpy::ConversationItem::OUTGOING_MESSAGE) {
-                return mBubbleColor[3];
+                return mBubbleColor[mBubbleColor.count()-1];
             } else {
                 QString id = conversationItem->contact()->id();
                 return contactColor(id);
             }
         }
-        return mBubbleColor[3];
+        return mBubbleColor[mBubbleColor.count()-1];
     }
     // override the type role, so that we can return a custom type for file transfer items
     case Tpy::ConversationModel::TypeRole: {
@@ -382,7 +382,7 @@ QString IMConversationModel::contactColor(const QString &id) const
 {
     // we want the modulo, to iterate among the available bubble colors
     // the last one, white, is reserved for the user
-    int index = mContactsList.indexOf(id) % 3;
+    int index = mContactsList.indexOf(id) % (mBubbleColor.count()-1);
     qDebug("bubble index: %d", index);
     if(index < 0 || index >= mBubbleColor.count()) {
         index = 0;

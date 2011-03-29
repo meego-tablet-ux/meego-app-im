@@ -70,6 +70,7 @@ ApplicationPage {
                         model: accountsSortedModel
                         AccountDelegate {
                             id: accountDelegate
+                            width: accountsListView.width
                         }
                     }
                 }

@@ -15,10 +15,8 @@ import TelepathyQML 0.1
 Item {
     id: mainArea
 
-    property int itemWidth: parent.width
     property int accountStatus: model.statusType
 
-    width: itemWidth
     height: childrenRect.height
 
     ContentRow {

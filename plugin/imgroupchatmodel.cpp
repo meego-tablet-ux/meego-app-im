@@ -45,7 +45,7 @@ IMGroupChatModel::IMGroupChatModel(QObject *parent) :
     roles[Tpy::AccountsModel::BlockedRole] = "blocked";
     roles[Tpy::AccountsModel::GroupsRole] = "groups";
     roles[Tpy::AccountsModel::TextChatCapabilityRole] = "textChat";
-    roles[Tpy::AccountsModel::CallCapabilityRole] = "call";
+    roles[Tpy::AccountsModel::MediaCallCapabilityRole] = "mediaCall";
     roles[Tpy::AccountsModel::AudioCallCapabilityRole] = "audioCall";
     roles[Tpy::AccountsModel::VideoCallCapabilityRole] = "videoCall";
     roles[Tpy::AccountsModel::VideoCallWithAudioCapabilityRole] = "videoCallWithAudio";

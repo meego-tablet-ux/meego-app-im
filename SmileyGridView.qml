@@ -52,7 +52,6 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             container.smileyClicked("/usr/share/themes/" + theme_name + "/" + model.source);
-                            container.showGrid = false;
                         }
                     }
                 }

@@ -809,6 +809,14 @@ bool CallAgent::cameraSwappable() const
     return false;
 }
 
+bool CallAgent::canSwapVideos() const
+{
+    if (mFarstreamChannel) {
+        return mFarstreamChannel->canSwapVideos();
+    }
+    return false;
+}
+
 const char *CallAgent::streamType(Tp::MediaStreamType streamType)
 {
     if (streamType == Tp::MediaStreamTypeAudio) {

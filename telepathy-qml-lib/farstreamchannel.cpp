@@ -72,8 +72,6 @@ FarstreamChannel::FarstreamChannel(TfChannel *tfChannel, QObject *parent) :
     mGstOutgoingVideoSink(0),
     mIncomingVideoItem(0),
     mOutgoingVideoItem(0),
-    mIncomingVideoWidgetInitialized(false),
-    mOutgoingVideoWidgetInitialized(false),
     mCurrentCamera(0),
     mCameraCount(-1),
     mCurrentOrientation(1) // TopUp is the default orientation of the camera (for lenovo tablet)
@@ -669,15 +667,7 @@ void FarstreamChannel::initOutgoingVideoWidget()
     LIFETIME_TRACER();
 
     if (mOutgoingVideoItem) {
-        // Already initialized ? Just set the surface and be done
-        if (mOutgoingVideoWidgetInitialized) {
-            mOutgoingVideoItem->setSurface(mOutgoingSurface);
-        }
-        else if (mGstOutgoingVideoSink && mOutgoingSurface) {
-            gst_object_ref(mGstOutgoingVideoSink);
-            mOutgoingVideoItem->setSurface(mOutgoingSurface);
-            mOutgoingVideoWidgetInitialized = true;
-        }
+        mOutgoingVideoItem->setSurface(mOutgoingSurface);
     } else {
         setError("Outgoing video item is unknown yet");
     }
@@ -687,17 +677,8 @@ void FarstreamChannel::deinitOutgoingVideoWidget()
 {
     LIFETIME_TRACER();
 
-    if (!mOutgoingVideoWidgetInitialized)
-        return;
-
     if (mOutgoingVideoItem) {
-        if (mGstOutgoingVideoSink && mOutgoingSurface) {
-            if (mOutgoingVideoWidgetInitialized) {
-                mOutgoingVideoItem->setSurface(0);
-                gst_object_unref(mGstOutgoingVideoSink);
-                mOutgoingVideoWidgetInitialized = false;
-            }
-        }
+        mOutgoingVideoItem->setSurface(0);
     }
 }
 
@@ -706,15 +687,7 @@ void FarstreamChannel::initIncomingVideoWidget()
     LIFETIME_TRACER();
 
     if (mIncomingVideoItem) {
-        // Already initialized ? Just set the surface and be done
-        if (mIncomingVideoWidgetInitialized) {
-            mIncomingVideoItem->setSurface(mIncomingSurface);
-        }
-        else if (mGstIncomingVideoSink && mIncomingSurface) {
-            gst_object_ref(mGstIncomingVideoSink);
-	    mIncomingVideoItem->setSurface(mIncomingSurface);
-            mIncomingVideoWidgetInitialized = true;
-        }
+        mIncomingVideoItem->setSurface(mIncomingSurface);
     } else {
         setError("Incoming video item is unknown yet");
     }
@@ -724,17 +697,8 @@ void FarstreamChannel::deinitIncomingVideoWidget()
 {
     LIFETIME_TRACER();
 
-    if (!mIncomingVideoWidgetInitialized)
-        return;
-
     if (mIncomingVideoItem) {
-        if (mGstIncomingVideoSink && mIncomingSurface) {
-            if (mIncomingVideoWidgetInitialized) {
-                mIncomingVideoItem->setSurface(0);
-                gst_object_unref(mGstIncomingVideoSink);
-                mIncomingVideoWidgetInitialized = false;
-            }
-        }
+        mIncomingVideoItem->setSurface(0);
     }
 }
 
@@ -1014,6 +978,11 @@ void FarstreamChannel::setOutgoingVideo(QmlGstVideoItem *item)
         connect(item, SIGNAL(destroyed(QObject*)), SLOT(onGstVideoItemDestroyed(QObject*)));
     }
     initOutgoingVideoWidget();
+}
+
+bool FarstreamChannel::canSwapVideos() const
+{
+    return (mGstVideoOutput != NULL);
 }
 
 void FarstreamChannel::onGstVideoItemDestroyed(QObject *obj)

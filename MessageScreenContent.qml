@@ -596,7 +596,7 @@ ApplicationPage {
                         fullscreenButton.anchors.right = undefined;
                         fullscreenButton.anchors.left = undefined;
 
-                        if (videoWindowSwap) {
+                        if (videoWindowSwap && scene.callAgent.canSwapVideos()) {
                             cameraWindowSmall  = !cameraWindowSmall;
                             videoWindowSwap = false;
                             scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);

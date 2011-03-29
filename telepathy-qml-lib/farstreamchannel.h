@@ -48,6 +48,7 @@ public:
     QString currentCameraDevice() const;
     int cameraCount() const;
 
+    bool canSwapVideos() const;
     void setIncomingVideo(QmlGstVideoItem *item);
     void setOutgoingVideo(QmlGstVideoItem *item);
 
@@ -96,9 +97,6 @@ private:
 
     QmlGstVideoItem *mIncomingVideoItem;
     QmlGstVideoItem *mOutgoingVideoItem;
-
-    bool mIncomingVideoWidgetInitialized;
-    bool mOutgoingVideoWidgetInitialized;
 
     mutable int mCurrentCamera;
     mutable int mCameraCount;

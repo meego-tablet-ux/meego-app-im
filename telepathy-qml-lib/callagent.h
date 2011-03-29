@@ -128,6 +128,8 @@ public:
     Q_INVOKABLE void swapCamera();
     Q_INVOKABLE bool cameraSwappable() const;
 
+    Q_INVOKABLE bool canSwapVideos() const;
+
 Q_SIGNALS:
     // property notification signals
     void callStatusChanged(CallAgent::CallStatus oldStatus, CallAgent::CallStatus newStatus);

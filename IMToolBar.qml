@@ -64,10 +64,8 @@ Item {
             anchors.margins: 10
             onClicked: {
                 videoWindow.opacity = 1;
-                //scene.callAgent.setOutgoingVideo(videoOutgoing);
                 scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
                 scene.callAgent.onOrientationChanged(scene.orientation);
-                //scene.callAgent.setIncomingVideo(videoIncoming);
                 scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
                 scene.callAgent.videoCall();
             }
@@ -98,10 +96,8 @@ Item {
             anchors.margins: 10
             onClicked: {
                 videoWindow.opacity = 1;
-                //scene.callAgent.setOutgoingVideo(videoOutgoing);
                 scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
                 scene.callAgent.onOrientationChanged(scene.orientation);
-                //scene.callAgent.setIncomingVideo(videoIncoming);
                 scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
                 scene.callAgent.audioCall();
             }

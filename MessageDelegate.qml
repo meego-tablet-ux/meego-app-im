@@ -200,7 +200,6 @@ Item {
 
         Text {
             id: eventMessageText
-            anchors.centerIn: parent
             horizontalAlignment: Text.AlignHCenter
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall

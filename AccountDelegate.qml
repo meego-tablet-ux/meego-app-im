@@ -86,8 +86,10 @@ Item {
                     }
                     else if (index == 1)
                     {
-                        // Some Action
-                        scene.addApplicationPage(accountContentFactory.componentForAccount(payload.data(AccountsModel.IdRole), scene));
+                        // Account settings
+                        var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
+                        appModel.launch(cmd);
+                        //scene.addApplicationPage(accountContentFactory.componentForAccount(payload.data(AccountsModel.IdRole), scene));
                     }
                     else
                     {
@@ -138,7 +140,7 @@ Item {
                 } else {
                     menu.append({"modelData":qsTr("Log in to %1").arg(telepathyManager.accountServiceName(model.icon))})
                 }
-                menu.append({"modelData":qsTr("Edit account")});
+                menu.append({"modelData":qsTr("Settings")});
 
                 scene.openContextMenu(contextComponent,
                                       contextLoader,

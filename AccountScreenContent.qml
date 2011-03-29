@@ -13,9 +13,7 @@ import MeeGo.App.IM 0.1
 ApplicationPage {
     id: accountScreenPage
     title: qsTr("Account list")
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.bottom: toolBar.top
+    anchors.fill: parent
 
     Component.onCompleted: {
         scene.title = qsTr("Account list");

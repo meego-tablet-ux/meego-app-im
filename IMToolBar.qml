@@ -167,11 +167,12 @@ Item {
 
         AbstractContext {
             id: sendFileContextMenu
+            anchors.bottom: sendFileButton.bottom
+            anchors.horizontalCenter: sendFileButton.horizontalCenter
 
             content: SendFileView {
                 id: sendFileView
-                anchors.bottom: sendFileButton.bottom
-                anchors.horizontalCenter: sendFileButton.horizontalCenter
+                anchors.fill: parent
                 anchors.horizontalCenterOffset: -(width / 4 + 30)
 
                 onFileSelected: {

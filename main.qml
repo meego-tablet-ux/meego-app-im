@@ -75,7 +75,10 @@ Window {
     }
 
     Connections {
-        target: contactsModel
+        // this signal is not created yet, so wait till it is, then the target will be set
+        // and the connection will be made then.
+        target: null;
+        id: contactsModelConnections;
         onOpenLastUsedAccount: {
             if(cmdCommand == "") {
                 currentAccountId = accountId;
@@ -128,11 +131,27 @@ Window {
     }
 
     Connections {
+        // the onComponentsLoaded signal is not created yet, but we can't use the same trick as the other
+        // signals to connect them later since this is the signal that gets used to connect the others.
+        // We then choose to ignore the runtime error for just this signal.
         target: accountsModel
+        ignoreUnknownSignals: true
         onComponentsLoaded: {
+            // the other signals should now be set up, so plug them in
+            console.log("Setting up accountsModel and contactsModel connections");
+            contactsModelConnections.target = contactsModel;
+            accountsModelConnections.target = accountsModel;
+
             telepathyManager.registerClients();
             reloadFilterModel();
         }
+    }
+
+    Connections {
+        // those signals are not created yet, so wait till they are, then the target will be set
+        // and the connections will be made then.
+        target: null
+        id: accountsModelConnections
 
         onAccountConnectionStatusChanged: {
             var item = accountsModel.accountItemForId(accountId);

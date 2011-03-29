@@ -1346,6 +1346,17 @@ void IMAccountsModel::unblockContact(const QString &accountId, const QString &co
     }
 }
 
+void IMAccountsModel::removeContact(const QString &accountId, const QString &contactId)
+{
+    qDebug() << "IMAccountsModel::removeContact:" << accountId << contactId;
+    Tpy::ContactModelItem *item = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    if (!item) {
+        return;
+    }
+
+    item->contact()->manager()->removeContacts(QList<Tp::ContactPtr>() << item->contact());
+}
+
 void IMAccountsModel::onBlockedContact(Tp::PendingOperation *op)
 {
 

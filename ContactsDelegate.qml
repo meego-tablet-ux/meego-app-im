@@ -95,8 +95,8 @@ Item {
                     menu.append({"modelData":qsTr("End chat")});
                 }
 
-                // Always show the delete option
-                //menu.append({"modelData":qsTr("Delete")});
+                // show the delete option
+                menu.append({"modelData":qsTr("Delete contact")});
 
                 scene.openContextMenu(contextMenu,
                                       contextLoader,
@@ -142,13 +142,11 @@ Item {
 
                     if(payload.chatOpened) {
                         menuIndex.append({"modelData":7});
-                    } else {
-                        menuIndex.append({"modelData":8});
                     }
 
 
                     // Always show the delete option
-                    //menuIndex.append({"modelData":9});
+                    menuIndex.append({"modelData":9});
 
                     // get the selected action and do whatever was requested
                     var actionIndex = menuIndex.get(index).modelData;
@@ -170,11 +168,11 @@ Item {
                     } else if (actionIndex == 7) {
                         // end chat
                         accountsModel.endChat(scene.currentAccountId, payload.id);
-                    }
-
-                    /*} else if (actionIndex == 9) {
+                    } else if (actionIndex == 9) {
                         // delete contact
-                    }*/
+                        console.debug("Going to ")
+                        accountsModel.removeContact(scene.currentAccountId, payload.id);
+                    }
 
                     // By setting the sourceComponent of the loader to undefined,
                     // then the QML engine will destruct the context menu element

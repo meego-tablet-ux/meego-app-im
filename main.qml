@@ -20,8 +20,8 @@ Window {
     property int animationDuration: 250
 
     property string currentAccountId: ""
-    property int    currentAccountStatus: accountItem.data(AccountsModel.CurrentPresenceTypeRole)
-    property string currentAccountName: accountItem.data(AccountsModel.DisplayNameRole)
+    property int    currentAccountStatus: -1 // will get filled when accountItem gets filled
+    property string currentAccountName: "" // will get filled when accountItem gets filled
     property variant accountItem
     property variant contactItem
     property variant callAgent

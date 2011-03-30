@@ -75,7 +75,7 @@ Item {
                 anchors.fill: parent
                 onClicked: {
                     hidePickers();
-                    photoPicker.show()
+                    photoPicker.visible = true;
                 }
             }
         }

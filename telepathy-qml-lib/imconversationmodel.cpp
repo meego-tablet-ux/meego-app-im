@@ -10,12 +10,27 @@
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4Yell/Models/ConversationItem>
+#include <TelepathyQt4Yell/Models/SessionConversationModel>
 #include "filetransferitem.h"
 
-IMConversationModel::IMConversationModel(const Tp::ContactPtr &self, const Tp::TextChannelPtr &channel, QObject *parent)
-    : Tpy::ConversationModel(self, channel, parent),
+IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
+    const Tp::ContactPtr &self,
+    const Tp::ContactPtr &contact,
+    const Tp::TextChannelPtr &channel,
+    QObject *parent)
+    : MergedModel(parent),
       mCallRunningItem(0)
 {
+    mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
+    if (mLoggerConversationModel) {
+        addModel(mLoggerConversationModel);
+    }
+
+    mSessionConversationModel = new Tpy::SessionConversationModel(self, channel, parent);
+    if (mSessionConversationModel) {
+        addModel(mSessionConversationModel);
+    }
+
     QHash<int, QByteArray> roles = roleNames();
     roles[IncludeSearchRole] = "includeSearch";
     roles[StatusRole] = "status";
@@ -33,7 +48,6 @@ IMConversationModel::IMConversationModel(const Tp::ContactPtr &self, const Tp::T
     mBubbleColor.append("green");
     mBubbleColor.append("orange");
     mBubbleColor.append("white");
-
 }
 
 IMConversationModel::~IMConversationModel()
@@ -58,13 +72,13 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
     }
 
     const FileTransferItem *item = qobject_cast<const FileTransferItem*>(
-                Tpy::ConversationModel::data(index, Tpy::ConversationModel::ItemRole).value<QObject*>());
+                MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
     const Tpy::ConversationItem *conversationItem = qobject_cast<const Tpy::ConversationItem*>(
-                Tpy::ConversationModel::data(index, Tpy::ConversationModel::ItemRole).value<QObject*>());
+                MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
 
     switch (role) {
-    case Tpy::ConversationModel::TextRole: {
-        QString text = Tpy::ConversationModel::data(index, role).toString();
+    case Tpy::SessionConversationModel::TextRole: {
+        QString text = MergedModel::data(index, role).toString();
 
         if (!mSearchString.isEmpty()) {
             text = text.replace(QString("<"), QString("&lt;"));
@@ -88,7 +102,7 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
     }
     case IncludeSearchRole: {
         if (!mSearchString.isEmpty()) {
-            return QVariant(Tpy::ConversationModel::data(index, Qt::UserRole).toString().contains(mSearchString, Qt::CaseInsensitive));
+            return QVariant(MergedModel::data(index, Qt::UserRole).toString().contains(mSearchString, Qt::CaseInsensitive));
         } else {
             return QVariant(true);
         }
@@ -119,12 +133,12 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return mBubbleColor[mBubbleColor.count()-1];
     }
     // override the type role, so that we can return a custom type for file transfer items
-    case Tpy::ConversationModel::TypeRole: {
+    case Tpy::SessionConversationModel::TypeRole: {
         if (item) {
             return (item->incomingTransfer() ? "incoming_file_transfer" :
                                                "outgoing_file_transfer");
         }
-        return Tpy::ConversationModel::data(index, role);
+        return MergedModel::data(index, role);
     }
     case IncomingTransferRole: {
         if (item) {
@@ -163,7 +177,7 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
     default:
-        return Tpy::ConversationModel::data(index, role);
+        return MergedModel::data(index, role);
     }
 }
 
@@ -178,7 +192,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     qDebug() << "IMConversationModel::onChatStateChanged state=" << state;
 
     // ignore events originating from self
-    if (contact == selfContact()) {
+    if (!mSessionConversationModel || contact == mSessionConversationModel->selfContact()) {
         return;
     }
 
@@ -230,7 +244,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
         if(item->contact() == contact) {
             qDebug("previous running item found, deleting");
             mChatRunningItems.removeOne(item);
-            deleteItem(item);
+            mSessionConversationModel->deleteItem(item);
             item = 0;
         }
     }
@@ -243,18 +257,22 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
         if (running) {
             mChatRunningItems.append(item);
         }
-        addItem(item);
+        mSessionConversationModel->addItem(item);
     }
 }
 
 void IMConversationModel::onItemChanged()
 {
+    if (!mSessionConversationModel) {
+        return;
+    }
+
     Tpy::ConversationItem *item = qobject_cast<Tpy::ConversationItem*>(sender());
     if(!item) {
         return;
     }
 
-    QModelIndex idx = index(item);
+    QModelIndex idx = mSessionConversationModel->index(item);
     if (idx.isValid()) {
         emit dataChanged(idx, idx);
     }
@@ -268,6 +286,10 @@ void IMConversationModel::onItemChanged()
 void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus)
 {
     qDebug() << "IMConversationModel::notifyCallStatusChanged: oldCallStatus=" << oldCallStatus << " newCallStatus=" << newCallStatus;
+
+    if (!mLoggerConversationModel) {
+        return;
+    }
 
     // build the message
     QString message;
@@ -312,7 +334,7 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
 
     // if we have a previous running call item, delete it
     if (mCallRunningItem) {
-        deleteItem(mCallRunningItem);
+        mLoggerConversationModel->deleteItem(mCallRunningItem);
         mCallRunningItem = 0;
     }
 
@@ -324,7 +346,7 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
         if (running) {
             mCallRunningItem = item;
         }
-        addItem(item);
+        mLoggerConversationModel->addItem(item);
     }
 }
 
@@ -344,14 +366,17 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
 
     Tpy::ConversationItem *item = new Tpy::ConversationItem(contact,
         QDateTime::currentDateTime(), message, Tpy::ConversationItem::EVENT, this);
-    addItem(item);
+    mLoggerConversationModel->addItem(item);
 }
 
 void IMConversationModel::notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel)
 {
     FileTransferItem *item = new FileTransferItem(contact, agent, channel, this);
     connect(item, SIGNAL(itemChanged()), SLOT(onItemChanged()));
-    addItem(item);
+
+    if (mLoggerConversationModel) {
+        mLoggerConversationModel->addItem(item);
+    }
 }
 
 QString IMConversationModel::friendlyFileSize(qulonglong size)
@@ -388,4 +413,34 @@ QString IMConversationModel::contactColor(const QString &id) const
         index = 0;
     }
     return mBubbleColor[index];
+}
+
+bool IMConversationModel::canFetchMoreBack() const
+{
+    if (mLoggerConversationModel) {
+        return mLoggerConversationModel->canFetchMoreBack();
+    }
+
+    return false;
+}
+
+void IMConversationModel::fetchMoreBack()
+{
+    if (mLoggerConversationModel) {
+        mLoggerConversationModel->fetchMoreBack();
+    }
+}
+
+void IMConversationModel::disconnectChannelQueue()
+{
+    if (mSessionConversationModel) {
+        mSessionConversationModel->disconnectChannelQueue();
+    }
+}
+
+void IMConversationModel::connectChannelQueue()
+{
+    if (mSessionConversationModel) {
+        mSessionConversationModel->connectChannelQueue();
+    }
 }

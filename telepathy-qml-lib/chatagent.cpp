@@ -406,9 +406,11 @@ void ChatAgent::createModelForChat()
         qDebug() << "ChatAgent::createModelForChat: self contact is invalid";
         return;
     }
-    mModel = new IMConversationModel(mTextChannel->connection()->selfContact(),
-                                       mTextChannel,
-                                       this);
+    mModel = new IMConversationModel(mAccount,
+        mTextChannel->connection()->selfContact(),
+        mContact,
+        mTextChannel,
+        this);
 }
 
 Tp::AccountPtr ChatAgent::account() const

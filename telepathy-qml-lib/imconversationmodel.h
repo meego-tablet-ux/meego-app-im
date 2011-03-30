@@ -12,13 +12,15 @@
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
-#include <TelepathyQt4Yell/Models/ConversationModel>
+#include <TelepathyQt4Logger/Models/LoggerConversationModel>
+#include <TelepathyQt4Yell/Models/SessionConversationModel>
 #include <TelepathyQt4Yell/Models/ConversationItem>
+#include "mergedmodel.h"
 #include "callagent.h"
 
 class FileTransferAgent;
 
-class IMConversationModel : public Tpy::ConversationModel
+class IMConversationModel : public MergedModel
 {
     Q_OBJECT
 
@@ -37,7 +39,11 @@ public:
         BubbleColorRole
     };
 
-    explicit IMConversationModel(const Tp::ContactPtr &self, const Tp::TextChannelPtr &channel, QObject *parent = 0);
+    explicit IMConversationModel(const Tp::AccountPtr &account,
+        const Tp::ContactPtr &self,
+        const Tp::ContactPtr &contact,
+        const Tp::TextChannelPtr &channel,
+        QObject *parent = 0);
     virtual ~IMConversationModel();
 
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -47,6 +53,12 @@ public:
     void notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel);
 
     static QString friendlyFileSize(qulonglong size);
+
+    Q_INVOKABLE bool canFetchMoreBack() const;
+    Q_INVOKABLE void fetchMoreBack();
+
+    Q_INVOKABLE void disconnectChannelQueue();
+    Q_INVOKABLE void connectChannelQueue();
 
 public Q_SLOTS:
     void onSearchByString(const QString &search);
@@ -67,6 +79,8 @@ private:
     Tpy::ConversationItem *mCallRunningItem;
     QStringList mContactsList;
     QStringList mBubbleColor;
+    Tpl::LoggerConversationModel *mLoggerConversationModel;
+    Tpy::SessionConversationModel *mSessionConversationModel;
 };
 
 #endif // IMCONVERSATIONMODEL_H

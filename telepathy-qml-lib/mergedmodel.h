@@ -16,6 +16,7 @@ class MergedModel : public QAbstractItemModel
     Q_OBJECT
 public:
     explicit MergedModel(QObject *parent = 0);
+    virtual ~MergedModel();
 
     void addModel(QAbstractItemModel *model);
     void removeModel(QAbstractItemModel *model);

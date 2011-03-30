@@ -21,6 +21,7 @@
 #include <TelepathyQt4/Connection>
 #include <TelepathyQt4/ChannelFactory>
 #include <TelepathyQt4/Debug>
+#include <TelepathyQt4Logger/Init>
 #include <TelepathyQt4Yell/Models/FlatModelProxy>
 
 #include <TelepathyQt4Yell/Types>
@@ -32,6 +33,8 @@
 #include <QSettings>
 #include <QtGstQmlSink/qmlgstvideoitem.h>
 
+#include <glib-object.h>
+
 //#include "imtextedit.h"
 
 void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
@@ -39,11 +42,16 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     qDebug() << "MeeGoIM initializeEngine" << uri;
     Q_ASSERT(engine);
 
+    // needed for tp-logger
+    g_type_init();
+
     Tp::registerTypes();
     //Tp::enableDebug(true);
     Tp::enableWarnings(true);
 
     Tpy::registerTypes();
+
+    Tpl::init();
 
     mTpManager = new TelepathyManager(true);
     connect(mTpManager, SIGNAL(accountManagerReady()), SLOT(onAccountManagerReady()));

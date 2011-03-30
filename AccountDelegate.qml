@@ -68,6 +68,9 @@ Item {
             ContextMenu {
                 menuWidth: 350
                 onClose: contextLoader.sourceComponent = undefined
+                ApplicationsModel {
+                    id: appModel
+                }
                 onTriggered: {
                     if (index == 0)
                     {

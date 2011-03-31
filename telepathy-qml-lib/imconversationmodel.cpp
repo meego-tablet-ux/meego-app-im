@@ -10,7 +10,6 @@
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4Yell/Models/ConversationItem>
-#include <TelepathyQt4Yell/Models/SessionConversationModel>
 #include "filetransferitem.h"
 
 IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
@@ -430,6 +429,14 @@ void IMConversationModel::fetchMoreBack()
         mLoggerConversationModel->fetchMoreBack();
     }
 }
+
+void IMConversationModel::sendMessage(const QString &text)
+{
+    if (mSessionConversationModel) {
+        mSessionConversationModel->sendMessage(text);
+    }
+}
+
 
 void IMConversationModel::disconnectChannelQueue()
 {

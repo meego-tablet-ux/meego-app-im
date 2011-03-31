@@ -57,6 +57,7 @@ public:
     Q_INVOKABLE bool canFetchMoreBack() const;
     Q_INVOKABLE void fetchMoreBack();
 
+    Q_INVOKABLE void sendMessage(const QString &text);
     Q_INVOKABLE void disconnectChannelQueue();
     Q_INVOKABLE void connectChannelQueue();
 

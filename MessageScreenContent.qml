@@ -222,6 +222,12 @@ ApplicationPage {
             id: noNetworkItem
         }
 
+        Component {
+            id: conversationViewHeader
+            LoadingConversationHistory {
+            }
+        }
+
         ListView {
             id: conversationView
             anchors {
@@ -267,9 +273,17 @@ ApplicationPage {
         Connections {
             target: typeof(conversationView.model) != 'undefined' ? conversationView.model : null
             ignoreUnknownSignals: true
+            onBackFetchable: {
+                if (conversationView.model.canFetchMoreBack()) {
+                    conversationView.header = conversationViewHeader;
+                }
+            }
             onBackFetched: {
                 conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
-                historyFeeder.fetching = false
+                historyFeeder.fetching = false;
+                if (!conversationView.model.canFetchMoreBack()) {
+                    conversationView.header = null;
+                }
             }
         }
 

@@ -235,8 +235,41 @@ ApplicationPage {
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true
             currentIndex: count - 1
+
             onCountChanged: {
                 textSound.playSound();
+            }
+        }
+
+        /*
+          Timer used to feed history from the logger at the beginning of the view
+        */
+        Timer {
+            id: historyFeeder
+            interval: 1000
+            running: true
+            repeat: true
+
+            property bool fetching : false
+            property int oldIndex : 0
+
+            onTriggered: {
+                if (conversationView.atYBeginning) {
+                    if (!fetching && conversationView.model.canFetchMoreBack()) {
+                        fetching = true;
+                        oldIndex = conversationView.indexAt(200,40);
+                        conversationView.model.fetchMoreBack();
+                    }
+                }
+            }
+        }
+
+        Connections {
+            target: typeof(conversationView.model) != 'undefined' ? conversationView.model : null
+            ignoreUnknownSignals: true
+            onBackFetched: {
+                conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
+                historyFeeder.fetching = false
             }
         }
 

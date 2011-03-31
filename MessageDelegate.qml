@@ -187,7 +187,7 @@ Item {
             wrapMode: Text.WordWrap
             textFormat: Text.RichText
 
-            color: theme_fontColorNormal
+            color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
             visible: (expandedMessage || model.includeSearch)
         }
     }

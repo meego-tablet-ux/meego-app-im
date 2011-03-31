@@ -149,7 +149,7 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         if (item) {
             return item->fileName();
         }
-        return QVariant();
+        return QVariant("");
     }
     case FileSizeRole: {
         if (item) {

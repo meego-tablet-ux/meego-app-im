@@ -29,6 +29,8 @@ public:
         IncludeSearchRole = Qt::UserRole + 100,
         StatusRole,
         DateStringRole,
+        // true if the line comes from telepathy-logger
+        FromLoggerRole,
 
         // file transfer related roles
         IncomingTransferRole,

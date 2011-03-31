@@ -228,6 +228,31 @@ ApplicationPage {
             }
         }
 
+        Component {
+            id: sectionDateDelegate
+            Item {
+                width: conversationView.width
+                height: 50
+
+                Text {
+                    id: dateText
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: theme_fontColorHighlight
+                    font.pixelSize: theme_fontPixelSizeLarge
+                    //verticalAlignment: Text.AlignVCenter
+                    //horizontalAlignment: Text.AlignHCenter
+                    text: section
+                }
+
+                Image {
+                    anchors.top: dateText.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "image://meegotheme/images/dialog-separator"
+                }
+            }
+        }
+
         ListView {
             id: conversationView
             anchors {
@@ -241,6 +266,10 @@ ApplicationPage {
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true
             currentIndex: count - 1
+
+            section.property : "dateString"
+            section.criteria : ViewSection.FullString
+            section.delegate : sectionDateDelegate
 
             onCountChanged: {
                 textSound.playSound();

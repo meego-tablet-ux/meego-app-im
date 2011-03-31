@@ -28,6 +28,7 @@ public:
     enum Role {
         IncludeSearchRole = Qt::UserRole + 100,
         StatusRole,
+        DateStringRole,
 
         // file transfer related roles
         IncomingTransferRole,

@@ -39,6 +39,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     QHash<int, QByteArray> roles = roleNames();
     roles[IncludeSearchRole] = "includeSearch";
     roles[StatusRole] = "status";
+    roles[DateStringRole] = "dateString";
     roles[IncomingTransferRole] = "incomingTransfer";
     roles[FileNameRole] = "fileName";
     roles[FileSizeRole] = "fileSize";
@@ -118,6 +119,12 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         }
 
         return QVariant();
+    }
+    case DateStringRole: {
+        if (conversationItem) {
+            return conversationItem->time().date().toString(Qt::DefaultLocaleLongDate);
+        }
+        return QDate::currentDate().toString(Qt::DefaultLocaleLongDate);
     }
     case BubbleColorRole: {
         if (item) {

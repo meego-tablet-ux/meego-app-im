@@ -23,6 +23,12 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
     if (mLoggerConversationModel) {
         addModel(mLoggerConversationModel);
+        connect(mLoggerConversationModel,
+                SIGNAL(backFetchable()),
+                SIGNAL(backFetchable()));
+        connect(mLoggerConversationModel,
+                SIGNAL(backFetched(int)),
+                SIGNAL(backFetched(int)));
     }
 
     mSessionConversationModel = new Tpy::SessionConversationModel(self, channel, parent);

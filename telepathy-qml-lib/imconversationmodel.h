@@ -61,6 +61,10 @@ public:
     Q_INVOKABLE void disconnectChannelQueue();
     Q_INVOKABLE void connectChannelQueue();
 
+Q_SIGNALS:
+    void backFetchable();
+    void backFetched(int numItems);
+
 public Q_SLOTS:
     void onSearchByString(const QString &search);
     void slotResetModel(void);

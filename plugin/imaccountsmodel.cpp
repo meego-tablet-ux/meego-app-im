@@ -13,6 +13,7 @@
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/PendingChannel>
 #include <TelepathyQt4/PendingContacts>
+#include <TelepathyQt4/PendingOperation>
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/ContactManager>
@@ -22,6 +23,9 @@
 #include "../telepathy-qml-lib/filetransferagent.h"
 #include "../telepathy-qml-lib/serverauthagent.h"
 #include "../telepathy-qml-lib/notificationmanager.h"
+
+#include <TelepathyQt4Logger/Logger>
+#include <TelepathyQt4Logger/PendingLogger>
 
 #include <TelepathyQt4/Client>
 #include <TelepathyQt4/PropertiesInterface>
@@ -1468,3 +1472,37 @@ QStringList IMAccountsModel::channelContacts(const QString &accountId, const QSt
     }
     return contactsList;
 }
+
+void IMAccountsModel::clearHistory()
+{
+    Tpl::Logger *logger = new Tpl::Logger();
+    //logger->clearLog();
+}
+
+void IMAccountsModel::clearAccountHistory(const QString &accountId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //Tpl::PendingClearOp *op = logger->clearAccount(accountItem->account());
+    }
+}
+
+void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //logger->clearContact(accountItem->account(), contactId);
+    }
+}
+
+void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &groupId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //logger->clearRoom(accountItem->account(), groupId);
+    }
+}
+

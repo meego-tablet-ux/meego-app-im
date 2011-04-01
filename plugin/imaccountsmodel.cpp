@@ -1527,3 +1527,37 @@ void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
         }
     }
 }
+
+void IMAccountsModel::clearHistory()
+{
+    Tpl::Logger *logger = new Tpl::Logger();
+    //logger->clearLog();
+}
+
+void IMAccountsModel::clearAccountHistory(const QString &accountId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //Tpl::PendingClearOp *op = logger->clearAccount(accountItem->account());
+    }
+}
+
+void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //logger->clearContact(accountItem->account(), contactId);
+    }
+}
+
+void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &groupId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::Logger *logger = new Tpl::Logger();
+        //logger->clearRoom(accountItem->account(), groupId);
+    }
+}
+

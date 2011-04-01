@@ -203,6 +203,11 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
         return;
     }
 
+    // do not log delivery reports
+    if(message.messageType() == Tp::ChannelTextMessageTypeDeliveryReport) {
+        return;
+    }
+
     //this is to allow parsing later on
     QString token = QString(MessageType + "&" + mAccountId + "&" + message.sender()->id() + "&" + message.messageToken());
 

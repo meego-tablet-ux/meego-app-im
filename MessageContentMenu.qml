@@ -109,6 +109,7 @@ Item {
                     } else {
                         accountsModel.clearContactHistory(scene.currentAccountId, scene.currentContactId);
                     }
+                    currentPage.closeMenu();
                 }
             }
         }

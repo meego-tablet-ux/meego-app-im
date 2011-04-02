@@ -571,6 +571,7 @@ Item {
 
                 onClicked: {
                     accountsModel.clearAccountHistory(scene.currentAccountId);
+                    currentPage.closeMenu();
                 }
             }
         }

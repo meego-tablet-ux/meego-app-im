@@ -571,6 +571,46 @@ Item {
 
                 onClicked: {
                     accountsModel.clearAccountHistory(scene.currentAccountId);
+                }
+            }
+        }
+
+        Image {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
+        }
+
+        Item {
+            id: meLogOut
+            height: meLogOutText.height
+            width: parent.width
+
+            anchors.bottomMargin: clearHistoryText.height / 2
+
+            Image {
+                anchors.fill: parent
+                source: "image://meegotheme/widgets/common/menu/menu-background"
+            }
+
+            Text {
+                id: clearHistoryText
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                anchors.left: parent.left
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+                text: qsTr("Clear chat history")
+                font.pixelSize: theme_contextMenuFontPixelSize
+                color: theme_contextMenuFontColor
+            }
+
+            MouseArea {
+                id: clearHistoryMouseArea
+                anchors.fill: parent
+
+                onClicked: {
+                    accountsModel.clearAccountHistory(scene.currentAccountId);
                     currentPage.closeMenu();
                 }
             }

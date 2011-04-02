@@ -1586,7 +1586,7 @@ void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
 void IMAccountsModel::clearHistory()
 {
     Tpl::Logger *logger = new Tpl::Logger();
-    //logger->clearLog();
+    logger->clearLog();
 }
 
 void IMAccountsModel::clearAccountHistory(const QString &accountId)
@@ -1594,7 +1594,7 @@ void IMAccountsModel::clearAccountHistory(const QString &accountId)
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tpl::Logger *logger = new Tpl::Logger();
-        //Tpl::PendingClearOp *op = logger->clearAccount(accountItem->account());
+        logger->clearAccount(accountItem->account());
     }
 }
 
@@ -1603,16 +1603,21 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tpl::Logger *logger = new Tpl::Logger();
-        //logger->clearContact(accountItem->account(), contactId);
+        logger->clearContact(accountItem->account(), contactId);
     }
 }
 
-void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &groupId)
+void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
 {
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tpl::Logger *logger = new Tpl::Logger();
-        //logger->clearRoom(accountItem->account(), groupId);
+
+        ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
+        if(chatAgent) {
+            QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
+            logger->clearRoom(accountItem->account(), roomName);
+        }
     }
 }
 

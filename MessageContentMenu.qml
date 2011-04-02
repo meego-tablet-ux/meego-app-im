@@ -83,6 +83,43 @@ Item {
         }
 
         Item {
+            id: meClearHistory
+            height: meClearHistoryText.height
+            width: parent.width
+
+            Text {
+                id: meClearHistoryText
+                anchors.top: parent.top
+                anchors.leftMargin: 10
+                anchors.left: parent.left
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+                text: qsTr("Clear chat history")
+                font.pixelSize: theme_contextMenuFontPixelSize
+                color: theme_fontColorNormal
+            }
+
+            MouseArea {
+                id: clearHistoryMouseArea
+                anchors.fill: parent
+
+                onClicked: {
+                    if(scene.chatAgent.isConference) {
+                        accountsModel.clearRoomHistory(scene.currentAccountId, scene.chatAgent.channelPath);
+                    } else {
+                        accountsModel.clearContactHistory(scene.currentAccountId, scene.currentContactId);
+                    }
+                }
+            }
+        }
+
+        Image {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
+        }
+
+        Item {
             id: meEndChat
             height: meEndChatText.height
             width: parent.width

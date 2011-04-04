@@ -476,11 +476,14 @@ void FarstreamChannel::initVideoInput()
     GstElement *source = 0;
 
     pushElement(mGstVideoInput, source, VIDEO_SOURCE_ELEMENT, false, &mGstVideoSource);
-    pushElement(mGstVideoInput, source, "videomaxrate", true);
-    pushElement(mGstVideoInput, source, "videoscale", true);
-    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, true);
 
-    GstElement *capsfilter = pushElement(mGstVideoInput, source, "capsfilter", true);
+    /* Prefer videomaxrate if it's available */
+    if (pushElement(mGstVideoInput, source, "videomaxrate", true) == NULL)
+        pushElement(mGstVideoInput, source, "fsvideoanyrate", true);
+    pushElement(mGstVideoInput, source, "videoscale", false);
+    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false);
+
+    GstElement *capsfilter = pushElement(mGstVideoInput, source, "capsfilter", false);
     if (capsfilter) {
         GstCaps *caps = gst_caps_new_simple(
             "video/x-raw-yuv",
@@ -508,9 +511,8 @@ void FarstreamChannel::initVideoInput()
     }
 
     pushElement(mGstVideoInput, source, "tee", false, &mGstVideoTee);
-qDebug()<<"video tee now "<<mGstVideoTee<<", "<<gst_element_get_name(mGstVideoTee);
-    pushElement(mGstVideoInput, source, "videoscale", true);
-    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, true);
+    pushElement(mGstVideoInput, source, "videoscale", false);
+    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false);
 
     element = mGstOutgoingVideoSink; // = GST_ELEMENT(QmlVideoSurfaceGstSink::createSink(mOutgoingSurface));
     element = addAndLink(GST_BIN(mGstVideoInput), source, element);

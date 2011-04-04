@@ -381,10 +381,10 @@ GstElement *FarstreamChannel::pushElement(GstElement *bin, GstElement *&last, co
     GstElement *e = addElementToBin(bin, last, factory);
     if (!e) {
         if (optional) {
-            qDebug() << "Failed to create optional element " << factory;
+            qDebug() << "Failed to create or link optional element " << factory;
         }
         else {
-            setError(QString("Failed to create element ") + factory);
+            setError(QString("Failed to create or link element ") + factory);
         }
         return NULL;
     }

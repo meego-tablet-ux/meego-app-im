@@ -1555,6 +1555,7 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
 
 void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
 {
+    qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tpl::LoggerPtr logger = Tpl::Logger::create();
@@ -1621,3 +1622,18 @@ void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QStr
     }
 }
 
+void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
+{
+    qDebug() << "IMAccountsModel::onConnectionReady";
+    for (int i = 0; i < rowCount(); ++i) {
+        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
+
+        if(accountItem) {
+            Tp::AccountPtr account = accountItem->account();
+            if(account->connection() == connection) {
+                accountItem->addKnownContacts();
+            }
+        }
+    }
+}

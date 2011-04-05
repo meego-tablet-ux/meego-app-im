@@ -36,6 +36,11 @@ ApplicationPage {
         accountStatus = scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
     }
 
+    onAccountStatusChanged: {
+        contactsModel.filterByAccountId(currentAccountId);
+        contactRequestModel.filterByAccountId(currentAccountId);
+    }
+
     Connections {
         target: telepathyManager
         onUpgradingContacts: {

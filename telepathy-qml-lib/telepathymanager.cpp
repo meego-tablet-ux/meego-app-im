@@ -141,8 +141,10 @@ void TelepathyManager::initializeContacts(const Tp::ContactManagerPtr &contactMa
         qDebug() << " contact " << contact << contact.data() << " id=" << contact->id();
     }
 
-    Tp::ContactPtr selfContact = contactManager->connection()->selfContact();
-    contacts.insert(selfContact);
+    if(contactManager->connection()->actualFeatures().contains(Tp::Connection::FeatureSelfContact)) {
+        Tp::ContactPtr selfContact = contactManager->connection()->selfContact();
+        contacts.insert(selfContact);
+    }
 
     connect(contactManager->upgradeContacts(contacts.toList(), mContactFeatures),
             SIGNAL(finished(Tp::PendingOperation*)),
@@ -190,7 +192,9 @@ void TelepathyManager::onAccountReady(Tp::PendingOperation *op)
 
     // only cascade the initialization if it is a full start
     if (mFullStart) {
-        if (!accountPtr->connection().isNull()) {
+        if (!accountPtr->connection().isNull()
+                && accountPtr->connection()->isValid()
+                && accountPtr->connection()->status() == Tp::ConnectionStatusConnected) {
             initializeConnection(accountPtr->connection());
         } else {
             --mConnCount;
@@ -245,7 +249,6 @@ void TelepathyManager::onConnectionReady(Tp::PendingOperation *op)
         // initialize contacts
         initializeContacts(conn->contactManager());
     }
-
     emit connectionReady(conn);
 }
 
@@ -254,10 +257,9 @@ void TelepathyManager::onConnectionStatusChanged(Tp::ConnectionStatus status)
     qDebug() << "TelepathyManager::onConnectionStatusChanged: status=" << status;
 
     Tp::Account *account = qobject_cast<Tp::Account *>(sender());
-    if (status == Tp::ConnectionStatusConnected) {
-        if (!account->connection().isNull()) {
-            initializeConnection(account->connection());
-        }
+
+    if (!account->connection().isNull() && status == Tp::ConnectionStatusConnected) {
+        initializeConnection(account->connection());
     }
 }
 

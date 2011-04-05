@@ -136,6 +136,9 @@ private Q_SLOTS:
     void onMissedCallsChanged();
     void onBlockedContact(Tp::PendingOperation *op);
     void onUnblockedContact(Tp::PendingOperation *op);
+    void onGotAllProperties(QDBusPendingCallWatcher *watcher);
+    void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
+    void onAccountCountChanged();
     void onAccountConnectionStatusChanged(const QString &accountId, const int status);
     void onConnectionReady(Tp::ConnectionPtr connection);
 

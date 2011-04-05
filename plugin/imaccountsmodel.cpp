@@ -62,7 +62,7 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     introspectPrivacySettings();
     connect(this, SIGNAL(accountCountChanged()), SLOT(onAccountCountChanged()));
     connect(this, SIGNAL(accountConnectionStatusChanged(QString,int)),
-            SLOT(onAccountConnectionStatusChanged(QString)));
+            SLOT(onAccountConnectionStatusChanged(QString, int)));
 }
 
 IMAccountsModel::~IMAccountsModel()
@@ -1128,6 +1128,8 @@ void IMAccountsModel::setNotificationManager(NotificationManager *notificationMa
 void IMAccountsModel::setTelepathyManager(TelepathyManager *manager)
 {
     mTelepathyManager = manager;
+    connect(mTelepathyManager, SIGNAL(connectionReady(Tp::ConnectionPtr)),
+            SLOT(onConnectionReady(Tp::ConnectionPtr)));
 
     // trigger an update on the items
     if (rowCount()) {
@@ -1569,13 +1571,35 @@ void IMAccountsModel::onAccountCountChanged()
     introspectPrivacySettings();
 }
 
-void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId)
+void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId, const int status)
 {
+    qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tp::ConnectionPtr connection = accountItem->account()->connection();
-        if (!connection.isNull() && connection->isValid()) {
+        if (!connection.isNull()
+                && connection->isValid()
+                && status == Tp::ConnectionStatusConnected) {
             introspectAccountPrivacySettings(accountItem->account());
+            if (connection->actualFeatures().contains(Tp::Connection::FeatureRoster)) {
+                accountItem->addKnownContacts();
+            }
+        }
+    }
+}
+
+void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
+{
+    qDebug() << "IMAccountsModel::onConnectionReady";
+    for (int i = 0; i < rowCount(); ++i) {
+        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
+
+        if(accountItem) {
+            Tp::AccountPtr account = accountItem->account();
+            if(account->connection() == connection) {
+                accountItem->addKnownContacts();
+            }
         }
     }
 }

@@ -298,8 +298,28 @@ void FarstreamChannel::initAudioInput()
         setError("GStreamer audio input source could not be created");
         return;
     }
-    if (!strcmp(AUDIO_SOURCE_ELEMENT, "pulsesrc")) {
-        setPhoneMediaRole(source);
+
+    /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
+       READY as they can't connect to the pulse daemon. This will cause the
+       entire pipeline to fail to set to PLAYING. So we try to get pulsesrc to
+       READY temporarily here, and if it doesn't work, replace it with audiotestsrc
+       and volume, such that we'll get audio data at zero volume - silence. */
+    GstStateChangeReturn scr = gst_element_set_state(source, GST_STATE_READY);
+    if (scr == GST_STATE_CHANGE_FAILURE) {
+        qDebug() << "Audio source \"" AUDIO_SOURCE_ELEMENT "\" failed to get to READY, replacing with a fake audio source";
+        gst_bin_remove(GST_BIN(mGstAudioInput), source);
+        source = NULL;
+        source = addElementToBin(mGstAudioInput, source, "audiotestsrc");
+        g_object_set(source, "is-live", 1, NULL);
+        g_object_set(source, "wave", "silence", NULL);
+    }
+    else {
+        // put things back how we found them
+        gst_element_set_state(source, GST_STATE_NULL);
+
+        if (!strcmp(AUDIO_SOURCE_ELEMENT, "pulsesrc")) {
+            setPhoneMediaRole(source);
+        }
     }
 
     GstElement *element = addElementToBin(mGstAudioInput, source, "capsfilter");

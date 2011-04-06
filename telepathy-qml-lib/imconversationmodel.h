@@ -113,7 +113,7 @@ private:
     // matches are sorted reverse chronological order, 0 is newest
     int mCurrentMatch;
     int mCurrentRowMatch;
-    QList<int> mMatchesFound;
+    QList<QModelIndex> mMatchesFound;
     bool mSearching;
 };
 

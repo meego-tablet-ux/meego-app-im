@@ -87,8 +87,6 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    qDebug() << "IMConversationModel::data: requesting " << index.row() << " role=" << role;
-
     const FileTransferItem *item = qobject_cast<const FileTransferItem*>(
                 MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
     const Tpy::ConversationItem *conversationItem = qobject_cast<const Tpy::ConversationItem*>(
@@ -104,19 +102,30 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         text = text.replace(QChar('\n'), QString("<br>"));
 
         if (!mSearchString.isEmpty()) {
-            int i = text.indexOf(mSearchString, Qt::CaseInsensitive);
-            if (i != -1) {
-                QString prefix = text.left(i);
-                QString middle = text.mid(i, mSearchString.length());
-                QString suffix = text.mid(i+ mSearchString.length());
-                QString newText;
-                if (mCurrentRowMatch == index.row()) {
-                    newText = QString(prefix + "<font color=\"#ff0000\"><b>" + middle + "</b></font>" + suffix);
-                } else {
-                    newText = QString(prefix + "<font color=\"#ff0000\">" + middle + "</font>" + suffix);
+            QString newText;
+            int fromIndex = -1;
+            int lastIndex = -1;
+            int currentMatchInRow = mMatchesFound.at(mCurrentMatch).column();
+            int numMatchInRow = 0;
+            do {
+                fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
+                if (fromIndex != -1) {
+                    QString middle = text.mid(fromIndex, mSearchString.length());
+                    QString suffix = text.mid(fromIndex + mSearchString.size(), lastIndex - fromIndex);
+                    if (currentRowMatch() == index.row() && currentMatchInRow == numMatchInRow) {
+                        newText = "<font color=\"#ff0000\"><b>" + middle + "</b></font>" + suffix + newText;
+                    } else {
+                        newText = "<font color=\"#ff0000\">" + middle + "</font>" + suffix + newText;
+                    }
+                    lastIndex = fromIndex;
+                    fromIndex--;
+                    numMatchInRow++;
                 }
-                return QVariant(newText);
-            }
+            } while(fromIndex != -1);
+
+            QString prefix = text.left(lastIndex);
+            newText = prefix + newText;
+            return QVariant(newText);
         }
         return text;
     }
@@ -499,7 +508,7 @@ bool IMConversationModel::searching() const
 int IMConversationModel::currentRowMatch() const
 {
     if (mCurrentMatch < (uint) mMatchesFound.count()) {
-        return mMatchesFound.at(mCurrentMatch);
+        return mMatchesFound.at(mCurrentMatch).row();
     }
 
     return rowCount(QModelIndex()) - 1;
@@ -511,7 +520,7 @@ void IMConversationModel::newerMatch(void)
         bool previousOlderActive = olderActive();
         mCurrentMatch--;
         int oldRowMatch = mCurrentRowMatch;
-        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch);
+        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch).row();
         emit dataChanged(this->index(oldRowMatch), this->index(oldRowMatch));
         emit dataChanged(this->index(mCurrentRowMatch), this->index(mCurrentRowMatch));
         emit currentRowMatchChanged();
@@ -530,7 +539,7 @@ void IMConversationModel::olderMatch(void)
         bool previousNewerActive =  newerActive();
         mCurrentMatch++;
         int oldRowMatch = mCurrentRowMatch;
-        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch);
+        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch).row();
         emit dataChanged(this->index(oldRowMatch), this->index(oldRowMatch));
         emit dataChanged(this->index(mCurrentRowMatch), this->index(mCurrentRowMatch));
         emit currentRowMatchChanged();
@@ -549,16 +558,23 @@ void IMConversationModel::calculateMatches(void)
     for(int i = rowCount(QModelIndex()) - 1;i >= 0;i--) {
         QModelIndex rowIndex = index(i,0,QModelIndex());
         QString text = MergedModel::data(rowIndex, Tpy::SessionConversationModel::TextRole).toString();
-        if (text.contains(mSearchString, Qt::CaseInsensitive)) {
-            mMatchesFound.append(i);
-        }
+        int fromIndex = -1;
+        // NOTE matched are counted backwards in the string (0 starts at end of string, latest one)
+        int numMatchInRow = 0;
+        do {
+            fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
+            if (fromIndex != -1) {
+                mMatchesFound.append(this->index(i, numMatchInRow++));
+                fromIndex--;
+            }
+        } while(fromIndex != -1);
     }
 
     // TODO logic to know if reset current match or not
     mCurrentMatch = 0;
     int oldRowMatch = mCurrentMatch;
     if (mMatchesFound.count()) {
-        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch);
+        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch).row();
     } else {
         mCurrentRowMatch = rowCount(QModelIndex()) - 1;
     }

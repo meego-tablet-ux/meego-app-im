@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -283,6 +283,7 @@ ApplicationPage {
             anchors.right: parent.right
             anchors.bottom: callToolBar.visible ? callToolBar.top : imToolBar.top
             height: textBox.height
+            visible: !scene.fullscreen
 
             Item {
                 id: textBox
@@ -291,7 +292,6 @@ ApplicationPage {
                 anchors.rightMargin: 5
 
                 height: textEdit.height + 2 * textEdit.anchors.margins + 2 * textArea.anchors.margins
-                visible: !scene.fullscreen
 
                 BorderImage {
                     id: textArea
@@ -371,9 +371,9 @@ ApplicationPage {
             function getVideoWidth(full, window) {
                 if (scene.fullscreen) {
                     if (scene.orientation == 0 || scene.orientation == 2) {
-                        return scene.height;
+                        return pageContent.height;
                     }
-                    return scene.width;
+                    return pageContent.width;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
                 var width = window.width - 20;
@@ -387,9 +387,9 @@ ApplicationPage {
             function getVideoHeight(full, window) {
                 if (scene.fullscreen) {
                     if (scene.orientation == 0 || scene.orientation == 2) {
-                        return scene.width;
+                        return pageContent.width;
                     }
-                    return scene.height;
+                    return pageContent.height;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
                 var width = window.width - 20;

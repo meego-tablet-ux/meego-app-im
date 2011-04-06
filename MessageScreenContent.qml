@@ -74,7 +74,8 @@ ApplicationPage {
     //showSearch: true
 
     onSearch: {
-        conversationView.model.onSearchByString(needle);
+        conversationView.model.searchByString(needle);
+        searchHeader.searchActive = (needle != "");
     }
 
     Component.onCompleted: {
@@ -218,8 +219,31 @@ ApplicationPage {
         // force clipping
         //clip: true
 
+        SearchHeader {
+            id: searchHeader
+            searchActive: messageScreenPage.showSearch
+            searching: conversationView.model.searching
+            olderActive : conversationView.model.olderActive
+            newerActive : conversationView.model.newerActive
+            numMatchesFound: conversationView.model.numMatchesFound
+            onOlderClicked: {
+                conversationView.model.olderMatch();
+            }
+            onNewerClicked: {
+                conversationView.model.newerMatch();
+            }
+        }
+
+        Connections {
+            target: conversationView.model
+            onCurrentRowMatchChanged: {
+                conversationView.positionViewAtIndex(conversationView.model.currentRowMatch, ListView.Center);
+            }
+        }
+
         NoNetworkHeader {
             id: noNetworkItem
+            anchors.top: searchHeader.bottom
         }
 
         Component {
@@ -262,6 +286,7 @@ ApplicationPage {
                 bottom: textBar.top
                 margins: 10
             }
+            clip: true
 
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true

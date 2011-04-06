@@ -68,7 +68,7 @@ Item {
             border.right: 20
             border.top: 12
 
-            height: ((expandedMessage || model.includeSearch) ?
+            height: ((expandedMessage) ?
                          62 : 10 )
         }
 

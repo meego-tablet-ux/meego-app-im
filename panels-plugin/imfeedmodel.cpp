@@ -279,8 +279,7 @@ void IMFeedModel::onNewFileTransferChannel(const Tp::AccountPtr &account, const 
     if (account->uniqueIdentifier() == mAccountId) {
         // enable the features we need to receive incoming messages
         connect(fileTransferChannel->becomeReady(Tp::Features()
-                        << Tp::IncomingFileTransferChannel::FeatureCore
-                        << Tp::IncomingFileTransferChannel::FeatureConferenceInitialInviteeContacts),
+                        << Tp::IncomingFileTransferChannel::FeatureCore),
                 SIGNAL(finished(Tp::PendingOperation*)),
                 SLOT(onFileTransferChannelReady(Tp::PendingOperation*)));
     }

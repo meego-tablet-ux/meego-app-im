@@ -171,11 +171,17 @@ void AccountHelper::createAccount()
         mParameters["password"] = mPassword;
     }
 
+    // set the icon as a property so that the account has the
+    // correct value right when it is created
+    QVariantMap props;
+    props["org.freedesktop.Telepathy.Account.Icon"] = mIcon;
+
     if (mAccount.isNull()) {
         Tp::PendingAccount *pa = mAccountManager->createAccount(mConnectionManager,
                                                                  mProtocol,
                                                                  mDisplayName,
-                                                                 mParameters);
+                                                                 mParameters,
+                                                                 props);
         connect(pa, SIGNAL(finished(Tp::PendingOperation*)),
                 this, SLOT(onAccountCreated(Tp::PendingOperation*)));
     }
@@ -342,17 +348,6 @@ void AccountHelper::onAccountEnabled(Tp::PendingOperation *op)
     if (op->isError()) {
         // TODO: notify errors and get back to the setup screen
         return;
-    }
-
-    connect(mAccount->setIconName(mIcon), SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountIconSet(Tp::PendingOperation*)));
-}
-
-void AccountHelper::onAccountIconSet(Tp::PendingOperation *op)
-{
-    if (op->isError()) {
-        // TODO: notify errors and get back to the setup screen
-        // do not return, we can continue executing.
     }
 
     Tp::SimplePresence presence;

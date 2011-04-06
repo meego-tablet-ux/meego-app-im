@@ -23,7 +23,8 @@ public:
         IconRole,
         IdRole,
         ConnectionManagerRole,
-        ProtocolRole
+        ProtocolRole,
+        SingleInstanceRole
     };
 
     explicit IMProtocolsModel(QObject *parent = 0);
@@ -33,6 +34,7 @@ public:
     Q_INVOKABLE QString iconForId(const QString &id) const;
     Q_INVOKABLE QString contentForId(const QString &id) const;
     Q_INVOKABLE QString titleForId(const QString &id) const;
+    Q_INVOKABLE bool isSingleInstance(const QString &id) const;
 
     QMap<QString, QString> protocolNames() const;
 

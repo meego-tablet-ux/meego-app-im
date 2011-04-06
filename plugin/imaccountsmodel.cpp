@@ -443,6 +443,18 @@ int IMAccountsModel::accountsOfType(const QString &type) const
     return count;
 }
 
+QStringList IMAccountsModel::accountIdsOfType(const QString &type) const
+{
+    QStringList ids;
+    for (int i = 0; i < rowCount(); ++i) {
+        if (index(i, 0).data(Tpy::AccountsModel::IconRole).toString() == type) {
+            ids.append(index(i,0).data(Tpy::AccountsModel::IdRole).toString());
+        }
+    }
+
+    return ids;
+}
+
 void IMAccountsModel::onChatCreated()
 {
     ChatAgent *agent = qobject_cast<ChatAgent*>(sender());

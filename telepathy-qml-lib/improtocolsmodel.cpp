@@ -20,6 +20,7 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
     roles[IdRole] = "id";
     roles[ConnectionManagerRole] = "connectionManager";
     roles[ProtocolRole] = "protocol";
+    roles[SingleInstanceRole] = "singleInstance";
     setRoleNames(roles);
 
     QDir dir(modulePath());
@@ -65,6 +66,11 @@ QVariant IMProtocolsModel::data(const QModelIndex &index, int role) const
         return mProtocolList[index.row()]->value("MTI", "ConnectionManager");
     case ProtocolRole:
         return mProtocolList[index.row()]->value("MTI", "Protocol");
+    case SingleInstanceRole:
+        if (mProtocolList[index.row()]->contains("MTI", "SingleInstance")) {
+            return (mProtocolList[index.row()]->value("MTI", "SingleInstance") == "true");
+        }
+        return false;
     }
 
     return QVariant();
@@ -95,6 +101,16 @@ QString IMProtocolsModel::titleForId(const QString &id) const
     }
 
     return mProtocolMap[id]->name();
+}
+
+bool IMProtocolsModel::isSingleInstance(const QString &id) const
+{
+    if (!mProtocolMap.contains(id) ||
+        !mProtocolMap[id]->contains("MTI", "SingleInstance")) {
+        return false;
+    }
+
+   return (mProtocolMap[id]->value("MTI", "SingleInstance") == "true");
 }
 
 QMap<QString, QString> IMProtocolsModel::protocolNames() const

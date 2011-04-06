@@ -56,6 +56,13 @@ ApplicationPage {
         }
     }
 
+    Component {
+        id: confirmationDialogContent
+        ConfirmationDialog {
+            id: confirmationDialogItem
+        }
+    }
+
     Flickable {
         parent: container.content
         anchors.fill: parent

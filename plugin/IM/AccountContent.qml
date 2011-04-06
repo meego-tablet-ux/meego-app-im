@@ -42,6 +42,7 @@ Column {
     property alias icon: accountHelperItem.icon
     property string accountId: ""
     property variant accountItem: accountsModel.accountItemForId(accountId)
+    property string serviceName: protocolsModel.titleForId(icon)
 
     property alias advancedOptionsComponent: advancedOptions.sourceComponent
     property alias advancedOptionsItem: advancedOptions.item
@@ -68,6 +69,71 @@ Column {
         }
     }
 
+    Connections {
+        target: dialogLoader.item
+        onAccepted: {
+            if (dialogLoader.item.instanceReason != "account-setup-single-instance") {
+                return;
+            }
+
+            // if the dialog was accepted we should disconnect all other accounts
+            // of the same type
+            mainArea.disconnectOtherAccounts();
+
+            // and finally create the account
+            accountHelper.createAccount();
+        }
+        onRejected: {
+            if (dialogLoader.item.instanceReason != "account-setup-single-instance") {
+                return;
+            }
+
+            // ask the account helper not to connect the account
+            accountHelper.connectAfterSetup = false;
+
+            // and create the account
+            accountHelper.createAccount();
+        }
+    }
+
+    function otherAccountsOnline() {
+        var ids = accountsModel.accountIdsOfType(icon);
+        var count = 0;
+
+        for (var i in ids) {
+            if (edit && ids[i] == accountId) {
+                continue;
+            }
+
+            var item = accountsModel.accountItemForId(ids[i]);
+            var status = item.data(AccountsModel.ConnectionStatusRole);
+            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    function disconnectOtherAccounts() {
+        var ids = accountsModel.accountIdsOfType(icon);
+        var count = 0;
+
+        for (var i in ids) {
+            if (edit && ids[i] == accountId) {
+                continue;
+            }
+
+            var item = accountsModel.accountItemForId(ids[i]);
+            var status = item.data(AccountsModel.ConnectionStatusRole);
+            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
+                item.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                                          "offline", // i18n ok
+                                          item.data(AccountsModel.ConnectionStatusRole));
+            }
+        }
+    }
+
     function createAccount() {
         // emit the aboutToCreate signal so that accounts that need proper setup
         aboutToCreateAccount();
@@ -78,6 +144,21 @@ Column {
             accountCreationAborted();
             loginBox.focus = true;
             return;
+        }
+
+        // check if the service allows for more than one account to be used at the same time
+        if (protocolsModel.isSingleInstance(icon)) {
+            // check if there is any other account of type online
+            if (otherAccountsOnline() > 0) {
+                // TODO: show the dialog asking if the other accounts should be signed off
+                showModalDialog(confirmationDialogContent);
+                dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
+                dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
+                dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                dialogLoader.item.instanceReason = "account-setup-single-instance"; // i18n ok
+
+                return;
+            }
         }
 
         // and then creates the real account

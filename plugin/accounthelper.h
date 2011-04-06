@@ -66,6 +66,9 @@ class AccountHelper : public QObject
     Q_PROPERTY(bool connectsAutomatically READ connectsAutomatically
                                           WRITE setConnectsAutomatically
                                           NOTIFY connectsAutomaticallyChanged)
+    Q_PROPERTY(bool connectAfterSetup READ connectAfterSetup
+                                      WRITE setConnectAfterSetup
+                                      NOTIFY connectAfterSetupChanged)
 
 public:
     explicit AccountHelper(QObject *parent = 0);
@@ -130,6 +133,8 @@ public:
 
     Q_INVOKABLE void introspectAccountPrivacySettings(const QString &interfaceName);
     Q_INVOKABLE void setPrivacySettings(const QString &interfaceName);
+    bool connectAfterSetup() const;
+    void setConnectAfterSetup(bool value);
 
 Q_SIGNALS:
     void connectionManagerChanged();
@@ -150,6 +155,10 @@ Q_SIGNALS:
     void onlineChanged();
     void connectsAutomaticallyChanged();
     void accountChanged();
+    void connectAfterSetupChanged();
+
+protected:
+    void updatePrivacySettings();
 
 private:
     QString mConnectionManager;
@@ -171,6 +180,7 @@ private:
     uint mShowMyWebStatus;
     uint mShowIHaveVideoTo;
     bool mConnectsAutomatically;
+    bool mConnectAfterSetup;
 
 private Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);

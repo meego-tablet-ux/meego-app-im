@@ -76,6 +76,7 @@ public:
     Q_INVOKABLE QObject *fileTransferAgent(const QString &accountId, const QString &contactId);
     Q_INVOKABLE void addContactsToChat(const QString &accountId, const QString &channelPath, const QString &contacts);
     Q_INVOKABLE int accountsOfType(const QString &type) const;
+    Q_INVOKABLE QStringList accountIdsOfType(const QString &type) const;
     Q_INVOKABLE void addContactFromGroupChat(const QString &accountId, const QString &channelPath, const QString &contactId);
     Q_INVOKABLE bool isContactKnown(const QString &accountId, const QString &channelPath, const QString &contactId) const;
     Q_INVOKABLE void blockContact(const QString &accountId, const QString &contactId);

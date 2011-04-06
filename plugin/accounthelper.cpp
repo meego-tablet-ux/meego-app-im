@@ -29,7 +29,8 @@ AccountHelper::AccountHelper(QObject *parent) :
     mShowMyAvatarTo(0),
     mShowMyWebStatus(0),
     mShowIHaveVideoTo(0),
-    mConnectsAutomatically(true)
+    mConnectsAutomatically(true),
+    mConnectAfterSetup(true)
 {
     mAccountManager = Tp::AccountManager::create();
     connect(mAccountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
@@ -223,11 +224,6 @@ void AccountHelper::createAccount()
 
         QVariantMap::iterator it = mParameters.begin();
 
-        /*while (it != mParameters.end()) {
-            qDebug() << "Going to set parameter " << it.key() << " to " << it.value();
-            ++it;
-        }*/
-
         // set account to connect automatically
         mAccount->setConnectsAutomatically(mConnectsAutomatically);
         mAccount->setDisplayName(mDisplayName);
@@ -313,7 +309,6 @@ void AccountHelper::onAccountCreated(Tp::PendingOperation *op)
 
     // set account to connect automatically
     mAccount->setConnectsAutomatically(mConnectsAutomatically);
-    qDebug("account set to automatic");
 
     // get the account online
     connect(mAccount->setEnabled(true), SIGNAL(finished(Tp::PendingOperation*)),
@@ -327,12 +322,13 @@ void AccountHelper::onAccountEnabled(Tp::PendingOperation *op)
         return;
     }
 
-    Tp::SimplePresence presence;
-    presence.type = Tp::ConnectionPresenceTypeAvailable;
-    presence.status = "online";
-    presence.statusMessage = "";
-
-    mAccount->setRequestedPresence(presence);
+    if (mConnectAfterSetup) {
+        Tp::SimplePresence presence;
+        presence.type = Tp::ConnectionPresenceTypeAvailable;
+        presence.status = "online";
+        presence.statusMessage = "";
+        mAccount->setRequestedPresence(presence);
+    }
     emit accountSetupFinished();
 }
 
@@ -345,7 +341,7 @@ void AccountHelper::onParametersUpdated(Tp::PendingOperation *op)
     Tp::PendingStringList *list = qobject_cast<Tp::PendingStringList*>(op);
     qDebug() << "Parameters on relogin:" << list->result();
 
-    if (list->result().count()) {
+    if (list->result().count() && mConnectAfterSetup) {
         mAccount->reconnect();
     }
 
@@ -574,4 +570,15 @@ void AccountHelper::onSetPrivacyProperty(QDBusPendingCallWatcher *watcher)
     if(!accountId.isEmpty()) {
         introspectAccountPrivacySettings(interfaceName);
     }
+}
+
+bool AccountHelper::connectAfterSetup() const
+{
+    return mConnectAfterSetup;
+}
+
+void AccountHelper::setConnectAfterSetup(bool value)
+{
+    mConnectAfterSetup = value;
+    emit connectAfterSetupChanged();
 }

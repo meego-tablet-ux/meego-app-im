@@ -445,6 +445,13 @@ Window {
         }
     }
 
+    Component {
+        id: confirmationDialogContent
+        ConfirmationDialog {
+            id: confirmationDialogItem
+        }
+    }
+
     Loader {
             id: dialogLoader
             width: scene.width

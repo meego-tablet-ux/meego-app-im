@@ -409,8 +409,7 @@ void FarstreamChannel::initAudioOutput()
     gst_object_sink(mGstAudioOutput);
 
     GstElement *source = 0;
-    pushElement(mGstAudioOutput, source, "liveadder", false, &mGstAudioOutputSink);
-    pushElement(mGstAudioOutput, source, "audioresample", true);
+    pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink);
     if (strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
         pushElement(mGstAudioOutput, source, "volume", true, &mGstAudioOutputVolume);
     }
@@ -435,7 +434,7 @@ void FarstreamChannel::initAudioOutput()
 void FarstreamChannel::deinitAudioOutput()
 {
     LIFETIME_TRACER();
-    releaseGhostPad(mGstAudioOutput, SINK_GHOST_PAD_NAME, mGstAudioOutputSink);
+    releaseGhostPad(mGstAudioOutput, SINK_GHOST_PAD_NAME, NULL);
 
     if (mGstAudioOutput) {
         gst_element_set_state(mGstAudioOutput, GST_STATE_NULL);
@@ -1508,6 +1507,7 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
     GstElement *sinkElement = 0;
     GstPad *pad = 0;
     gboolean res = FALSE;
+    GstPad *sinkPad = NULL;
     switch (media_type) {
     case TP_MEDIA_STREAM_TYPE_AUDIO:
         if (self->mGstAudioOutput) {
@@ -1516,6 +1516,7 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
         self->initAudioOutput();
         bin = self->mGstAudioOutput;
         sinkElement = self->mGstAudioOutputSink;
+        sinkPad = gst_element_get_static_pad(sinkElement, "sink");
         break;
     case TP_MEDIA_STREAM_TYPE_VIDEO:
         if (self->mGstVideoOutput) {
@@ -1525,6 +1526,7 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
         self->initVideoOutput();
         bin = self->mGstVideoOutput;
         sinkElement = self->mGstVideoOutputSink;
+        sinkPad = gst_element_get_request_pad(sinkElement, "sink%d");
         break;
 
     default:
@@ -1551,9 +1553,6 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
         return;
     }
 
-    GstPad *sinkPad;
-    qDebug() << "Requesting pad for bin " << gst_element_get_name(bin) << " to add a sink ghost pad to";
-    sinkPad = gst_element_get_request_pad(sinkElement, "sink%d");
     if (!sinkPad) {
         //tf_content_error(content, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR, "Could not link sink");
         self->setError("GStreamer sink pad request failed");

@@ -149,7 +149,6 @@ ApplicationPage {
                 Text {
                     anchors.margins: 10
                     text: qsTr("Show offline contacts")
-                    style: Text.Raised
                     font.pixelSize: theme_fontPixelSizeLarge
                 }
 
@@ -159,7 +158,7 @@ ApplicationPage {
                     onToggled: settingsHelper.showOfflineContacts = isOn;
                 }
 
-                Text {
+                /*Text {
                     anchors.margins: 10
                     text: qsTr("Audio alert on new message")
                     font.pixelSize: theme_fontPixelSizeLarge
@@ -169,7 +168,7 @@ ApplicationPage {
                     id: audioAlertToggle
                     on: settingsHelper.enableAudioAlerts
                     onToggled: settingsHelper.enableAudioAlerts = isOn;
-                }
+                }*/
 
                 Text {
                     anchors.margins: 10
@@ -183,7 +182,7 @@ ApplicationPage {
                     onToggled: settingsHelper.enableNotifications = isOn;
                 }
 
-                Text {
+                /*Text {
                     anchors.margins: 10
                     text: qsTr("Vibrate on new message")
                     font.pixelSize: theme_fontPixelSizeLarge
@@ -193,7 +192,7 @@ ApplicationPage {
                     id: vibrateToggle
                     on: settingsHelper.enableVibrate
                     onToggled: settingsHelper.enableVibrate = isOn;
-                }
+                }*/
             }
 
             Item {

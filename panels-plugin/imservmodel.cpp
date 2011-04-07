@@ -136,7 +136,7 @@ void IMServiceModel::onAccountRemoved()
     Tp::Account *account = qobject_cast<Tp::Account *>(sender());
 
     // make sure we are not acting on a null object
-    if (account && account->isValid()) {
+    if (account) {
         QString id = account->uniqueIdentifier();
         if (!id.isEmpty()) {
             foreach(QString name, m_names) {

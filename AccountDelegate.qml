@@ -63,6 +63,27 @@ Item {
             font.pixelSize: theme_fontPixelSizeLargest
         }
 
+        Connections {
+            target: dialogLoader.item
+            onAccepted: {
+                if (dialogLoader.item.instanceReason != "account-delegate-single-instance") {
+                    return;
+                }
+
+                // if the dialog was accepted we should disconnect all other accounts
+                // of the same type
+                accountFactory.disconnectOtherAccounts(model.icon, model.id);
+
+                // and set the account online
+                model.item.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
+                                                "available", // i18n ok
+                                                model.item.data(AccountsModel.CurrentPresenceStatusMessageRole));
+            }
+
+            // no need to do anything if the dialog is rejected
+            // onRejected:
+        }
+
         Component {
             id: contextComponent
             ContextMenu {
@@ -79,9 +100,24 @@ Item {
                                                 "offline", // i18n ok
                                                 payload.data(AccountsModel.ConnectionStatusRole));
                         } else {
-                            payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
-                                                "available", // i18n ok
-                                                payload.data(AccountsModel.CurrentPresenceStatusMessageRole));
+                            var icon = payload.data(AccountsModel.IconRole);
+                            var id = payload.data(AccountsModel.IdRole);
+
+                            // if the protocol only allows to have one account connected at a time,
+                            // ask the user if he really wants to do that
+                            if (protocolsModel.isSingleInstance(icon) &&
+                                accountFactory.otherAccountsOnline(icon, id)) {
+                                // show the dialog asking the user if he really wants to connect the account
+                                showModalDialog(confirmationDialogContent);
+                                dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
+                                dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
+                                dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                                dialogLoader.item.instanceReason = "account-delegate-single-instance"; // i18n ok
+                            } else {
+                                payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
+                                                             "available", // i18n ok
+                                                             payload.data(AccountsModel.CurrentPresenceStatusMessageRole));
+                            }
                         }
 
                     }

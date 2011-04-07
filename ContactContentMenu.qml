@@ -22,7 +22,23 @@ Item {
     // FIXME remove after full migration to MeegGo.Components
     property variant window : scene
 
+    property int requestedStatusType: 0
+    property string requestedStatus: ""
+    property string requestedStatusMessage: ""
+
     signal accountChanged
+
+    function confirmAccountLogin()
+    {
+        var serviceName = protocolsModel.titleForId(scene.accountItem.data(AccountsModel.IconRole));
+
+        // show the dialog to ask for user confirmation
+        showModalDialog(confirmationDialogContent);
+        dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
+        dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
+        dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+        dialogLoader.item.instanceReason = "contact-menu-single-instance"; // i18n ok
+    }
 
     Component.onCompleted: {
         if (scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
@@ -51,6 +67,26 @@ Item {
         onCurrentAccountIdChanged: {
              scene.accountItem = accountsModel.accountItemForId(scene.currentAccountId);
         }
+    }
+
+    Connections {
+        target: dialogLoader.item
+        onAccepted: {
+            if (dialogLoader.item.instanceReason != "contact-menu-single-instance") {
+                return;
+            }
+
+            // if the dialog was accepted we should disconnect all other accounts
+            // of the same type
+            accountFactory.disconnectOtherAccounts(model.icon, model.id);
+
+            // and set the account online
+            scene.accountItem.setRequestedPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+            scene.accountItem.setAutomaticPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+        }
+
+        // no need to do anything if the dialog is rejected
+        // onRejected:
     }
 
     width: 400
@@ -252,6 +288,23 @@ Item {
                                 anchors.fill: parent
                                 onClicked: {
                                     statusRadioGroup.select(model.type);
+                                    var icon = scene.accountItem.data(AccountsModel.IconRole);
+                                    var id = scene.accountItem.data(AccountsModel.IdRole);
+                                    // if the protocol doesn t allow for multiple accounts to be online
+                                    // at the same time, we need to ask the user if he wants to disconnect
+                                    // the other accounts
+                                    if (!protocolsModel.isSingleInstance(icon) ||
+                                        accountFactory.otherAccountsOnline(icon, id) == 0 ||
+                                        model.type == TelepathyTypes.ConnectionPresenceTypeOffline) {
+                                            scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
+                                            scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
+                                    } else {
+                                        requestedStatusType = model.type;
+                                        requestedStatus = model.status;
+                                        requestedStatusMessage = customMessageBox.text;
+                                        confirmAccountLogin();
+                                    }
+                                    currentPage.closeMenu();
                                 }
                             }
 
@@ -543,9 +596,20 @@ Item {
 
                 onClicked: {
                     if(scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
-                        scene.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
-                                                      "available", // i18n ok
-                                                      "");
+                        requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
+                        requestedStatus = "available"; // i18n ok
+                        requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
+
+                        var icon = scene.accountItem.data(AccountsModel.IconRole);
+                        var id = scene.accountItem.data(AccountsModel.IdRole);
+
+                        if (!protocolsModel.isSingleInstance(icon) ||
+                            accountFactory.otherAccountsOnline(icon, id) == 0) {
+                                scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
+                                scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
+                        } else {
+                            confirmAccountLogin();
+                        }
                         currentPage.closeMenu();
                     } else {
                         scene.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
@@ -553,7 +617,6 @@ Item {
                                                       scene.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
                         currentPage.closeMenu();
                         scene.previousApplicationPage();
-
                     }
                 }
             }

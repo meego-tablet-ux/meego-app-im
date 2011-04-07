@@ -7,6 +7,7 @@
  */
 
 import Qt 4.7
+import MeeGo.Components 0.1 as Ux
 import MeeGo.Labs.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
@@ -16,6 +17,8 @@ Item {
     id: meTabItem
 
     property variant currentPage
+    // FIXME remove after full migration to MeegGo.Components
+    property variant window : scene
 
     signal accountChanged
 
@@ -531,9 +534,8 @@ Item {
         id: accountHelper
     }
 
-    PhotoPicker {
+    Ux.PhotoPicker {
         id: photoPicker
-        parent: scene;
 
         onPhotoSelected: {
             accountHelper.setAccount(scene.accountItem);

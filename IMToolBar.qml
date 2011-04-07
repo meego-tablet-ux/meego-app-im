@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -186,7 +186,8 @@ Item {
             fingerMode: 3
 
             Component.onCompleted: {
-                sendFileButton.visible = sendFileContextMenu.content != null
+                if (sendFileContextMenu.content == null)
+                    sendFileButton.visible = false
             }
         }
 

@@ -89,4 +89,42 @@ Item {
     {
         return protocolsModel.titleForId(type)
     }
+
+    function otherAccountsOnline(type, accountId) {
+        var ids = accountsModel.accountIdsOfType(type);
+        var count = 0;
+
+        for (var i in ids) {
+            if (ids[i] == accountId) {
+                continue;
+            }
+
+            var item = accountsModel.accountItemForId(ids[i]);
+            var status = item.data(AccountsModel.ConnectionStatusRole);
+            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    function disconnectOtherAccounts(type, accountId) {
+        var ids = accountsModel.accountIdsOfType(type);
+        var count = 0;
+
+        for (var i in ids) {
+            if (ids[i] == accountId) {
+                continue;
+            }
+
+            var item = accountsModel.accountItemForId(ids[i]);
+            var status = item.data(AccountsModel.ConnectionStatusRole);
+            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
+                item.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                                          "offline", // i18n ok
+                                          item.data(AccountsModel.ConnectionStatusRole));
+            }
+        }
+    }
 }

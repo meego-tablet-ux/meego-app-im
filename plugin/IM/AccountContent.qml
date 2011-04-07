@@ -78,7 +78,7 @@ Column {
 
             // if the dialog was accepted we should disconnect all other accounts
             // of the same type
-            mainArea.disconnectOtherAccounts();
+            accountFactory.disconnectOtherAccounts(icon, (edit ? accountId : ""));
 
             // and finally create the account
             accountHelper.createAccount();
@@ -93,44 +93,6 @@ Column {
 
             // and create the account
             accountHelper.createAccount();
-        }
-    }
-
-    function otherAccountsOnline() {
-        var ids = accountsModel.accountIdsOfType(icon);
-        var count = 0;
-
-        for (var i in ids) {
-            if (edit && ids[i] == accountId) {
-                continue;
-            }
-
-            var item = accountsModel.accountItemForId(ids[i]);
-            var status = item.data(AccountsModel.ConnectionStatusRole);
-            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    function disconnectOtherAccounts() {
-        var ids = accountsModel.accountIdsOfType(icon);
-        var count = 0;
-
-        for (var i in ids) {
-            if (edit && ids[i] == accountId) {
-                continue;
-            }
-
-            var item = accountsModel.accountItemForId(ids[i]);
-            var status = item.data(AccountsModel.ConnectionStatusRole);
-            if (status != TelepathyTypes.ConnectionStatusDisconnected) {
-                item.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
-                                          "offline", // i18n ok
-                                          item.data(AccountsModel.ConnectionStatusRole));
-            }
         }
     }
 
@@ -149,7 +111,7 @@ Column {
         // check if the service allows for more than one account to be used at the same time
         if (protocolsModel.isSingleInstance(icon)) {
             // check if there is any other account of type online
-            if (otherAccountsOnline() > 0) {
+            if (accountFactory.otherAccountsOnline(icon, (edit ? accountId : "")) > 0) {
                 // TODO: show the dialog asking if the other accounts should be signed off
                 showModalDialog(confirmationDialogContent);
                 dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
@@ -192,10 +154,6 @@ Column {
                 return false;
         }
         return value;
-    }
-
-    AccountContentFactory {
-        id: accountFactory
     }
 
     Image {

@@ -55,6 +55,14 @@ ApplicationPage {
         }
     }
 
+    Connections {
+        target: scene
+
+        onCurrentAccountNameChanged: {
+            scene.title = scene.currentAccountName;
+        }
+    }
+
     Item {
         id: pageContent
         parent: contactsScreenPage.content

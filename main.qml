@@ -14,6 +14,9 @@ import TelepathyQML 0.1
 Window {
     id: scene
 
+    // FIXME remove once migration to Meego UX components is completed
+    signal orientationChangeFinished();
+
     title: qsTr("Chat")
     fullscreen: true
 

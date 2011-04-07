@@ -8,11 +8,14 @@
 
 import Qt 4.7
 import MeeGo.App.IM 0.1
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.Media 0.1
 
 Item {
     id: container
+
+    // FIXME remove after full migration to MeegGo.Components
+    property variant window : scene
 
     width: itemsColumn.width + itemsColumn.anchors.margins * 2
     height: itemsColumn.height
@@ -20,10 +23,10 @@ Item {
     signal fileSelected(string fileName);
 
     function hidePickers() {
-        photoPicker.visible = false;
-        videoPicker.visible = false;
-        musicPicker.visible = false;
-        //contactsPicker.visible = false;
+        photoPicker.hide();
+        videoPicker.hide();
+        musicPicker.hide();
+        //contactsPicker.hide();
     }
 
     onVisibleChanged: {
@@ -74,8 +77,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    hidePickers();
-                    photoPicker.visible = true;
+                    photoPicker.show();
                 }
             }
         }
@@ -103,7 +105,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    hidePickers();
                     videoPicker.show()
                 }
             }
@@ -132,7 +133,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    hidePickers();
                     musicPicker.show()
                 }
             }
@@ -160,7 +160,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    hidePickers();
                     //contactsPicker.show()
                 }
             }
@@ -169,7 +168,6 @@ Item {
 
     PhotoPicker {
         id: photoPicker
-        parent: scene
 
         onPhotoSelected: {
             container.fileSelected(uri.replace("file://", ""));
@@ -179,7 +177,6 @@ Item {
 
     VideoPicker {
         id: videoPicker
-        parent: scene
 
         onVideoSelected: {
             container.fileSelected(uri.replace("file://", ""));
@@ -189,11 +186,10 @@ Item {
 
     MusicPicker {
         id: musicPicker
-        parent: scene
+        selectSongs: true
 
         onSongSelected: {
-            // TODO: once the music picker gets a uri, use it
-            //container.fileSelected(uri.replace("file://", ""));
+            container.fileSelected(uri.replace("file://", ""));
             container.visible = false;
         }
     }

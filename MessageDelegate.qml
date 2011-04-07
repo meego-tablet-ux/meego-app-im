@@ -31,7 +31,7 @@ Item {
         var avatar = "";
         if (messageSent) {
             avatar = "image://avatars/" + scene.currentAccountId + // i18n ok
-                        "?" + accountContentFactory.avatarSerial;
+                        "?" + accountFactory.avatarSerial;
         } else {
             avatar = model.contactAvatar;
         }

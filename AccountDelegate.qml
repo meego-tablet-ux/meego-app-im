@@ -29,7 +29,7 @@ Item {
             id: serviceIcon
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            source: accountContentFactory.accountIcon(model.icon, model.connectionStatus)
+            source: accountFactory.accountIcon(model.icon, model.connectionStatus)
             opacity: loadingIcon.visible ? 0 : 1
             smooth: true
 
@@ -90,7 +90,7 @@ Item {
                         // Account settings
                         var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
                         appModel.launch(cmd);
-                        //scene.addApplicationPage(accountContentFactory.componentForAccount(payload.data(AccountsModel.IdRole), scene));
+                        //scene.addApplicationPage(accountFactory.componentForAccount(payload.data(AccountsModel.IdRole), scene));
                     }
                     else
                     {

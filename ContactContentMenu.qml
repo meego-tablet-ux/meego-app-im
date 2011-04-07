@@ -24,10 +24,6 @@ Item {
 
     signal accountChanged
 
-    AccountContentFactory {
-        id: accountFactory
-    }
-
     Component.onCompleted: {
         if (scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
             statusMessage.text = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
@@ -85,7 +81,7 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 2
                 source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
-                            "?" + accountContentFactory.avatarSerial
+                            "?" + accountFactory.avatarSerial
                 noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
             }
 
@@ -574,7 +570,7 @@ Item {
         onPhotoSelected: {
             accountHelper.setAccount(scene.accountItem);
             accountHelper.avatar = uri;
-            accountContentFactory.avatarSerial++;
+            accountFactory.avatarSerial++;
             avatarImage.source = accountHelper.avatar;
         }
     }

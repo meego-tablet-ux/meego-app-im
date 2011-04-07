@@ -75,10 +75,6 @@ Window {
         notificationManager.applicationActive = foreground;
     }
 
-    AccountContentFactory {
-        id: accountContentFactory
-    }
-
     Connections {
         target:  null;
         id: accountItemConnections

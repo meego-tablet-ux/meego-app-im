@@ -16,7 +16,7 @@ ApplicationPage {
     anchors.fill: parent
 
     // The label is used as the user visible string in the crumb trail
-    title: accountContentFactory.accountServiceName(accountContent.icon)
+    title: accountFactory.accountServiceName(accountContent.icon)
 
     property variant accountContent
 
@@ -24,7 +24,7 @@ ApplicationPage {
         accountContent.parent = accountContentPlaceholder;
         accountContent.anchors.top = accountContent.parent.top;
         accountContent.anchors.topMargin = 10;
-        scene.title = accountContentFactory.accountServiceName(accountContent.icon)
+        scene.title = accountFactory.accountServiceName(accountContent.icon)
     }
 
     Connections {

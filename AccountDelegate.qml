@@ -129,9 +129,9 @@ Item {
             anchors.fill: parent
             onClicked: {
                 scene.currentAccountId = model.id;
-                scene.accountItem = accountsModel.accountItemForId(model.id);
                 accountScreenPage.addApplicationPage(contactsScreenContent);
             }
+
             onPressAndHold: {
                 var map = mapToItem(scene, mouseX, mouseY);
                 menu.clear();

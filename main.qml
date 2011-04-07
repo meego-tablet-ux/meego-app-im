@@ -58,7 +58,9 @@ Window {
         contactRequestModel.filterByAccountId(currentAccountId);
         accountItem = accountsModel.accountItemForId(scene.currentAccountId);
         currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
         notificationManager.currentAccount = currentAccountId;
+        accountItemConnections.target = accountItem;
     }
 
     onCurrentContactIdChanged: {
@@ -75,6 +77,17 @@ Window {
 
     AccountContentFactory {
         id: accountContentFactory
+    }
+
+    Connections {
+        target:  null;
+        id: accountItemConnections
+
+        onChanged: {
+            currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+            currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
+            notificationManager.currentAccount = currentAccountId;
+        }
     }
 
     Connections {

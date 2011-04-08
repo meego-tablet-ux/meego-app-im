@@ -9,10 +9,10 @@
 #ifndef IMCONVERSATIONMODEL_H
 #define IMCONVERSATIONMODEL_H
 
+#include <TelepathyLoggerQt4/Models/LoggerConversationModel>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
-#include <TelepathyQt4Logger/Models/LoggerConversationModel>
 #include <TelepathyQt4Yell/Models/SessionConversationModel>
 #include <TelepathyQt4Yell/Models/ConversationItem>
 #include "mergedmodel.h"

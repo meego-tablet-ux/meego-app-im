@@ -24,7 +24,7 @@
 #include "../telepathy-qml-lib/serverauthagent.h"
 #include "../telepathy-qml-lib/notificationmanager.h"
 
-#include <TelepathyQt4Logger/Logger>
+#include <TelepathyLoggerQt4/Logger>
 
 #include <TelepathyQt4/Client>
 #include <TelepathyQt4/PropertiesInterface>

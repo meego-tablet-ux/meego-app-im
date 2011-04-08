@@ -17,13 +17,12 @@
 #include "../telepathy-qml-lib/chatagent.h"
 #include "../telepathy-qml-lib/imchannelapprover.h"
 
+#include <TelepathyLoggerQt4/Init>
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/Connection>
 #include <TelepathyQt4/ChannelFactory>
 #include <TelepathyQt4/Debug>
-#include <TelepathyQt4Logger/Init>
 #include <TelepathyQt4Yell/Models/FlatModelProxy>
-
 #include <TelepathyQt4Yell/Types>
 #include <TelepathyQt4Yell/CallChannel>
 

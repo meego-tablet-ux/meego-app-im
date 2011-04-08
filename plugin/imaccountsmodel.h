@@ -16,7 +16,7 @@
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/ChannelRequest>
-#include <TelepathyQt4Logger/Types>
+#include <TelepathyLoggerQt4/Types>
 #include <TelepathyQt4Yell/CallChannel>
 #include <QMap>
 #include "../telepathy-qml-lib/callagent.h"

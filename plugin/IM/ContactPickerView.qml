@@ -8,7 +8,12 @@ Item {
     signal itemSelected(string parentId, string itemId);
     signal itemDeselected(string parentId, string itemId);
 
+    // either way, if the item is clicked, it should be unblocked
     onItemSelected: {
+        accountsModel.unblockContact(parentId, itemId);
+    }
+
+    onItemDeselected: {
         accountsModel.unblockContact(parentId, itemId);
     }
 

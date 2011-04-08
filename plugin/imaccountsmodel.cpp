@@ -25,7 +25,6 @@
 #include "../telepathy-qml-lib/notificationmanager.h"
 
 #include <TelepathyQt4Logger/Logger>
-#include <TelepathyQt4Logger/PendingLogger>
 
 #include <TelepathyQt4/Client>
 #include <TelepathyQt4/PropertiesInterface>

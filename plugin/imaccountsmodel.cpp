@@ -56,6 +56,7 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     roles[CanBlockContactsRole] = "canBlockContacts";
     roles[ParentDisplayNameRole] = "parentDisplayName";
     roles[ParentIdRole] = "parentId";
+    roles[CanReportAbuseRole] = "canReportAbuse";
     setRoleNames(roles);
 }
 
@@ -329,6 +330,28 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             return QString();
+        }
+
+        case CanReportAbuseRole: {
+            Tpy::AccountsModelItem *accountItem;
+
+            if (index.parent().isValid()) {
+                // contact index
+                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+                            accountItemForId(Tpy::AccountsModel::data(index.parent(), IdRole).toString()));
+            } else {
+                // account index
+                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+                            accountItemForId(Tpy::AccountsModel::data(index, IdRole).toString()));
+            }
+
+            if (accountItem) {
+                Tp::AccountPtr account = accountItem->account();
+                if (!account->connection().isNull()) {
+                    return account->connection()->contactManager()->canReportAbuse();
+                }
+            }
+            return false;
         }
 
         default:
@@ -1353,15 +1376,21 @@ bool IMAccountsModel::isAccountRegistered(const QString &cm, const QString &prot
     return false;
 }
 
-void IMAccountsModel::blockContact(const QString &accountId, const QString &contactId)
+void IMAccountsModel::blockContact(const QString &accountId, const QString &contactId, const bool reportAbuse)
 {
     Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
     if(contactItem) {
         Tp::ContactPtr contact = contactItem->contact();
         if(!contact->isBlocked()) {
-            qDebug() << "IMAccountsModel::blockContact: blocking contact";
-            connect(contact->block(true), SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(onBlockedContact(Tp::PendingOperation*)));
+            if (reportAbuse) {
+                qDebug() << "IMAccountsModel::blockContact: blocking contact and reporting abuse";
+                connect(contact->blockAndReportAbuse(), SIGNAL(finished(Tp::PendingOperation*)),
+                        SLOT(onBlockedContact(Tp::PendingOperation*)));
+            } else {
+                qDebug() << "IMAccountsModel::blockContact: blocking contact";
+                connect(contact->block(), SIGNAL(finished(Tp::PendingOperation*)),
+                        SLOT(onBlockedContact(Tp::PendingOperation*)));
+            }
         }
     }
 }

@@ -56,7 +56,8 @@ public:
         GroupChatCapableRole,
         CanBlockContactsRole,
         ParentDisplayNameRole,
-        ParentIdRole
+        ParentIdRole,
+        CanReportAbuseRole
     };
 
     explicit IMAccountsModel(const Tp::AccountManagerPtr &am, QObject *parent = 0);
@@ -82,7 +83,7 @@ public:
     Q_INVOKABLE bool existsConnectsAutomaticallyByType(const QString &type) const;
     Q_INVOKABLE void addContactFromGroupChat(const QString &accountId, const QString &channelPath, const QString &contactId);
     Q_INVOKABLE bool isContactKnown(const QString &accountId, const QString &channelPath, const QString &contactId) const;
-    Q_INVOKABLE void blockContact(const QString &accountId, const QString &contactId);
+    Q_INVOKABLE void blockContact(const QString &accountId, const QString &contactId, const bool reportAbuse = false);
     Q_INVOKABLE void unblockContact(const QString &accountId, const QString &contactId);
     Q_INVOKABLE void removeContact(const QString &accountId, const QString &contactId);
     Q_INVOKABLE bool isAccountRegistered(const QString &cm, const QString &protocol, const QString &displayName) const;

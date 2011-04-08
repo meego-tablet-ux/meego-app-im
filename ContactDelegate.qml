@@ -136,6 +136,18 @@ Item {
                 MenuItemSeparator { visible: blockItem.visible }
 
                 MenuItem {
+                    id: abuseItem
+                    text: qsTr("Report abuse")
+                    visible: model.canReportAbuse && !model.blocked
+                    onClicked: {
+                        accountsModel.blockContact(window.currentAccountId, model.id, true);
+                        contextMenu.hide();
+                    }
+                }
+
+                MenuItemSeparator { visible: abuseItem.visible }
+
+                MenuItem {
                     id: endChatItem
                     text: Constants.contactEndChat
                     visible: model.chatOpened

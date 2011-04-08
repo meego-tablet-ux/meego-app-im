@@ -16,6 +16,7 @@
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/ChannelRequest>
+#include <TelepathyQt4Logger/Types>
 #include <TelepathyQt4Yell/CallChannel>
 #include <QMap>
 #include "../telepathy-qml-lib/callagent.h"
@@ -148,6 +149,7 @@ private Q_SLOTS:
     void onConnectionReady(Tp::ConnectionPtr connection);
 
 private:
+    Tpl::LoggerPtr mLogger;
     ChatAgentHash mChatAgents;
     CallAgentHash mCallAgents;
     FileTransferAgentHash mFileTransferAgents;

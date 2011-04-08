@@ -34,7 +34,10 @@
 
 IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
                                  QObject *parent)
- : Tpy::AccountsModel(am, parent), mNotificationManager(0), mTelepathyManager(0)
+ : Tpy::AccountsModel(am, parent),
+   mLogger(Tpl::Logger::create()),
+   mNotificationManager(0),
+   mTelepathyManager(0)
 {
     QHash<int, QByteArray> roles = roleNames();
     roles[PendingMessagesRole] = "pendingMessages";
@@ -1530,16 +1533,14 @@ void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
 
 void IMAccountsModel::clearHistory()
 {
-    Tpl::Logger *logger = new Tpl::Logger();
-    logger->clearLog();
+    mLogger->clearLog();
 }
 
 void IMAccountsModel::clearAccountHistory(const QString &accountId)
 {
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearAccount(accountItem->account());
+        mLogger->clearAccount(accountItem->account());
     }
 }
 
@@ -1547,8 +1548,8 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
 {
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearContact(accountItem->account(), contactId);
+        Tpl::LoggerPtr logger = Tpl::Logger::create();
+        mLogger->clearContact(accountItem->account(), contactId);
     }
 }
 
@@ -1556,12 +1557,12 @@ void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QStr
 {
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
+        Tpl::LoggerPtr logger = Tpl::Logger::create();
 
         ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
         if(chatAgent) {
             QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
-            logger->clearRoom(accountItem->account(), roomName);
+            mLogger->clearRoom(accountItem->account(), roomName);
         }
     }
 }

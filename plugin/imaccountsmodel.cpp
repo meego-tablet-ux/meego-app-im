@@ -50,16 +50,9 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     roles[CanBlockContactsRole] = "canBlockContacts";
     roles[ParentDisplayNameRole] = "parentDisplayName";
     roles[ParentIdRole] = "parentId";
-    roles[AllowTextChannelsFromRole] = "allowTextChannelsFrom";
-    roles[AllowCallChannelsFromRole] = "allowCallChannelsFrom";
-    roles[AllowOutsideCallsFromRole] = "allowOutsideCallsFrom";
-    roles[ShowMyAvatarRole] = "showMyAvatar";
-    roles[ShowMyWebStatusRole]  = "showMyWebStatus";
-    roles[ShowIHaveVideoToRole] = "showIHaveVideo";
     setRoleNames(roles);
 
     // get privacy settings for all accounts
-    introspectPrivacySettings();
     connect(this, SIGNAL(accountCountChanged()), SLOT(onAccountCountChanged()));
     connect(this, SIGNAL(accountConnectionStatusChanged(QString,int)),
             SLOT(onAccountConnectionStatusChanged(QString, int)));
@@ -346,26 +339,6 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             return QString();
         }
 
-        // privacy roles
-        case AllowTextChannelsFromRole:
-        case AllowCallChannelsFromRole:
-        case AllowOutsideCallsFromRole:
-        case ShowMyAvatarRole:
-        case ShowMyWebStatusRole:
-        case ShowIHaveVideoToRole: {
-            Tpy::AccountsModelItem *accountItem;
-
-            if (index.parent().isValid()) {
-                // contact index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index.parent(), IdRole).toString()));
-            } else {
-                // account index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index, IdRole).toString()));
-            }
-            return privacySetting(accountItem->account()->uniqueIdentifier(), role);
-        }
         default:
             return Tpy::AccountsModel::data(index, role);
     }
@@ -1407,170 +1380,6 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
     }
 }
 
-void IMAccountsModel::introspectPrivacySettings()
-{
-    for (int i = 0; i < rowCount(); ++i) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
-
-        if(accountItem) {
-            Tp::AccountPtr account = accountItem->account();
-            introspectAccountPrivacySettings(account);
-        }
-    }
-}
-
-void IMAccountsModel::introspectAccountPrivacySettings(const Tp::AccountPtr &account)
-{
-    Tp::ConnectionPtr connection = account->connection();
-    if(!connection.isNull() && connection->isValid()) {
-        if(connection->hasInterface(QLatin1String("uk.co.Collabora.Telepathy.Psyke.Connection.Interface.PrivacySettings")))
-        {
-            qDebug() << "IMAccountsModel::introspectAccountPrivacySettings: found account with privacy settings";
-            Tp::Client::DBus::PropertiesInterface *properties = qobject_cast<Tp::Client::DBus::PropertiesInterface*>(connection->interface<Tp::Client::DBus::PropertiesInterface>());
-            if(properties) {
-                QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(
-                properties->GetAll(QLatin1String("uk.co.Collabora.Telepathy.Psyke.Connection.Interface.PrivacySettings")), this);
-                watcher->setProperty("accountUniqueIdentifier", QVariant(account->uniqueIdentifier()));
-                connect(watcher,
-                        SIGNAL(finished(QDBusPendingCallWatcher*)),
-                        SLOT(onGotAllProperties(QDBusPendingCallWatcher*)));
-            }
-        }
-    }
-}
-
-void IMAccountsModel::onGotAllProperties(QDBusPendingCallWatcher *watcher)
-{
-    QDBusPendingReply<QVariantMap> reply = *watcher;
-
-    if (watcher->isError()) {
-        qDebug() << "Failed introspecting privacy properties";
-        return;
-    }
-    QVariantMap map = reply.value();
-
-    // get the account id
-    QString accountId = watcher->property("accountUniqueIdentifier").toString();
-    qDebug() << "IMAccountsModel::onGotAllProperties: got " << map.count() << " properties for account: " << accountId;
-
-    QVariantMap privacyMap = mAccountsPrivacyMap[accountId];
-
-    uint allowTextChannelsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowTextChannelsFrom")]);
-    uint allowCallChannelsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowCallChannelsFrom")]);
-    uint allowVideoFrom  = qdbus_cast<uint>(map[QLatin1String("AllowVideoFrom")]);
-    uint allowOutsideCallsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowOutsideCallsFrom")]);
-    uint showMyAvatarTo  = qdbus_cast<uint>(map[QLatin1String("ShowMyAvatarTo")]);
-    uint showMyWebStatus  = qdbus_cast<uint>(map[QLatin1String("ShowMyWebStatus")]);
-    uint showIHaveVideoTo  = qdbus_cast<uint>(map[QLatin1String("ShowIHaveVideoTo")]);
-
-    privacyMap[QLatin1String("AllowTextChannelsFrom")] = allowTextChannelsFrom;
-    privacyMap[QLatin1String("AllowCallChannelsFrom")] = allowCallChannelsFrom;
-    privacyMap[QLatin1String("AllowVideoFrom")] = allowVideoFrom;
-    privacyMap[QLatin1String("AllowOutsideCallsFrom")] = allowOutsideCallsFrom;
-    privacyMap[QLatin1String("ShowMyAvatarTo")] = showMyAvatarTo;
-    privacyMap[QLatin1String("ShowMyWebStatus")] = showMyWebStatus;
-    privacyMap[QLatin1String("ShowIHaveVideoTo")] = showIHaveVideoTo;
-
-    mAccountsPrivacyMap[accountId] = privacyMap;
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if(accountItem) {
-        QModelIndex accountIndex = index(accountItem);
-        if (accountIndex.isValid()) {
-            emit dataChanged(accountIndex, accountIndex);
-        }
-    }
-
-    emit privacyPropertiesLoaded(accountId);
-}
-
-QVariant IMAccountsModel::privacySetting(const QString &accountId, const int &role) const
-{
-    QString setting = roleToPrivacyProperty(role);
-
-    if(!setting.isEmpty() && mAccountsPrivacyMap.contains(accountId)) {
-        QVariantMap privacyMap = mAccountsPrivacyMap[accountId];
-        if(privacyMap.contains(setting)) {
-            return privacyMap[setting];
-        }
-    }
-    return QVariant();
-}
-
-void IMAccountsModel::setPrivacySetting(const QString &accountId, const int &role, const uint &value)
-{
-    QString setting = roleToPrivacyProperty(role);
-    if(!setting.isEmpty() && mAccountsPrivacyMap.contains(accountId)) {
-        Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-        if(accountItem) {
-            Tp::ConnectionPtr connection = accountItem->account()->connection();
-            if(!connection.isNull() && connection->isValid()) {
-                if(connection->hasInterface(QLatin1String("uk.co.Collabora.Telepathy.Psyke.Connection.Interface.PrivacySettings")))
-                {
-                    qDebug() << "IMAccountsModel::introspectAccountPrivacySettings: setting property";
-                    Tp::Client::DBus::PropertiesInterface *properties = qobject_cast<Tp::Client::DBus::PropertiesInterface*>(connection->interface<Tp::Client::DBus::PropertiesInterface>());
-                    if(properties) {
-                        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(
-                        properties->Set(QLatin1String("uk.co.Collabora.Telepathy.Psyke.Connection.Interface.PrivacySettings"), setting, QDBusVariant(QVariant(value))), this);
-                        watcher->setProperty("accountId", accountId);
-                        connect(watcher,
-                                SIGNAL(finished(QDBusPendingCallWatcher*)),
-                                SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
-                    }
-                }
-            }
-        }
-    }
-}
-
-void IMAccountsModel::onSetPrivacyProperty(QDBusPendingCallWatcher *watcher)
-{
-    if (watcher->isError()) {
-        qDebug() << "Failed setting privacy property";
-        return;
-    }
-
-    // update the privacy settings
-    QString accountId = watcher->property("accountId").toString();
-    if(!accountId.isEmpty()) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *>(accountItemForId(accountId));
-        if(accountItem) {
-            introspectAccountPrivacySettings(accountItem->account());
-        }
-    }
-}
-
-QString IMAccountsModel::roleToPrivacyProperty(const int &role) const
-{
-    switch(role) {
-        case AllowTextChannelsFromRole: {
-            return QString("AllowTextChannelsFrom");
-        }
-        case AllowCallChannelsFromRole: {
-            return QString("AllowCallChannelsFrom");
-        }
-        case AllowOutsideCallsFromRole: {
-            return QString("AllowOutsideCallsFrom");
-        }
-        case ShowMyAvatarRole: {
-            return QString("ShowMyAvatarTo");
-        }
-        case ShowMyWebStatusRole: {
-            return QString("ShowMyWebStatus");
-        }
-        case ShowIHaveVideoToRole: {
-            return QString("ShowIHaveVideoTo");
-        }
-        default:
-            return QString();
-    }
-}
-
-void IMAccountsModel::onAccountCountChanged()
-{
-    introspectPrivacySettings();
-}
-
 void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId, const int status)
 {
     qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
@@ -1580,7 +1389,6 @@ void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId,
         if (!connection.isNull()
                 && connection->isValid()
                 && status == Tp::ConnectionStatusConnected) {
-            introspectAccountPrivacySettings(accountItem->account());
             if (connection->actualFeatures().contains(Tp::Connection::FeatureRoster)) {
                 accountItem->addKnownContacts();
             }

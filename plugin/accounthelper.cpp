@@ -235,7 +235,6 @@ void AccountHelper::createAccount()
         Tp::PendingStringList *psl = mAccount->updateParameters(mParameters, mUnsetParameters);
         connect(psl, SIGNAL(finished(Tp::PendingOperation*)),
                 this, SLOT(onParametersUpdated(Tp::PendingOperation*)));
-        updatePrivacySettings();
     }
 }
 
@@ -263,31 +262,9 @@ void AccountHelper::setAccount(QObject *object)
             mParameters[param.name()] = param.defaultValue();
         }
     }
-
-    // get privacy settings
-    qDebug() << "AccountHelper::setAccount: loading privacy settings";
-    onPrivacySettingsLoaded(mAccount->uniqueIdentifier());
-    connect(mAccountsModel, SIGNAL(privacyPropertiesLoaded(QString)),
-            SLOT(onPrivacySettingsLoaded(QString)));
     connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             SIGNAL(onlineChanged()));
-}
-
-void AccountHelper::onPrivacySettingsLoaded(const QString &accountId)
-{
-    if (mAccount && mAccountsModel
-            && mAccount->uniqueIdentifier() == accountId) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(mAccountsModel->accountItemForId(
-                    mAccount->uniqueIdentifier()));
-        if (accountItem) {
-            setAllowTextChatFrom(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::AllowTextChannelsFromRole).toUInt());
-            setAllowCallFrom(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::AllowCallChannelsFromRole).toUInt());
-            setAllowOutsideCallFrom(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::AllowOutsideCallsFromRole).toUInt());
-            setShowMyAvatarTo(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::ShowMyAvatarRole).toUInt());
-            setShowMyWebStatus(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::ShowMyWebStatusRole).toUInt());
-            setShowIHaveVideoTo(mAccountsModel->privacySetting( mAccount->uniqueIdentifier(), IMAccountsModel::ShowIHaveVideoToRole).toUInt());
-        }
-    }
+    emit accountChanged();
 }
 
 void AccountHelper::removeAccount()
@@ -373,18 +350,6 @@ void AccountHelper::onParametersUpdated(Tp::PendingOperation *op)
     }
 
     emit accountSetupFinished();
-}
-
-void AccountHelper::updatePrivacySettings()
-{
-    if (mAccount && mAccountsModel) {
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::AllowTextChannelsFromRole, mAllowTextChatFrom);
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::AllowCallChannelsFromRole, mAllowCallFrom);
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::AllowOutsideCallsFromRole, mAllowOutsideCallFrom);
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::ShowMyAvatarRole, mShowMyAvatarTo);
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::ShowMyWebStatusRole, mShowMyWebStatus);
-        mAccountsModel->setPrivacySetting(mAccount->uniqueIdentifier(), IMAccountsModel::ShowIHaveVideoToRole, mShowIHaveVideoTo);
-    }
 }
 
 uint AccountHelper::allowTextChatFrom() const
@@ -475,4 +440,138 @@ void AccountHelper::setConnectsAutomatically(bool value)
 {
     mConnectsAutomatically = value;
     emit connectsAutomaticallyChanged();
+}
+
+void AccountHelper::introspectAccountPrivacySettings(const QString &interfaceName)
+{
+    if (!mAccount.isNull() && mAccount->isValid()) {
+        Tp::ConnectionPtr connection = mAccount->connection();
+        if (!connection.isNull() && connection->isValid()) {
+            if(connection->hasInterface(interfaceName))
+            {
+                qDebug() << "IMAccountsModel::introspectAccountPrivacySettings: found account with privacy settings";
+                Tp::Client::DBus::PropertiesInterface *properties = qobject_cast<Tp::Client::DBus::PropertiesInterface*>(connection->interface<Tp::Client::DBus::PropertiesInterface>());
+                if(properties) {
+                    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(
+                    properties->GetAll(interfaceName), this);
+                    watcher->setProperty("accountUniqueIdentifier", QVariant(mAccount->uniqueIdentifier()));
+                    connect(watcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onGotAllProperties(QDBusPendingCallWatcher*)));
+                }
+            }
+        }
+    }
+}
+
+void AccountHelper::onGotAllProperties(QDBusPendingCallWatcher *watcher)
+{
+    QDBusPendingReply<QVariantMap> reply = *watcher;
+
+    if (watcher->isError()) {
+        qDebug() << "Failed introspecting privacy properties";
+        return;
+    }
+    QVariantMap map = reply.value();
+
+    // get the account id
+    QString accountId = watcher->property("accountUniqueIdentifier").toString();
+    qDebug() << "AccountHelper::onGotAllProperties: got " << map.count() << " properties for account: " << accountId;
+
+
+    uint allowTextChannelsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowTextChannelsFrom")]);
+    uint allowCallChannelsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowCallChannelsFrom")]);
+    uint allowOutsideCallsFrom  = qdbus_cast<uint>(map[QLatin1String("AllowOutsideCallsFrom")]);
+    uint showMyAvatarTo  = qdbus_cast<uint>(map[QLatin1String("ShowMyAvatarTo")]);
+    uint showMyWebStatus  = qdbus_cast<uint>(map[QLatin1String("ShowMyWebStatus")]);
+    uint showIHaveVideoTo  = qdbus_cast<uint>(map[QLatin1String("ShowIHaveVideoTo")]);
+
+    setAllowTextChatFrom(allowTextChannelsFrom);
+    setAllowCallFrom(allowCallChannelsFrom);
+    setAllowOutsideCallFrom(allowOutsideCallsFrom);
+    setShowMyAvatarTo(showMyAvatarTo);
+    setShowMyWebStatus(showMyWebStatus);
+    setShowIHaveVideoTo(showIHaveVideoTo);
+}
+
+void AccountHelper::setPrivacySettings(const QString &interfaceName)
+{
+    if(!mAccount.isNull() && mAccount->isValid()) {
+        Tp::ConnectionPtr connection = mAccount->connection();
+        if(!connection.isNull()
+                && connection->isValid()
+                && connection->status() == Tp::ConnectionStatusConnected) {
+            if(connection->hasInterface(interfaceName))
+            {
+                qDebug() << "AccountHelper::setPrivacySettings: setting properties via D-Bus interface";
+                Tp::Client::DBus::PropertiesInterface *properties = qobject_cast<Tp::Client::DBus::PropertiesInterface*>(connection->interface<Tp::Client::DBus::PropertiesInterface>());
+                if(properties) {
+                    QDBusPendingCallWatcher *chatWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("AllowTextChannelsFrom"), QDBusVariant(QVariant(allowTextChatFrom()))), this);
+                    chatWatcher->setProperty("accountId", accountId());
+                    chatWatcher->setProperty("interfaceName", interfaceName);
+                    connect(chatWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+
+                    QDBusPendingCallWatcher *callWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("AllowCallChannelsFrom"), QDBusVariant(QVariant(allowCallFrom()))), this);
+                    callWatcher->setProperty("accountId", accountId());
+                    callWatcher->setProperty("interfaceName", interfaceName);
+                    connect(callWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+
+                    QDBusPendingCallWatcher *outsideWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("AllowOutsideCallsFrom"), QDBusVariant(QVariant(allowOutsideCallFrom()))), this);
+                    outsideWatcher->setProperty("accountId", accountId());
+                    outsideWatcher->setProperty("interfaceName", interfaceName);
+                    connect(outsideWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+
+                    QDBusPendingCallWatcher *avatarWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("ShowMyAvatarTo"), QDBusVariant(QVariant(showMyAvatarTo()))), this);
+                    avatarWatcher->setProperty("accountId", accountId());
+                    avatarWatcher->setProperty("interfaceName", interfaceName);
+                    connect(avatarWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+
+                    QDBusPendingCallWatcher *webWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("ShowMyWebStatus"), QDBusVariant(QVariant(showMyWebStatus()))), this);
+                    webWatcher->setProperty("accountId", accountId());
+                    webWatcher->setProperty("interfaceName", interfaceName);
+                    connect(webWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+
+                    QDBusPendingCallWatcher *videoWatcher = new QDBusPendingCallWatcher(
+                    properties->Set(interfaceName, QString("ShowIHaveVideoTo"), QDBusVariant(QVariant(showIHaveVideoTo()))), this);
+                    videoWatcher->setProperty("accountId", accountId());
+                    videoWatcher->setProperty("interfaceName", interfaceName);
+                    connect(videoWatcher,
+                            SIGNAL(finished(QDBusPendingCallWatcher*)),
+                            SLOT(onSetPrivacyProperty(QDBusPendingCallWatcher*)));
+                }
+            }
+        }
+    }
+}
+
+void AccountHelper::onSetPrivacyProperty(QDBusPendingCallWatcher *watcher)
+{
+    if (watcher->isError()) {
+        qDebug() << "Failed setting privacy property";
+        return;
+    }
+
+    qDebug() << "Privacy property set";
+
+    // update the privacy settings
+    QString accountId = watcher->property("accountId").toString();
+    QString interfaceName = watcher->property("interfaceName").toString();
+    if(!accountId.isEmpty()) {
+        introspectAccountPrivacySettings(interfaceName);
+    }
 }

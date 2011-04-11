@@ -55,13 +55,7 @@ public:
         GroupChatCapableRole,
         CanBlockContactsRole,
         ParentDisplayNameRole,
-        ParentIdRole,
-        AllowTextChannelsFromRole,
-        AllowCallChannelsFromRole,
-        AllowOutsideCallsFromRole,
-        ShowMyAvatarRole,
-        ShowMyWebStatusRole,
-        ShowIHaveVideoToRole
+        ParentIdRole
     };
 
     explicit IMAccountsModel(const Tp::AccountManagerPtr &am, QObject *parent = 0);
@@ -96,8 +90,6 @@ public:
     void setNotificationManager(NotificationManager *notificationManager);
     void setTelepathyManager(TelepathyManager *manager);
 
-    Q_INVOKABLE void setPrivacySetting(const QString &accountId, const int &role, const uint &value);
-    Q_INVOKABLE QVariant privacySetting(const QString &accountId, const int &role) const;
 
 Q_SIGNALS:
     void chatReady(const QString &accountId, const QString &contactId);
@@ -107,7 +99,6 @@ Q_SIGNALS:
     void incomingCallAvailable(const QString &accountId, const QString &contactId);
     void requestedGroupChatCreated(QObject *agent);
     void passwordRequestRequired(const QString &accountId);
-    void privacyPropertiesLoaded(const QString &accountId);
 
 public Q_SLOTS:
     void onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel);
@@ -125,7 +116,6 @@ protected:
     Tpy::ContactModelItem *itemForCallAgent(CallAgent *agent) const;
     Tpy::ContactModelItem *itemForFileTransferAgent(FileTransferAgent *agent) const;
     Tp::ContactPtr contactFromChannelId(const Tp::AccountPtr &account, const QString &channelPath, const QString &contactId) const;
-    void introspectPrivacySettings();
 
 private Q_SLOTS:
     void onChatCreated();
@@ -138,9 +128,6 @@ private Q_SLOTS:
     void onMissedCallsChanged();
     void onBlockedContact(Tp::PendingOperation *op);
     void onUnblockedContact(Tp::PendingOperation *op);
-    void onGotAllProperties(QDBusPendingCallWatcher *watcher);
-    void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
-    void onAccountCountChanged();
     void onAccountConnectionStatusChanged(const QString &accountId, const int status);
     void onConnectionReady(Tp::ConnectionPtr connection);
 
@@ -152,7 +139,6 @@ private:
     NotificationManager *mNotificationManager;
     TelepathyManager *mTelepathyManager;
     QMap<QString, QString> mAccountPasswords;
-    QMap<QString, QVariantMap> mAccountsPrivacyMap;
 
     ChatAgent *chatAgentByPtr(const Tp::AccountPtr &account, const Tp::ContactPtr &contact, bool createIfNotExists = true);
     ChatAgent *chatAgentByPtr(const Tp::AccountPtr &account, const Tp::TextChannelPtr &channel, bool createIfNotExists = true);
@@ -169,8 +155,6 @@ private:
     Q_INVOKABLE FileTransferAgent *fileTransferAgent(const QString &accountId, const QString &contactId, bool createIfNotExists);
 
     ServerAuthAgent *serverAuthAgentByPtr(const Tp::AccountPtr &account);
-    void introspectAccountPrivacySettings(const Tp::AccountPtr &account);
-    QString roleToPrivacyProperty(const int &role) const;
 };
 
 #endif // IMACCOUNTSMODEL_H

@@ -128,6 +128,9 @@ public:
     bool connectsAutomatically() const;
     void setConnectsAutomatically(bool value);
 
+    Q_INVOKABLE void introspectAccountPrivacySettings(const QString &interfaceName);
+    Q_INVOKABLE void setPrivacySettings(const QString &interfaceName);
+
 Q_SIGNALS:
     void connectionManagerChanged();
     void protocolChanged();
@@ -146,9 +149,7 @@ Q_SIGNALS:
     void showIHaveVideoToChanged();
     void onlineChanged();
     void connectsAutomaticallyChanged();
-
-protected:
-    void updatePrivacySettings();
+    void accountChanged();
 
 private:
     QString mConnectionManager;
@@ -181,6 +182,8 @@ private Q_SLOTS:
     void onParametersUpdated(Tp::PendingOperation *op);
     void onPrivacySettingsLoaded(const QString &accountId);
 
+    void onGotAllProperties(QDBusPendingCallWatcher *watcher);
+    void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
 };
 
 #endif // ACCOUNTHELPER_H

@@ -217,10 +217,10 @@ Item {
             anchors { 
                 left: avatar.right;
                 right: chatIcon.left
-                top: mainArea.top
-                bottom: mainArea.bottom
+                verticalCenter: avatar.verticalCenter
                 margins: 10
             }
+            height: childrenRect.height
             
             Text {
                 id: displayText
@@ -228,7 +228,6 @@ Item {
                 text: model.aliasName
                 width: parent.width
                 elide: Text.ElideRight
-                font.weight: Font.Bold
                 color: nameColor
                 font.pixelSize: theme_fontPixelSizeLarge
             }
@@ -236,7 +235,7 @@ Item {
             Row {
                 spacing: 5
                 width: parent.width
-                height: parent.height - displayText.height
+                height: message.height
 
                 PresenceIcon {
                     id: presence

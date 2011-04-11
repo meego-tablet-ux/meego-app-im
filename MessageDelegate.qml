@@ -151,7 +151,6 @@ Item {
                 text: model.contact
 
                 color: Qt.rgba(0.3,0.3,0.3,1)
-                font.weight: Font.Bold
                 elide: Text.ElideRight
             }
 

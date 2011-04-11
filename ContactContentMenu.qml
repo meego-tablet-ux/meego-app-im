@@ -17,6 +17,8 @@ Item {
     id: meTabItem
 
     property variant currentPage
+    property string nameColor: "black"
+
     // FIXME remove after full migration to MeegGo.Components
     property variant window : scene
 
@@ -226,12 +228,19 @@ Item {
                     }
                 }
 
+                RadioGroup {
+                    id: statusRadioGroup
+                }
+
+                property string statusString: ""
+
                 ListView {
                     id: statusView
                     model: statusModel
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: statusModel.count * (theme_contextMenuFontPixelSize + 5)
+                    height: statusModel.count * (theme_contextMenuFontPixelSize + 14)
+
                     delegate: Component {
                         Item {
                             anchors.left: parent.left
@@ -239,16 +248,14 @@ Item {
                             height: childrenRect.height
 
                             Image {
-                                anchors.fill: parent
+                                anchors.fill: delegateRow
                                 source: "image://meegotheme/widgets/common/menu/menu-background"
                             }
 
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
-                                    scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
-                                    currentPage.closeMenu();
+                                    statusRadioGroup.select(model.type);
                                 }
                             }
 
@@ -258,16 +265,19 @@ Item {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.leftMargin: 5
-                                height: statusMenu.itemHeight
+                                height: statusRadioButton.height + 5
                                 spacing: 10
 
-                                PresenceIcon {
+                                RadioButton {
+                                    id: statusRadioButton
+                                    value: model.type
+                                    group: statusRadioGroup
                                     anchors.verticalCenter: parent.verticalCenter
-                                    status: model.type
                                 }
 
                                 Text {
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    id: statusText
+                                    anchors.verticalCenter: statusRadioButton.verticalCenter
                                     text: qsTr(model.text)
                                     font.bold: true
                                     font.pixelSize: theme_contextMenuFontPixelSize
@@ -307,6 +317,29 @@ Item {
                         Behavior on height {
                             NumberAnimation { duration: 250 }
                         }
+                    }
+                }
+
+                Button {
+                    id: updateStatusButton
+                    height: 30
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    title: qsTr("Update")
+                    color: theme_buttonFontColor
+                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                    onClicked: {
+                        var status;
+                        for(var i = 0; i < statusModel.count; ++i) {
+                            if (statusRadioGroup.selectedValue == statusModel.get(i).type) {
+                                status = statusModel.get(i).text;
+                            }
+                        }
+
+                        scene.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        scene.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        currentPage.closeMenu();
                     }
                 }
             }

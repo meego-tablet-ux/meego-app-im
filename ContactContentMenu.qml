@@ -116,8 +116,8 @@ Item {
                     id: displayName
                     width: parent.width
                     text: scene.accountItem.data(AccountsModel.NicknameRole)
-                    font.pixelSize: theme_contextMenuFontPixelSize
-                    color: theme_contextMenuFontColor
+                    color: nameColor
+                    font.pixelSize: theme_fontPixelSizeLarge
                     elide: Text.ElideRight
                 }
 
@@ -137,6 +137,7 @@ Item {
                         id: statusMessage
                         text: ""
                         color: theme_contextMenuFontColor
+                        font.pixelSize: theme_fontPixelSizeLarge
                         width: parent.width - presenceIcon.width
                         elide: Text.ElideRight
                     }

@@ -24,7 +24,7 @@ Item {
     Row {
         id: containerRow
         height: parent.height
-
+        spacing: 10
 
         Item {
             height: parent.height

@@ -148,10 +148,11 @@ Item {
                 anchors.leftMargin:5
                 anchors.right: time.left
                 anchors.rightMargin: 10
-                text: model.contact
-
                 color: Qt.rgba(0.3,0.3,0.3,1)
+                font.pixelSize: theme_fontPixelSizeSmall
                 elide: Text.ElideRight
+
+                text: model.contact
             }
 
             Text {
@@ -159,9 +160,10 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: contact.bottom
                 anchors.rightMargin: messageTop.border.right
-                text: fuzzyDateTime.getFuzzy(model.time)
-
                 color: Qt.rgba(0.3,0.3,0.3,1)
+                font.pixelSize: theme_fontPixelSizeSmall
+
+                text: fuzzyDateTime.getFuzzy(model.time)
 
                 Connections {
                     target: fuzzyDateTimeUpdater

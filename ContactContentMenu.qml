@@ -518,10 +518,8 @@ Item {
 
         Item {
             id: meLogOut
-            height: meLogOutText.height
+            height: meLogOutText.height + meLogOutText.height / 2
             width: parent.width
-
-            anchors.bottomMargin: meLogOutText.height / 2
 
             Image {
                 anchors.fill: parent
@@ -530,7 +528,7 @@ Item {
 
             Text {
                 id: meLogOutText
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: parent.top
                 anchors.leftMargin: 10
                 anchors.left: parent.left
                 anchors.right: parent.right

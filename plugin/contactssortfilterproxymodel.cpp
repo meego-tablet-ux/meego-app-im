@@ -86,6 +86,10 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     return false;
                 }
 
+                if (mSkippedContacts.contains(contact->id())) {
+                    return false;
+                }
+
                 if (filtered and !mStringFilter.isEmpty()) {
                     if (contact->alias().contains(mStringFilter, Qt::CaseInsensitive) ||
                             contact->id().contains(mStringFilter, Qt::CaseInsensitive)) {
@@ -125,9 +129,13 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     }
 
                     //filter blocked contacts
-                    if(!mBlockedOnly && contact->isBlocked()) {
+                    if (!mBlockedOnly && contact->isBlocked()) {
                         return false;
-                    } else if(mBlockedOnly && !contact->isBlocked()) {
+                    } else if (mBlockedOnly && !contact->isBlocked()) {
+                        return false;
+                    }
+
+                    if (mSkippedContacts.contains(contact->id())) {
                         return false;
                     }
 
@@ -380,4 +388,20 @@ bool ContactsSortFilterProxyModel::isBlockedOnly() const
 QString ContactsSortFilterProxyModel::accountId() const
 {
     return mAccountId;
+}
+
+void ContactsSortFilterProxyModel::skipContacts(const QStringList &contactsList)
+{
+    mSkippedContacts = contactsList;
+    invalidate();
+    emit rowCountChanged();
+    slotResetModel();
+}
+
+void ContactsSortFilterProxyModel::clearSkippedContacts()
+{
+    mSkippedContacts.clear();
+    invalidate();
+    emit rowCountChanged();
+    slotResetModel();
 }

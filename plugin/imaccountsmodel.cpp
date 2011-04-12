@@ -1411,3 +1411,48 @@ void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
         }
     }
 }
+
+QStringList IMAccountsModel::channelContacts(const QString &accountId, const QString &channelPath) const
+{
+    QStringList contactsList;
+    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+                accountItemForId(accountId));
+
+    if(accountItem) {
+        Tp::AccountPtr account = accountItem->account();
+
+        // get connection id
+        ChatAgent *agent = chatAgentByKey(account->uniqueIdentifier(), channelPath);
+        if (!agent) {
+            return QStringList();
+        }
+
+        if (account->connection().isNull()) {
+            return QStringList();
+        }
+
+        // if not a conference channel, the contact can be used as is
+        if (!agent->textChannel()->isConference()) {
+            foreach (Tp::ContactPtr contact, agent->textChannel()->groupContacts().toList()) {
+                contactsList.append(contact->id());
+            }
+        } else {
+            Tp::ContactManagerPtr contactManager = account->connection()->contactManager();
+
+            if (contactManager.isNull()) {
+                return QStringList();
+            }
+
+            foreach (Tp::ContactPtr contact, agent->textChannel()->groupContacts().toList()) {
+                // get the handle of the contact and get the global handle
+                Tp::ReferencedHandles channelHandleList = contact->handle();
+                uint channelHandle = channelHandleList.first();
+                Tp::ContactPtr refContact = agent->contactByChannelHandle(channelHandle);
+                if(!refContact.isNull()) {
+                    contactsList.append(refContact->id());
+                }
+            }
+        }
+    }
+    return contactsList;
+}

@@ -46,12 +46,20 @@ ApplicationPage {
     }
 
     Component.onCompleted: {
-        contactsModel.setContactsOnly(true);
         scene.title = qsTr("Add contacts to chat");
+        var contactsList;
+        if(scene.currentContactId == "") {
+            contactsList = accountsModel.channelContacts(scene.currentAccountId, scene.chatAgent.channelPath);
+        } else {
+            contactsList = accountsModel.channelContacts(scene.currentAccountId, scene.currentContactId);
+        }
+        contactsModel.skipContacts(contactsList);
+        contactsModel.setContactsOnly(true);
     }
 
     Component.onDestruction: {
         contactsModel.setContactsOnly(false);
+        contactsModel.clearSkippedContacts();
     }
 
     ListModel {

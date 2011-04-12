@@ -87,6 +87,8 @@ public:
 
     Q_INVOKABLE void setAccountPassword(const QString &account, const QString &password);
 
+    Q_INVOKABLE QStringList channelContacts(const QString &accountId, const QString &channelPath) const;
+
     void setNotificationManager(NotificationManager *notificationManager);
     void setTelepathyManager(TelepathyManager *manager);
 

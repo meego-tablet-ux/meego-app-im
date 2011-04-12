@@ -579,8 +579,8 @@ Item {
 
                         if (!protocolsModel.isSingleInstance(icon) ||
                             accountFactory.otherAccountsOnline(icon, id) == 0) {
-                                scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
-                                scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
+                                scene.accountItem.setRequestedPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
+                                scene.accountItem.setAutomaticPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
                         } else {
                             confirmAccountLogin();
                         }

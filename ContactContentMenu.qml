@@ -42,6 +42,7 @@ Item {
         } else {
             statusMessage.text = scene.presenceStatusText(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         }
+        statusRadioGroup.select(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
     }
 
     Connections {
@@ -55,6 +56,7 @@ Item {
                 statusMessage.text = scene.presenceStatusText(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
             }
             displayName.text = scene.accountItem.data(AccountsModel.NicknameRole);
+            presenceIcon.status = scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
         }
     }
 
@@ -280,7 +282,6 @@ Item {
                                         contactsScreenPage.requestedStatusMessage = customMessageBox.text;
                                         confirmAccountLogin();
                                     }
-                                    currentPage.closeMenu();
                                 }
                             }
 
@@ -304,7 +305,6 @@ Item {
                                     id: statusText
                                     anchors.verticalCenter: statusRadioButton.verticalCenter
                                     text: qsTr(model.text)
-                                    font.bold: true
                                     font.pixelSize: theme_contextMenuFontPixelSize
                                     color: theme_contextMenuFontColor
                                 }

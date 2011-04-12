@@ -36,6 +36,9 @@ public:
 
     void filterByLastUsedAccount(const QString &accountId);
 
+    Q_INVOKABLE void skipContacts(const QStringList &contactsList);
+    Q_INVOKABLE void clearSkippedContacts();
+
 public Q_SLOTS:
     void filterByConnection(Tp::ConnectionPtr connection);
     void filterByAccountId(const QString id);
@@ -68,6 +71,7 @@ private:
     bool mContactsOnly;
     bool mRequestsOnly;
     bool mBlockedOnly;
+    QStringList mSkippedContacts;
 };
 
 #endif

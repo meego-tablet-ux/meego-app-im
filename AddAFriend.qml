@@ -47,7 +47,6 @@ Column {
     TextEntry {
         id: addAFriendInput
         width: parent.width
-        height: 30
         text: ""
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError

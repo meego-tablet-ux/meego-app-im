@@ -19,11 +19,14 @@ Row {
 
         model: avatarList
 
-        height: 80
+        height: parent.height
 
         Avatar {
             active: container.active
             source: modelData
+            anchors.top:  parent.top
+            anchors.bottom: parent.bottom
+            anchors.rightMargin: 3
         }
     }
 }

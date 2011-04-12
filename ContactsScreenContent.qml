@@ -22,6 +22,11 @@ ApplicationPage {
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnknown
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeError)
 
+
+    property int requestedStatusType: 0
+    property string requestedStatus: ""
+    property string requestedStatusMessage: ""
+
     // this should be commented unless you are testing the search functionality
     // showSearch: true
 
@@ -66,6 +71,30 @@ ApplicationPage {
         onCurrentAccountNameChanged: {
             scene.title = scene.currentAccountName;
         }
+    }
+
+    // this connection is to handle
+    Connections {
+        target: dialogLoader.item
+        onAccepted: {
+
+            var icon = scene.accountItem.data(AccountsModel.IconRole);
+
+            if (dialogLoader.item.instanceReason != "contact-menu-single-instance") {
+                return;
+            }
+
+            // if the dialog was accepted we should disconnect all other accounts
+            // of the same type
+            accountFactory.disconnectOtherAccounts(icon, scene.currentAccountId);
+
+            // and set the account online
+            scene.accountItem.setRequestedPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+            scene.accountItem.setAutomaticPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+        }
+
+        // no need to do anything if the dialog is rejected
+        // onRejected:
     }
 
     Item {

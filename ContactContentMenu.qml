@@ -22,10 +22,6 @@ Item {
     // FIXME remove after full migration to MeegGo.Components
     property variant window : scene
 
-    property int requestedStatusType: 0
-    property string requestedStatus: ""
-    property string requestedStatusMessage: ""
-
     signal accountChanged
 
     function confirmAccountLogin()
@@ -67,26 +63,6 @@ Item {
         onCurrentAccountIdChanged: {
              scene.accountItem = accountsModel.accountItemForId(scene.currentAccountId);
         }
-    }
-
-    Connections {
-        target: dialogLoader.item
-        onAccepted: {
-            if (dialogLoader.item.instanceReason != "contact-menu-single-instance") {
-                return;
-            }
-
-            // if the dialog was accepted we should disconnect all other accounts
-            // of the same type
-            accountFactory.disconnectOtherAccounts(model.icon, model.id);
-
-            // and set the account online
-            scene.accountItem.setRequestedPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
-            scene.accountItem.setAutomaticPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
-        }
-
-        // no need to do anything if the dialog is rejected
-        // onRejected:
     }
 
     width: 400
@@ -299,9 +275,9 @@ Item {
                                             scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
                                             scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
                                     } else {
-                                        requestedStatusType = model.type;
-                                        requestedStatus = model.status;
-                                        requestedStatusMessage = customMessageBox.text;
+                                        contactsScreenPage.requestedStatusType = model.type;
+                                        contactsScreenPage.requestedStatus = model.status;
+                                        contactsScreenPage.requestedStatusMessage = customMessageBox.text;
                                         confirmAccountLogin();
                                     }
                                     currentPage.closeMenu();
@@ -596,9 +572,9 @@ Item {
 
                 onClicked: {
                     if(scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
-                        requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
-                        requestedStatus = "available"; // i18n ok
-                        requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
+                        contactsScreenPage.requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
+                        contactsScreenPage.requestedStatus = "available"; // i18n ok
+                        contactsScreenPage.requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
 
                         var icon = scene.accountItem.data(AccountsModel.IconRole);
                         var id = scene.accountItem.data(AccountsModel.IdRole);

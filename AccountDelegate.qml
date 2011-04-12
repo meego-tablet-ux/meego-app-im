@@ -102,6 +102,7 @@ Item {
                         } else {
                             var icon = payload.data(AccountsModel.IconRole);
                             var id = payload.data(AccountsModel.IdRole);
+                            var serviceName = protocolsModel.titleForId(icon);
 
                             // if the protocol only allows to have one account connected at a time,
                             // ask the user if he really wants to do that

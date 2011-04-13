@@ -404,33 +404,23 @@ void IMFeedModel::onItemChanged(int row)
 
 void IMFeedModel::onPresencePublicationRequested(const Tp::Contacts &contacts)
 {
-    // Look for existing friend requests on the model and save contact id
-    QList<QString> existingRequests;
-    foreach (IMFeedModelItem *item, mItems) {
-        if (item->itemType() == RequestType) {
-            existingRequests.append(item->contactId());
-        }
-    }
-
-    // Add new items, making sure not enter duplicate ones
+    // Add new items
     foreach (Tp::ContactPtr contact, contacts) {
-        if (!existingRequests.contains(contact->id())) {
-            QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
-            contact->setProperty("feedtype", RequestType);
-            contact->setProperty("messagetoken", token);
-            IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                        contact->id(),
-                                                        contact->id(),
-                                                        tr("Add as friend?"),
-                                                        QDateTime::currentDateTime(),
-                                                        QString("image://meegotheme/widgets/common/avatar/avatar-default"),
-                                                        new McaActions(),
-                                                        RequestType,
-                                                        token);
-            connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                    this, SLOT(performAction(QString,QString)));
-            insertItem(item);
-        }
+        QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
+        contact->setProperty("feedtype", RequestType);
+        contact->setProperty("messagetoken", token);
+        IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
+                                                    contact->id(),
+                                                    contact->id(),
+                                                    tr("Add as friend?"),
+                                                    QDateTime::currentDateTime(),
+                                                    QString("image://meegotheme/widgets/common/avatar/avatar-default"),
+                                                    new McaActions(),
+                                                    RequestType,
+                                                    token);
+        connect(item->actions(), SIGNAL(standardAction(QString,QString)),
+                this, SLOT(performAction(QString,QString)));
+        insertItem(item);
     }
 }
 

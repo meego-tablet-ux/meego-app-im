@@ -59,7 +59,6 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     setRoleNames(roles);
 
     // get privacy settings for all accounts
-    connect(this, SIGNAL(accountCountChanged()), SLOT(onAccountCountChanged()));
     connect(this, SIGNAL(accountConnectionStatusChanged(QString,int)),
             SLOT(onAccountConnectionStatusChanged(QString, int)));
 }

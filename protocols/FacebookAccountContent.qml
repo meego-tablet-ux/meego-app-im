@@ -18,7 +18,9 @@ AccountContent {
 
     onAboutToCreateAccount: {
         // we need to add @chat.facebook.com to the account name
-        accountHelper.displayName += "@chat.facebook.com"
+        if(accountHelper.displayName.indexOf("@chat.facebook.com") < 0) {
+            accountHelper.displayName += "@chat.facebook.com";
+        }
 
         // and we also need to set the server
         accountHelper.setAccountParameter("server", "chat.facebook.com");

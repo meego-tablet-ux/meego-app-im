@@ -8,7 +8,7 @@
 
 #include "imaccountsmodel.h"
 #include <TelepathyQt4Yell/Models/ContactModelItem>
-#include <TelepathyQt4Yell/Models/ConversationModel>
+#include <TelepathyQt4Yell/Models/AbstractConversationModel>
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/PendingChannel>
@@ -1407,7 +1407,6 @@ void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId,
         if (!connection.isNull()
                 && connection->isValid()
                 && status == Tp::ConnectionStatusConnected) {
-            introspectAccountPrivacySettings(accountItem->account());
             if (connection->actualFeatures().contains(Tp::Connection::FeatureRoster)) {
                 accountItem->addKnownContacts();
             }

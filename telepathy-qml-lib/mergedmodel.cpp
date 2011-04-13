@@ -14,6 +14,12 @@ MergedModel::MergedModel(QObject *parent) :
 {
 }
 
+MergedModel::~MergedModel()
+{
+    qDeleteAll(mModels);
+    mModels.clear();
+}
+
 void MergedModel::addModel(QAbstractItemModel *model)
 {
     if (mModels.indexOf(model) >= 0) {
@@ -125,7 +131,6 @@ void MergedModel::removeModel(QAbstractItemModel *model)
     updateRoleNames();
 
     endRemoveRows();
-
 }
 
 int MergedModel::rowCount(const QModelIndex &parent) const

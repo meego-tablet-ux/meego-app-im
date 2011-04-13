@@ -200,6 +200,63 @@ ApplicationPage {
                     on: settingsHelper.enableVibrate
                     onToggled: settingsHelper.enableVibrate = isOn;
                 }*/
+
+                Item {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 40
+                    Button {
+                        id: clearHistoryButton
+                        anchors.centerIn: parent
+
+                        height: 32
+
+                        title: qsTr("Clear chat history")
+                        color: theme_buttonFontColor
+                        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+                        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+
+                        onClicked: accountsModel.clearHistory();
+                    }
+                }
+
+                Item {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 40
+                    Button {
+                        id: clearHistoryButton
+                        anchors.centerIn: parent
+
+                        height: 32
+
+                        title: qsTr("Clear chat history")
+                        color: theme_buttonFontColor
+                        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+                        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+
+                        onClicked: accountsModel.clearHistory();
+                    }
+                }
+
+                Item {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 40
+                    Button {
+                        id: clearHistoryButton
+                        anchors.centerIn: parent
+
+                        height: 32
+
+                        title: qsTr("Clear chat history")
+                        color: theme_buttonFontColor
+                        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+                        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+
+                        onClicked: accountsModel.clearHistory();
+                    }
+                }
             }
 
             Item {

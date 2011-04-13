@@ -16,6 +16,7 @@ class MergedModel : public QAbstractItemModel
     Q_OBJECT
 public:
     explicit MergedModel(QObject *parent = 0);
+    virtual ~MergedModel();
 
     void addModel(QAbstractItemModel *model);
     void removeModel(QAbstractItemModel *model);
@@ -24,7 +25,7 @@ public:
     virtual int columnCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role);
-    virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
+    virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &child) const;
 
 protected:

@@ -103,7 +103,7 @@ QVariant IMGroupChatModelItem::data(int role) const
             return Tp::ConnectionPresenceTypeAvailable;
         case Tpy::AccountsModel::TextChatCapabilityRole:
             return true;
-        case Tpy::AccountsModel::CallCapabilityRole:
+        case Tpy::AccountsModel::MediaCallCapabilityRole:
             return false;
         case Tpy::AccountsModel::AudioCallCapabilityRole:
             return false;

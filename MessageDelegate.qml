@@ -25,7 +25,7 @@ Item {
     property bool messageSent: model.type == "outgoing_message" || model.type == "outgoing_file_transfer"
     // TODO: check how to add more colors for group chat
     property string color: model.bubbleColor //messageSent ? "white" : "blue"
-    property bool expandedMessage: false
+    property bool expandedMessage: true
 
     function messageAvatar() {
         var avatar = "";
@@ -66,7 +66,7 @@ Item {
         anchors.rightMargin: 0
         smooth: true
 
-        height: ((expandedMessage || model.includeSearch) ?
+        height: ((expandedMessage) ?
             Math.max(messageHeader.height + messageBody.height + messageBody.anchors.margins,
                      messageTop.height + messageBody.height) :
                  messageHeader.height + 10)
@@ -91,7 +91,7 @@ Item {
             border.right: 20
             border.top: 12
 
-            height: ((expandedMessage || model.includeSearch) ?
+            height: ((expandedMessage) ?
                          62 : 10 )
         }
 
@@ -106,7 +106,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: messageBottom.top
 
-            height: ((expandedMessage || model.includeSearch) ?
+            height: ((expandedMessage) ?
                          messageBody.height : 10 )
         }
 
@@ -187,8 +187,8 @@ Item {
             wrapMode: Text.WordWrap
             textFormat: Text.RichText
 
-            color: theme_fontColorNormal
-            visible: (expandedMessage || model.includeSearch)
+            color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
+            visible: (expandedMessage)
         }
     }
 

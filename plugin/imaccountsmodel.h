@@ -16,6 +16,7 @@
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/ChannelRequest>
+#include <TelepathyLoggerQt4/Types>
 #include <TelepathyQt4Yell/CallChannel>
 #include <QMap>
 #include "../telepathy-qml-lib/callagent.h"
@@ -94,6 +95,10 @@ public:
     void setNotificationManager(NotificationManager *notificationManager);
     void setTelepathyManager(TelepathyManager *manager);
 
+    Q_INVOKABLE void clearHistory();
+    Q_INVOKABLE void clearAccountHistory(const QString &accountId);
+    Q_INVOKABLE void clearContactHistory(const QString &accountId, const QString &contactId);
+    Q_INVOKABLE void clearGroupChatHistory(const QString &accountId, const QString &channelPath);
 
 Q_SIGNALS:
     void chatReady(const QString &accountId, const QString &contactId);
@@ -132,10 +137,14 @@ private Q_SLOTS:
     void onMissedCallsChanged();
     void onBlockedContact(Tp::PendingOperation *op);
     void onUnblockedContact(Tp::PendingOperation *op);
+    void onGotAllProperties(QDBusPendingCallWatcher *watcher);
+    void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
+    void onAccountCountChanged();
     void onAccountConnectionStatusChanged(const QString &accountId, const int status);
     void onConnectionReady(Tp::ConnectionPtr connection);
 
 private:
+    Tpl::LoggerPtr mLogger;
     ChatAgentHash mChatAgents;
     CallAgentHash mCallAgents;
     FileTransferAgentHash mFileTransferAgents;

@@ -74,7 +74,8 @@ ApplicationPage {
     //showSearch: true
 
     onSearch: {
-        conversationView.model.onSearchByString(needle);
+        conversationView.model.searchByString(needle);
+        searchHeader.searchActive = (needle != "");
     }
 
     Component.onCompleted: {
@@ -218,8 +219,62 @@ ApplicationPage {
         // force clipping
         //clip: true
 
+        SearchHeader {
+            id: searchHeader
+            searchActive: messageScreenPage.showSearch
+            searching: conversationView.model.searching
+            olderActive : conversationView.model.olderActive
+            newerActive : conversationView.model.newerActive
+            numMatchesFound: conversationView.model.numMatchesFound
+            onOlderClicked: {
+                conversationView.model.olderMatch();
+            }
+            onNewerClicked: {
+                conversationView.model.newerMatch();
+            }
+        }
+
+        Connections {
+            target: conversationView.model
+            onCurrentRowMatchChanged: {
+                conversationView.positionViewAtIndex(conversationView.model.currentRowMatch, ListView.Center);
+            }
+        }
+
         NoNetworkHeader {
             id: noNetworkItem
+            anchors.top: searchHeader.bottom
+        }
+
+        Component {
+            id: conversationViewHeader
+            LoadingConversationHistory {
+            }
+        }
+
+        Component {
+            id: sectionDateDelegate
+            Item {
+                width: conversationView.width
+                height: 50
+
+                Text {
+                    id: dateText
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: theme_fontColorHighlight
+                    font.pixelSize: theme_fontPixelSizeLarge
+                    //verticalAlignment: Text.AlignVCenter
+                    //horizontalAlignment: Text.AlignHCenter
+                    text: section
+                }
+
+                Image {
+                    anchors.top: dateText.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "image://meegotheme/images/dialog-separator"
+                }
+            }
         }
 
         ListView {
@@ -231,12 +286,58 @@ ApplicationPage {
                 bottom: textBar.top
                 margins: 10
             }
+            clip: true
 
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true
             currentIndex: count - 1
+
+            section.property : "dateString"
+            section.criteria : ViewSection.FullString
+            section.delegate : sectionDateDelegate
+
             onCountChanged: {
                 textSound.playSound();
+            }
+        }
+
+        /*
+          Timer used to feed history from the logger at the beginning of the view
+        */
+        Timer {
+            id: historyFeeder
+            interval: 1000
+            running: true
+            repeat: true
+
+            property bool fetching : false
+            property int oldIndex : 0
+
+            onTriggered: {
+                if (conversationView.atYBeginning) {
+                    if (!fetching && conversationView.model.canFetchMoreBack()) {
+                        fetching = true;
+                        oldIndex = conversationView.indexAt(200,40);
+                        conversationView.model.fetchMoreBack();
+                    }
+                }
+            }
+        }
+
+        Connections {
+            target: typeof(conversationView.model) != 'undefined' ? conversationView.model : null
+            ignoreUnknownSignals: true
+            onBackFetchable: {
+                if (conversationView.model.canFetchMoreBack()) {
+                    conversationView.header = conversationViewHeader;
+                }
+            }
+            onBackFetched: {
+                conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
+                historyFeeder.fetching = false;
+                if (!conversationView.model.canFetchMoreBack()) {
+                    conversationView.header = null;
+                }
             }
         }
 

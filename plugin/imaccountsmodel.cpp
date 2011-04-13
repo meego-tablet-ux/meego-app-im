@@ -8,11 +8,12 @@
 
 #include "imaccountsmodel.h"
 #include <TelepathyQt4Yell/Models/ContactModelItem>
-#include <TelepathyQt4Yell/Models/ConversationModel>
+#include <TelepathyQt4Yell/Models/AbstractConversationModel>
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/PendingChannel>
 #include <TelepathyQt4/PendingContacts>
+#include <TelepathyQt4/PendingOperation>
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/ContactManager>
@@ -23,6 +24,8 @@
 #include "../telepathy-qml-lib/serverauthagent.h"
 #include "../telepathy-qml-lib/notificationmanager.h"
 
+#include <TelepathyLoggerQt4/Logger>
+
 #include <TelepathyQt4/Client>
 #include <TelepathyQt4/PropertiesInterface>
 
@@ -30,7 +33,10 @@
 
 IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
                                  QObject *parent)
- : Tpy::AccountsModel(am, parent), mNotificationManager(0), mTelepathyManager(0)
+ : Tpy::AccountsModel(am, parent),
+   mLogger(Tpl::Logger::create()),
+   mNotificationManager(0),
+   mTelepathyManager(0)
 {
     QHash<int, QByteArray> roles = roleNames();
     roles[PendingMessagesRole] = "pendingMessages";
@@ -53,7 +59,6 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     setRoleNames(roles);
 
     // get privacy settings for all accounts
-    connect(this, SIGNAL(accountCountChanged()), SLOT(onAccountCountChanged()));
     connect(this, SIGNAL(accountConnectionStatusChanged(QString,int)),
             SLOT(onAccountConnectionStatusChanged(QString, int)));
 }
@@ -1528,4 +1533,37 @@ bool IMAccountsModel::openedChatByAccount(const QString &accountId) const
     return false;
 }
 
+void IMAccountsModel::clearHistory()
+{
+    mLogger->clearLog();
+}
 
+void IMAccountsModel::clearAccountHistory(const QString &accountId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        mLogger->clearAccount(accountItem->account());
+    }
+}
+
+void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tpl::LoggerPtr logger = Tpl::Logger::create();
+        mLogger->clearContact(accountItem->account(), contactId);
+    }
+}
+
+void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
+{
+    qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
+        if(chatAgent) {
+            QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
+            mLogger->clearRoom(accountItem->account(), roomName);
+        }
+    }
+}

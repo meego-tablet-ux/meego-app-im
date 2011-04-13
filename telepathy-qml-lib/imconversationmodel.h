@@ -9,23 +9,33 @@
 #ifndef IMCONVERSATIONMODEL_H
 #define IMCONVERSATIONMODEL_H
 
+#include <TelepathyLoggerQt4/Models/LoggerConversationModel>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
-#include <TelepathyQt4Yell/Models/ConversationModel>
+#include <TelepathyQt4Yell/Models/SessionConversationModel>
 #include <TelepathyQt4Yell/Models/ConversationItem>
+#include "mergedmodel.h"
 #include "callagent.h"
 
 class FileTransferAgent;
 
-class IMConversationModel : public Tpy::ConversationModel
+class IMConversationModel : public MergedModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(int numMatchesFound READ numMatchesFound NOTIFY numMatchesFoundChanged)
+    Q_PROPERTY(bool olderActive READ olderActive NOTIFY olderActiveChanged)
+    Q_PROPERTY(bool newerActive READ newerActive NOTIFY newerActiveChanged)
+    Q_PROPERTY(bool searching READ searching NOTIFY searchingChanged)
+    Q_PROPERTY(int currentRowMatch READ currentRowMatch NOTIFY currentRowMatchChanged)
+
 public:
     enum Role {
-        IncludeSearchRole = Qt::UserRole + 100,
-        StatusRole,
+        StatusRole = Qt::UserRole + 100,
+        DateStringRole,
+        // true if the line comes from telepathy-logger
+        FromLoggerRole,
 
         // file transfer related roles
         IncomingTransferRole,
@@ -37,7 +47,11 @@ public:
         BubbleColorRole
     };
 
-    explicit IMConversationModel(const Tp::ContactPtr &self, const Tp::TextChannelPtr &channel, QObject *parent = 0);
+    explicit IMConversationModel(const Tp::AccountPtr &account,
+        const Tp::ContactPtr &self,
+        const Tp::ContactPtr &contact,
+        const Tp::TextChannelPtr &channel,
+        QObject *parent = 0);
     virtual ~IMConversationModel();
 
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -48,13 +62,39 @@ public:
 
     static QString friendlyFileSize(qulonglong size);
 
+    Q_INVOKABLE bool canFetchMoreBack() const;
+    Q_INVOKABLE void fetchMoreBack();
+
+    Q_INVOKABLE void sendMessage(const QString &text);
+    Q_INVOKABLE void disconnectChannelQueue();
+    Q_INVOKABLE void connectChannelQueue();
+
+    int numMatchesFound() const;
+    bool olderActive() const;
+    bool newerActive() const;
+    bool searching() const;
+    int currentRowMatch() const;
+
+Q_SIGNALS:
+    void backFetchable();
+    void backFetched(int numItems);
+    void numMatchesFoundChanged();
+    void olderActiveChanged();
+    void newerActiveChanged();
+    void searchingChanged();
+    void currentRowMatchChanged();
+
 public Q_SLOTS:
-    void onSearchByString(const QString &search);
+    void searchByString(const QString &search);
     void slotResetModel(void);
+    void newerMatch(void);
+    void olderMatch(void);
 
 protected Q_SLOTS:
     virtual void onChatStateChanged(const Tp::ContactPtr &contact, Tp::ChannelChatState state);
     void onItemChanged();
+    void calculateMatches(void);
+    void continueSearch();
 
 protected:
     QString contactColor(const QString &id) const;
@@ -67,6 +107,14 @@ private:
     Tpy::ConversationItem *mCallRunningItem;
     QStringList mContactsList;
     QStringList mBubbleColor;
+    Tpl::LoggerConversationModel *mLoggerConversationModel;
+    Tpy::SessionConversationModel *mSessionConversationModel;
+
+    // matches are sorted reverse chronological order, 0 is newest
+    int mCurrentMatch;
+    int mCurrentRowMatch;
+    QList<QModelIndex> mMatchesFound;
+    bool mSearching;
 };
 
 #endif // IMCONVERSATIONMODEL_H

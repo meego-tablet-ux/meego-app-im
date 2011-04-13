@@ -101,12 +101,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             // in case the parent is not valid, we need to count the children's pending conversations
-            int messages = 0;
-            int count = Tpy::AccountsModel::rowCount(index);
-            for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
-                messages += data(child, PendingMessagesRole).toInt();
-            }
+            int messages = pendingMessagesByAccount(Tpy::AccountsModel::data(index, IdRole).toString());
+            messages += fileTransfersByAccount(Tpy::AccountsModel::data(index, IdRole).toString());
             return messages;
         }
 
@@ -126,13 +122,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             // account index
-            bool existsChat = false;
-            int count = Tpy::AccountsModel::rowCount(index);
-            for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
-                existsChat = existsChat || data(child, ChatOpenedRole).toBool();
-            }
-            return existsChat;
+            return (openedChatByAccount(Tpy::AccountsModel::data(index, IdRole).toString())
+                    || fileTransfersByAccount(Tpy::AccountsModel::data(index, IdRole).toString()));
         }
 
         case LastPendingMessageRole: {
@@ -419,7 +410,7 @@ void IMAccountsModel::addContactsToChat(const QString &accountId, const QString 
 
 void IMAccountsModel::endChat(const QString &accountId, const QString &contactId)
 {
-    const QString key = accountId + "/" + contactId;
+    const QString key = accountId + "&" + contactId;
     if (mChatAgents.contains(key)) {
         mChatAgents[key]->endChat();
     }
@@ -637,7 +628,7 @@ ChatAgent *IMAccountsModel::chatAgentByPtr(const Tp::AccountPtr &account, const 
     }
 
     ChatAgent *agent = 0;
-    const QString key = account->uniqueIdentifier() + "/" + contact->id();
+    const QString key = account->uniqueIdentifier() + "&" + contact->id();
     if (!mChatAgents.contains(key)) {
         if (createIfNotExists) {
             agent = new ChatAgent(account, contact, this);
@@ -659,7 +650,7 @@ ChatAgent *IMAccountsModel::chatAgentByPtr(const Tp::AccountPtr &account, const 
     }
 
     ChatAgent *agent = 0;
-    const QString key = account->uniqueIdentifier() + "/" + channel->objectPath();
+    const QString key = account->uniqueIdentifier() + "&" + channel->objectPath();
     if (!mChatAgents.contains(key)) {
         if (createIfNotExists) {
             qDebug("group chat agent created");
@@ -686,7 +677,7 @@ ChatAgent* IMAccountsModel::chatAgentByIndex(const QModelIndex &index) const
 ChatAgent *IMAccountsModel::chatAgentByKey(const QString &account, const QString &suffix) const
 {
     if(!account.isEmpty() && !suffix.isEmpty()) {
-        QString key = account + "/" + suffix;
+        QString key = account + "&" + suffix;
         if (mChatAgents.contains(key)) {
             return mChatAgents[key];
         }
@@ -858,7 +849,7 @@ CallAgent *IMAccountsModel::callAgentByPtr(const Tp::AccountPtr &account, const 
     }
 
     CallAgent *agent = 0;
-    const QString key = account->uniqueIdentifier() + "/" + contact->id();
+    const QString key = account->uniqueIdentifier() + "&" + contact->id();
     if (!mCallAgents.contains(key)) {
         if (createIfNotExists) {
             agent = new CallAgent(account, contact, this);
@@ -884,7 +875,7 @@ CallAgent *IMAccountsModel::callAgentByIndex(const QModelIndex &index) const
 {
     // if it is a contact
     if (index.isValid() && index.parent().isValid()) {
-        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "/";
+        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "&";
         key += Tpy::AccountsModel::data(index, IdRole).toString();
         if (mChatAgents.contains(key)) {
             return mCallAgents[key];
@@ -925,7 +916,7 @@ FileTransferAgent* IMAccountsModel::fileTransferAgentByPtr(const Tp::AccountPtr 
     }
 
     FileTransferAgent *agent = 0;
-    const QString key = account->uniqueIdentifier() + "/" + contact->id();
+    const QString key = account->uniqueIdentifier() + "&" + contact->id();
     if (!mFileTransferAgents.contains(key)) {
         if (createIfNotExists) {
             agent = new FileTransferAgent(account, contact, this);
@@ -945,7 +936,7 @@ FileTransferAgent* IMAccountsModel::fileTransferAgentByIndex(const QModelIndex &
 {
     // if it is a contact
     if (index.isValid() && index.parent().isValid()) {
-        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "/";
+        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "&";
         key += Tpy::AccountsModel::data(index, IdRole).toString();
         if (mFileTransferAgents.contains(key)) {
             return mFileTransferAgents[key];
@@ -1468,3 +1459,62 @@ QStringList IMAccountsModel::channelContacts(const QString &accountId, const QSt
     }
     return contactsList;
 }
+
+QList<ChatAgent *> IMAccountsModel::chatAgentsByAccount(const QString &accountId) const
+{
+    QList<ChatAgent *> agentsList;
+
+    foreach (const QString &key, mChatAgents.uniqueKeys()) {
+        QString subkey = key.left(key.indexOf('&'));
+        if(subkey == accountId) {
+            agentsList.append(mChatAgents.value(key));
+        }
+
+    }
+    return agentsList;
+}
+
+QList<FileTransferAgent *> IMAccountsModel::fileTransferAgentsByAccount(const QString &accountId) const
+{
+    QList<FileTransferAgent *> agentsList;
+
+    foreach (const QString &key, mFileTransferAgents.uniqueKeys()) {
+        QString subkey = key.left(key.indexOf('&'));
+        if(subkey == accountId) {
+            agentsList.append(mFileTransferAgents.value(key));
+        }
+
+    }
+    return agentsList;
+}
+
+int IMAccountsModel::pendingMessagesByAccount(const QString &accountId) const
+{
+    int messages = 0;
+    foreach(ChatAgent *agent, chatAgentsByAccount(accountId)) {
+        messages += agent->pendingConversations();
+    }
+    return messages;
+}
+
+int IMAccountsModel::fileTransfersByAccount(const QString &accountId) const
+{
+    int transfers = 0;
+    foreach(FileTransferAgent *agent, fileTransferAgentsByAccount(accountId)) {
+        transfers += agent->pendingTransfers();
+    }
+    return transfers;
+
+}
+
+bool IMAccountsModel::openedChatByAccount(const QString &accountId) const
+{
+    foreach(ChatAgent *agent, chatAgentsByAccount(accountId)) {
+        if (agent->existsChat()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+

@@ -148,6 +148,11 @@ private:
     ChatAgent *chatAgentByIndex(const QModelIndex &index) const;
     ChatAgent *chatAgent(const QString &accountId, const QString &contactId, bool createIfNotExists = true);
     ChatAgent *chatAgent(const QString &accountId, const Tp::TextChannelPtr &channel, bool createIfNotExists = true);
+    QList<ChatAgent *> chatAgentsByAccount(const QString &accountId) const;
+    QList<FileTransferAgent *> fileTransferAgentsByAccount(const QString &accountId) const;
+    int pendingMessagesByAccount(const QString &accountId) const;
+    int fileTransfersByAccount(const QString &accountId) const;
+    bool openedChatByAccount(const QString &accountId) const;
 
     CallAgent *callAgentByPtr(const Tp::AccountPtr &account, const Tp::ContactPtr &contact, bool createIfNotExists = true);
     CallAgent *callAgentByIndex(const QModelIndex &index) const;

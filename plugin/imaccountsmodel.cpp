@@ -1478,60 +1478,6 @@ QStringList IMAccountsModel::channelContacts(const QString &accountId, const QSt
 
 void IMAccountsModel::clearHistory()
 {
-    Tpl::Logger *logger = new Tpl::Logger();
-    logger->clearLog();
-}
-
-void IMAccountsModel::clearAccountHistory(const QString &accountId)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearAccount(accountItem->account());
-    }
-}
-
-void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearContact(accountItem->account(), contactId);
-    }
-}
-
-void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-
-        ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
-        if(chatAgent) {
-            QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
-            logger->clearRoom(accountItem->account(), roomName);
-        }
-    }
-}
-
-void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
-{
-    qDebug() << "IMAccountsModel::onConnectionReady";
-    for (int i = 0; i < rowCount(); ++i) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
-
-        if(accountItem) {
-            Tp::AccountPtr account = accountItem->account();
-            if(account->connection() == connection) {
-                accountItem->addKnownContacts();
-            }
-        }
-    }
-}
-
-void IMAccountsModel::clearHistory()
-{
     mLogger->clearLog();
 }
 
@@ -1557,82 +1503,10 @@ void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QStr
     qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
-        Tpl::LoggerPtr logger = Tpl::Logger::create();
-
         ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
         if(chatAgent) {
             QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
             mLogger->clearRoom(accountItem->account(), roomName);
-        }
-    }
-}
-
-void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
-{
-    qDebug() << "IMAccountsModel::onConnectionReady";
-    for (int i = 0; i < rowCount(); ++i) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
-
-        if(accountItem) {
-            Tp::AccountPtr account = accountItem->account();
-            if(account->connection() == connection) {
-                accountItem->addKnownContacts();
-            }
-        }
-    }
-}
-
-void IMAccountsModel::clearHistory()
-{
-    Tpl::Logger *logger = new Tpl::Logger();
-    logger->clearLog();
-}
-
-void IMAccountsModel::clearAccountHistory(const QString &accountId)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearAccount(accountItem->account());
-    }
-}
-
-void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-        logger->clearContact(accountItem->account(), contactId);
-    }
-}
-
-void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
-{
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tpl::Logger *logger = new Tpl::Logger();
-
-        ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
-        if(chatAgent) {
-            QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
-            logger->clearRoom(accountItem->account(), roomName);
-        }
-    }
-}
-
-void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
-{
-    qDebug() << "IMAccountsModel::onConnectionReady";
-    for (int i = 0; i < rowCount(); ++i) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
-
-        if(accountItem) {
-            Tp::AccountPtr account = accountItem->account();
-            if(account->connection() == connection) {
-                accountItem->addKnownContacts();
-            }
         }
     }
 }

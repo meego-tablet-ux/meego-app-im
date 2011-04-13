@@ -9,14 +9,14 @@
 #ifndef FILETRANSFERITEM_H
 #define FILETRANSFERITEM_H
 
-#include <TelepathyQt4Yell/Models/ConversationItem>
+#include <TelepathyQt4Yell/Models/EventItem>
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/Contact>
 
 #include "filetransferagent.h"
 
-class FileTransferItem : public Tpy::ConversationItem
+class FileTransferItem : public Tpy::EventItem
 {
     Q_OBJECT
     Q_PROPERTY(bool incomingTransfer READ incomingTransfer)

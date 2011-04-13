@@ -13,7 +13,7 @@ FileTransferItem::FileTransferItem(Tp::ContactPtr contact,
                                    FileTransferAgent *agent,
                                    Tp::FileTransferChannelPtr channel,
                                    QObject *parent)
-: Tpy::ConversationItem(contact, QDateTime::currentDateTime(), tr("Incoming file"), EVENT, parent),
+: Tpy::EventItem(contact, agent->contact(), QDateTime::currentDateTime(), parent),
   mContact(contact), mChannel(channel), mAgent(agent)
 {
     mIncomingChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);

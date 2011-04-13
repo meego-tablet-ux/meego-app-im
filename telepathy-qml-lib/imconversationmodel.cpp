@@ -9,7 +9,8 @@
 #include "imconversationmodel.h"
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
-#include <TelepathyQt4Yell/Models/ConversationItem>
+#include <TelepathyQt4Yell/Models/TextEventItem>
+#include <TelepathyQt4Yell/Models/CallEventItem>
 #include "filetransferitem.h"
 
 IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
@@ -88,13 +89,13 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    const FileTransferItem *item = qobject_cast<const FileTransferItem*>(
+    const Tpy::EventItem *eventItem = qobject_cast<const Tpy::EventItem*>(
                 MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
-    const Tpy::ConversationItem *conversationItem = qobject_cast<const Tpy::ConversationItem*>(
-                MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
+    const Tpy::TextEventItem *textItem = qobject_cast<const Tpy::TextEventItem*>(eventItem);
+    const FileTransferItem *fileTransferItem = qobject_cast<const FileTransferItem*>(eventItem);
 
     switch (role) {
-    case Tpy::SessionConversationModel::TextRole: {
+    case Tpy::AbstractConversationModel::MessageTextRole: {
         QString text = MergedModel::data(index, role).toString();
 
         text = text.replace(QString("&"), QString("&amp;"));
@@ -131,15 +132,15 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return text;
     }
     case StatusRole: {
-        if (conversationItem) {
-            return conversationItem->contact()->presence().type();
+        if (eventItem) {
+            return eventItem->sender()->presence().type();
         }
 
         return QVariant();
     }
     case DateStringRole: {
-        if (conversationItem) {
-            return conversationItem->time().date().toString(Qt::DefaultLocaleLongDate);
+        if (eventItem) {
+            return eventItem->dateTime().date().toString(Qt::DefaultLocaleLongDate);
         }
         return QDate::currentDate().toString(Qt::DefaultLocaleLongDate);
     }
@@ -150,40 +151,39 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return false;
     }
     case BubbleColorRole: {
-        if (item) {
-            if(item->incomingTransfer()) {
-                return contactColor(item->contact()->id());
+        if (fileTransferItem) {
+            if (fileTransferItem->incomingTransfer()) {
+                return contactColor(fileTransferItem->sender()->id());
             } else {
                 return mBubbleColor[mBubbleColor.count()-1];
             }
-        }
-        else if (conversationItem) {
-            if(conversationItem->type() == Tpy::ConversationItem::OUTGOING_MESSAGE) {
+        } else if (textItem) {
+            if (textItem->messageOrigin() == Tpy::TextEventItem::MessageOriginOutgoing) {
                 return mBubbleColor[mBubbleColor.count()-1];
             } else {
-                QString id = conversationItem->contact()->id();
+                QString id = textItem->sender()->id();
                 return contactColor(id);
             }
         }
         return mBubbleColor[mBubbleColor.count()-1];
     }
     // override the type role, so that we can return a custom type for file transfer items
-    case Tpy::SessionConversationModel::TypeRole: {
-        if (item) {
-            return (item->incomingTransfer() ? "incoming_file_transfer" :
-                                               "outgoing_file_transfer");
+    case Tpy::AbstractConversationModel::MessageOriginRole: {
+        if (fileTransferItem) {
+            return (fileTransferItem->incomingTransfer() ? "incoming_file_transfer" :
+                                                           "outgoing_file_transfer");
         }
         return MergedModel::data(index, role);
     }
     case IncomingTransferRole: {
-        if (item) {
-            return item->incomingTransfer();
+        if (fileTransferItem) {
+            return fileTransferItem->incomingTransfer();
         }
         return false;
     }
     case FileNameRole: {
-        if (item) {
-            return item->fileName();
+        if (fileTransferItem) {
+            return fileTransferItem->fileName();
         }
         return QVariant("");
     }
@@ -194,26 +194,26 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant("");
     }
     case FileSizeRole: {
-        if (item) {
-            return friendlyFileSize(item->fileSize());
+        if (fileTransferItem) {
+            return friendlyFileSize(fileTransferItem->fileSize());
         }
         return QVariant();
     }
     case TransferStateRole: {
-        if (item) {
-            return item->transferState();
+        if (fileTransferItem) {
+            return fileTransferItem->transferState();
         }
         return QVariant();
     }
     case TransferStateReasonRole: {
-        if (item) {
-            return item->transferStateReason();
+        if (fileTransferItem) {
+            return fileTransferItem->transferStateReason();
         }
         return QVariant();
     }
     case PercentTransferredRole: {
-        if (item) {
-            return item->percentTransferred();
+        if (fileTransferItem) {
+            return fileTransferItem->percentTransferred();
         }
         return QVariant();
     }
@@ -281,8 +281,8 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     }
 
     // if we have a previous running chat item from the contact, delete it
-    foreach(Tpy::ConversationItem* item, mChatRunningItems) {
-        if(item->contact() == contact) {
+    foreach(Tpy::EventItem *item, mChatRunningItems) {
+        if(item->sender() == contact) {
             qDebug("previous running item found, deleting");
             mChatRunningItems.removeOne(item);
             mSessionConversationModel->deleteItem(item);
@@ -292,8 +292,11 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
 
     // add the event message
     if (!message.isEmpty()) {
-        Tpy::ConversationItem *item = new Tpy::ConversationItem(contact,
-            QDateTime::currentDateTime(), message, Tpy::ConversationItem::EVENT, this);
+        // FIXME receiver ?
+        Tp::ContactPtr receiver;
+        Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
+            QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
+            Tp::ChannelTextMessageTypeNormal, this);
         // remember running messages
         if (running) {
             mChatRunningItems.append(item);
@@ -308,7 +311,7 @@ void IMConversationModel::onItemChanged()
         return;
     }
 
-    Tpy::ConversationItem *item = qobject_cast<Tpy::ConversationItem*>(sender());
+    Tpy::EventItem *item = qobject_cast<Tpy::EventItem*>(sender());
     if(!item) {
         return;
     }
@@ -319,8 +322,8 @@ void IMConversationModel::onItemChanged()
     }
 
     // if it is a new contact, add it to the list
-    if(!mContactsList.contains(item->contact()->id())) {
-        mContactsList.append(item->contact()->id());
+    if(!mContactsList.contains(item->sender()->id())) {
+        mContactsList.append(item->sender()->id());
     }
 }
 
@@ -381,8 +384,11 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
 
     // add the event message
     if (!message.isEmpty()) {
-        Tpy::ConversationItem *item = new Tpy::ConversationItem(contact,
-            QDateTime::currentDateTime(), message, Tpy::ConversationItem::EVENT, this);
+        // FIXME sender ?
+        Tp::ContactPtr receiver;
+        Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
+            QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
+            Tp::ChannelTextMessageTypeNormal, this);
         // remember running messages
         if (running) {
             mCallRunningItem = item;
@@ -405,8 +411,11 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
 
     message = tr("Error in call with %1").arg(contact->alias());
 
-    Tpy::ConversationItem *item = new Tpy::ConversationItem(contact,
-        QDateTime::currentDateTime(), message, Tpy::ConversationItem::EVENT, this);
+    // FIXME sender ?
+    Tp::ContactPtr receiver;
+    Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
+        QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
+        Tp::ChannelTextMessageTypeNormal, this);
     mLoggerConversationModel->addItem(item);
 }
 
@@ -564,7 +573,7 @@ void IMConversationModel::calculateMatches(void)
     mMatchesFound.clear();
     for(int i = rowCount(QModelIndex()) - 1;i >= 0;i--) {
         QModelIndex rowIndex = index(i,0,QModelIndex());
-        QString text = MergedModel::data(rowIndex, Tpy::SessionConversationModel::TextRole).toString();
+        QString text = MergedModel::data(rowIndex, Tpy::AbstractConversationModel::MessageTextRole).toString();
         int fromIndex = -1;
         // NOTE matched are counted backwards in the string (0 starts at end of string, latest one)
         int numMatchInRow = 0;

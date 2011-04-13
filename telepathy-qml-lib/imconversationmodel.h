@@ -14,7 +14,7 @@
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
 #include <TelepathyQt4Yell/Models/SessionConversationModel>
-#include <TelepathyQt4Yell/Models/ConversationItem>
+#include <TelepathyQt4Yell/Models/EventItem>
 #include "mergedmodel.h"
 #include "callagent.h"
 
@@ -104,8 +104,8 @@ private:
     QString mSearchString;
     QList<Tp::ContactPtr> mContactsTyping;
     QDateTime mContactsTypingTime;
-    QList<Tpy::ConversationItem*> mChatRunningItems;
-    Tpy::ConversationItem *mCallRunningItem;
+    QList<Tpy::EventItem*> mChatRunningItems;
+    Tpy::EventItem *mCallRunningItem;
     QStringList mContactsList;
     QStringList mBubbleColor;
     Tpl::LoggerConversationModel *mLoggerConversationModel;

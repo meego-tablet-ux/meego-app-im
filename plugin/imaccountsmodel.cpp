@@ -446,6 +446,17 @@ QStringList IMAccountsModel::accountIdsOfType(const QString &type) const
     return ids;
 }
 
+bool IMAccountsModel::existsConnectsAutomaticallyByType(const QString &type) const
+{
+    for (int i = 0; i < rowCount(); ++i) {
+        if (index(i, 0).data(Tpy::AccountsModel::IconRole).toString() == type
+                && index(i,0).data(Tpy::AccountsModel::ConnectsAutomaticallyRole).toBool()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void IMAccountsModel::onChatCreated()
 {
     ChatAgent *agent = qobject_cast<ChatAgent*>(sender());

@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -112,16 +112,16 @@ Item {
                 Button {
                     id: takePictureButton
                     anchors.horizontalCenter: parent.horizontalCenter
-                    title: qsTr("Take picture")
+                    text: qsTr("Take picture")
                     width: 180
-                    height: 32
+                    height: 40
                 }
                 Button {
                     id: choosePictureButton
                     anchors.horizontalCenter: parent.horizontalCenter
-                    title: qsTr("Choose picture")
+                    text: qsTr("Choose picture")
                     width: 180
-                    height: 32
+                    height: 40
                 }
             }
 

@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -201,10 +201,10 @@ Item {
                 anchors.left: fileName.left
                 anchors.topMargin: 10
 
-                height: visible ? 32 : 0
+                height: visible ? 40 : 0
 
-                title: qsTr("Open")
-                color: theme_buttonFontColor
+                text: qsTr("Open")
+                textColor: theme_buttonFontColor
                 bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                 bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -252,10 +252,10 @@ Item {
                     anchors.top: parent.top
                     anchors.left: parent.left
 
-                    height: 32
+                    height: 40
 
-                    title: qsTr("Save")
-                    color: theme_buttonFontColor
+                    text: qsTr("Save")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -268,10 +268,10 @@ Item {
                     anchors.leftMargin: 10
                     anchors.left: saveButton.right
 
-                    height: 32
+                    height: 40
 
-                    title: qsTr("Decline")
-                    color: theme_buttonFontColor
+                    text: qsTr("Decline")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
@@ -298,10 +298,10 @@ Item {
                     anchors.top: parent.top
                     anchors.right: parent.right
 
-                    height: 32
+                    height: 40
 
-                    title: qsTr("Cancel")
-                    color: theme_buttonFontColor
+                    text: qsTr("Cancel")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 

@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -56,10 +56,9 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        height: 32
-
-        title: qsTr("Accept")
-        color: theme_buttonFontColor
+        height: mainArea.height - 10
+        text: qsTr("Accept")
+        textColor: theme_buttonFontColor
         bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
         bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -74,11 +73,10 @@ Item {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
+        height: mainArea.height - 10
 
-        height: 32
-
-        title: qsTr("Cancel")
-        color: theme_buttonFontColor
+        text: qsTr("Cancel")
+        textColor: theme_buttonFontColor
         bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
         bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 

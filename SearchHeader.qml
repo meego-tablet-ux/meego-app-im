@@ -7,7 +7,8 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 
 Item {
@@ -60,7 +61,7 @@ Item {
             anchors.verticalCenter: searchText.verticalCenter
             anchors.left: searchText.right
             anchors.leftMargin: 15
-            Spinner {
+            Labs.Spinner {
                 id: loadingIcon
                 width: theme_fontPixelSizeLarge
                 height: theme_fontPixelSizeLarge
@@ -70,7 +71,7 @@ Item {
 
         Button {
             id: olderButton
-            title: qsTr("Older")
+            text: qsTr("Older")
             width: 180
             height: 32
             anchors.verticalCenter: parent.verticalCenter
@@ -83,7 +84,7 @@ Item {
         }
         Button {
             id: newerButton
-            title: qsTr("Newer")
+            text: qsTr("Newer")
             width: 180
             height: 32
             anchors.verticalCenter: parent.verticalCenter

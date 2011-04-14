@@ -7,11 +7,12 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-ApplicationPage {
+Labs.ApplicationPage {
     id: accountEditPage
     anchors.fill: parent
 
@@ -109,8 +110,8 @@ ApplicationPage {
 
                             height: 32
 
-                            title: qsTr("Done")
-                            color: theme_buttonFontColor
+                            text: qsTr("Done")
+                            textColor: theme_buttonFontColor
                             bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                             bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -130,8 +131,8 @@ ApplicationPage {
 
                             height: 32
 
-                            title: qsTr("Cancel")
-                            color: theme_buttonFontColor
+                            text: qsTr("Cancel")
+                            textColor: theme_buttonFontColor
                             bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                             bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
@@ -142,7 +143,7 @@ ApplicationPage {
             }
         }
 
-        ModalSurface {
+        Labs.ModalSurface {
             id: modalSurface
             anchors.fill: parent
             autoCenter: true
@@ -150,7 +151,7 @@ ApplicationPage {
 
             content: Component {
 
-                Spinner {
+                Labs.Spinner {
                     spinning: true
                     onSpinningChanged: {
                         if (!spinning) {

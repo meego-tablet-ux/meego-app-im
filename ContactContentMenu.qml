@@ -7,8 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Components 0.1 as Ux
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 import MeeGo.Media 0.1
@@ -296,44 +295,22 @@ Item {
                     }
                 }
 
-                Item {
+                TextEntry {
+                    id: customMessageBox
                     anchors.left: parent.left
+                    anchors.leftMargin: 10
                     anchors.right: parent.right
                     anchors.rightMargin: 15
-                    height: customMessageBox.height + 20
-
-                    BorderImage {
-                        id: customMessageBorder
-                        anchors.fill: parent
-                        source: "image://meegotheme/widgets/common/text-area/text-area-background"
-                        border.left: 5; border.top: 5
-                        border.right: 5; border.bottom: 5
-                    }
-
-                    TextArea {
-                        id: customMessageBox
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            leftMargin: 15
-                            rightMargin: 15
-                            verticalCenter: parent.verticalCenter
-                        }
-                        text: scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
-                        Behavior on height {
-                            NumberAnimation { duration: 250 }
-                        }
-                    }
+                    defaultText: qsTr("Custom status message");
+                    text: scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
                 }
 
                 Button {
                     id: updateStatusButton
                     anchors.left: parent.left
                     anchors.leftMargin: 10
-                    title: qsTr("Update")
-                    color: theme_buttonFontColor
+                    text: qsTr("Update")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
                     onClicked: {
@@ -428,8 +405,8 @@ Item {
                     id: updateNicknameButton
                     anchors.left: parent.left
                     anchors.leftMargin: 10
-                    title: qsTr("Update")
-                    color: theme_buttonFontColor
+                    text: qsTr("Update")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
                     onClicked: {
@@ -534,7 +511,7 @@ Item {
         id: accountHelper
     }
 
-    Ux.PhotoPicker {
+    PhotoPicker {
         id: photoPicker
 
         onPhotoSelected: {

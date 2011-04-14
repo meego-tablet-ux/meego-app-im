@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -48,14 +48,16 @@ Column {
         id: addAFriendInput
         width: parent.width
         text: ""
+        defaultText: qsTr("friend's username")
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
     }
 
     Button {
         id: addAFriendSend
-        title: qsTr("Send")
-        color: theme_buttonFontColor
+        height: 30
+        text: qsTr("Send")
+        textColor: theme_buttonFontColor
         bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
         bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
         visible: addContactHelper.state == AddContactHelper.StateIdle ||

@@ -7,12 +7,13 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 import "utils.js" as Utils
 
-ApplicationPage {
+Labs.ApplicationPage {
     id: messageScreenPage
     anchors.fill: parent
 
@@ -449,8 +450,8 @@ ApplicationPage {
 
                 height: 32
 
-                title: qsTr("Send")
-                color: theme_buttonFontColor
+                text: qsTr("Send")
+                textColor: theme_buttonFontColor
 
                 onClicked: {
                     if(!textEdit.isEmpty()) {
@@ -1014,7 +1015,7 @@ ApplicationPage {
 
     Component {
         id: contextComponent
-        ContextMenu {
+        Labs.ContextMenu {
             menuWidth: 350
             onClose: contextLoader.sourceComponent = undefined
             onTriggered: {

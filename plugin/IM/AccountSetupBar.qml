@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 
 Column {
     anchors.left: parent.left
@@ -31,10 +31,10 @@ Column {
                     verticalCenter: parent.verticalCenter
                 }
 
-                height: 32
+                height: 40
 
-                title: qsTr("Update")
-                color: theme_buttonFontColor
+                text: qsTr("Update")
+                textColor: theme_buttonFontColor
                 bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                 bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -49,10 +49,10 @@ Column {
                     verticalCenter: parent.verticalCenter
                 }
 
-                height: 32
+                height: 40
 
-                title: qsTr("Cancel")
-                color: theme_buttonFontColor
+                text: qsTr("Cancel")
+                textColor: theme_buttonFontColor
                 bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                 bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
@@ -68,10 +68,10 @@ Column {
             id: deleteAccountButton
             anchors.centerIn: parent
 
-            height: 32
+            height: 40
 
-            title: qsTr("Delete account")
-            color: theme_buttonFontColor
+            text: qsTr("Delete account")
+            textColor: theme_buttonFontColor
             bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
             bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 

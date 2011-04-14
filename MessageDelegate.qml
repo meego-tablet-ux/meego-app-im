@@ -17,14 +17,18 @@ Item {
 
     anchors.margins: 10
 
-    property bool eventItem: model.type == "event"
-    property bool fileTransferItem: model.type == "incoming_file_transfer" ||
-                                    model.type == "outgoing_file_transfer"
-    property bool messageItem: model.type == "incoming_message" || model.type == "outgoing_message"
-    property bool messageSent: model.type == "outgoing_message" || model.type == "outgoing_file_transfer"
+    property bool eventItem: model.messageOrigin == "event"
+    property bool fileTransferItem: model.messageOrigin == "incoming_file_transfer" ||
+                                    model.messageOrigin == "outgoing_file_transfer"
+    property bool messageItem: model.messageOrigin == "incoming_message" || model.messageOrigin == "outgoing_message"
+    property bool messageSent: model.messageOrigin == "outgoing_message" || model.messageOrigin == "outgoing_file_transfer"
     // TODO: check how to add more colors for group chat
     property string color: model.bubbleColor //messageSent ? "white" : "blue"
     property bool expandedMessage: true
+
+    Component.onCompleted: {
+        console.log("model.messageOrigin=" + model.messageOrigin);
+    }
 
     function messageAvatar() {
         var avatar = "";
@@ -32,7 +36,7 @@ Item {
             avatar = "image://avatars/" + scene.currentAccountId + // i18n ok
                         "?" + accountFactory.avatarSerial;
         } else {
-            avatar = model.contactAvatar;
+            avatar = model.senderAvatar;
         }
 
         return avatar;
@@ -151,7 +155,7 @@ Item {
                 font.pixelSize: theme_fontPixelSizeSmall
                 elide: Text.ElideRight
 
-                text: model.contact
+                text: model.sender
             }
 
             Text {
@@ -162,12 +166,12 @@ Item {
                 color: Qt.rgba(0.3,0.3,0.3,1)
                 font.pixelSize: theme_fontPixelSizeSmall
 
-                text: fuzzyDateTime.getFuzzy(model.time)
+                text: fuzzyDateTime.getFuzzy(model.dateTime)
 
                 Connections {
                     target: fuzzyDateTimeUpdater
                     onTriggered: {
-                        time.text = fuzzyDateTime.getFuzzy(model.time);
+                        time.text = fuzzyDateTime.getFuzzy(model.dateTime);
                     }
                 }
             }
@@ -182,7 +186,7 @@ Item {
             anchors.leftMargin: messageTop.border.left
             anchors.rightMargin: messageTop.border.right
 
-            text: parseChatText(model.text)
+            text: parseChatText(model.messageText)
             wrapMode: Text.WordWrap
             textFormat: Text.RichText
 
@@ -204,15 +208,15 @@ Item {
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
             // i18n: the first argument is the event itself, the second one is the fuzzy time
-            text: qsTr("%1 - %2").arg(model.text)
-                                 .arg(fuzzyDateTime.getFuzzy(model.time))
+            text: qsTr("%1 - %2").arg(model.messageText)
+                                 .arg(fuzzyDateTime.getFuzzy(model.dateTime))
             wrapMode: Text.WordWrap
 
             Connections {
                 target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    eventMessageText.text = qsTr("%1 - %2").arg(model.text)
-                                                           .arg(fuzzyDateTime.getFuzzy(model.time));
+                    eventMessageText.text = qsTr("%1 - %2").arg(model.messageText)
+                                                           .arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
         }

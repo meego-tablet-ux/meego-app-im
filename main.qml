@@ -7,11 +7,11 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-Window {
+Labs.Window {
     id: scene
 
     // FIXME remove once migration to Meego UX components is completed
@@ -42,7 +42,7 @@ Window {
     // TODO: check how can we do that on group chat
     property string currentContactId: ""
 
-    FuzzyDateTime {
+    Labs.FuzzyDateTime {
         id: fuzzyDateTime
     }
 

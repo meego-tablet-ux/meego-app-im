@@ -7,7 +7,8 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -35,7 +36,7 @@ Item {
 
         }
 
-        Spinner {
+        Labs.Spinner {
             id: loadingIcon
             anchors.centerIn: serviceIcon
             visible: model.connectionStatus == TelepathyTypes.ConnectionStatusConnecting
@@ -86,10 +87,10 @@ Item {
 
         Component {
             id: contextComponent
-            ContextMenu {
+            Labs.ContextMenu {
                 menuWidth: 350
                 onClose: contextLoader.sourceComponent = undefined
-                ApplicationsModel {
+                Labs.ApplicationsModel {
                     id: appModel
                 }
                 onTriggered: {

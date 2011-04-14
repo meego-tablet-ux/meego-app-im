@@ -7,39 +7,47 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-ExpandingBox {
-    id: setupDelegate
+Item {
+    width: parent.width
+    height: childrenRect.height + setupDelegate.detailsHeight
 
-    detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
+    ExpandingBox {
+        id: setupDelegate
 
-    property int itemWidth: parent.width
-    property int accountStatus: model.statusType
-    property variant accountContent: detailsItem.accountContent
-    //property bool expanded: false
+        detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
 
-    expandedHeight: detailsItem.height + expandButton.height
+        property int itemWidth: parent.width
+        property int accountStatus: model.statusType
+        property variant accountContent: detailsItem.accountContent
+        //property bool expanded: false
+        property int detailsHeight: childrenRect.height
 
-    Image {
-        id: serviceIcon
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.margins: 10
-        source: accountFactory.accountIcon(model.icon, model.connectionStatus)
-        smooth: true
-    }
+        //expandedHeight: detailsItem.height + expandButton.height
 
-    Text {
-        id: accountTypeName
-        anchors.left: serviceIcon.right
-        anchors.top: parent.top
-        anchors.margins: 10
-        text: model.displayName
-        elide: Text.ElideRight
-        font.weight: Font.Bold
-        color: theme_fontColorNormal
+        height:  serviceIcon.height
+
+        Image {
+            id: serviceIcon
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            source: accountFactory.accountIcon(model.icon, model.connectionStatus)
+            smooth: true
+        }
+
+        Text {
+            id: accountTypeName
+            anchors.left: serviceIcon.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: 10
+            text: model.displayName
+            elide: Text.ElideRight
+            font.weight: Font.Bold
+            color: theme_fontColorNormal
+        }
     }
 }

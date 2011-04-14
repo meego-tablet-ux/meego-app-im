@@ -7,25 +7,26 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 ModalDialog {
     id: container
-    dialogTitle: qsTr("Incoming Call")
-    dialogWidth: 420
-    dialogHeight: 480
-    leftButtonText: qsTr("Accept")
-    bgSourceUpLeft: "image://meegotheme/images/btn_blue_up"
-    bgSourceDnLeft: "image://meegotheme/images/btn_blue_dn"
-    rightButtonText: qsTr("Decline")
-    bgSourceUpRight: "image://meegotheme/images/btn_red_up"
-    bgSourceDnRight: "image://meegotheme/images/btn_red_dn"
-    contentLoader.sourceComponent: Item {
+    title: qsTr("Incoming Call")
+    width: 420
+    height:  480
+    acceptButtonEnabled: true
+    acceptButtonText: qsTr("Accept")
+    acceptButtonImage: "image://meegotheme/images/btn_blue_up"
+    acceptButtonImagePressed:  "image://meegotheme/images/btn_blue_dn"
+    cancelButtonText: qsTr("Decline")
+    cancelButtonImage: "image://meegotheme/images/btn_red_up"
+    cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
+    content: Item {
         anchors.fill: contentLoader
 
-        DialogText {
+        Text {
             id: dialogText
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
@@ -61,19 +62,18 @@ ModalDialog {
         callSound.playSound();
     }
 
-    onDialogClicked: {
+    onAccepted: {
+        scene.callAgent = scene.incomingCallAgent
+        scene.callAgent.acceptCall();
+        scene.acceptCall(accountId, scene.incomingContactItem.data(AccountsModel.IdRole));
+        callSound.stopSound();
         dialogLoader.sourceComponent = undefined;
-        if (button == 1) {
-            scene.callAgent = scene.incomingCallAgent
-            scene.callAgent.acceptCall();
-            scene.acceptCall(accountId, scene.incomingContactItem.data(AccountsModel.IdRole));
-            callSound.stopSound();
-            dialogLoader.sourceComponent = undefined;
-        } else if (button == 2) {
-            scene.incomingCallAgent.endCall();
-            callSound.stopSound();
-            dialogLoader.sourceComponent = undefined;
-        }
+    }
+
+    onRejected: {
+        scene.incomingCallAgent.endCall();
+        callSound.stopSound();
+        dialogLoader.sourceComponent = undefined;
     }
 
     IMSound {

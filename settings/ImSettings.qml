@@ -7,11 +7,12 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
 
-ApplicationPage {
+Labs.ApplicationPage {
     id: container
     title: qsTr("Instant Messaging Settings")
     anchors.fill: parent
@@ -34,7 +35,7 @@ ApplicationPage {
     // the account setup page
     Component {
         id: accountSetupComponent
-        ApplicationPage {
+        Labs.ApplicationPage {
             id: accountSetupPage
             anchors.fill: parent
 
@@ -116,8 +117,8 @@ ApplicationPage {
 
                     height: 32
 
-                    title: qsTr("Add another account")
-                    color: theme_buttonFontColor
+                    text: qsTr("Add another account")
+                    textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
@@ -213,8 +214,8 @@ ApplicationPage {
 
                         height: 32
 
-                        title: qsTr("Clear chat history")
-                        color: theme_buttonFontColor
+                        text: qsTr("Clear chat history")
+                        textColor: theme_buttonFontColor
                         bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                         bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 

@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 
 Item {
     id: container
@@ -33,7 +33,7 @@ Item {
             anchors.verticalCenter: loadingText.verticalCenter
             anchors.left: loadingText.right
             anchors.leftMargin: 15
-            Spinner {
+            Labs.Spinner {
                 id: loadingIcon
 
                 width: theme_fontPixelSizeLarge

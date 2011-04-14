@@ -45,8 +45,10 @@ CallAgent::CallAgent(
 {
     qDebug() << "CallAgent::CallAgent: created for contact " << mContact->id();
 
-    connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            SLOT(onConnectionStatusChanged()));
+    connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
+        SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+
+    onAccountConnectionChanged(mAccount->connection());
 }
 
 CallAgent::CallAgent(QObject *parent)
@@ -836,16 +838,38 @@ void CallAgent::onOrientationChanged(uint orientation)
     }
 }
 
-void CallAgent::onConnectionStatusChanged()
+void CallAgent::onAccountConnectionChanged(const Tp::ConnectionPtr &conn)
 {
-    if(!mAccount.isNull() && !mAccount->connection().isNull()) {
-        if(mAccount->connection()->status() != Tp::ConnectionStatusConnected) {
-            endCall();
-        }
-    } else {
-        endCall(); // end chat anyway if the account or the connection are invalid
+    if (conn == NULL) {
+        qDebug() << "NULL connection";
+        endCall();
+    }
+    else {
+        connect(conn.data(),
+            SIGNAL(statusChanged(Tp::ConnectionStatus)),
+            SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+        connect(conn.data(),
+            SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
+            SLOT(onConnectionInvalidated(Tp::DBusProxy*)));
+        onConnectionStatusChanged(conn->status());
     }
 }
+
+void CallAgent::onConnectionStatusChanged(Tp::ConnectionStatus status)
+{
+    if(status == Tp::ConnectionStatusDisconnected) {
+        endCall();
+    }
+}
+
+void CallAgent::onConnectionInvalidated(Tp::DBusProxy *proxy)
+{
+    Tp::Connection *conn = qobject_cast<Tp::Connection *>(proxy);
+    if (conn) {
+        disconnect(conn, 0, this, 0);
+    }
+}
+
 
 void CallAgent::onPendingChanelRequestFinished(Tp::PendingOperation *op)
 {

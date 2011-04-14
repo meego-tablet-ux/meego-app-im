@@ -203,11 +203,31 @@ void TelepathyManager::onAccountReady(Tp::PendingOperation *op)
     if (mConnCount == 0) {
         emit finished();
     }
-    connect(accountPtr.data(),
-            SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+
+
+    connect(accountPtr.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr &)),
+        SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr &)));
+    onAccountConnectionChanged(accountPtr->connection());
 
     emit accountReady(accountPtr.data());
+}
+
+void TelepathyManager::onAccountConnectionChanged(const Tp::ConnectionPtr &conn)
+{
+    qDebug() << "TelepathyManager::onAccountConnectionChanged";
+
+    if (conn == NULL) {
+        qDebug() << "NULL connection";
+    }
+    else {
+        connect(conn.data(),
+            SIGNAL(statusChanged(Tp::ConnectionStatus)),
+            SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+        connect(conn.data(),
+            SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
+            SLOT(onConnectionInvalidated(Tp::DBusProxy*)));
+        onConnectionStatusChanged(conn->status());
+    }
 }
 
 void TelepathyManager::onConnectionReady(Tp::PendingOperation *op)
@@ -256,11 +276,21 @@ void TelepathyManager::onConnectionStatusChanged(Tp::ConnectionStatus status)
 {
     qDebug() << "TelepathyManager::onConnectionStatusChanged: status=" << status;
 
-    Tp::Account *account = qobject_cast<Tp::Account *>(sender());
+    Tp::Connection *conn = qobject_cast<Tp::Connection *>(sender());
 
-    if (!account->connection().isNull() && status == Tp::ConnectionStatusConnected) {
-        initializeConnection(account->connection());
+    if (conn && status == Tp::ConnectionStatusConnected) {
+        initializeConnection(Tp::ConnectionPtr(conn));
     }
+}
+
+void TelepathyManager::onConnectionInvalidated(Tp::DBusProxy *proxy)
+{
+    qDebug() << "TelepathyManager::onConnectionInvalidated";
+
+    Tp::Connection *conn = qobject_cast<Tp::Connection *>(proxy);
+    if (conn) {
+        disconnect(conn, 0, this, 0);
+   }
 }
 
 void TelepathyManager::onContactsUpgraded(Tp::PendingOperation *op)

@@ -95,7 +95,9 @@ private Q_SLOTS:
     void onGroupHandleOwnersChanged(const Tp::HandleOwnerMap &owners, const Tp::UIntList &added, const Tp::UIntList &removed);
     void onNewHandleOwner(const uint &handle);
     void onNewHandleContact(Tp::PendingOperation *op);
-    void onConnectionStatusChanged();
+    void onConnectionStatusChanged(Tp::ConnectionStatus status);
+    void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
+    void onConnectionInvalidated(Tp::DBusProxy *proxy);
 
 private:
     Tp::AccountPtr mAccount;

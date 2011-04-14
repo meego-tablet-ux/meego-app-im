@@ -30,8 +30,10 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::ContactPtr &contac
 {
     qDebug() << "ChatAgent::ChatAgent: created for contact " << mContact->id();
 
-    connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            SLOT(onConnectionStatusChanged()));
+    connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
+        SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+
+    onAccountConnectionChanged(mAccount->connection());
     // todo check contact readyness
 }
 
@@ -77,8 +79,9 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const QString &roomName, QOb
     connect(mPendingChannelRequest,
             SIGNAL(channelRequestCreated(Tp::ChannelRequestPtr)),
             SLOT(onPendingChanelRequestCreated(Tp::ChannelRequestPtr)));
-    connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            SLOT(onConnectionStatusChanged()));
+    connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
+        SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+    onAccountConnectionChanged(mAccount->connection());
 }
 
 ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::TextChannelPtr &channel, QObject *parent)
@@ -95,8 +98,9 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::TextChannelPtr &ch
 
     handleReadyChannel();
     emit isConferenceChanged();
-    connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            SLOT(onConnectionStatusChanged()));
+    connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
+        SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+    onAccountConnectionChanged(mAccount->connection());
 }
 
 ChatAgent::~ChatAgent()
@@ -503,13 +507,35 @@ Tp::ContactPtr ChatAgent::contactByChannelHandle(const uint &handle) const
     return mHandleContactMap.value(globalHandle(handle), Tp::ContactPtr());
 }
 
-void ChatAgent::onConnectionStatusChanged()
+void ChatAgent::onAccountConnectionChanged(const Tp::ConnectionPtr &conn)
 {
-    if(!mAccount.isNull() && !mAccount->connection().isNull()) {
-        if(mAccount->connection()->status() != Tp::ConnectionStatusConnected) {
-            endChat();
-        }
-    } else {
-        endChat(); // end chat anyway if the account or the connection are invalid
+    if (conn == NULL) {
+        qDebug() << "NULL connection";
+        endChat();
+    }
+    else {
+        connect(conn.data(),
+            SIGNAL(statusChanged(Tp::ConnectionStatus)),
+            SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+        connect(conn.data(),
+                SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
+                SLOT(onConnectionInvalidated(Tp::DBusProxy*)));
+        onConnectionStatusChanged(conn->status());
     }
 }
+
+void ChatAgent::onConnectionStatusChanged(Tp::ConnectionStatus status)
+{
+    if(status == Tp::ConnectionStatusDisconnected) {
+        endChat();
+    }
+}
+
+void ChatAgent::onConnectionInvalidated(Tp::DBusProxy *proxy)
+{
+    Tp::Connection *conn = qobject_cast<Tp::Connection *>(proxy);
+    if (conn) {
+        disconnect(conn, 0, this, 0);
+    }
+}
+

@@ -165,7 +165,9 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void onFarstreamStateChanged();
     void onRemoteVideoRender(bool enabled);
-    void onConnectionStatusChanged();
+    void onConnectionStatusChanged(Tp::ConnectionStatus status);
+    void onConnectionInvalidated(Tp::DBusProxy *proxy);
+    void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
     void onPendingChanelRequestFinished(Tp::PendingOperation *op);
     void onPendingChanelRequestCreated(const Tp::ChannelRequestPtr &channelRequest);
     void onCallChannelReady(Tp::PendingOperation *op);

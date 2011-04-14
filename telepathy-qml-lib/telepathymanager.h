@@ -77,6 +77,8 @@ private Q_SLOTS:
                                    const Tp::Contacts &groupMembersRemoved,
                                    const Tp::Channel::GroupMemberChangeDetails &details);
     void onFinished();
+    void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
+    void onConnectionInvalidated(Tp::DBusProxy *proxy);
 
 private:
     Tp::AccountManagerPtr mAccountManager;

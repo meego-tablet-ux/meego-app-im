@@ -111,6 +111,7 @@ Labs.ApplicationPage {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.margins: 10
+                hasBackground: false
 
                 onClicked: {
                     var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok

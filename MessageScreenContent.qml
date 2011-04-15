@@ -854,6 +854,7 @@ Labs.ApplicationPage {
                 iconDown: icon + "-pressed"
                 width: 28
                 height: 44
+                hasBackground: false
                 onClicked: {
                     var map = mapToItem(scene, 0, 0);
                     var menu;
@@ -880,6 +881,7 @@ Labs.ApplicationPage {
                 icon: "image://meegotheme/icons/actionbar/view-" +
                        (scene.fullscreen ? "smallscreen" : "fullscreen")
                 iconDown: icon + "-active"
+                hasBackground: false
                 onClicked: {
                     scene.fullscreen = !scene.fullscreen
                 }

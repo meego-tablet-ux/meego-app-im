@@ -28,6 +28,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         height: parent.height
+        width: height
 
         fillMode: Image.PreserveAspectFit
 
@@ -37,11 +38,6 @@ Item {
                 avatarImage.visible = false;
             }
         }
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        color: "red"
     }
 
     Image {

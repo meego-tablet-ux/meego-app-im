@@ -41,7 +41,8 @@ CallAgent::CallAgent(
       mIncomingVideo(0),
       mOutgoingVideo(0),
       mCurrentOrientation(1), // TopUp
-      mPendingChannelRequest(0)
+      mPendingChannelRequest(0),
+      mIsRequested(false)
 {
     qDebug() << "CallAgent::CallAgent: created for contact " << mContact->id();
 
@@ -471,6 +472,8 @@ void CallAgent::onChannelAvailable(Tp::ChannelPtr channel)
              << " flags=" << int(mCallChannel->flags())
              << " stateReason=" << mCallChannel->stateReason().reason
              << " stateDetails=" << mCallChannel->stateDetails();
+
+    mIsRequested = mCallChannel->isRequested();
 
     if (!mCallChannel->isRequested() && mCallChannel->state() == Tpy::CallStatePendingReceiver) {
         QVariantMap props = channel->immutableProperties();
@@ -1288,3 +1291,7 @@ void CallAgent::onFarstreamChannelCreated(Tp::PendingOperation *po)
     setupFarstreamChannel(mFarstreamChannel);
 }
 
+bool CallAgent::isRequested() const
+{
+    return mIsRequested;
+}

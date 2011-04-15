@@ -52,6 +52,8 @@ class CallAgent : public QObject
     Q_PROPERTY(QObject *outgoingVideo READ outgoingVideo WRITE setOutgoingVideo)
     Q_PROPERTY(QObject *incomingVideo READ incomingVideo WRITE setIncomingVideo)
 
+    Q_PROPERTY(bool isRequested READ isRequested)
+
     Q_ENUMS(CallStatus);
 
 public:
@@ -130,6 +132,7 @@ public:
 
     Q_INVOKABLE bool canSwapVideos() const;
 
+    Q_INVOKABLE bool isRequested() const;
 Q_SIGNALS:
     // property notification signals
     void callStatusChanged(CallAgent::CallStatus oldStatus, CallAgent::CallStatus newStatus);
@@ -209,6 +212,7 @@ protected:
     Tpy::FarstreamChannelFactoryPtr mChannelFactory;
     Tp::PendingChannelRequest *mPendingChannelRequest;
     Tpy::CallChannelPtr mCallChannel;
+    bool mIsRequested;
 
     explicit CallAgent(QObject *parent = 0);
 

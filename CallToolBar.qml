@@ -60,6 +60,7 @@ Item {
                        "image://meegotheme/icons/actionbar/turn-video-on"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 scene.callAgent.videoSent = !scene.callAgent.videoSent;
             }
@@ -82,6 +83,7 @@ Item {
             icon: "image://meegotheme/icons/actionbar/call-audio-stop"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 scene.callAgent.endCall();
             }
@@ -92,26 +94,6 @@ Item {
             }
         }
 
-        /*
-        IconButton {
-            id: holdButton
-            property int numButton: 1
-            x : parent.calculateButtonX(holdButton)
-            anchors.verticalCenter: parent.verticalCenter
-            icon: scene.callAgent.heldCall ?
-                        "image://meegotheme/icons/apps/media-play" :
-                        "image://meegotheme/icons/apps/media-pause"
-            iconDown: icon + "-active"
-            sourceDown: scene.callAgent.heldCall ?
-                        "image://theme/im/app_icons/icn_pause_up" :
-                        ""
-            anchors.margins: 10
-            onClicked: {
-                scene.callAgent.heldCall = !scene.callAgent.heldCall;
-            }
-        }
-        */
-
         IconButton {
             id: volumeOnButton
             property int numButton: 1
@@ -121,6 +103,7 @@ Item {
             icon: "image://meegotheme/icons/actionbar/turn-audio-off"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 if (volumeLoader.sourceComponent != null ) {
                     volumeLoader.sourceComponent = null;
@@ -144,6 +127,7 @@ Item {
                        "image://meegotheme/icons/actionbar/microphone-mute"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 scene.callAgent.setMuteCall(!scene.callAgent.mutedCall);
             }

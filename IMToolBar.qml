@@ -63,6 +63,7 @@ Item {
             icon: "image://meegotheme/icons/actionbar/turn-video-on"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 videoWindow.opacity = 1;
                 scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
@@ -95,6 +96,7 @@ Item {
             icon: "image://meegotheme/icons/actionbar/call-audio-start"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
             onClicked: {
                 videoWindow.opacity = 1;
                 scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
@@ -126,6 +128,7 @@ Item {
             icon: "image://meegotheme/icons/actionbar/call-audio-stop"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
 
             onClicked: {
                 scene.callAgent.endCall();
@@ -144,32 +147,31 @@ Item {
             }
         }
 
-        Labs.AbstractContext {
+        ModalContextMenu {
             id: smileyContextMenu
 
             content: SmileyGridView {
                 id: smileyGrid
+                height: 200
+                width: 200
 
                 onSmileyClicked: {
                     toolBar.smileyClicked(sourceName);
-                    smileyContextMenu.visible = false;
+                    smileyContextMenu.hide();
                 }
             }
-            mouseX: insertSmileyButton.x + insertSmileyButton.width / 2
-            mouseY: insertSmileyButton.y + insertSmileyButton.height + toolBar.y
-            fingerMode: 3
-            contentWidth: 200
-            contentHeight: 200
+
+            forceFingerMode: 3
+            width: 200
+            height: 200
 
             Component.onCompleted: {
                 insertSmileyButton.visible = smileyContextMenu.content != null
             }
         }
 
-        Labs.AbstractContext {
+        ModalContextMenu {
             id: sendFileContextMenu
-            anchors.bottom: sendFileButton.bottom
-            anchors.horizontalCenter: sendFileButton.horizontalCenter
 
             content: SendFileView {
                 id: sendFileView
@@ -178,13 +180,11 @@ Item {
 
                 onFileSelected: {
                     fileTransferAgent.sendFile(fileName);
-                    sendFileContextMenu.visible = false;
+                    sendFileContextMenu.hide();
                 }
             }
 
-            mouseX: sendFileButton.x + sendFileButton.width / 2
-            mouseY: sendFileButton.y + sendFileButton.height + toolBar.y
-            fingerMode: 3
+            forceFingerMode: 3
 
             Component.onCompleted: {
                 if (sendFileContextMenu.content == null)
@@ -200,9 +200,14 @@ Item {
             icon: "image://meegotheme/icons/actionbar/insert-emote"
             iconDown: icon + "-active"
             anchors.margins: 10
+            hasBackground: false
 
             onClicked: {
-                smileyContextMenu.visible = true;
+
+                smileyContextMenu.setPosition(insertSmileyButton.x + insertSmileyButton.width / 2,
+                                              insertSmileyButton.y + insertSmileyButton.height + toolBar.y);
+
+                smileyContextMenu.show();
             }
 
             Behavior on x {
@@ -220,8 +225,13 @@ Item {
             icon: "image://meegotheme/icons/actionbar/document-attach"
             iconDown: icon + "-active"
             anchors.margins: 10
-            onClicked: sendFileContextMenu.visible = !sendFileContextMenu.visible
+            onClicked: {
+                sendFileContextMenu.setPosition(sendFileButton.x + sendFileButton.width / 2,
+                                                sendFileButton.y + sendFileButton.height + toolBar.y);
+                sendFileContextMenu.show();
+            }
             visible: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
+            hasBackground: false
 
             Behavior on x {
                 NumberAnimation {

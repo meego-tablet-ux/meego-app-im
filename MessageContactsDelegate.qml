@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1 as Labs
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -15,7 +15,7 @@ Item {
     id: contactsDelegate
 
     width: parent.width
-    height: childrenRect.height
+    height: mainArea.height
     property bool tabDiv: false
     property variant currentPage
     property string nameColor: "black"
@@ -30,6 +30,8 @@ Item {
         } else {
             message.text = scene.presenceStatusText(model.presenceType);
         }
+        console.log("width: " + avatar.width);
+        console.log("source: " + avatar.source);
     }
 
     Item {
@@ -59,20 +61,20 @@ Item {
                 scene.currentPage = contactsDelegate.currentPage;
 
                 // open menu
-                scene.openContextMenu(contextMenu,
-                                      contextLoader,
-                                      map.x, map.y, model, menu);
+                contextMenu.setPosition( map.x, map.y);
+                actionMenu.model = menu;
+                actionMenu.payload = model;
+                contextMenu.show();
             }
         }
 
-        Component {
+        ModalContextMenu {
             id: contextMenu
-            Labs.ContextMenu {
+            content: ActionMenu {
+                id: actionMenu
 
                 ListModel {id: menuIndex}
 
-                menuWidth: 350
-                onClose: contextLoader.sourceComponent = undefined
                 onTriggered: {
                     // clear the existing menu
                     menuIndex.clear();
@@ -106,7 +108,7 @@ Item {
                     // By setting the sourceComponent of the loader to undefined,
                     // then the QML engine will destruct the context menu element
                     // much like doing a c++ delete
-                    contextLoader.sourceComponent = undefined;
+                    contextMenu.hide();
                 }
             }
         }
@@ -115,9 +117,8 @@ Item {
             id: avatar
             active: contactsDelegate.active
             source: model.avatar
-            anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            //anchors.top:  parent.top
+            anchors.top:  parent.top
             anchors.bottom: itemSeparator.top
             anchors.margins: 3
         }
@@ -162,7 +163,6 @@ Item {
                     font.pixelSize: theme_fontPixelSizeLarge
                     elide: Text.ElideRight
                 }
-
             }
         }
 

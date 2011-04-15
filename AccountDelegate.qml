@@ -85,14 +85,15 @@ Item {
             // onRejected:
         }
 
-        Component {
-            id: contextComponent
-            Labs.ContextMenu {
-                menuWidth: 350
-                onClose: contextLoader.sourceComponent = undefined
+        ModalContextMenu {
+            id: contextMenu
+            content:  ActionMenu {
+                id: actionMenu
+
                 Labs.ApplicationsModel {
                     id: appModel
                 }
+
                 onTriggered: {
                     if (index == 0)
                     {
@@ -128,17 +129,8 @@ Item {
                         // Account settings
                         var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
                         appModel.launch(cmd);
-                        //scene.addApplicationPage(accountFactory.componentForAccount(payload.data(AccountsModel.IdRole), scene));
                     }
-                    else
-                    {
-                        // Some Other Action
-                    }
-
-                    // By setting the sourceComponent of the loader to undefined,
-                    // then the QML engine will destruct the context menu element
-                    // much like doing a c++ delete
-                    contextLoader.sourceComponent = undefined;
+                    contextMenu.hide();
                 }
             }
         }
@@ -161,8 +153,10 @@ Item {
                       || model.missedVideoCalls > 0)
         }
 
+        ListModel { id: menu}
+
         MouseArea {
-            ListModel { id: menu}
+
 
             anchors.fill: parent
             onClicked: {
@@ -171,7 +165,6 @@ Item {
             }
 
             onPressAndHold: {
-                var map = mapToItem(scene, mouseX, mouseY);
                 menu.clear();
 
                 if(model.connectionStatus == TelepathyTypes.ConnectionStatusConnected) {
@@ -181,9 +174,11 @@ Item {
                 }
                 menu.append({"modelData":qsTr("Settings")});
 
-                scene.openContextMenu(contextComponent,
-                                      contextLoader,
-                                      map.x, map.y, model.item, menu);
+                var map = mapToItem(scene, mouseX, mouseY);
+                contextMenu.setPosition( map.x, map.y);
+                actionMenu.model = menu;
+                actionMenu.payload = model.item;
+                contextMenu.show();
 
             }
         }

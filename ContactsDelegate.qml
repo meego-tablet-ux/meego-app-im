@@ -65,7 +65,6 @@ Item {
             }
             onPressAndHold: {
                 contactsDelegate.ListView.view.currentIndex = index;
-                var map = mapToItem(scene, mouseX, mouseY);
                 menu.clear();
 
                 // Add items to menu according to contact capabilities
@@ -99,20 +98,22 @@ Item {
                 // show the delete option
                 menu.append({"modelData":qsTr("Delete contact")});
 
-                scene.openContextMenu(contextMenu,
-                                      contextLoader,
-                                      map.x, map.y, model, menu);
+
+                var map = mapToItem(scene, mouseX, mouseY);
+                contextMenu.setPosition( map.x, map.y);
+                actionMenu.model = menu;
+                actionMenu.payload = model;
+                contextMenu.show();
             }
         }
 
-        Component {
+        ModalContextMenu {
             id: contextMenu
-            Labs.ContextMenu {
+            content: ActionMenu {
+                id: actionMenu
 
                 ListModel {id: menuIndex}
 
-                menuWidth: 350
-                onClose: contextLoader.sourceComponent = undefined
                 onTriggered: {
                     // clear the existing menu
                     menuIndex.clear();
@@ -144,7 +145,6 @@ Item {
                     if(payload.chatOpened) {
                         menuIndex.append({"modelData":7});
                     }
-
 
                     // Always show the delete option
                     menuIndex.append({"modelData":9});
@@ -178,7 +178,7 @@ Item {
                     // By setting the sourceComponent of the loader to undefined,
                     // then the QML engine will destruct the context menu element
                     // much like doing a c++ delete
-                    contextLoader.sourceComponent = undefined;
+                    contextMenu.hide();
                 }
             }
         }

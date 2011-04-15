@@ -181,7 +181,7 @@ Window {
             if ((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
                 ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
                  (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse))) {
-                scene.addApplicationPage(accountContentFactory.componentForAccount(accountId, scene));
+                scene.addApplicationPage(accountFactory.componentForAccount(accountId, scene));
             }
 
         }
@@ -229,7 +229,7 @@ Window {
         }
 
         onPasswordRequestRequired: {
-            scene.addApplicationPage(accountContentFactory.componentForAccount(accountId, scene));
+            scene.addApplicationPage(accountFactory.componentForAccount(accountId, scene));
         }
 
         onDataChanged: {

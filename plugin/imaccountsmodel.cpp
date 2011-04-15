@@ -1149,7 +1149,7 @@ void IMAccountsModel::onCallStatusChanged(CallAgent::CallStatus oldCallStatus, C
         return;
     }
 
-    model->notifyCallStatusChanged(callAgent->contact(), oldCallStatus, newCallStatus);
+    model->notifyCallStatusChanged(callAgent, oldCallStatus, newCallStatus);
 }
 
 void IMAccountsModel::onCallError(const QString & errorString)

@@ -9,7 +9,9 @@
 #include "imconversationmodel.h"
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
+#include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4Yell/Models/CustomEventItem>
+#include <TelepathyQt4Yell/Models/CallEventItem>
 #include "filetransferitem.h"
 
 IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
@@ -20,6 +22,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     : MergedModel(parent),
       mCallRunningItem(0),
       mSelf(self),
+      mAccount(account),
       mCurrentMatch(0),
       mCurrentRowMatch(0),
       mSearching(false)
@@ -318,11 +321,11 @@ void IMConversationModel::onItemChanged()
     }
 }
 
-void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus)
+void IMConversationModel::notifyCallStatusChanged(CallAgent *callAgent, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus)
 {
     qDebug() << "IMConversationModel::notifyCallStatusChanged: oldCallStatus=" << oldCallStatus << " newCallStatus=" << newCallStatus;
 
-    if (!mLoggerConversationModel) {
+    if (!mSessionConversationModel) {
         return;
     }
 
@@ -331,37 +334,39 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
     bool running = true;
 
     // if it is a new contact, add it to the list
-    if(!mContactsList.contains(contact->id())) {
-        mContactsList.append(contact->id());
+    if(!mContactsList.contains(callAgent->contact()->id())) {
+        mContactsList.append(callAgent->contact()->id());
     }
 
     switch (newCallStatus) {
     case CallAgent::CallStatusNoCall:
-        message = tr("Error in call with %1").arg(contact->alias());
+        /*
+        message = tr("Error in call with %1").arg(callAgent->contact()->alias());
         // check if previous was call
         if (oldCallStatus == CallAgent::CallStatusTalking ||
             oldCallStatus == CallAgent::CallStatusHeld ||
             oldCallStatus == CallAgent::CallStatusHangingUp) {
-            message = tr("Call with %1 ended").arg(contact->alias());
+            message = tr("Call with %1 ended").arg(callAgent->contact()->alias());
         } else if (oldCallStatus == CallAgent::CallStatusIncomingCall) {
-            message = tr("Missed call from %1").arg(contact->alias());
+            message = tr("Missed call from %1").arg(callAgent->contact()->alias());
         }
+        */
         running = false;
         break;
     case CallAgent::CallStatusIncomingCall:
-        message = tr("%1 is calling you").arg(contact->alias());
+        message = tr("%1 is calling you").arg(callAgent->contact()->alias());
         break;
     case CallAgent::CallStatusConnecting:
-        message = tr("Setting up call to %1").arg(contact->alias());
+        message = tr("Setting up call to %1").arg(callAgent->contact()->alias());
         break;
     case CallAgent::CallStatusRinging:
-        message = tr("Calling %1").arg(contact->alias());
+        message = tr("Calling %1").arg(callAgent->contact()->alias());
         break;
     case CallAgent::CallStatusTalking:
-        message = tr("Call with %1 started").arg(contact->alias());
+        message = tr("Call with %1 started").arg(callAgent->contact()->alias());
         break;
     case CallAgent::CallStatusHeld:
-        message = tr("Call with %1 on hold").arg(contact->alias());
+        message = tr("Call with %1 on hold").arg(callAgent->contact()->alias());
         break;
     case CallAgent::CallStatusHangingUp:
         break;
@@ -369,21 +374,43 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
 
     // if we have a previous running call item, delete it
     if (mCallRunningItem) {
-        mLoggerConversationModel->deleteItem(mCallRunningItem);
+        mSessionConversationModel->deleteItem(mCallRunningItem);
         mCallRunningItem = 0;
     }
 
     // add the event message
-    if (!message.isEmpty()) {
-        // FIXME sender ?
+    if (!running || !message.isEmpty()) {
+        Tp::ContactPtr sender;
         Tp::ContactPtr receiver;
-        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
-            QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
-        // remember running messages
-        if (running) {
-            mCallRunningItem = item;
+        if (callAgent->isRequested()) {
+            sender = mSelf;
+            receiver = callAgent->contact();
+        } else {
+            sender = callAgent->contact();
+            receiver = mSelf;
         }
-        mLoggerConversationModel->addItem(item);
+
+        if (running) {
+            Tpy::CustomEventItem *item = new Tpy::CustomEventItem(sender, receiver,
+                QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
+            mCallRunningItem = item;
+            mSessionConversationModel->addItem(item);
+       } else {
+            Tp::ContactPtr endActor;
+            if (callAgent &&
+                callAgent->stateReason().actor != 0 &&
+                !mAccount.isNull() &&
+                !mAccount->connection().isNull() &&
+                !mAccount->connection()->contactManager().isNull()) {
+                endActor = mAccount->connection()->contactManager()->lookupContactByHandle(callAgent->stateReason().actor);
+            }
+            Tpy::CallStateChangeReason endReason = (Tpy::CallStateChangeReason) callAgent->stateReason().reason;
+            QString detailedEndReason = callAgent->stateReason().DBusReason;
+            Tpy::CallEventItem *item = new Tpy::CallEventItem(sender, receiver,
+                callAgent->startTime(), callAgent->updateCallDuration(),
+                endActor, endReason, detailedEndReason, this);
+            mSessionConversationModel->addItem(item);
+        }
     }
 }
 

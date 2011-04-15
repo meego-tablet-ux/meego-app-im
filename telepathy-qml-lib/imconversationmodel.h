@@ -58,7 +58,7 @@ public:
 
     virtual QVariant data(const QModelIndex &index, int role) const;
     QString searchString(void) const;
-    void notifyCallStatusChanged(Tp::ContactPtr contact, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus);
+    void notifyCallStatusChanged(CallAgent *callAgent, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus);
     void notifyCallError(Tp::ContactPtr contact, const QString & errorString);
     void notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel);
 
@@ -112,6 +112,7 @@ private:
     Tpl::LoggerConversationModel *mLoggerConversationModel;
     Tpy::SessionConversationModel *mSessionConversationModel;
     Tp::ContactPtr mSelf;
+    Tp::AccountPtr mAccount;
 
     // matches are sorted reverse chronological order, 0 is newest
     int mCurrentMatch;

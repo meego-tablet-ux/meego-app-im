@@ -36,6 +36,8 @@ public:
         DateStringRole,
         // true if the line comes from telepathy-logger
         FromLoggerRole,
+        BubbleColorRole,
+        IncomingEventRole,
 
         // file transfer related roles
         IncomingTransferRole,
@@ -44,8 +46,7 @@ public:
         FileSizeRole,
         TransferStateRole,
         TransferStateReasonRole,
-        PercentTransferredRole,
-        BubbleColorRole
+        PercentTransferredRole
     };
 
     explicit IMConversationModel(const Tp::AccountPtr &account,
@@ -110,6 +111,7 @@ private:
     QStringList mBubbleColor;
     Tpl::LoggerConversationModel *mLoggerConversationModel;
     Tpy::SessionConversationModel *mSessionConversationModel;
+    Tp::ContactPtr mSelf;
 
     // matches are sorted reverse chronological order, 0 is newest
     int mCurrentMatch;

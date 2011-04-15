@@ -9,8 +9,7 @@
 #include "imconversationmodel.h"
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
-#include <TelepathyQt4Yell/Models/TextEventItem>
-#include <TelepathyQt4Yell/Models/CallEventItem>
+#include <TelepathyQt4Yell/Models/CustomEventItem>
 #include "filetransferitem.h"
 
 IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
@@ -20,6 +19,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     QObject *parent)
     : MergedModel(parent),
       mCallRunningItem(0),
+      mSelf(self),
       mCurrentMatch(0),
       mCurrentRowMatch(0),
       mSearching(false)
@@ -58,6 +58,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     roles[TransferStateReasonRole] = "transferStateReason";
     roles[PercentTransferredRole] = "percentTransferred";
     roles[BubbleColorRole] = "bubbleColor";
+    roles[IncomingEventRole] = "incomingEvent";
     setRoleNames(roles);
 
     mBubbleColor.clear();
@@ -91,7 +92,6 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
 
     const Tpy::EventItem *eventItem = qobject_cast<const Tpy::EventItem*>(
                 MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
-    const Tpy::TextEventItem *textItem = qobject_cast<const Tpy::TextEventItem*>(eventItem);
     const FileTransferItem *fileTransferItem = qobject_cast<const FileTransferItem*>(eventItem);
 
     switch (role) {
@@ -151,30 +151,22 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return false;
     }
     case BubbleColorRole: {
-        if (fileTransferItem) {
-            if (fileTransferItem->incomingTransfer()) {
-                return contactColor(fileTransferItem->sender()->id());
+        if (!eventItem->sender().isNull()) {
+            if (eventItem->sender() == mSelf) {
+                return mBubbleColor[mBubbleColor.count() - 1];
             } else {
-                return mBubbleColor[mBubbleColor.count()-1];
-            }
-        } else if (textItem) {
-            if (textItem->messageOrigin() == Tpy::TextEventItem::MessageOriginOutgoing) {
-                return mBubbleColor[mBubbleColor.count()-1];
-            } else {
-                QString id = textItem->sender()->id();
-                return contactColor(id);
+                return contactColor(eventItem->sender()->id());
             }
         }
-        return mBubbleColor[mBubbleColor.count()-1];
+        return mBubbleColor[mBubbleColor.count() - 1];
+    }
+    case IncomingEventRole: {
+        if (!eventItem->sender().isNull()) {
+            return (eventItem->sender() != mSelf);
+        }
+        return false;
     }
     // override the type role, so that we can return a custom type for file transfer items
-    case Tpy::AbstractConversationModel::MessageOriginRole: {
-        if (fileTransferItem) {
-            return (fileTransferItem->incomingTransfer() ? "incoming_file_transfer" :
-                                                           "outgoing_file_transfer");
-        }
-        return MergedModel::data(index, role);
-    }
     case IncomingTransferRole: {
         if (fileTransferItem) {
             return fileTransferItem->incomingTransfer();
@@ -294,9 +286,8 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     if (!message.isEmpty()) {
         // FIXME receiver ?
         Tp::ContactPtr receiver;
-        Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
-            QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
-            Tp::ChannelTextMessageTypeNormal, this);
+        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
+            QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
         // remember running messages
         if (running) {
             mChatRunningItems.append(item);
@@ -386,9 +377,8 @@ void IMConversationModel::notifyCallStatusChanged(Tp::ContactPtr contact, CallAg
     if (!message.isEmpty()) {
         // FIXME sender ?
         Tp::ContactPtr receiver;
-        Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
-            QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
-            Tp::ChannelTextMessageTypeNormal, this);
+        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
+            QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
         // remember running messages
         if (running) {
             mCallRunningItem = item;
@@ -413,9 +403,8 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
 
     // FIXME sender ?
     Tp::ContactPtr receiver;
-    Tpy::EventItem *item = new Tpy::TextEventItem(contact, receiver,
-        QDateTime::currentDateTime(), message, Tpy::TextEventItem::MessageOriginEvent,
-        Tp::ChannelTextMessageTypeNormal, this);
+    Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
+        QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
     mLoggerConversationModel->addItem(item);
 }
 

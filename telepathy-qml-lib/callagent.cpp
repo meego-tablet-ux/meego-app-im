@@ -1295,6 +1295,18 @@ void CallAgent::onFarstreamChannelCreated(Tp::PendingOperation *po)
     setupFarstreamChannel(mFarstreamChannel);
 }
 
+Tpy::CallStateReason CallAgent::stateReason() const
+{
+    Tpy::CallStateReason ret;
+    if (mCallChannel) {
+        ret = mCallChannel->stateReason();
+    } else {
+        ret.actor = 0;
+        ret.reason = Tpy::CallStateChangeReasonUnknown;
+    }
+    return ret;
+}
+
 bool CallAgent::isRequested() const
 {
     return mIsRequested;

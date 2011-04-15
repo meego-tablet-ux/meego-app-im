@@ -135,6 +135,8 @@ public:
     Q_INVOKABLE bool isRequested() const;
     Q_INVOKABLE QTime updateCallDuration();
 
+    Tpy::CallStateReason stateReason() const;
+
 Q_SIGNALS:
     // property notification signals
     void callStatusChanged(CallAgent::CallStatus oldStatus, CallAgent::CallStatus newStatus);

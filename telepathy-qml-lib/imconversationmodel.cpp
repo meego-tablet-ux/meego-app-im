@@ -47,6 +47,9 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     mSessionConversationModel = new Tpy::SessionConversationModel(self, channel, parent);
     if (mSessionConversationModel) {
         addModel(mSessionConversationModel);
+        connect(channel.data(),
+                SIGNAL(chatStateChanged(Tp::ContactPtr,Tp::ChannelChatState)),
+                SLOT(onChatStateChanged(Tp::ContactPtr,Tp::ChannelChatState)));
     }
 
     QHash<int, QByteArray> roles = roleNames();
@@ -255,8 +258,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
         break;
     }
     case Tp::ChannelChatStateGone: {
-        message = tr("%1 has left the conversation").arg(contact->alias());
-        running = false;
+        // already processed
         break;
     }
     case Tp::ChannelChatStatePaused: {
@@ -264,7 +266,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
         break;
     }
     case Tp::ChannelChatStateActive: {
-        message = tr("%1 is now active").arg(contact->alias());
+        //message = tr("%1 is now active").arg(contact->alias());
         break;
     }
     case Tp::ChannelChatStateInactive: {
@@ -287,9 +289,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
 
     // add the event message
     if (!message.isEmpty()) {
-        // FIXME receiver ?
-        Tp::ContactPtr receiver;
-        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
+        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
             QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
         // remember running messages
         if (running) {

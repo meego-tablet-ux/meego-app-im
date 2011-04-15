@@ -133,6 +133,8 @@ public:
     Q_INVOKABLE bool canSwapVideos() const;
 
     Q_INVOKABLE bool isRequested() const;
+    Q_INVOKABLE QTime updateCallDuration();
+
 Q_SIGNALS:
     // property notification signals
     void callStatusChanged(CallAgent::CallStatus oldStatus, CallAgent::CallStatus newStatus);
@@ -213,6 +215,7 @@ protected:
     Tp::PendingChannelRequest *mPendingChannelRequest;
     Tpy::CallChannelPtr mCallChannel;
     bool mIsRequested;
+    QTime mCallDuration;
 
     explicit CallAgent(QObject *parent = 0);
 

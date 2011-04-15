@@ -392,6 +392,10 @@ void CallAgent::setCallStatus(CallStatus callStatus)
         if (callStatus == CallStatusTalking && mCallStatus != CallStatusHeld) {
             setStartTime(QDateTime::currentDateTime());
         }
+        // make sure the duration is updated when call finishes
+        if (mCallStatus == CallStatusTalking) {
+            updateCallDuration();
+        }
         mCallStatus = callStatus;
         emit callStatusChanged(oldCallStatus, mCallStatus);
     }
@@ -1294,4 +1298,20 @@ void CallAgent::onFarstreamChannelCreated(Tp::PendingOperation *po)
 bool CallAgent::isRequested() const
 {
     return mIsRequested;
+}
+
+QTime CallAgent::updateCallDuration()
+{
+    if (mCallStatus == CallStatusTalking) {
+        QDateTime currentTime = QDateTime::currentDateTime();
+        quint64 ms = mStartTime.msecsTo(currentTime);
+        int hh = ms / 3600000;
+        ms = ms % 3600000;
+        int mm = ms / 60000;
+        ms = ms % 60000;
+        int ss = ms / 1000;
+        //ms = ms % 1000;
+        mCallDuration.setHMS(hh, mm, ss, 0);
+    }
+    return mCallDuration;
 }

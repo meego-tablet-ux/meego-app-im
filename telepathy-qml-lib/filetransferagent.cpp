@@ -140,7 +140,7 @@ void FileTransferAgent::onChannelInvalidated(Tp::DBusProxy *, const QString &err
 
 }
 
-void FileTransferAgent::onChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason)
+void FileTransferAgent::onChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason /*reason*/)
 {
     if (state == Tp::FileTransferStateCancelled ||
         state == Tp::FileTransferStateCompleted) {

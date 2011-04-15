@@ -17,17 +17,38 @@ Item {
 
     anchors.margins: 10
 
-    property bool eventItem: model.messageOrigin == "event"
-    property bool fileTransferItem: model.messageOrigin == "incoming_file_transfer" ||
-                                    model.messageOrigin == "outgoing_file_transfer"
-    property bool messageItem: model.messageOrigin == "incoming_message" || model.messageOrigin == "outgoing_message"
-    property bool messageSent: model.messageOrigin == "outgoing_message" || model.messageOrigin == "outgoing_file_transfer"
+    property bool eventItem: model.eventType == "Tpy::CustomEventItem"
+    property bool fileTransferItem: model.eventType == "FileTransferItem"
+    property bool messageItem: model.eventType == "Tpy::TextEventItem"
+    property bool callItem: model.eventType == "Tpy::CallEventItem"
+    property bool messageSent: !model.incomingEvent
     // TODO: check how to add more colors for group chat
-    property string color: model.bubbleColor //messageSent ? "white" : "blue"
+    property string color: model.bubbleColor
     property bool expandedMessage: true
 
     Component.onCompleted: {
-        console.log("model.messageOrigin=" + model.messageOrigin);
+        console.log("-------------------------------------------------------")
+        console.log("model.eventType=" + model.eventType);
+        console.log("model.incomingEvent=" + model.incomingEvent);
+        console.log("model.sender=" + model.sender);
+        console.log("model.senderAvatar=" + model.senderAvatar);
+        console.log("model.receiver=" + model.receiver);
+        console.log("model.receiverAvatar=" + model.receiverAvatar);
+        console.log("model.dateTime=" + model.dateTime);
+        console.log("model.item=" + model.item);
+        console.log("model.dateTime=" + model.dateTime);
+        console.log("model.messageText=" + model.messageText);
+        console.log("model.messageType=" + model.messageType);
+        console.log("model.callDuration=" + model.callDuration);
+        console.log("model.callEndActor=" + model.callEndActor);
+        console.log("model.callEndActorAvatar=" + model.callEndActorAvatar);
+        console.log("model.callEndReason=" + model.callEndReason);
+        console.log("model.callDetailedEndReason=" + model.callDetailedEndReason);
+        console.log("model.missedCall=" + model.missedCall);
+        console.log("model.rejectedCall=" + model.rejectedCall);
+        console.log("model.customEventText=" + model.customEventText);
+        console.log("model.customEventType=" + model.customEventType);
+        console.log("callItem=" + callItem);
     }
 
     function messageAvatar() {
@@ -44,7 +65,7 @@ Item {
 
     Avatar {
         id: avatar
-        visible: !eventItem
+        visible: fileTransferItem || messageItem
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.topMargin: 10
@@ -208,15 +229,61 @@ Item {
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
             // i18n: the first argument is the event itself, the second one is the fuzzy time
-            text: qsTr("%1 - %2").arg(model.messageText)
+            text: qsTr("%1 - %2").arg(model.customEventText)
                                  .arg(fuzzyDateTime.getFuzzy(model.dateTime))
             wrapMode: Text.WordWrap
 
             Connections {
                 target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    eventMessageText.text = qsTr("%1 - %2").arg(model.messageText)
+                    eventMessageText.text = qsTr("%1 - %2").arg(model.customEventText)
                                                            .arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                }
+            }
+        }
+    }
+
+    Item {
+        id: callMessage
+        visible: callItem
+        width: parent.width
+        height: visible ? 30 : 0
+
+        Image {
+            id: callIcon
+            anchors.right: callMessageText.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 20
+            //source: "image://meegotheme/widgets/apps/chat/call-video-missed
+            source: "image://meegotheme/widgets/apps/chat/call-audio-missed"
+            visible: callItem && (model.missedCall || model.rejectedCall)
+        }
+
+        Text {
+            id: callMessageText
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: theme_fontColorInactive
+            font.pixelSize: theme_fontPixelSizeSmall
+            text: getCallMessageText()
+            wrapMode: Text.WordWrap
+
+            Connections {
+                target: fuzzyDateTimeUpdater
+                onTriggered: {
+                    callMessageText.text = callMessageText.getCallMessageText();
+                }
+            }
+
+            function getCallMessageText() {
+                if (model.missedCall) {
+                    return qsTr("%1 tried to call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                } else if (model.rejectedCall) {
+                    return qsTr("%1 rejected call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                } else {
+                    return qsTr("%1 called - duration %2 - %3").arg(model.sender).arg("" + model.callDuration).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
         }

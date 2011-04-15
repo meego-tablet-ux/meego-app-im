@@ -866,9 +866,11 @@ Labs.ApplicationPage {
                     } else {
                         menu = [op1, op2, op3]
                     }
-                    scene.openContextMenu(contextComponent,
-                                          contextLoader,
-                                          map.x, map.y, videoWindow, menu);
+
+                    actionMenu.model = menu;
+                    actionMenu.payload = videoWindow;
+                    contextMenu.setPosition(map.x, map.y);
+                    contextMenu.show();
                 }
             }
 
@@ -1015,11 +1017,11 @@ Labs.ApplicationPage {
 
     menuWidth: 600
 
-    Component {
-        id: contextComponent
-        Labs.ContextMenu {
-            menuWidth: 350
-            onClose: contextLoader.sourceComponent = undefined
+    ModalContextMenu {
+        id: contextMenu
+        width: 350
+        content: ActionMenu {
+            id: actionMenu
             onTriggered: {
                 if (index == 0) {
                     //videoWindow.showCameraVideo = !videoWindow.showCameraVideo
@@ -1033,7 +1035,7 @@ Labs.ApplicationPage {
                 // By setting the sourceComponent of the loader to undefined,
                 // then the QML engine will destruct the context menu element
                 // much like doing a c++ delete
-                contextLoader.sourceComponent = undefined;
+                contextMenu.hide();
             }
         }
     }

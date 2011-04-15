@@ -1,5 +1,5 @@
 import QtQuick 1.0
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 
 ModalDialog {
@@ -9,27 +9,17 @@ ModalDialog {
     property string subText: ""
     property string instanceReason: ""
 
-    signal accepted()
-    signal rejected()
+    width: 420
+    height: 480
 
-    onDialogClicked: {
-        if (button == 1) {
-            container.accepted();
-        } else if (button == 2) {
-            container.rejected();
-        }
-        dialogLoader.sourceComponent = undefined;
-    }
+    acceptButtonText: qsTr("Yes")
+    acceptButtonImage: "image://meegotheme/images/btn_blue_up"
+    acceptButtonImagePressed: "image://meegotheme/images/btn_blue_dn"
+    cancelButtonText: qsTr("No")
+    cancelButtonImage: "image://meegotheme/images/btn_red_up"
+    cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
 
-    dialogWidth: 420
-    dialogHeight: 480
-    leftButtonText: qsTr("Yes")
-    bgSourceUpLeft: "image://meegotheme/images/btn_blue_up"
-    bgSourceDnLeft: "image://meegotheme/images/btn_blue_dn"
-    rightButtonText: qsTr("No")
-    bgSourceUpRight: "image://meegotheme/images/btn_red_up"
-    bgSourceDnRight: "image://meegotheme/images/btn_red_dn"
-    contentLoader.sourceComponent: Item {
+    content: Item {
         anchors.fill: contentLoader
 
         Column {

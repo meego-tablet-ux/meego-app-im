@@ -7,7 +7,6 @@
  */
 
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
 
 Item {
     id: avatar
@@ -16,38 +15,41 @@ Item {
     property alias source: avatarImage.source
     property alias noAvatarImage: noAvatar.source
 
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
     width: childrenRect.width
-    height: childrenRect.height
+    height:  parent.height
 
-    RoundedItem {
-        id: avatarMask
-        anchors.fill: avatarBorder
-        radius: 0 // the item is not rounded anymore
-        visible: avatar.source != ""
+    Image {
+        id: avatarImage
 
-        Image {
-            id: avatarImage
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        height: parent.height
 
-            anchors.fill: parent
-            fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectFit
 
-            onStatusChanged: {
-                if(status == Image.Error) {
-                    avatarMask.visible = false;
-                }
+        visible: (source != ""? true : false)
+        onStatusChanged: {
+            if(status == Image.Error) {
+                avatarImage.visible = false;
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "red"
     }
 
     Image {
         id: avatarBorder
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        visible: avatarMask.visible
+        anchors.fill: avatarImage
 
-        width: height
+        visible: avatarImage.visible
 
         source: (active ?
                      "image://meegotheme/widgets/common/avatar/avatar-shadow" :
@@ -60,7 +62,8 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         source: "image://meegotheme/widgets/common/avatar/avatar-default"
-        visible: !avatarMask.visible
+        visible: !avatarImage.visible
         width: height
+        height: parent.height
     }
 }

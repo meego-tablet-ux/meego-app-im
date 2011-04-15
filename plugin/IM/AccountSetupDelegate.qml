@@ -13,7 +13,7 @@ import TelepathyQML 0.1
 
 Item {
     width: parent.width
-    height: childrenRect.height + setupDelegate.detailsHeight
+    height: setupDelegate.detailsHeight
 
     ExpandingBox {
         id: setupDelegate
@@ -28,7 +28,7 @@ Item {
 
         //expandedHeight: detailsItem.height + expandButton.height
 
-        height:  serviceIcon.height
+        height:  (serviceIcon != ""? serviceIcon.height : accountTypeName.height)
 
         Image {
             id: serviceIcon

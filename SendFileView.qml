@@ -36,15 +36,23 @@ Item {
     Column {
         id: itemsColumn
         anchors.left: parent.left
-        width: childrenRect.width
-        anchors.margins: 10
+        width: Math.max(Math.max(photoItem.textWidth, videoItem.textWidth),
+                        Math.max(musicItem.textWidth, contactItem.textWidth)) + 20 // left and right borders
 
-        spacing: 10
+        Item {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: headerText.height + 10
 
-        Text {
-            color: theme_fontColorNormal
-            text: qsTr("Send:")
-            font.pixelSize: theme_fontPixelSizeLarge
+            Text {
+                id: headerText
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                anchors.left: parent.left
+                color: theme_fontColorNormal
+                text: qsTr("Send:")
+                font.pixelSize: theme_fontPixelSizeLarge
+            }
         }
 
         Image {
@@ -53,114 +61,65 @@ Item {
             anchors.right: parent.right
         }
 
-        Item {
+        MenuItem {
+            id: photoItem
             anchors.left: parent.left
-            width: childrenRect.width
+            anchors.right: parent.right
+            text: qsTr("Photo")
 
-            height: photoRow.height
-
-            Row {
-                id: photoRow
-                anchors.left: parent.left
-                anchors.top: parent.top
-                spacing: 10
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: theme_fontColorNormal
-                    text: qsTr("Photo")
-                    font.pixelSize: theme_fontPixelSizeLargest
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    photoPicker.show();
-                }
+            onClicked: {
+                photoPicker.show();
             }
         }
 
-        Item {
+        Image {
+            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
             anchors.left: parent.left
-            width: childrenRect.width
+            anchors.right: parent.right
+        }
 
-            height: videoRow.height
+        MenuItem {
+            id: videoItem
+            anchors.left: parent.left
+            width: parent.width
+            text: qsTr("Video")
 
-            Row {
-                id: videoRow
-                anchors.left: parent.left
-                anchors.top: parent.top
-                spacing: 10
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: theme_fontColorNormal
-                    text: qsTr("Video")
-                    font.pixelSize: theme_fontPixelSizeLargest
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    videoPicker.show()
-                }
+            onClicked: {
+                videoPicker.show()
             }
         }
 
-        Item {
+        Image {
+            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
             anchors.left: parent.left
-            width: childrenRect.width
-            height: musicRow.height
+            anchors.right: parent.right
+        }
 
-            Row {
-                id: musicRow
-                anchors.left: parent.left
-                anchors.top: parent.top
+        MenuItem {
+            id: musicItem
+            anchors.left: parent.left
+            width: parent.width
+            text: qsTr("Music")
 
-                spacing: 10
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: theme_fontColorNormal
-                    text: qsTr("Music")
-                    font.pixelSize: theme_fontPixelSizeLargest
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    musicPicker.show()
-                }
+            onClicked: {
+                musicPicker.show()
             }
         }
 
-        Item {
+        Image {
+            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
             anchors.left: parent.left
-            width: childrenRect.width
-            height: contactRow.height
-            Row {
-                id: contactRow
-                anchors.left: parent.left
-                anchors.top: parent.top
+            anchors.right: parent.right
+        }
 
-                spacing: 10
+        MenuItem {
+            id: contactItem
+            anchors.left: parent.left
+            width: parent.width
+            text: qsTr("Contact Details")
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: theme_fontColorNormal
-                    text: qsTr("Contact Details")
-                    font.pixelSize: theme_fontPixelSizeLargest
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    //contactsPicker.show()
-                }
+            onClicked: {
+                //contactsPicker.show()
             }
         }
     }

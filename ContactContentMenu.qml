@@ -63,7 +63,7 @@ Item {
     Connections {
         target: scene
         onCurrentAccountIdChanged: {
-             scene.accountItem = accountsModel.accountItemForId(scene.currentAccountId);
+            scene.accountItem = accountsModel.accountItemForId(scene.currentAccountId);
         }
     }
 
@@ -74,7 +74,6 @@ Item {
         id: meColumn
         anchors.right: parent.right
         anchors.left: parent.left
-        spacing: theme_fontPixelSizeLarge / 2
 
         Item {
             id: meInfo
@@ -95,7 +94,7 @@ Item {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 2
                 source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
-                            "?" + accountFactory.avatarSerial
+                        "?" + accountFactory.avatarSerial
                 noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
             }
 
@@ -163,51 +162,41 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
-            id: meUpdateStatus
-            height: (statusMenu.visible ?
-                         meUpdateStatusText.height + statusMenu.height + theme_contextMenuFontPixelSize: meUpdateStatusText.height)
-            width: parent.width
+        MenuItem {
+            id: meUpdateStatusItem
+            text: qsTr("Update status")
 
-            Behavior on height {
-                NumberAnimation { duration: 250 }
-            }
-
-            Text {
-                id: meUpdateStatusText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Update status")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_contextMenuFontColor
-            }
-
-            MouseArea {
-                id: updateMouseArea
-                anchors.fill: meUpdateStatusText
-
-                onClicked: {
-                    if(statusMenu.visible == false) {
-                        statusMenu.visible = true;
-                        customMessageBox.focus = true;
-                    } else {
-                        statusMenu.visible = false;
-                    }
+            onClicked: {
+                if(statusMenu.visible == false) {
+                    statusMenu.opacity = 1;
+                    customMessageBox.focus = true;
+                } else {
+                    statusMenu.opacity = 0;
                 }
             }
+        }
+
+        Item {
+            id: meUpdateStatus
+            height: statusMenu.visible ? childrenRect.height + 2 * statusMenu.anchors.topMargin : 0
+            width: parent.width
 
             Column {
                 id: statusMenu
-                anchors.top: meUpdateStatusText.bottom
+                anchors.top: parent.top
                 anchors.topMargin: 10
                 anchors.right: parent.right
                 anchors.leftMargin: 10
                 anchors.left: parent.left
-                visible: false
+                visible: opacity > 0
+                opacity: 0
                 spacing: 5
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration:  250
+                    }
+                }
 
                 ListModel {
                     id: statusModel
@@ -244,23 +233,17 @@ Item {
 
                 property string statusString: ""
 
-                ListView {
+                Repeater {
                     id: statusView
                     model: statusModel
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: statusModel.count * (theme_contextMenuFontPixelSize + 14)
 
                     delegate: Component {
                         Item {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             height: childrenRect.height
-
-                            Image {
-                                anchors.fill: delegateRow
-                                source: "image://meegotheme/widgets/common/menu/menu-background"
-                            }
 
                             MouseArea {
                                 anchors.fill: parent
@@ -272,10 +255,10 @@ Item {
                                     // at the same time, we need to ask the user if he wants to disconnect
                                     // the other accounts
                                     if (!protocolsModel.isSingleInstance(icon) ||
-                                        accountFactory.otherAccountsOnline(icon, id) == 0 ||
-                                        model.type == TelepathyTypes.ConnectionPresenceTypeOffline) {
-                                            scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
-                                            scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
+                                            accountFactory.otherAccountsOnline(icon, id) == 0 ||
+                                            model.type == TelepathyTypes.ConnectionPresenceTypeOffline) {
+                                        scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
+                                        scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
                                     } else {
                                         contactsScreenPage.requestedStatusType = model.type;
                                         contactsScreenPage.requestedStatus = model.status;
@@ -375,40 +358,23 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
-            id: meUpdateNick
-            height: nicknameColumn.visible ? childrenRect.height : meUpdateNicknameText.height
-            width: parent.width
+        MenuItem {
+            id: meUpdateNickItem
+            text: qsTr("Update user display name")
 
-            Image {
-                anchors.fill: parent
-                source: "image://meegotheme/widgets/common/menu/menu-background"
-            }
-
-            Text {
-                id: meUpdateNicknameText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Update user display name")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_contextMenuFontColor
-            }
-
-            MouseArea {
-                id: updateNicknameMouseArea
-                anchors.fill: meUpdateNicknameText
-
-                onClicked: {
-                    if (nicknameColumn.visible) {
-                        nicknameColumn.opacity = 0;
-                    } else {
-                        nicknameColumn.opacity = 1;
-                    }
+            onClicked: {
+                if (nicknameColumn.visible) {
+                    nicknameColumn.opacity = 0;
+                } else {
+                    nicknameColumn.opacity = 1;
                 }
             }
+        }
+
+        Item {
+            id: meUpdateNick
+            height: nicknameColumn.visible ? childrenRect.height + 2 * nicknameColumn.spacing : 0
+            width: parent.width
 
             Timer {
                 id: nicknameHideTimer
@@ -420,7 +386,7 @@ Item {
 
             Column {
                 id: nicknameColumn
-                anchors.top: meUpdateNicknameText.bottom
+                anchors.top: parent.top
                 anchors.topMargin: theme_contextMenuFontPixelSize / 2
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -479,39 +445,17 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
-            id: addIMContact
-            height: addIMContactText.height
-            width: parent.width
+        MenuItem {
+            id: addIMContactItem
+            text: qsTr("Add a friend")
             visible: scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected
 
-            Image {
-                anchors.fill: parent
-                source: "image://meegotheme/widgets/common/menu/menu-background"
-            }
-
-            Text {
-                id: addIMContactText
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Add a friend")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_contextMenuFontColor
-            }
-
-            MouseArea {
-                id: addIMContactMouseArea
-                anchors.fill: parent
-                onClicked: {
-                    if(addAFriend.opacity == 1) {
-                        addAFriend.opacity = 0;
-                        addAFriend.resetHelper();
-                    } else {
-                        addAFriend.opacity = 1;
-                    }
+            onClicked: {
+                if(addAFriend.opacity == 1) {
+                    addAFriend.opacity = 0;
+                    addAFriend.resetHelper();
+                } else {
+                    addAFriend.opacity = 1;
                 }
             }
         }
@@ -538,37 +482,12 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
-            id: clearHistory
-            height: clearHistoryText.height
-            width: parent.width
+        MenuItem {
+            id: clearHistoryItem
+            text: qsTr("Clear chat history")
 
-            anchors.bottomMargin: clearHistoryText.height / 2
-
-            Image {
-                anchors.fill: parent
-                source: "image://meegotheme/widgets/common/menu/menu-background"
-            }
-
-            Text {
-                id: clearHistoryText
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Clear chat history")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_contextMenuFontColor
-            }
-
-            MouseArea {
-                id: clearHistoryMouseArea
-                anchors.fill: parent
-
-                onClicked: {
-                    accountsModel.clearAccountHistory(scene.currentAccountId);
-                }
+            onClicked: {
+                accountsModel.clearAccountHistory(scene.currentAccountId);
             }
         }
 
@@ -578,57 +497,34 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
-            id: meLogOut
-            height: meLogOutText.height
-            width: parent.width
+        MenuItem {
+            id: meLogOutItem
+            text: (scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
+                       qsTr("Log in") : qsTr("Log out"))
 
-            Image {
-                anchors.fill: parent
-                source: "image://meegotheme/widgets/common/menu/menu-background"
-            }
+            onClicked: {
+                if(scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
+                    contactsScreenPage.requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
+                    contactsScreenPage.requestedStatus = "available"; // i18n ok
+                    contactsScreenPage.requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
 
-            Text {
-                id: meLogOutText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: (scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
-                           qsTr("Log in") : qsTr("Log out"))
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_contextMenuFontColor
-            }
+                    var icon = scene.accountItem.data(AccountsModel.IconRole);
+                    var id = scene.accountItem.data(AccountsModel.IdRole);
 
-            MouseArea {
-                id: logOutMouseArea
-                anchors.fill: parent
-
-                onClicked: {
-                    if(scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
-                        contactsScreenPage.requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
-                        contactsScreenPage.requestedStatus = "available"; // i18n ok
-                        contactsScreenPage.requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
-
-                        var icon = scene.accountItem.data(AccountsModel.IconRole);
-                        var id = scene.accountItem.data(AccountsModel.IdRole);
-
-                        if (!protocolsModel.isSingleInstance(icon) ||
+                    if (!protocolsModel.isSingleInstance(icon) ||
                             accountFactory.otherAccountsOnline(icon, id) == 0) {
-                                scene.accountItem.setRequestedPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
-                                scene.accountItem.setAutomaticPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
-                        } else {
-                            confirmAccountLogin();
-                        }
-                        currentPage.closeMenu();
+                        scene.accountItem.setRequestedPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
+                        scene.accountItem.setAutomaticPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
                     } else {
-                        scene.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
-                                                      "offline", // i18n ok
-                                                      scene.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
-                        currentPage.closeMenu();
-                        scene.previousApplicationPage();
+                        confirmAccountLogin();
                     }
+                    currentPage.closeMenu();
+                } else {
+                    scene.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                                                           "offline", // i18n ok
+                                                           scene.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
+                    currentPage.closeMenu();
+                    scene.previousApplicationPage();
                 }
             }
         }

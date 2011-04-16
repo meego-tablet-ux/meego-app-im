@@ -17,6 +17,12 @@ AccountContent {
     icon: "im-google-talk"
 
     onAboutToCreateAccount: {
+        // if the user didn't put his full mail address, we should complete
+        // using @gmail.com
+        if(accountHelper.displayName.indexOf("@") < 0) {
+            accountHelper.displayName += "@gmail.com";
+        }
+
         // set the server
         accountHelper.setAccountParameter("server", "talk.google.com");
     }

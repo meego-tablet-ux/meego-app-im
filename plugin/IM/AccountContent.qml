@@ -156,13 +156,13 @@ Column {
         return value;
     }
 
-    Image {
+    InfoPanel {
         id: accountError
-        source: "image://meegotheme/widgets/common/infobar/bg_overlaybar"
-        width: parent.width
 
         property int connectionStatus: accountItem.data(AccountsModel.ConnectionStatusRole)
         property int connectionStatusReason: accountItem.data(AccountsModel.ConnectionStatusReasonRole)
+
+        height: childrenRect.height + 10
 
         Connections {
             target: accountItem

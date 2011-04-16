@@ -9,6 +9,7 @@ ContactPickerDelegate 0.1 ContactPickerDelegate.qml
 ContactPickerView 0.1 ContactPickerView.qml
 ContentRow 0.1 ContentRow.qml
 ImageButton 0.1 ImageButton.qml
+InfoPanel 0.1 InfoPanel.qml
 PresenceIcon 0.1 PresenceIcon.qml
 SpinBox 0.1 SpinBox.qml
 TextCheckBox 0.1 TextCheckBox.qml

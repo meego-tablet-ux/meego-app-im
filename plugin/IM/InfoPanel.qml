@@ -8,13 +8,11 @@
 
 import Qt 4.7
 
-Rectangle {
-    height: 100
+BorderImage {
     width: parent.width
-
-    BorderImage {
-        anchors.fill: parent
-        source: "image://meegotheme/widgets/common/infobar/bg_overlaybar"
-    }
-
+    source: "image://meegotheme/widgets/common/infobar/infobar-background"
+    border.left: 5
+    border.right: 5
+    border.top: 5
+    border.bottom: 5
 }

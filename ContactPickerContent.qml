@@ -100,6 +100,7 @@ ApplicationPage {
             model: contactsModel
             delegate: ContactPickerDelegate {}
             clip: true
+            interactive: contentHeight > height
         }
 
         Image {

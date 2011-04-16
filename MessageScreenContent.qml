@@ -296,6 +296,8 @@ ApplicationPage {
             section.criteria : ViewSection.FullString
             section.delegate : sectionDateDelegate
 
+            interactive: contentHeight > height
+
             onCountChanged: {
                 textSound.playSound();
             }

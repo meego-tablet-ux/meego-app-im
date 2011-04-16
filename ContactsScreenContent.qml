@@ -165,6 +165,7 @@ ApplicationPage {
             clip: true
 
             header: requestsViewComponent
+            interactive: contentHeight > height
         }
     }
 

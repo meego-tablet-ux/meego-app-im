@@ -70,6 +70,8 @@ ApplicationPage {
         contentHeight: contentColumn.height
         clip: true
 
+        interactive: contentHeight > height
+
         Column {
             id: contentColumn
             anchors.left: parent.left

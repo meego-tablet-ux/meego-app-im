@@ -347,7 +347,6 @@ Item {
 
                 Button {
                     id: updateStatusButton
-                    height: 30
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     title: qsTr("Update")
@@ -448,7 +447,6 @@ Item {
                     anchors.leftMargin: 10
                     anchors.right: parent.right
                     anchors.rightMargin: 15
-                    height: 30
 
                     text: scene.accountItem.data(AccountsModel.NicknameRole)
 
@@ -462,7 +460,6 @@ Item {
 
                 Button {
                     id: updateNicknameButton
-                    height: 30
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     title: qsTr("Update")

@@ -54,7 +54,6 @@ Column {
 
     Button {
         id: addAFriendSend
-        height: 30
         title: qsTr("Send")
         color: theme_buttonFontColor
         bgSourceUp: "image://meegotheme/widgets/common/button/button-default"

@@ -15,23 +15,26 @@ Column {
     height: childrenRect.height
 
     Item {
+        id: spacing1
+        width: 10
+        height: 10
+    }
+
+    Item {
         width: parent.width
-        height: 64
+        height: childrenRect.height
         Item {
             id: centerItem
-            width: childrenRect.width
-            height: parent.height
+            width: childrenRect.width + cancelButton.anchors.margins
+            height: childrenRect.height
             anchors.centerIn: parent
 
             Button {
                 id: updateButton
                 anchors {
-                    margins: 10
                     left: parent.left
-                    verticalCenter: parent.verticalCenter
+                    top: parent.top
                 }
-
-                height: 40
 
                 text: qsTr("Update")
                 textColor: theme_buttonFontColor
@@ -44,12 +47,10 @@ Column {
             Button {
                 id: cancelButton
                 anchors {
-                    margins: 10
+                    leftMargin: 10
                     left: updateButton.right
-                    verticalCenter: parent.verticalCenter
+                    top: parent.top
                 }
-
-                height: 40
 
                 text: qsTr("Cancel")
                 textColor: theme_buttonFontColor
@@ -61,14 +62,19 @@ Column {
             }
         }
     }
+
+    Item {
+        id: spacing2
+        width: 10
+        height: 10
+    }
+
     Item {
         width: parent.width
-        height: 64
+        height: childrenRect.height
         Button {
             id: deleteAccountButton
             anchors.centerIn: parent
-
-            height: 40
 
             text: qsTr("Delete account")
             textColor: theme_buttonFontColor

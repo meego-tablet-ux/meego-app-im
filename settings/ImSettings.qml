@@ -64,7 +64,7 @@ Labs.ApplicationPage {
     Flickable {
         parent: container.content
         anchors.fill: parent
-        flickableDirection: "VerticalFlick"
+        flickableDirection: Flickable.VerticalFlick
         contentHeight: contentColumn.height
         clip: true
 
@@ -107,12 +107,10 @@ Labs.ApplicationPage {
             Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: 40
+                height: childrenRect.height + 20
                 Button {
-                    id: deleteAccountButton
+                    id: addAccountButton
                     anchors.centerIn: parent
-
-                    height: 32
 
                     text: qsTr("Add another account")
                     textColor: theme_buttonFontColor
@@ -204,12 +202,10 @@ Labs.ApplicationPage {
                 Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: 40
+                    height: childrenRect.height + 20
                     Button {
                         id: clearHistoryButton
                         anchors.centerIn: parent
-
-                        height: 32
 
                         text: qsTr("Clear chat history")
                         textColor: theme_buttonFontColor

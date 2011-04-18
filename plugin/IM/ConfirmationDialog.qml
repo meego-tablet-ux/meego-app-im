@@ -2,7 +2,7 @@ import QtQuick 1.0
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 
-ModalDialog {
+ModalMessageBox {
     id: container
 
     property string mainText: ""
@@ -18,33 +18,5 @@ ModalDialog {
     cancelButtonText: qsTr("No")
     cancelButtonImage: "image://meegotheme/images/btn_red_up"
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
-
-    content: Item {
-        anchors.fill: contentLoader
-
-        Column {
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 10
-            spacing: 10
-
-            Text {
-                id: mainText
-                anchors.left: parent.left
-                anchors.right: parent.right
-                text: container.mainText
-                wrapMode: Text.WordWrap
-            }
-
-            Text {
-                id: subText
-                anchors.left: parent.left
-                anchors.right: parent.right
-                text: container.subText
-                wrapMode: Text.WordWrap
-            }
-        }
-    }
 
 }

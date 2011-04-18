@@ -207,9 +207,9 @@ Labs.Window {
         onIncomingCallAvailable: {
             scene.incomingContactItem = accountsModel.contactItemForId(accountId, contactId);
             scene.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
-            showModalDialog(incomingCallContent);
-            dialogLoader.item.accountId = accountId;
-            dialogLoader.item.contactId = contactId;
+            incomingCallDialog.accountId = accountId;
+            incomingCallDialog.contactId = contactId;
+            incomingCallDialog.show();
         }
 
         onRequestedGroupChatCreated: {
@@ -426,10 +426,12 @@ Labs.Window {
         }
     }
 
-    Component {
-        id: incomingCallContent
-        IncomingCall {
-            id: incomingCallDialog
+
+    IncomingCall {
+        id: incomingCallDialog
+        anchors {
+            verticalCenter: parent.verticalCenter
+            horizontalCenter: parent.horizontalCenter
         }
     }
 
@@ -441,17 +443,8 @@ Labs.Window {
         }
     }
 
-    Component {
-        id: confirmationDialogContent
-        ConfirmationDialog {
-            id: confirmationDialogItem
-        }
-    }
-
-    Loader {
-            id: dialogLoader
-            width: scene.width
-            height: scene.height
+    ConfirmationDialog {
+        id: confirmationDialogItem
     }
 }
 

@@ -65,9 +65,9 @@ Item {
         }
 
         Connections {
-            target: dialogLoader.item
+            target: confirmationDialogItem
             onAccepted: {
-                if (dialogLoader.item.instanceReason != "account-delegate-single-instance") {
+                if (confirmationDialogItem.instanceReason != "account-delegate-single-instance") {
                     return;
                 }
 
@@ -111,11 +111,11 @@ Item {
                             if (protocolsModel.isSingleInstance(icon) &&
                                 accountFactory.otherAccountsOnline(icon, id)) {
                                 // show the dialog asking the user if he really wants to connect the account
-                                showModalDialog(confirmationDialogContent);
-                                dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
-                                dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
-                                dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
-                                dialogLoader.item.instanceReason = "account-delegate-single-instance"; // i18n ok
+
+                                confirmationDialogItem.title = qsTr("Multiple accounts connected");
+                                confirmationDialogItem.mainText = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                                confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
+                                confirmationDialogItem.show();
                             } else {
                                 payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
                                                              "available", // i18n ok

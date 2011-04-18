@@ -28,11 +28,10 @@ Item {
         var serviceName = protocolsModel.titleForId(scene.accountItem.data(AccountsModel.IconRole));
 
         // show the dialog to ask for user confirmation
-        showModalDialog(confirmationDialogContent);
-        dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
-        dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
-        dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
-        dialogLoader.item.instanceReason = "contact-menu-single-instance"; // i18n ok
+        confirmationDialogItem.title = qsTr("Multiple accounts connected");
+        confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+        confirmationDialogItem.instanceReason = "contact-menu-single-instance"; // i18n ok
+        confirmationDialogItem.show();
     }
 
     Component.onCompleted: {

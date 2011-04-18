@@ -24,7 +24,9 @@ ModalDialog {
     cancelButtonImage: "image://meegotheme/images/btn_red_up"
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
     content: Item {
-        anchors.fill: contentLoader
+
+        height: childrenRect.height
+        width:  childrenRect.width
 
         Text {
             id: dialogText
@@ -53,7 +55,7 @@ ModalDialog {
         onCallStatusChanged: {
             if (scene.incomingCallAgent.callStatus == CallAgent.CallStatusNoCall
              || scene.incomingCallAgent.callStatus == CallAgent.CallStatusHangingUp) {
-                dialogLoader.sourceComponent = undefined;
+                container.hide();
             }
         }
     }
@@ -67,13 +69,13 @@ ModalDialog {
         scene.callAgent.acceptCall();
         scene.acceptCall(accountId, scene.incomingContactItem.data(AccountsModel.IdRole));
         callSound.stopSound();
-        dialogLoader.sourceComponent = undefined;
+        container.hide();
     }
 
     onRejected: {
         scene.incomingCallAgent.endCall();
         callSound.stopSound();
-        dialogLoader.sourceComponent = undefined;
+        container.hide();
     }
 
     IMSound {

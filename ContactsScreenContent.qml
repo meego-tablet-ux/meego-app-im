@@ -76,12 +76,12 @@ Labs.ApplicationPage {
 
     // this connection is to handle
     Connections {
-        target: dialogLoader.item
+        target: confirmationDialogItem
         onAccepted: {
 
             var icon = scene.accountItem.data(AccountsModel.IconRole);
 
-            if (dialogLoader.item.instanceReason != "contact-menu-single-instance") {
+            if (confirmationDialogItem.instanceReason != "contact-menu-single-instance") {
                 return;
             }
 

@@ -57,11 +57,8 @@ Labs.ApplicationPage {
         }
     }
 
-    Component {
-        id: confirmationDialogContent
-        ConfirmationDialog {
-            id: confirmationDialogItem
-        }
+    ConfirmationDialog {
+        id: confirmationDialogItem
     }
 
     Flickable {

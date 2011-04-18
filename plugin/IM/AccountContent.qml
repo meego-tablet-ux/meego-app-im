@@ -70,9 +70,9 @@ Column {
     }
 
     Connections {
-        target: dialogLoader.item
+        target: confirmationDialogItem
         onAccepted: {
-            if (dialogLoader.item.instanceReason != "account-setup-single-instance") {
+            if (confirmationDialogItem.instanceReason != "account-setup-single-instance") {
                 return;
             }
 
@@ -84,7 +84,7 @@ Column {
             accountHelper.createAccount();
         }
         onRejected: {
-            if (dialogLoader.item.instanceReason != "account-setup-single-instance") {
+            if (confirmationDialogItem.instanceReason != "account-setup-single-instance") {
                 return;
             }
 
@@ -113,12 +113,10 @@ Column {
             // check if there is any other account of type online
             if (accountFactory.otherAccountsOnline(icon, (edit ? accountId : "")) > 0) {
                 // TODO: show the dialog asking if the other accounts should be signed off
-                showModalDialog(confirmationDialogContent);
-                dialogLoader.item.dialogTitle = qsTr("Multiple accounts connected");
-                dialogLoader.item.mainText = qsTr("Do you really want to connect this account?");
-                dialogLoader.item.subText = qsTr("By doing this all other %1 accounts will be disconnected.").arg(serviceName);
-                dialogLoader.item.instanceReason = "account-setup-single-instance"; // i18n ok
-
+                confirmationDialogItem.instanceReason = "account-setup-single-instance"; // i18n ok
+                confirmationDialogItem.title = qsTr("Multiple accounts connected");
+                confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                confirmationDialogItem.show();
                 return;
             }
         }

@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.Labs.Components 0.1 as Labs
+import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -42,7 +43,7 @@ Labs.Window {
     // TODO: check how can we do that on group chat
     property string currentContactId: ""
 
-    Labs.FuzzyDateTime {
+    FuzzyDateTime {
         id: fuzzyDateTime
     }
 

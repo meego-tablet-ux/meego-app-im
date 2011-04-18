@@ -420,6 +420,7 @@ void FarstreamChannel::initAudioOutput()
 {
     LIFETIME_TRACER();
 
+    mGstAudioOutputSink = NULL;
     mGstAudioOutput = gst_bin_new("audio-output-bin");
     if (!mGstAudioOutput) {
         setError("GStreamer audio output could not be created");
@@ -429,8 +430,8 @@ void FarstreamChannel::initAudioOutput()
     gst_object_sink(mGstAudioOutput);
 
     GstElement *source = 0;
-    pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink);
     if (strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
+        pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink);
         pushElement(mGstAudioOutput, source, "volume", true, &mGstAudioOutputVolume);
     }
     else {
@@ -463,6 +464,9 @@ void FarstreamChannel::initAudioOutput()
             // restore sink as we created it
             gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_NULL);
         }
+
+        if (!mGstAudioOutputSink)
+            mGstAudioOutputSink = mGstAudioOutputActualSink;
 
         if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
             setPhoneMediaRole(mGstAudioOutputActualSink);

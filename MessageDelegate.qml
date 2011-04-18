@@ -61,7 +61,7 @@ Item {
         anchors.right: parent.right
         anchors.topMargin: 10
         anchors.bottomMargin: 10
-        anchors.leftMargin: -17
+        anchors.leftMargin: 0
         anchors.rightMargin: 0
         smooth: true
 

@@ -31,14 +31,14 @@ Labs.ApplicationPage {
     Connections {
         target: accountContent
         onFinished: {
-            modalSurface.visible = false;
+            spinner.hide();
             scene.previousApplicationPage();
             // this second call is for the settings module
             scene.previousApplicationPage();
         }
 
         onAccountCreationAborted: {
-            modalSurface.visible = false;
+            spinner.hide();
         }
     }
 
@@ -116,7 +116,7 @@ Labs.ApplicationPage {
                             bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
                             onClicked: {
-                                modalSurface.visible = true;
+                                spinner.show();
                                 accountContent.createAccount();
                             }
                         }
@@ -143,28 +143,8 @@ Labs.ApplicationPage {
             }
         }
 
-        Labs.ModalSurface {
-            id: modalSurface
-            anchors.fill: parent
-            autoCenter: true
-            closeUponFogClicked: false
-
-            content: Component {
-
-                Labs.Spinner {
-                    spinning: true
-                    onSpinningChanged: {
-                        if (!spinning) {
-                            spinning = modalSurface.visible;
-                        }
-                    }
-                }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                // just to avoid clicking in the underlying components
-            }
+        Spinner {
+            id: spinner
         }
     }
 }

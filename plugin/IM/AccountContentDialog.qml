@@ -108,8 +108,6 @@ Labs.ApplicationPage {
                                 verticalCenter: parent.verticalCenter
                             }
 
-                            height: 32
-
                             text: qsTr("Done")
                             textColor: theme_buttonFontColor
                             bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
@@ -128,8 +126,6 @@ Labs.ApplicationPage {
                                 left: doneButton.right
                                 verticalCenter: parent.verticalCenter
                             }
-
-                            height: 32
 
                             text: qsTr("Cancel")
                             textColor: theme_buttonFontColor

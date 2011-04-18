@@ -24,9 +24,7 @@ Item {
     Image {
         id: avatarImage
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
+        anchors.fill: avatarItem
         height: parent.height
         width: height
 
@@ -40,7 +38,16 @@ Item {
         }
     }
 
-    Image {
+    Item {
+        id: avatarItem
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 5
+        width: height
+    }
+
+    BorderImage {
         id: avatarBorder
 
         anchors.fill: avatarImage

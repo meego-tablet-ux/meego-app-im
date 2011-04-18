@@ -25,8 +25,6 @@ Item {
         id: avatarImage
 
         anchors.fill: avatarItem
-        height: parent.height
-        width: height
 
         fillMode: Image.PreserveAspectFit
 

@@ -25,25 +25,40 @@ ModalDialog {
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
     content: Item {
 
-        height: childrenRect.height
-        width:  childrenRect.width
+        height: 400
+        width:  420
 
-        Text {
-            id: dialogText
-            anchors.horizontalCenter: parent.horizontalCenter
+        Column {
+            spacing: 5
             anchors.top: parent.top
-            height: parent.height - avatarItem.height
-            text: qsTr("Incoming call: %1").arg(scene.incomingContactItem.data(AccountsModel.AliasRole));
-            horizontalAlignment: Text.AlignHCenter
-        }
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
 
-        Avatar {
-            id: avatarItem
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            height: parent.height / 3
-            source: scene.incomingContactItem.data(AccountsModel.AvatarRole)
-            noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
+            Text {
+                id: dialogText
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width - 10
+
+                text: scene.incomingContactItem.data(AccountsModel.AliasRole);
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Item {
+
+                height: 300
+                width: 300
+
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Avatar {
+                    id: avatarItem
+
+                    source: scene.incomingContactItem.data(AccountsModel.AvatarRole)
+                    noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
+                }
+            }
         }
     }
 

@@ -25,7 +25,7 @@ function getCallStatusText (agent) {
         return qsTr("Ringing");
         break;
     case CallAgent.CallStatusTalking:
-        return Qt.formatTime(scene.callAgent.elapsedTime(), qsTr("HH:mm:ss"));
+        return Qt.formatTime(scene.callAgent.elapsedTime(), Qt.DefaultLocaleShortDate);
         break;
     case CallAgent.CallStatusHeld:
         return qsTr("On Hold");

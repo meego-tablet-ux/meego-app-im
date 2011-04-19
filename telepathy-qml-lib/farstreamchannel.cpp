@@ -455,7 +455,8 @@ void FarstreamChannel::initAudioOutput()
         GstStateChangeReturn scr = gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_READY);
         if (scr == GST_STATE_CHANGE_FAILURE) {
             qDebug() << "Audio sink \"" AUDIO_SINK_ELEMENT "\" failed to get to READY, replacing with a fake audio sink";
-            gst_element_unlink(previous_source, mGstAudioOutputActualSink);
+            if (previous_source)
+              gst_element_unlink(previous_source, mGstAudioOutputActualSink);
             gst_bin_remove(GST_BIN(mGstAudioOutput), mGstAudioOutputActualSink);
             source = previous_source;
             pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink);
@@ -465,8 +466,10 @@ void FarstreamChannel::initAudioOutput()
             gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_NULL);
         }
 
-        if (!mGstAudioOutputSink)
+        if (!mGstAudioOutputSink) {
             mGstAudioOutputSink = mGstAudioOutputActualSink;
+            gst_object_ref(mGstAudioOutputSink);
+        }
 
         if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
             setPhoneMediaRole(mGstAudioOutputActualSink);

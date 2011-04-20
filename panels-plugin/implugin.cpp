@@ -51,7 +51,13 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
 
 IMPlugin::~IMPlugin()
 {
+    qDebug() << "IMPlugin::~IMPlugin() terminating";
+    mClientRegistrar->unregisterClients();
     delete m_serviceModel;
+    delete m_tpManager;
+    delete m_protocolsModel;
+    mClientRegistrar->deleteLater();
+    qDebug() << "IMPlugin::~IMPlugin() done terminating";
 }
 
 QAbstractItemModel *IMPlugin::serviceModel()

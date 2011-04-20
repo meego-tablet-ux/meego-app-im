@@ -59,7 +59,7 @@ TelepathyManager::TelepathyManager(bool fullStart)
             Tp::AccountFactory::create(QDBusConnection::sessionBus(), mAccountFeatures),
             Tp::ConnectionFactory::create(QDBusConnection::sessionBus(), mConnectionFeatures),
             channelFactory,
-            Tp::ContactFactory::create());
+            Tp::ContactFactory::create(mContactFeatures));
 #else
     mAccountManager = Tp::AccountManager::create();
 #endif

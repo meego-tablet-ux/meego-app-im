@@ -415,8 +415,8 @@ void IMConversationModel::notifyFileTransfer(Tp::ContactPtr contact, FileTransfe
     FileTransferItem *item = new FileTransferItem(contact, agent, channel, this);
     connect(item, SIGNAL(itemChanged()), SLOT(onItemChanged()));
 
-    if (mLoggerConversationModel) {
-        mLoggerConversationModel->addItem(item);
+    if (mSessionConversationModel) {
+        mSessionConversationModel->addItem(item);
     }
 }
 

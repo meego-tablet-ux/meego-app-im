@@ -93,6 +93,9 @@ Labs.Window {
         target: null;
         id: contactsModelConnections;
         onOpenLastUsedAccount: {
+            // If there command line parameters,those take precedence over opening the last
+            // used account
+            parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {
                 currentAccountId = accountId;
                 accountItem = accountsModel.accountItemForId(scene.currentAccountId);
@@ -110,34 +113,6 @@ Labs.Window {
                     } else if(cmdCommand == "show-contacts") {
                         addApplicationPage(contactsScreenContent);
                     }
-                }
-            }
-        }
-    }
-
-    // this call will parse and store the parameters for later use
-    // with the onLastUsedAccount, which is triggered when all models are loaded.
-    // That way we also make sure that the lastUsedAccount call does not override
-    // the command line parameters
-    Connections {
-        target: mainWindow
-        onCall: {
-
-            notificationManager.applicationActive = true;
-
-            var cmd = parameters[0];
-            var cdata = parameters[1];
-
-            if(cmd == "show-chat" || cmd == "show-contacts") {
-                cmdCommand = cmd;
-                var parsedParameter = cdata.substr(0, cdata.length -1);
-                cmdAccountId = parsedParameter.substr(0, indexOf("&") - 1);
-
-                //message type
-                if (cmd == "show-chat")	{
-                    //also get the contact id to open a chat with
-                    parsedParameter = parsedParameter.substr(parsedParameter.index("&") + 1, parsedParameter.length - 1);
-                    cmdContactId = parsedParameter.substr(0, parsedParameter.indexOf("&") - 1);
                 }
             }
         }
@@ -392,6 +367,33 @@ Labs.Window {
             return qsTr("offline");
         } else {
             return "";
+        }
+    }
+
+    function parseWindowParameters(parameters)
+    {
+        // only parse if not empty
+        if (parameters.length == 0) {
+            return;
+        }
+
+        var cmd = parameters[0];
+        var cdata = parameters[1];
+
+        if (cmd == "show-chat" || cmd == "show-contacts") {
+            cmdCommand = cmd;
+            var parsedParameter = cdata;
+            if (parsedParameter.indexOf("&") > 0) {
+                cmdAccountId = parsedParameter.substr(0, parsedParameter.indexOf("&"));
+            } else {
+                cmdAccountId = cdata;
+            }
+
+            //message type
+            if (cmd == "show-chat") {
+                //also get the contact id to open a chat with
+                cmdContactId = parsedParameter.substr(parsedParameter.indexOf("&") + 1, parsedParameter.length - 1);
+            }
         }
     }
 

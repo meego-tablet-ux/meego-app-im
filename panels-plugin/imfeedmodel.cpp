@@ -568,7 +568,7 @@ void IMFeedModel::createNewChannelItem(const Tp::ChannelPtr &channel, const Feed
         }
 
         IMFeedModelItem *item = new IMFeedModelItem(mAccountId, alias, contact->id(), message, QDateTime::currentDateTime(),
-                                                    avatar, new McaActions(), InformationType, token);
+                                                    avatar, new McaActions(), MessageType, token);
         connect(item->actions(), SIGNAL(standardAction(QString,QString)),
                 this, SLOT(performAction(QString,QString)));
 

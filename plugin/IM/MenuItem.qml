@@ -3,7 +3,7 @@ import Qt 4.7
 Item {
     id: mainArea
     width: parent.width
-    height: label.height + 10
+    height: label.height + 20
 
     property alias text: label.text
     property alias textWidth: label.width

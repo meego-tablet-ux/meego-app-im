@@ -22,56 +22,33 @@ Item {
     Column {
         id: meColumn
 
-        spacing: theme_contextMenuFontPixelSize / 2
+        height: childrenRect.height
+
         anchors {
             right: parent.right
             left: parent.left
         }
 
-        ListView {
+        Repeater {
             id: contactsView
-
-            height: 75 * model.rowCount
-
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
 
             model: scene.chatAgent.contactsModel()
             delegate: MessageContactsDelegate {
+                anchors.left: parent.left
+                anchors.right: parent.right
                 currentPage: container.currentPage
-                }
+            }
             clip: true
         }
 
-        Item {
+        MenuItem {
             id: addContactItem
-            height: addContactText.height
-            width: parent.width
-
             visible: scene.chatAgent.isGroupChatCapable
 
-            Text {
-                id: addContactText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Add contacts to chat")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_fontColorNormal
-            }
-
-            MouseArea {
-                id: addContactMouseArea
-                anchors.fill: parent
-
-                onClicked: {
-                    scene.pickContacts(messageScreenPage);
-                    currentPage.closeMenu();
-                }
+            text: qsTr("Add contacts to chat")
+            onClicked: {
+                scene.pickContacts(messageScreenPage);
+                currentPage.closeMenu();
             }
         }
 
@@ -81,35 +58,16 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
+        MenuItem {
             id: meClearHistory
-            height: meClearHistoryText.height
-            width: parent.width
-
-            Text {
-                id: meClearHistoryText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("Clear chat history")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_fontColorNormal
-            }
-
-            MouseArea {
-                id: clearHistoryMouseArea
-                anchors.fill: parent
-
-                onClicked: {
-                    if(scene.chatAgent.isConference) {
-                        accountsModel.clearRoomHistory(scene.currentAccountId, scene.chatAgent.channelPath);
-                    } else {
-                        accountsModel.clearContactHistory(scene.currentAccountId, scene.currentContactId);
-                    }
-                    currentPage.closeMenu();
+            text: qsTr("Clear chat history")
+            onClicked: {
+                if(scene.chatAgent.isConference) {
+                    accountsModel.clearRoomHistory(scene.currentAccountId, scene.chatAgent.channelPath);
+                } else {
+                    accountsModel.clearContactHistory(scene.currentAccountId, scene.currentContactId);
                 }
+                currentPage.closeMenu();
             }
         }
 
@@ -119,31 +77,12 @@ Item {
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
         }
 
-        Item {
+        MenuItem {
             id: meEndChat
-            height: meEndChatText.height
-            width: parent.width
-
-            Text {
-                id: meEndChatText
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-                text: qsTr("End chat")
-                font.pixelSize: theme_contextMenuFontPixelSize
-                color: theme_fontColorNormal
-            }
-
-            MouseArea {
-                id: endChatMouseArea
-                anchors.fill: parent
-
-                onClicked: {
-                    currentPage.closeConversation();
-                    currentPage.closeMenu();
-                }
+            text: qsTr("End chat")
+            onClicked: {
+                currentPage.closeConversation();
+                currentPage.closeMenu();
             }
         }
     }

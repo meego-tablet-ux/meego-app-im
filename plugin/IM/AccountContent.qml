@@ -185,8 +185,8 @@ Column {
             color: theme_fontColorHighlight
 
             text: duplicated ?
-                      qsTr("There is already an account configured using this login. \nPlease check your username.") :
-                      qsTr("Sorry, there was a problem logging in. \nPlease check your username and password.")
+                      qsTr("There is already an account configured using this login. Please check your username.") :
+                      qsTr("Sorry, there was a problem logging in. Please check your username and password.")
         }
     }
 

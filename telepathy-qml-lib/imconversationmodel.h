@@ -40,6 +40,7 @@ public:
         // file transfer related roles
         IncomingTransferRole,
         FileNameRole,
+        FilePathRole,
         FileSizeRole,
         TransferStateRole,
         TransferStateReasonRole,

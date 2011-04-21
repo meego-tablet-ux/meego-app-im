@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
@@ -21,6 +22,10 @@ Item {
     property variant item: model.item
 
     height: childrenRect.height
+
+    Labs.ApplicationsModel {
+        id: appModel
+    }
 
     Avatar {
         id: avatar
@@ -208,7 +213,11 @@ Item {
                 bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                 bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
-                //onClicked: TODO: implement
+                onClicked: {
+                    var cmd = "xdg-open \"" + model.filePath + "\"";
+                    appModel.launch(cmd);
+                }
+
 
                 visible: finished && model.incomingTransfer
             }

@@ -41,6 +41,11 @@ QString FileTransferItem::fileName() const
     return mChannel->property("fileName").toString();
 }
 
+QString FileTransferItem::filePath() const
+{
+    return mChannel->property("filePath").toString();
+}
+
 qulonglong FileTransferItem::fileSize() const
 {
     return mChannel->size();

@@ -51,6 +51,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     roles[FromLoggerRole] = "fromLogger";
     roles[IncomingTransferRole] = "incomingTransfer";
     roles[FileNameRole] = "fileName";
+    roles[FilePathRole] = "filePath";
     roles[FileSizeRole] = "fileSize";
     roles[TransferStateRole] = "transferState";
     roles[TransferStateReasonRole] = "transferStateReason";
@@ -183,6 +184,12 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
     case FileNameRole: {
         if (item) {
             return item->fileName();
+        }
+        return QVariant("");
+    }
+    case FilePathRole: {
+        if (item) {
+            return item->filePath();
         }
         return QVariant("");
     }

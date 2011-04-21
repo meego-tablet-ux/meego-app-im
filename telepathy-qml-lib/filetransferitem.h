@@ -21,6 +21,7 @@ class FileTransferItem : public Tpy::ConversationItem
     Q_OBJECT
     Q_PROPERTY(bool incomingTransfer READ incomingTransfer)
     Q_PROPERTY(QString fileName READ fileName)
+    Q_PROPERTY(QString filePath READ filePath)
     Q_PROPERTY(float percentTransferred READ percentTransferred)
 public:
     explicit FileTransferItem(Tp::ContactPtr contact,
@@ -31,6 +32,7 @@ public:
     bool incomingTransfer() const;
 
     QString fileName() const;
+    QString filePath() const;
     qulonglong fileSize() const;
     int transferState() const;
     int transferStateReason() const;

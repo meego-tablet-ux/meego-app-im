@@ -41,7 +41,7 @@ Item {
 
                 width: theme_fontPixelSizeLarge
                 height: theme_fontPixelSizeLarge
-                spinning: true
+                spinning: container.visible
 
                 onSpinningChanged: {
                     if(container.visible && !spinning) {

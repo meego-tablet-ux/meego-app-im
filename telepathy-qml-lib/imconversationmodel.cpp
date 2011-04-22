@@ -186,8 +186,8 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant("");
     }
     case FilePathRole: {
-        if (item) {
-            return item->filePath();
+        if (fileTransferItem) {
+            return fileTransferItem->filePath();
         }
         return QVariant("");
     }

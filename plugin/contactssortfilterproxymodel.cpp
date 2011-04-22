@@ -269,8 +269,6 @@ void ContactsSortFilterProxyModel::filterByConnection(Tp::ConnectionPtr connecti
 
 void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
 {
-    qDebug("filtering contacts by account");
-
     beginResetModel();
     foreach (Tp::AccountPtr accountPtr, mManager->accounts()) {
         if (accountPtr->uniqueIdentifier() == id) {

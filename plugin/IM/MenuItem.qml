@@ -6,9 +6,16 @@ Item {
     height: label.height + 20
 
     property alias text: label.text
-    property alias textWidth: label.width
 
     signal clicked()
+
+    Component.onCompleted: {
+        var textWidth = label.width + 2 * label.anchors.leftMargin;
+
+        if (textWidth > mainArea.parent.width) {
+            mainArea.parent.width = textWidth;
+        }
+    }
 
     BorderImage {
         id: activeBackground

@@ -55,10 +55,8 @@ Item {
             }
         }
 
-        Image {
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator-header"
-            anchors.left: parent.left
-            anchors.right: parent.right
+        MenuItemSeparator {
+            header: true
         }
 
         MenuItem {
@@ -72,11 +70,7 @@ Item {
             }
         }
 
-        Image {
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: videoItem
@@ -89,11 +83,7 @@ Item {
             }
         }
 
-        Image {
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: musicItem
@@ -106,11 +96,7 @@ Item {
             }
         }
 
-        Image {
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-            anchors.left: parent.left
-            anchors.right: parent.right
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: contactItem

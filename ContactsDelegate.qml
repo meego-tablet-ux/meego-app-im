@@ -63,121 +63,93 @@ Item {
                 }
             }
             onPressAndHold: {
-                contactsDelegate.ListView.view.currentIndex = index;
-                menu.clear();
-
-                // Add items to menu according to contact capabilities
-                if(model.textChat) {
-                    if(model.chatOpened) {
-                        menu.append({"modelData":qsTr("Return to chat")});
-                    } else {
-                        menu.append({"modelData":qsTr("Open chat")});
-                    }
-                }
-                if(model.audioCall) {
-                    menu.append({"modelData":qsTr("Call")});
-                }
-                if(model.videoCall) {
-                    menu.append({"modelData":qsTr("Video call")});
-                }
-                // Show depending on block state
-                if(model.canBlockContacts) {
-                    if(model.blocked) {
-                        menu.append({"modelData":qsTr("Unblock")});
-                    } else {
-                        menu.append({"modelData":qsTr("Block")});
-                    }
-                }
-
-                //show chat options
-                if(model.chatOpened) {
-                    menu.append({"modelData":qsTr("End chat")});
-                }
-
-                // show the delete option
-                menu.append({"modelData":qsTr("Delete contact")});
-
-
                 var map = mapToItem(scene, mouseX, mouseY);
                 contextMenu.setPosition( map.x, map.y);
-                actionMenu.model = menu;
-                actionMenu.payload = model;
+                menuContent.model = model;
                 contextMenu.show();
             }
         }
 
         ModalContextMenu {
             id: contextMenu
-            content: ActionMenu {
-                id: actionMenu
+            content: Column {
+                id: menuContent
 
-                ListModel {id: menuIndex}
+                property variant model
+                height: childrenRect.height
 
-                onTriggered: {
-                    // clear the existing menu
-                    menuIndex.clear();
-
-                    // Recreate menu according to contact capabilities
-                    // this is done because the menu is dynamic, and we can't reuse the
-                    // menu previously used because the contactDelegate is not available when
-                    // this is called through the loader. Only the selected index and the payload
-                    // are available
-                    if(payload.textChat) {
-                        menuIndex.append({"modelData":1});
+                MenuItem {
+                    id: textChatItem
+                    text: (model.chatOpened ? qsTr("Return to chat") :
+                                              qsTr("Open chat"))
+                    visible: model.textChat
+                    onClicked: {
+                        scene.startConversation(model.id, scene);
+                        contextMenu.hide();
                     }
-                    if(payload.audioCall) {
-                        menuIndex.append({"modelData":3});
-                    }
-                    if(payload.videoCall) {
-                        menuIndex.append({"modelData":4});
-                    }
+                }
 
-                    // Show depending on block state and block capability
-                    if(payload.canBlockContacts) {
-                        if(payload.blocked) {
-                            menuIndex.append({"modelData":5});
+                MenuItemSeparator { visible: textChatItem.visible }
+
+                MenuItem {
+                    id: callItem
+                    text: qsTr("Call")
+                    visible: model.audioCall
+                    onClicked: {
+                        scene.startAudioCall(model.id, scene);
+                        contextMenu.hide();
+                    }
+                }
+
+                MenuItemSeparator { visible: callItem.visible }
+
+                MenuItem {
+                    id: videoCallItem
+                    text: qsTr("Video call")
+                    visible: model.videoCall
+                    onClicked: {
+                        scene.startVideoCall(model.id, scene);
+                        contextMenu.hide();
+                    }
+                }
+
+                MenuItemSeparator { visible: videoCallItem.visible }
+
+                MenuItem {
+                    id: blockItem
+                    text: (model.blocked ? qsTr("Unblock") :
+                                           qsTr("Block"))
+                    visible: model.canBlockContacts
+                    onClicked: {
+                        if (model.blocked) {
+                        accountsModel.unblockContact(scene.currentAccountId, model.id);
                         } else {
-                            menuIndex.append({"modelData":6});
+                            accountsModel.blockContact(scene.currentAccountId, model.id);
                         }
+                        contextMenu.hide();
                     }
+                }
 
-                    if(payload.chatOpened) {
-                        menuIndex.append({"modelData":7});
+                MenuItemSeparator { visible: blockItem.visible }
+
+                MenuItem {
+                    id: endChatItem
+                    text: qsTr("End chat")
+                    visible: model.chatOpened
+                    onClicked: {
+                        accountsModel.endChat(scene.currentAccountId, model.id);
+                        contextMenu.hide();
                     }
+                }
 
-                    // Always show the delete option
-                    menuIndex.append({"modelData":9});
+                MenuItemSeparator { visible: endChatItem.visible }
 
-                    // get the selected action and do whatever was requested
-                    var actionIndex = menuIndex.get(index).modelData;
-                    if (actionIndex == 1) {
-                        // chat
-                        scene.startConversation(payload.id, scene);
-                    } else if (actionIndex == 3) {
-                        // audio call
-                        scene.startAudioCall(payload.id, scene);
-                    } else if (actionIndex == 4) {
-                        // video call
-                        scene.startVideoCall(payload.id, scene);
-                    } else if (actionIndex == 5) {
-                        // unblock contact
-                        accountsModel.unblockContact(scene.currentAccountId, payload.id);
-                    } else if (actionIndex == 6) {
-                        //block contact
-                        accountsModel.blockContact(scene.currentAccountId, payload.id);
-                    } else if (actionIndex == 7) {
-                        // end chat
-                        accountsModel.endChat(scene.currentAccountId, payload.id);
-                    } else if (actionIndex == 9) {
-                        // delete contact
-                        console.debug("Going to ")
-                        accountsModel.removeContact(scene.currentAccountId, payload.id);
+                MenuItem {
+                    text: qsTr("Delete contact")
+                    onClicked: {
+                        accountsModel.removeContact(scene.currentAccountId, model.id);
+                        contextMenu.hide();
                     }
-
-                    // By setting the sourceComponent of the loader to undefined,
-                    // then the QML engine will destruct the context menu element
-                    // much like doing a c++ delete
-                    contextMenu.hide();
                 }
             }
         }

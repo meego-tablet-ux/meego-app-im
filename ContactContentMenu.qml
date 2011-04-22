@@ -154,11 +154,7 @@ Item {
             }
         }
 
-        Image {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: meUpdateStatusItem
@@ -328,11 +324,7 @@ Item {
             }
         }
 
-        Image {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: meUpdateNickItem
@@ -415,11 +407,7 @@ Item {
             }
         }
 
-        Image {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: addIMContactItem
@@ -452,11 +440,7 @@ Item {
             }
         }
 
-        Image {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-        }
+        MenuItemSeparator { }
 
         MenuItem {
             id: clearHistoryItem

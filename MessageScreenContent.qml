@@ -247,9 +247,13 @@ Labs.ApplicationPage {
             anchors.top: searchHeader.bottom
         }
 
-        Component {
-            id: conversationViewHeader
-            LoadingConversationHistory {
+        LoadingConversationHistory {
+            id: loadingConversation
+            visible: false
+            anchors {
+                top: noNetworkItem.bottom
+                left: parent.left
+                right: parent.right
             }
         }
 
@@ -281,7 +285,7 @@ Labs.ApplicationPage {
         ListView {
             id: conversationView
             anchors {
-                top: noNetworkItem.bottom
+                top: loadingConversation.bottom
                 left: parent.left
                 right: parent.right
                 bottom: textBar.top
@@ -332,14 +336,14 @@ Labs.ApplicationPage {
             ignoreUnknownSignals: true
             onBackFetchable: {
                 if (conversationView.model.canFetchMoreBack()) {
-                    conversationView.header = conversationViewHeader;
+                    loadingConversation.visible = true;
                 }
             }
             onBackFetched: {
                 conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
                 historyFeeder.fetching = false;
                 if (!conversationView.model.canFetchMoreBack()) {
-                    conversationView.header = null;
+                    loadingConversation.visible = false;
                 }
             }
         }

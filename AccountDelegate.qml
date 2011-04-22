@@ -87,6 +87,10 @@ Item {
 
         ModalContextMenu {
             id: contextMenu
+
+            // if we don't change the parent here, the maximum height of the context menu is that of the account row,
+            // and not of the whole list
+            parent: accountsListView
             content:  ActionMenu {
                 id: actionMenu
 

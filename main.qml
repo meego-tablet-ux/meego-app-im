@@ -300,8 +300,8 @@ Labs.Window {
         //the message screen will then get the already created agent
         callAgent = accountsModel.callAgent(scene.currentAccountId, contactId);
         fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
-        accountsModel.startChat(accountId, contactId);
-        chatAgent = accountsModel.chatAgentByKey(accountId, contactId);
+        accountsModel.startChat(scene.currentAccountId, contactId);
+        chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
         callAgent.audioCall();
 
         // and start the conversation
@@ -321,8 +321,8 @@ Labs.Window {
         //the message screen will then get the already created agent
         callAgent = accountsModel.callAgent(scene.currentAccountId, contactId);
         fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
-        accountsModel.startChat(accountId, contactId);
-        chatAgent = accountsModel.chatAgentByKey(accountId, contactId);
+        accountsModel.startChat(scene.currentAccountId, contactId);
+        chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
         callAgent.videoCall();
 
         // and start the conversation

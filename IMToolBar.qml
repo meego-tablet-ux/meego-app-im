@@ -174,8 +174,6 @@ Item {
 
             content: SendFileView {
                 id: sendFileView
-                anchors.fill: parent
-                anchors.horizontalCenterOffset: -(width / 4 + 30)
 
                 onFileSelected: {
                     fileTransferAgent.sendFile(fileName);

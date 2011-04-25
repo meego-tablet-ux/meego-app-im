@@ -16,7 +16,7 @@ Item {
     // FIXME remove after full migration to MeegGo.Components
     property variant window : scene
 
-    width: itemsColumn.width + itemsColumn.anchors.margins * 2
+    width: itemsColumn.width
     height: itemsColumn.height
 
     signal fileSelected(string fileName);
@@ -36,8 +36,7 @@ Item {
     Column {
         id: itemsColumn
         anchors.left: parent.left
-        width: Math.max(Math.max(photoItem.textWidth, videoItem.textWidth),
-                        Math.max(musicItem.textWidth, contactItem.textWidth)) + 20 // left and right borders
+        height: childrenRect.height
 
         Item {
             anchors.left: parent.left
@@ -61,8 +60,6 @@ Item {
 
         MenuItem {
             id: photoItem
-            anchors.left: parent.left
-            anchors.right: parent.right
             text: qsTr("Photo")
 
             onClicked: {
@@ -74,8 +71,6 @@ Item {
 
         MenuItem {
             id: videoItem
-            anchors.left: parent.left
-            width: parent.width
             text: qsTr("Video")
 
             onClicked: {
@@ -87,8 +82,6 @@ Item {
 
         MenuItem {
             id: musicItem
-            anchors.left: parent.left
-            width: parent.width
             text: qsTr("Music")
 
             onClicked: {
@@ -100,8 +93,6 @@ Item {
 
         MenuItem {
             id: contactItem
-            anchors.left: parent.left
-            width: parent.width
             text: qsTr("Contact Details")
 
             onClicked: {

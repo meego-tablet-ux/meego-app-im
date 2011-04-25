@@ -13,6 +13,11 @@ void ServerAuthAgent::setChannel(Tp::ChannelPtr channel)
     mChannel = channel;
     mSaslInterface = mChannel->interface<Tp::Client::ChannelInterfaceSASLAuthenticationInterface>();
 
+    if (mChannel->hasInterface(mCredentialsInterface->staticInterfaceName())) {
+        mCredentialsInterface = mChannel->interface<Tpy::Client::ChannelInterfaceCredentialsStorageInterface>();
+        mCredentialsInterface->StoreCredentials(true);
+    }
+
     connect(mSaslInterface,
             SIGNAL(SASLStatusChanged(uint,QString,QVariantMap)),
             SLOT(onSASLStatusChanged(uint,QString,QVariantMap)));

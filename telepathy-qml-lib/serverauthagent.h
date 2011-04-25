@@ -4,6 +4,7 @@
 #include <QObject>
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/ChannelInterfaceSASLAuthenticationInterface>
+#include <TelepathyQt4Yell/ChannelInterfaceCredentialsStorageInterface>
 
 class ServerAuthAgent : public QObject
 {
@@ -26,6 +27,7 @@ private:
     Tp::AccountPtr mAccount;
     Tp::ChannelPtr mChannel;
     Tp::Client::ChannelInterfaceSASLAuthenticationInterface *mSaslInterface;
+    Tpy::Client::ChannelInterfaceCredentialsStorageInterface *mCredentialsInterface;
     QString mPassword;
     bool mWaitingForPassword;
 };

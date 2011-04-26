@@ -160,7 +160,7 @@ Column {
         property int connectionStatus: accountItem.data(AccountsModel.ConnectionStatusRole)
         property int connectionStatusReason: accountItem.data(AccountsModel.ConnectionStatusReasonRole)
 
-        height: childrenRect.height + 10
+        height: childrenRect.height + 20
 
         Connections {
             target: accountItem
@@ -177,7 +177,7 @@ Column {
         // TODO: check for another reasons
         Text {
             id: errorLabel
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.top: parent.top
             anchors.left: parent.left
             anchors.margins: 10
 

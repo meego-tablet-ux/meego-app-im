@@ -13,7 +13,7 @@ Item {
     id: mainArea
 
     width: parent.width
-    height: eventItem ? eventMessage.height : childrenRect.height
+    height: childrenRect.height
 
     anchors.margins: 10
 
@@ -22,9 +22,7 @@ Item {
     property bool messageItem: model.eventType == "Tpy::TextEventItem"
     property bool callItem: model.eventType == "Tpy::CallEventItem"
     property bool messageSent: !model.incomingEvent
-    // TODO: check how to add more colors for group chat
     property string color: model.bubbleColor
-    property bool expandedMessage: true
 
     Component.onCompleted: {
         console.log("-------------------------------------------------------")
@@ -70,53 +68,36 @@ Item {
         anchors.left: parent.left
         anchors.topMargin: 10
         anchors.leftMargin: 10
-        anchors.bottomMargin: 10
-        width: 80
-        height: 80
+        width: 100
+        height: visible ? 100 : 0
         source: messageAvatar()
-        //width:  childrenRect.width
-        //height: childrenRect.height
+
     }
 
     Item {
-        id: message
-        visible: messageItem
+        id: messageBubble
         anchors.top: parent.top
         anchors.left: avatar.right
         anchors.right: parent.right
         anchors.topMargin: 10
         anchors.bottomMargin: 10
-        anchors.leftMargin: 0
+        anchors.leftMargin: -19
         anchors.rightMargin: 0
         smooth: true
+        visible: messageItem || fileTransferItem
 
-        height: ((expandedMessage) ?
-            Math.max(messageHeader.height + messageBody.height + messageBody.anchors.margins,
-                     messageTop.height + messageBody.height) :
-                 messageHeader.height + 10)
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                expandedMessage = true;
-            }
-        }
+        height: visible ? Math.max(childrenRect.height, avatar.height) : 0
 
         BorderImage {
             id: messageTop
             source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-top"
-            //border.left: int; border.top: int
-            //border.right: int; border.bottom: int
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
 
             border.left: 40
-            border.right: 20
-            border.top: 12
-
-            height: ((expandedMessage) ?
-                         62 : 10 )
+            border.right: 10
+            border.top: 5
         }
 
         BorderImage {
@@ -129,9 +110,6 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: messageBottom.top
-
-            height: ((expandedMessage) ?
-                         messageBody.height : 10 )
         }
 
         BorderImage {
@@ -139,6 +117,7 @@ Item {
             source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-bottom"
             border.left: messageTop.border.left
             border.right: messageTop.border.right
+            border.bottom: 5
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -146,73 +125,95 @@ Item {
         }
 
         Item {
-            id: messageHeader
+            id: textMessage
+            visible: messageItem
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
+            height: visible ? childrenRect.height + 10 : 0
 
-            height: childrenRect.height + 10
-
-            PresenceIcon {
-                id: presence
-                anchors.left: parent.left
-                anchors.verticalCenter: contact.verticalCenter
-                anchors.margins: 5
-                anchors.leftMargin: messageTop.border.left
-
-                status: model.status
-            }
-
-            Text {
-                id: contact
-                anchors.left: presence.right
+            Item {
+                id: messageHeader
                 anchors.top: parent.top
-                anchors.topMargin: 10
-                anchors.bottomMargin: 10
-                anchors.leftMargin:5
-                anchors.right: time.left
-                anchors.rightMargin: 10
-                color: Qt.rgba(0.3,0.3,0.3,1)
-                font.pixelSize: theme_fontPixelSizeSmall
-                elide: Text.ElideRight
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-                text: model.sender
+                height: childrenRect.height
+
+                PresenceIcon {
+                    id: presence
+                    anchors.left: parent.left
+                    anchors.verticalCenter: contact.verticalCenter
+                    anchors.margins: 5
+                    anchors.leftMargin: messageTop.border.left
+
+                    status: model.status
+                }
+
+                Text {
+                    id: contact
+                    anchors.left: presence.right
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.leftMargin:5
+                    anchors.right: time.left
+                    anchors.rightMargin: 10
+                    color: Qt.rgba(0.3,0.3,0.3,1)
+                    font.pixelSize: theme_fontPixelSizeSmall
+                    elide: Text.ElideRight
+
+                    text: model.sender
+                }
+
+                Text {
+                    id: time
+                    anchors.right: parent.right
+                    anchors.bottom: contact.bottom
+                    anchors.rightMargin: messageTop.border.right
+                    color: Qt.rgba(0.3,0.3,0.3,1)
+                    font.pixelSize: theme_fontPixelSizeSmall
+
+                    text: fuzzyDateTime.getFuzzy(model.dateTime)
+
+                    Connections {
+                        target: fuzzyDateTimeUpdater
+                        onTriggered: {
+                            time.text = fuzzyDateTime.getFuzzy(model.dateTime);
+                        }
+                    }
+                }
             }
 
             Text {
-                id: time
+                id: messageBody
+                anchors.top: messageHeader.bottom
+                anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.bottom: contact.bottom
+                anchors.topMargin: 15
+                anchors.leftMargin: messageTop.border.left
                 anchors.rightMargin: messageTop.border.right
-                color: Qt.rgba(0.3,0.3,0.3,1)
-                font.pixelSize: theme_fontPixelSizeSmall
 
-                text: fuzzyDateTime.getFuzzy(model.dateTime)
+                text: parseChatText(model.messageText)
+                wrapMode: Text.WordWrap
+                textFormat: Text.RichText
 
-                Connections {
-                    target: fuzzyDateTimeUpdater
-                    onTriggered: {
-                        time.text = fuzzyDateTime.getFuzzy(model.dateTime);
-                    }
+                color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
+
+                Rectangle {
+                    color: "green"
+                    anchors.fill: parent
                 }
             }
         }
 
-        Text {
-            id: messageBody
-            anchors.top: messageHeader.bottom
+        FileTransferDelegate {
+            id: fileTransferMessage
+            visible: fileTransferItem
             anchors.left: parent.left
+            anchors.top: parent.top
             anchors.right: parent.right
-            anchors.topMargin: 10
-            anchors.leftMargin: messageTop.border.left
-            anchors.rightMargin: messageTop.border.right
-
-            text: parseChatText(model.messageText)
-            wrapMode: Text.WordWrap
-            textFormat: Text.RichText
-
-            color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
-            visible: (expandedMessage)
+            height: visible ? childrenRect.height : 0
         }
     }
 
@@ -220,7 +221,7 @@ Item {
         id: eventMessage
         visible: eventItem
         width: parent.width
-        height: childrenRect.height
+        height: visible ? childrenRect.height : 0
         anchors.margins: 10
 
         Text {
@@ -287,12 +288,6 @@ Item {
                 }
             }
         }
-    }
-
-    FileTransferDelegate {
-        id: fileTransferMessage
-        visible: fileTransferItem
-        width: parent.width
     }
 
     function parseChatText(message) {

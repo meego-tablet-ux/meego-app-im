@@ -15,9 +15,6 @@ Item {
     property alias source: avatarImage.source
     property alias noAvatarImage: noAvatar.source
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
     width: childrenRect.width
     height:  parent.height
 

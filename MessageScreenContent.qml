@@ -250,6 +250,7 @@ Labs.ApplicationPage {
         LoadingConversationHistory {
             id: loadingConversation
             visible: false
+            z: 10
             anchors {
                 top: noNetworkItem.bottom
                 left: parent.left
@@ -291,7 +292,6 @@ Labs.ApplicationPage {
                 bottom: textBar.top
                 margins: 10
             }
-            clip: true
 
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true

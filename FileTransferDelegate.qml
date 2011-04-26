@@ -21,350 +21,276 @@ Item {
     property bool canceled: model.transferState == TelepathyTypes.FileTransferStateCancelled
     property variant item: model.item
 
-    height: childrenRect.height
+    height: childrenRect.height + 10
 
     Labs.ApplicationsModel {
         id: appModel
     }
 
-    Avatar {
-        id: avatar
-        visible: !eventItem
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: 10
-        anchors.leftMargin: 10
-        anchors.bottomMargin: 10
-        width: 80
-        height: 80
-        source: messageAvatar()
+    Behavior on height {
+        NumberAnimation {
+            duration: 250
+        }
     }
 
     Item {
-        id: message
+        id: messageHeader
         anchors.top: parent.top
-        anchors.left: avatar.right
+        anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: 10
-        anchors.bottomMargin: 10
-        anchors.leftMargin: 0
-        anchors.rightMargin: 0
-        smooth: true
 
-        height: Math.max(messageHeader.height + messageBody.height + messageBody.anchors.margins,
-                         messageTop.height + messageBody.height)
+        height: childrenRect.height
 
-        Behavior on height {
-            NumberAnimation {
-                duration: 250
-            }
+        PresenceIcon {
+            id: presence
+            anchors.left: parent.left
+            anchors.verticalCenter: contact.verticalCenter
+            anchors.margins: 5
+            anchors.leftMargin: messageTop.border.left
+
+            status: model.status
         }
 
-        BorderImage {
-            id: messageTop
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-top"
-            //border.left: int; border.top: int
-            //border.right: int; border.bottom: int
+        Text {
+            id: contact
+
+            anchors.left: presence.right
             anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.topMargin: 10
+            anchors.bottomMargin: 10
+            anchors.leftMargin:5
+            anchors.right: time.left
+            anchors.rightMargin: 10
+            color: Qt.rgba(0.3,0.3,0.3,1)
+            font.pixelSize: theme_fontPixelSizeSmall
+            elide: Text.ElideRight
 
-            border.left: 40
-            border.right: 20
-            border.top: 12
-
-            height: ((expandedMessage) ?
-                         62 : 10 )
-        }
-
-        BorderImage {
-            id: messageCenter
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-middle"
-            border.left: messageTop.border.left
-            border.right: messageTop.border.right
-
-            anchors.top: messageTop.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: messageBottom.top
-        }
-
-        BorderImage {
-            id: messageBottom
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-bottom"
-            border.left: messageTop.border.left
-            border.right: messageTop.border.right
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-        }
-
-        Item {
-            id: messageHeader
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            height: 30
-
-            PresenceIcon {
-                id: presence
-                anchors.left: parent.left
-                anchors.verticalCenter: contact.verticalCenter
-                anchors.margins: 5
-                anchors.leftMargin: messageTop.border.left
-
-                status: model.status
-            }
-
-            Text {
-                id: contact
-                anchors.left: presence.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.topMargin: 10
-                anchors.bottomMargin: 10
-                anchors.leftMargin: 5
-
-                anchors.right: time.left
-                anchors.rightMargin: 10
-
-                text: {
-                    if (messageSent) {
-                        if (canceled) {
-                            qsTr("Upload canceled:");
-                        } else if (finished) {
-                            qsTr("Sent:");
-                        } else {
-                            qsTr("Uploading:");
-                        }
+            text: {
+                if (messageSent) {
+                    if (canceled) {
+                        qsTr("Upload canceled:");
+                    } else if (finished) {
+                        qsTr("Sent:");
                     } else {
-                        if (finished) {
-                            qsTr("%1 has sent you:").arg(model.contact);
-                        } else {
-                            qsTr("%1 is sending you:").arg(model.contact);
-                        }
+                        qsTr("Uploading:");
                     }
-                }
-                color: Qt.rgba(0.3,0.3,0.3,1)
-                font.weight: Font.Bold
-                elide: Text.ElideRight
-            }
-
-            Text {
-                id: time
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.topMargin: 10
-                anchors.bottomMargin: 10
-                anchors.rightMargin: messageTop.border.right
-                text: fuzzyDateTime.getFuzzy(model.time)
-
-                color: Qt.rgba(0.3,0.3,0.3,1)
-
-                Connections {
-                    target: fuzzyDateTimeUpdater
-                    onTriggered: {
-                        time.text = fuzzyDateTime.getFuzzy(model.time);
+                } else {
+                    if (finished) {
+                        qsTr("%1 has sent you:").arg(model.sender);
+                    } else {
+                        qsTr("%1 is sending you:").arg(model.sender);
                     }
                 }
             }
         }
 
-        Item {
-            id: messageBody
-
-            anchors.top: messageHeader.bottom
-            anchors.left: parent.left
+        Text {
+            id: time
             anchors.right: parent.right
+            anchors.bottom: contact.bottom
+            anchors.rightMargin: messageTop.border.right
+            color: Qt.rgba(0.3,0.3,0.3,1)
+            font.pixelSize: theme_fontPixelSizeSmall
 
-            height: childrenRect.height
+            text: fuzzyDateTime.getFuzzy(model.dateTime)
 
-            Text {
-                id: fileName
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.topMargin: 10
-                anchors.leftMargin: messageTop.border.left
+            Connections {
+                target: fuzzyDateTimeUpdater
+                onTriggered: {
+                    time.text = fuzzyDateTime.getFuzzy(model.dateTime);
+                }
+            }
+        }
+    }
 
-                text: model.fileName
-                color: theme_fontColorNormal
+    Item {
+        id: messageBody
+
+        anchors.top: messageHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.topMargin: 15
+        anchors.leftMargin: messageTop.border.left
+        anchors.rightMargin: messageTop.border.right
+
+        height: childrenRect.height
+
+        Text {
+            id: fileName
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+
+            text: model.fileName
+            color: theme_fontColorNormal
+        }
+
+        Text {
+            id: fileSize
+            anchors.verticalCenter: fileName.verticalCenter
+            anchors.left: fileName.right
+            anchors.margins: 5
+            text: qsTr("(%1)").arg(model.fileSize)
+            color: theme_fontColorInactive
+        }
+
+        Button {
+            id: openButton
+            anchors.top: fileName.bottom
+            anchors.left: fileName.left
+            anchors.topMargin: 10
+
+            text: qsTr("Open")
+            textColor: theme_buttonFontColor
+            bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+            bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+
+            onClicked: {
+                var cmd = "xdg-open \"" + model.filePath + "\"";
+                appModel.launch(cmd);
             }
 
-            Text {
-                id: fileSize
-                anchors.verticalCenter: fileName.verticalCenter
-                anchors.left: fileName.right
-                anchors.margins: 5
-                text: qsTr("(%1)").arg(model.fileSize)
-                color: theme_fontColorInactive
+
+            visible: finished && model.incomingTransfer
+        }
+
+        Text {
+            id: errorText
+            anchors.top: fileName.bottom
+            anchors.left: fileName.left
+            anchors.topMargin: 10
+            text: {
+                if (canceled &&
+                        (model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonRemoteError
+                         || model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonLocalError)) {
+                    if (model.incomingTransfer) {
+                        qsTr("There was a problem downloading");
+                    } else {
+                        qsTr("There was a problem uploading");
+                    }
+                } else {
+                    qsTr("Canceled") // TODO: report other errors
+                }
             }
+            color: theme_fontColorHighlight
+
+            visible: canceled
+        }
+
+
+        Item {
+            id: buttonsParent
+            width: childrenRect.width
+            height: visible ? childrenRect.height + 20 : 0
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: fileName.bottom
+            anchors.margins: 10
+
+            visible: pending && model.incomingTransfer
 
             Button {
-                id: openButton
-                anchors.top: fileName.bottom
-                anchors.left: fileName.left
-                anchors.topMargin: 10
+                id: saveButton
+                anchors.top: parent.top
+                anchors.left: parent.left
 
-                height: visible ? 40 : 0
-
-                text: qsTr("Open")
+                text: qsTr("Save")
                 textColor: theme_buttonFontColor
                 bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                 bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
-                onClicked: {
-                    var cmd = "xdg-open \"" + model.filePath + "\"";
-                    appModel.launch(cmd);
-                }
-
-
-                visible: finished && model.incomingTransfer
+                onClicked: item.acceptTransfer();
             }
 
-            Text {
-                id: errorText
-                anchors.top: fileName.bottom
-                anchors.left: fileName.left
-                anchors.topMargin: 10
-                text: {
-                    if (canceled &&
-                        (model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonRemoteError
-                      || model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonLocalError)) {
-                        if (model.incomingTransfer) {
-                            qsTr("There was a problem downloading");
-                        } else {
-                            qsTr("There was a problem uploading");
-                        }
-                    } else {
-                        qsTr("Canceled") // TODO: report other errors
-                    }
-                }
-                color: theme_fontColorHighlight
+            Button {
+                id: declineButton
+                anchors.top: parent.top
+                anchors.leftMargin: 10
+                anchors.left: saveButton.right
 
-                visible: canceled
+                text: qsTr("Decline")
+                textColor: theme_buttonFontColor
+                bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
+                bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+
+                onClicked: item.cancelTransfer()
             }
+        }
 
+        Item {
+            id: progressItem
+            anchors.topMargin: 10
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
 
-            Item {
-                id: buttonsParent
-                width: childrenRect.width
-                height: visible ? childrenRect.height : 0
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: fileName.bottom
-                anchors.margins: 10
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: fileName.bottom
 
-                visible: pending && model.incomingTransfer
+            visible: mainArea.active || (!model.incomingTransfer && mainArea.pending)
 
-                Button {
-                    id: saveButton
-                    anchors.top: parent.top
-                    anchors.left: parent.left
+            height: visible ? childrenRect.height + 10 : 0
 
-                    height: 40
+            Button {
+                id: cancelButton
+                anchors.top: parent.top
+                anchors.right: parent.right
 
-                    text: qsTr("Save")
-                    textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                text: qsTr("Cancel")
+                textColor: theme_buttonFontColor
+                bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
+                bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
-                    onClicked: item.acceptTransfer();
-                }
-
-                Button {
-                    id: declineButton
-                    anchors.top: parent.top
-                    anchors.leftMargin: 10
-                    anchors.left: saveButton.right
-
-                    height: 40
-
-                    text: qsTr("Decline")
-                    textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
-
-                    onClicked: item.cancelTransfer()
-                }
+                onClicked: item.cancelTransfer();
             }
 
             Item {
-                id: progressItem
-                anchors.topMargin: 10
-                anchors.leftMargin: messageTop.border.left
-                anchors.rightMargin: messageTop.border.right
+                id: progressBar
 
                 anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: fileName.bottom
+                anchors.right: cancelButton.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
 
-                visible: mainArea.active || (!model.incomingTransfer && mainArea.pending)
-
-                height: visible ? cancelButton.height : 0
-
-                Button {
-                    id: cancelButton
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-
-                    height: 40
-
-                    text: qsTr("Cancel")
-                    textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
-
-                    onClicked: item.cancelTransfer();
-                }
-
-                Item {
-                    id: progressBar
+                BorderImage {
+                    id: backgroundBar
 
                     anchors.left: parent.left
-                    anchors.right: cancelButton.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.margins: 10
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    BorderImage {
-                        id: backgroundBar
-
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        border {
-                            top: 2
-                            bottom: 2
-                            left: 2
-                            right: 2
-                        }
-
-                        source: "image://meegotheme/widgets/common/progress-bar/progress-bar-backgound"
+                    border {
+                        top: 2
+                        bottom: 2
+                        left: 2
+                        right: 2
                     }
 
-                    BorderImage {
-                        id: foregroundBar
+                    source: "image://meegotheme/widgets/common/progress-bar/progress-bar-backgound"
+                }
 
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
+                BorderImage {
+                    id: foregroundBar
 
-                        border {
-                            top: 2
-                            bottom: 2
-                            left: 2
-                            right: 2
-                        }
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
 
-                        width: backgroundBar.width * (model.percentTransferred / 100.)
-                        source: "image://meegotheme/widgets/common/progress-bar/progress-bar-fill"
+                    border {
+                        top: 2
+                        bottom: 2
+                        left: 2
+                        right: 2
+                    }
 
-                        visible: model.percentTransferred > 0
+                    width: backgroundBar.width * (model.percentTransferred / 100.)
+                    source: "image://meegotheme/widgets/common/progress-bar/progress-bar-fill"
 
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 500
-                            }
+                    visible: model.percentTransferred > 0
+
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 500
                         }
                     }
                 }

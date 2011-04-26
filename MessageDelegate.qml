@@ -15,7 +15,9 @@ Item {
     width: parent.width
     height: childrenRect.height
 
-    anchors.margins: 10
+    anchors.leftMargin: 10
+    anchors.rightMargin: 10
+    anchors.topMargin: 5
 
     property bool eventItem: model.eventType == "Tpy::CustomEventItem"
     property bool fileTransferItem: model.eventType == "FileTransferItem"
@@ -199,11 +201,6 @@ Item {
                 textFormat: Text.RichText
 
                 color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
-
-                Rectangle {
-                    color: "green"
-                    anchors.fill: parent
-                }
             }
         }
 

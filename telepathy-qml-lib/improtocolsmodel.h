@@ -16,7 +16,7 @@
 class IMProtocolsModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString modulePath READ modulePath)
+    Q_PROPERTY(QString modulePath READ modulePath NOTIFY modulePathChanged)
 public:
     enum Roles {
         TitleRole = Qt::UserRole,
@@ -39,6 +39,9 @@ public:
     QMap<QString, QString> protocolNames() const;
 
     QString modulePath() const;
+
+Q_SIGNALS:
+    void modulePathChanged();
 
 private:
     QList<MDesktopEntry*> mProtocolList;

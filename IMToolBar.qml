@@ -57,7 +57,12 @@ Item {
             id: videoCallButton
             property int numButton: 0
             x : parent.calculateButtonX(videoCallButton)
-            active: scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) && (scene.callAgent != undefined && scene.callAgent.callStatus == CallAgent.CallStatusNoCall)
+            active: scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                    scene.callAgent != undefined &&
+                    scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                    !scene.chatAgent.isConference
+
+
             anchors.verticalCenter: parent.verticalCenter
             icon: "image://meegotheme/icons/actionbar/turn-video-on"
             iconDown: icon + "-active"
@@ -90,7 +95,11 @@ Item {
             id: audioCallButton
             property int numButton: 1
             x : parent.calculateButtonX(audioCallButton)
-            active: scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) && (scene.callAgent != undefined && scene.callAgent.callStatus == CallAgent.CallStatusNoCall)
+            active: scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                    scene.callAgent != undefined &&
+                    scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                    !scene.chatAgent.isConference
+
             anchors.verticalCenter: parent.verticalCenter
             icon: "image://meegotheme/icons/actionbar/call-audio-start"
             iconDown: icon + "-active"

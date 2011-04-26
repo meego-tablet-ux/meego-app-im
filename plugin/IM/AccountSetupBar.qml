@@ -27,7 +27,7 @@ Column {
             id: centerItem
             width: childrenRect.width + cancelButton.anchors.margins
             height: childrenRect.height
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
 
             Button {
                 id: updateButton
@@ -72,9 +72,10 @@ Column {
     Item {
         width: parent.width
         height: childrenRect.height
+
         Button {
             id: deleteAccountButton
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
 
             text: qsTr("Delete account")
             textColor: theme_buttonFontColor

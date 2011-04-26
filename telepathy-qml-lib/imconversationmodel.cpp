@@ -21,13 +21,18 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
     QObject *parent)
     : MergedModel(parent),
       mCallRunningItem(0),
+      mLoggerConversationModel(0),
       mSelf(self),
       mAccount(account),
       mCurrentMatch(0),
       mCurrentRowMatch(0),
       mSearching(false)
 {
-    mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
+    // if the contact is null, it means we are creating
+    if (!contact.isNull()) {
+        mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
+    }
+
     if (mLoggerConversationModel) {
         addModel(mLoggerConversationModel);
         connect(mLoggerConversationModel,

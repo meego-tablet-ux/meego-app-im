@@ -310,7 +310,7 @@ void IMConversationModel::onItemChanged()
         return;
     }
 
-    QModelIndex idx = mSessionConversationModel->index(item);
+    QModelIndex idx = mapFromSource(mSessionConversationModel->index(item));
     if (idx.isValid()) {
         emit dataChanged(idx, idx);
     }

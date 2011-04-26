@@ -448,7 +448,7 @@ Labs.ApplicationPage {
                 anchors {
                     margins: 10
                     right: parent.right
-                    top: textBox.top
+                    verticalCenter: textBox.verticalCenter
                     topMargin: 0
                 }
 

@@ -97,8 +97,8 @@ Labs.ApplicationPage {
                     id: accountsView
                     model: accountsSortedModel
 
-
                     AccountSetupDelegate {
+                        parent: contentColumn
                         anchors.left: parent.left
                         anchors.right: parent.right
                     }

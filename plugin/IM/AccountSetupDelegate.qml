@@ -46,7 +46,6 @@ Item {
             anchors.margins: 10
             text: model.displayName
             elide: Text.ElideRight
-            font.weight: Font.Bold
             color: theme_fontColorNormal
         }
     }

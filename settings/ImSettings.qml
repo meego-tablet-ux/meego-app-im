@@ -95,7 +95,7 @@ Labs.ApplicationPage {
 
             Repeater {
                     id: accountsView
-                    model: accountsModel
+                    model: accountsSortedModel
 
 
                     AccountSetupDelegate {

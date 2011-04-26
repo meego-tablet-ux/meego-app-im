@@ -34,14 +34,13 @@ Item {
                     Image {
                         id: serviceIcon
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.margins: 10
                         anchors.left: parent.left
                         source: model.icon
                     }
 
                     Text {
                         id: accountSetupLabel
-                        anchors.margins: 30
+                        anchors.margins: 10
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: serviceIcon.right
                         text: model.title

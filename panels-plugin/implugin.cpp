@@ -46,7 +46,7 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
     connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
             m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
     connect(m_tpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
-            this, SLOT(onConnectionAvailble(Tp::ConnectionPtr)));
+            this, SLOT(onConnectionAvailable(Tp::ConnectionPtr)));
 
     // install translation catalogs
     loadTranslator();

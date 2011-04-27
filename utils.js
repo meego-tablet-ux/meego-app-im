@@ -25,7 +25,8 @@ function getCallStatusText (agent) {
         return qsTr("Ringing");
         break;
     case CallAgent.CallStatusTalking:
-        return Qt.formatTime(scene.callAgent.elapsedTime(), Qt.DefaultLocaleShortDate);
+        // Qt has no way to get the time separator
+        return Qt.formatTime(scene.callAgent.elapsedTime(), "HH:mm:ss");
         break;
     case CallAgent.CallStatusHeld:
         return qsTr("On Hold");

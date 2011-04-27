@@ -43,6 +43,11 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
     initializeChannelObserver();
     initializeChannelApprover();
 
+    connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
+            m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
+    connect(m_tpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
+            this, SLOT(onConnectionAvailble(Tp::ConnectionPtr)));
+
     // install translation catalogs
     loadTranslator();
     qApp->installTranslator(&appTranslator);
@@ -115,24 +120,7 @@ void IMPlugin::initializeChannelApprover()
     mClientRegistrar->registerClient(approver, "MeeGoIMPanelsApprover");
 }
 
-void IMPlugin::onAccountManagerReady()
-{
-    connect(m_tpManager, SIGNAL(accountReady(Tp::Account*)),
-            m_serviceModel, SLOT(onAccountReady(Tp::Account*)));
-    connect(m_tpManager, SIGNAL(accountReady(Tp::Account*)),
-            this, SLOT(onAccountReady(Tp::Account*)));
-    connect(m_tpManager, SIGNAL(connectionReady(Tp::ConnectionPtr)), this, SLOT(onConnectionReady(Tp::ConnectionPtr)));
-    m_tpManager->initializeAccounts();
-}
-
-void IMPlugin::onAccountReady(Tp::Account *account)
-{
-    if (!account->connection().isNull()) {
-        m_tpManager->initializeConnection(account->connection());
-    }
-}
-
-void IMPlugin::onConnectionReady(Tp::ConnectionPtr conn)
+void IMPlugin::onConnectionAvailable(Tp::ConnectionPtr conn)
 {
     // find the account related to the connection and connect
     // the contact manager to the publication request slot on the model

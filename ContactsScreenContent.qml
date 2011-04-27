@@ -16,7 +16,7 @@ Labs.ApplicationPage {
     id: contactsScreenPage
     
     property int count: listView.count
-    property bool showLoadingContacts: false
+    property bool showLoadingContacts: !count && !showAccountOffline
     property int accountStatus: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionPresenceTypeOffline
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnset
@@ -45,17 +45,6 @@ Labs.ApplicationPage {
     onAccountStatusChanged: {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
-    }
-
-    Connections {
-        target: telepathyManager
-        onUpgradingContacts: {
-            showLoadingContacts = true;
-        }
-
-        onContactsUpgraded: {
-            showLoadingContacts = false;
-        }
     }
 
     Connections {

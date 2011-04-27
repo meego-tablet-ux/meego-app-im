@@ -61,7 +61,7 @@ public slots:
     void onItemChanged(int row);
 
 private Q_SLOTS:
-    void onAccountReady(Tp::Account *account);
+    void onAccountAvailable(Tp::AccountPtr account);
     void onAccountRemoved();
 
 private:

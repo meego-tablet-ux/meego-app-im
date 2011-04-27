@@ -61,9 +61,7 @@ protected:
     void initializeChannelApprover();
 
 private Q_SLOTS:
-    void onAccountManagerReady();
-    void onAccountReady(Tp::Account *account);
-    void onConnectionReady(Tp::ConnectionPtr conn);
+    void onConnectionAvailable(Tp::ConnectionPtr conn);
     void onAcceptContact(Tp::AccountPtr account, QString contactId);
     void onRejectContact(Tp::AccountPtr account, QString contactId);
     void loadTranslator();

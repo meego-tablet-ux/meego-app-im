@@ -100,7 +100,7 @@ void IMServiceModel::configure(QString serviceName)
     qDebug() << "Configure option not available";
 }
 
-void IMServiceModel::onAccountReady(Tp::Account *account)
+void IMServiceModel::onAccountAvailable(Tp::AccountPtr account)
 {
     // check if it already exists
     foreach(QString id, m_names) {
@@ -109,14 +109,14 @@ void IMServiceModel::onAccountReady(Tp::Account *account)
         }
     }
 
-    connect(account, SIGNAL(removed()),
+    connect(account.data(), SIGNAL(removed()),
             SLOT(onAccountRemoved()));
 
     // add if new
     beginInsertRows(QModelIndex(), m_names.size(), m_names.size());
     //m_displayNames.append(tr("%1 - %2").arg(account->displayName(), accountServiceName(account->iconName()))); // account and service name
 
-    m_accounts.append(account);
+    m_accounts.append(account.data());
     m_icons.append(m_protocolsModel->iconForId(account->iconName()));
     m_categories.append("im");
     m_names.append(account->uniqueIdentifier());

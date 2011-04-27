@@ -138,9 +138,8 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     emit accountsModelCreated();
 
     connect(mTpManager, SIGNAL(handlerRegistered()), SLOT(onHandlerRegistered()));
-    connect(mTpManager,
-            SIGNAL(contactsUpgraded(QList<Tp::ContactPtr>)),
-            SLOT(onContactsUpgraded()));
+    connect(mTpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
+            this, SLOT(onContactsUpgraded()));
     connect(mNetworkConfigManager, SIGNAL(onlineStateChanged(bool)),
             mAccountsModel, SLOT(onNetworkStatusChanged(bool)));
 

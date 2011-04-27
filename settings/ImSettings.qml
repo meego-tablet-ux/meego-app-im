@@ -139,20 +139,18 @@ Labs.ApplicationPage {
             }
 
             Item {
-                id: spacer
                 width: 10
                 height: 10
             }
 
-            Grid {
-                columns: 2
+            Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 10
                 anchors.right: parent.right
-                spacing: 10
+                height: childrenRect.height
 
                 Text {
-                    anchors.margins: 10
+                    anchors.left: parent.left
                     text: qsTr("Show offline contacts")
                     font.pixelSize: theme_fontPixelSizeLarge
                 }
@@ -161,9 +159,18 @@ Labs.ApplicationPage {
                     id: offlineContactsToggle
                     on: settingsHelper.showOfflineContacts
                     onToggled: settingsHelper.showOfflineContacts = isOn;
+                    anchors.margins: 10
+                    anchors.right: parent.right
                 }
+            }
 
-                /*Text {
+            Item {
+                width: 10
+                height: 10
+            }
+
+
+            /*Text {
                     anchors.margins: 10
                     text: qsTr("Audio alert on new message")
                     font.pixelSize: theme_fontPixelSizeLarge
@@ -175,8 +182,14 @@ Labs.ApplicationPage {
                     onToggled: settingsHelper.enableAudioAlerts = isOn;
                 }*/
 
+            Item {
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                anchors.right: parent.right
+                height: childrenRect.height
+
                 Text {
-                    anchors.margins: 10
+                    anchors.left: parent.left
                     text: qsTr("Notification on new message")
                     font.pixelSize: theme_fontPixelSizeLarge
                 }
@@ -185,7 +198,10 @@ Labs.ApplicationPage {
                     id: notificationToggle
                     on: settingsHelper.enableNotifications;
                     onToggled: settingsHelper.enableNotifications = isOn;
+                    anchors.margins: 10
+                    anchors.right: parent.right
                 }
+            }
 
                 /*Text {
                     anchors.margins: 10
@@ -199,23 +215,26 @@ Labs.ApplicationPage {
                     onToggled: settingsHelper.enableVibrate = isOn;
                 }*/
 
-                Item {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: childrenRect.height + 20
-                    Button {
-                        id: clearHistoryButton
-                        anchors.centerIn: parent
+            Item {
+                width: 10
+                height: 10
+            }
 
-                        text: qsTr("Clear chat history")
-                        textColor: theme_buttonFontColor
-                        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+            Item {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: childrenRect.height + 20
+                Button {
+                    id: clearHistoryButton
+                    anchors.centerIn: parent
 
-                        onClicked: accountsModel.clearHistory();
-                    }
+                    text: qsTr("Clear chat history")
+                    textColor: theme_buttonFontColor
+                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
+                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+
+                    onClicked: accountsModel.clearHistory();
                 }
-
             }
 
             Item {

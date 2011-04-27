@@ -61,7 +61,6 @@ private Q_SLOTS:
     void onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel);
     void onFinished();
     void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
-    void onConnectionInvalidated(Tp::DBusProxy *proxy);
 
 private:
     Tp::AccountManagerPtr mAccountManager;

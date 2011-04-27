@@ -125,16 +125,6 @@ void TelepathyManager::onNewAccount(const Tp::AccountPtr &account)
     emit accountAvailable(account);
 }
 
-void TelepathyManager::onConnectionInvalidated(Tp::DBusProxy *proxy)
-{
-    qDebug() << "TelepathyManager::onConnectionInvalidated";
-
-    Tp::Connection *conn = qobject_cast<Tp::Connection *>(proxy);
-    if (conn) {
-        disconnect(conn, 0, this, 0);
-   }
-}
-
 void TelepathyManager::onConnectionChanged(const Tp::ConnectionPtr &connection)
 {
     qDebug() << "TelepathyManager::onConnectionChanged: connection=" << connection.data();

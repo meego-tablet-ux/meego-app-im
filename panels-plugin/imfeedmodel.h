@@ -105,7 +105,7 @@ protected slots:
     void onAllKnownContactsChanged(const Tp::Contacts &contactsAdded,
                                    const Tp::Contacts &contactsRemoved,
                                    const Tp::Channel::GroupMemberChangeDetails &details);
-    void onPublishStateChanged(Tp::Contact::PresenceState state, const Tp::Channel::GroupMemberChangeDetails &details);
+    void onPublishStateChanged(Tp::Contact::PresenceState state);
     void onServiceRegistered();
     void onServiceUnregistered();
 

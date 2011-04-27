@@ -589,14 +589,13 @@ void IMFeedModel::onAllKnownContactsChanged(const Tp::Contacts &contactsAdded,
         contact->setProperty("feedtype", InformationType);
 
         connect(contact.data(),
-                SIGNAL(publishStateChanged(Tp::Contact::PresenceState,Tp::Channel::GroupMemberChangeDetails)),
-                SLOT(onPublishStateChanged(Tp::Contact::PresenceState,Tp::Channel::GroupMemberChangeDetails)));
+                SIGNAL(publishStateChanged(Tp::Contact::PresenceState, QString)),
+                SLOT(onPublishStateChanged(Tp::Contact::PresenceState)));
     }
 }
 
-void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state, const Tp::Channel::GroupMemberChangeDetails &details)
+void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
 {
-    Q_UNUSED(details);
     //only process if it was added and it's a contact marked as InformationType
     if (state == Tp::Contact::PresenceStateYes) {
         Tp::Contact *contact = qobject_cast<Tp::Contact *>(sender());

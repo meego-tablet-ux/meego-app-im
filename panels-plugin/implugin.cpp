@@ -133,20 +133,25 @@ void IMPlugin::onConnectionAvailable(Tp::ConnectionPtr conn)
                 && model->account()->connection()->isValid()) {
             if (model->account()->connection() == conn) {
                 Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
-                connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
+                connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
                         model, SLOT(onPresencePublicationRequested(Tp::Contacts)));
                 connect(manager.data(), SIGNAL(allKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
                         model, SLOT(onAllKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)));
                 connect(model, SIGNAL(acceptContact(Tp::AccountPtr,QString)), SLOT(onAcceptContact(Tp::AccountPtr,QString)));
                 connect(model,SIGNAL(rejectContact(Tp::AccountPtr,QString)), SLOT(onRejectContact(Tp::AccountPtr,QString)));
 
-                // Look for friend requests
+                // Look for friend requests and listen for publish changes
                 Tp::Contacts contacts = manager->allKnownContacts();
                 QList<Tp::ContactPtr> friendRequests;
                 foreach (Tp::ContactPtr contact, contacts) {
+                    // if a friend request
                     if (contact->publishState() == Tp::Contact::PresenceStateAsk) {
                         friendRequests.append(contact);
                     }
+
+                    // connect to publish changes
+                    connect(contact.data(), SIGNAL(publishStateChanged(Tp::Contact::PresenceState,QString)),
+                            model, SLOT(onPublishStateChanged(Tp::Contact::PresenceState)));
                 }
                 // Add the friend requests to the model
                 if (friendRequests.count() > 0) {

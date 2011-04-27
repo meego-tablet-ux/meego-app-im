@@ -76,11 +76,15 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
 
     foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
         if (account->uniqueIdentifier() == service) {
-            IMFeedModel *model = new IMFeedModel(mObserver, account);
+            IMFeedModel *model = new IMFeedModel(mObserver, account, this);
 
             connect(model, SIGNAL(applicationRunningChanged(bool)),
                     mChannelApprover, SLOT(setApplicationRunning(bool)));
             mFeedModels[service] = model;
+            if (!account->connection().isNull()
+                    && account->connection()->isValid()) {
+                onConnectionAvailable(account->connection());
+            }
             return model;
         }
     }
@@ -125,7 +129,8 @@ void IMPlugin::onConnectionAvailable(Tp::ConnectionPtr conn)
     // find the account related to the connection and connect
     // the contact manager to the publication request slot on the model
     foreach (IMFeedModel *model, mFeedModels) {
-        if (!model->account()->connection().isNull()) {
+        if (!model->account()->connection().isNull()
+                && model->account()->connection()->isValid()) {
             if (model->account()->connection() == conn) {
                 Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
                 connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),

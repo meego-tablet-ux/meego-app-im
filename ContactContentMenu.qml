@@ -65,7 +65,7 @@ Item {
         }
     }
 
-    width: 400
+    width: 200
     height: meColumn.height
 
     Column {
@@ -73,28 +73,19 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
 
-        Item {
-            id: meInfo
-            height: 64
-            width: parent.width
-
-            Image {
-                anchors.fill: parent
-                source: "image://meegotheme/widgets/common/menu/menu-background"
-            }
-
-            Avatar {
-                id: avatarImage
-                anchors.leftMargin: 10
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.topMargin: 2
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 2
-                source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
-                        "?" + accountFactory.avatarSerial
-                noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
-            }
+        Avatar {
+            id: avatarImage
+            anchors.leftMargin: 10
+            anchors.left: parent.left
+            anchors.rightMargin: 10
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: 2
+            height: width
+            anchors.bottomMargin: 2
+            source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
+                    "?" + accountFactory.avatarSerial
+            noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
 
             Component {
                 id: avatarMenu
@@ -112,46 +103,47 @@ Item {
                     photoPicker.show();
                 }
             }
+        }
 
-            Column {
-                id: accountInfoColumn
-                anchors.margins: 5
-                anchors.left: avatarImage.right
-                anchors.right: parent.right
-                anchors.verticalCenter: avatarImage.verticalCenter
-                spacing: 5
+        Item {
+            height: 5
+            anchors.left: parent.left
+            anchors.right: parent.right
+        }
 
-                Text {
-                    id: displayName
-                    width: parent.width
-                    text: scene.accountItem.data(AccountsModel.NicknameRole)
-                    color: nameColor
-                    font.pixelSize: theme_fontPixelSizeLarge
-                    elide: Text.ElideRight
-                }
+        Row {
+            id: statusRow
+            spacing: 5
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 10
 
-                Row {
-                    id: statusRow
-                    spacing: 5
-                    anchors.right: parent.right
-                    anchors.left: parent.left
-
-                    PresenceIcon {
-                        id: presenceIcon
-                        anchors.verticalCenter: statusMessage.verticalCenter
-                        status: scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole)
-                    }
-
-                    Text {
-                        id: statusMessage
-                        text: ""
-                        color: theme_contextMenuFontColor
-                        font.pixelSize: theme_fontPixelSizeLarge
-                        width: parent.width - presenceIcon.width
-                        elide: Text.ElideRight
-                    }
-                }
+            Text {
+                id: displayName
+                width: parent.width - presenceIcon.width - 5
+                text: scene.accountItem.data(AccountsModel.NicknameRole)
+                color: nameColor
+                font.pixelSize: theme_fontPixelSizeSmall
+                elide: Text.ElideRight
             }
+
+            PresenceIcon {
+                id: presenceIcon
+                anchors.verticalCenter: statusMessage.verticalCenter
+                status: scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole)
+            }
+        }
+
+        Text {
+            id: statusMessage
+            text: ""
+            color: theme_contextMenuFontColor
+            font.pixelSize: theme_fontPixelSizeSmall
+            width: parent.width - presenceIcon.width
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 10
         }
 
         MenuItemSeparator { }

@@ -162,6 +162,6 @@ Labs.ApplicationPage {
     menuContent: ContactContentMenu {
         currentPage: contactsScreenPage;
     }
-    menuWidth: 400
+    menuWidth: 200
 
 }

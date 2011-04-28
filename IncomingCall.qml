@@ -44,7 +44,7 @@ ModalDialog {
                 width: parent.width
 
                 anchors {
-                    left: avatar.right
+                    left: avatarItem.right
                     verticalCenter: avatarItem.verticalCenter
                     margins: 10
                 }
@@ -62,6 +62,7 @@ ModalDialog {
                 Row {
                     spacing: 5
                     height: message.height
+                    width: parent.width
 
                     PresenceIcon {
                         id: presence
@@ -72,7 +73,9 @@ ModalDialog {
 
                     Text {
                         id: message
-                        text: scene.incomingContactItem.data(AccountsModel.PresenceMessageRole);
+                        text: (scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
+                                scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
+                                scene.presenceStatusText(scene.incomingContactItem.data(AccountsModel.PresenceTypeRole)))
                         width: parent.width - presence.width - 10
                         color: theme_fontColorNormal
                         font.pixelSize: theme_fontPixelSizeLarge

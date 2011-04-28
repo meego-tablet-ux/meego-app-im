@@ -57,7 +57,7 @@ public:
     virtual ~IMConversationModel();
 
     virtual QVariant data(const QModelIndex &index, int role) const;
-    QString searchString(void) const;
+    QString searchString() const;
     void notifyCallStatusChanged(CallAgent *callAgent, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus);
     void notifyCallError(Tp::ContactPtr contact, const QString & errorString);
     void notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel);
@@ -88,15 +88,16 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void searchByString(const QString &search);
-    void slotResetModel(void);
-    void newerMatch(void);
-    void olderMatch(void);
+    void slotResetModel();
+    void newerMatch();
+    void olderMatch();
 
 protected Q_SLOTS:
     virtual void onChatStateChanged(const Tp::ContactPtr &contact, Tp::ChannelChatState state);
     void onItemChanged();
-    void calculateMatches(void);
+    void calculateMatches();
     void continueSearch();
+    void onBackFetched();
 
 protected:
     QString contactColor(const QString &id) const;
@@ -113,6 +114,7 @@ private:
     Tpy::SessionConversationModel *mSessionConversationModel;
     Tp::ContactPtr mSelf;
     Tp::AccountPtr mAccount;
+    int mNumDuplicatedMessages;
 
     // matches are sorted reverse chronological order, 0 is newest
     int mCurrentMatch;

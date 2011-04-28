@@ -10,6 +10,7 @@
 #include "callagent.h"
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/ContactManager>
+#include <TelepathyQt4/ReceivedMessage>
 #include <TelepathyQt4Yell/Models/CustomEventItem>
 #include <TelepathyQt4Yell/Models/CallEventItem>
 #include "filetransferitem.h"
@@ -24,17 +25,21 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
       mLoggerConversationModel(0),
       mSelf(self),
       mAccount(account),
+      mNumDuplicatedMessages(0),
       mCurrentMatch(0),
       mCurrentRowMatch(0),
       mSearching(false)
 {
-    // if the contact is null, it means we are creating
+    // if the contact is null, it means we are in 1-to-1 chat
     if (!contact.isNull()) {
         mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
     }
 
     if (mLoggerConversationModel) {
         addModel(mLoggerConversationModel);
+        connect(mLoggerConversationModel,
+                SIGNAL(backFetched(int)),
+                SLOT(onBackFetched()));
         connect(mLoggerConversationModel,
                 SIGNAL(backFetchable()),
                 SIGNAL(backFetchable()));
@@ -47,6 +52,9 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
         connect(mLoggerConversationModel,
                 SIGNAL(backFetched(int)),
                 SLOT(continueSearch()));
+        // messages in the queue will be reported from both conversation models (logger and session)
+        // so basically we will delete the ones in the logger when loaded
+        mNumDuplicatedMessages = channel->messageQueue().count();
     }
 
     mSessionConversationModel = new Tpy::SessionConversationModel(self, channel, parent);
@@ -647,5 +655,21 @@ void IMConversationModel::continueSearch()
     } else {
         mSearching = false;
         emit searchingChanged();
+    }
+}
+
+void IMConversationModel::onBackFetched()
+{
+    qDebug() << "IMConversationModel::onBackFetched" << mNumDuplicatedMessages;
+    if (mLoggerConversationModel && mNumDuplicatedMessages > 0) {
+        int numToDelete = mNumDuplicatedMessages;
+        if (numToDelete > mLoggerConversationModel->rowCount()) {
+            numToDelete = mLoggerConversationModel->rowCount();
+        }
+        int numRow = mLoggerConversationModel->rowCount() - numToDelete;
+        qDebug() << "before " << mLoggerConversationModel->rowCount();
+        mLoggerConversationModel->removeRows(numRow, numToDelete);
+        qDebug() << "after " << mLoggerConversationModel->rowCount();
+        mNumDuplicatedMessages -= numToDelete;
     }
 }

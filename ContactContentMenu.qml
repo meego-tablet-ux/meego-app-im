@@ -150,7 +150,7 @@ Item {
         MenuItemSeparator { id: statusSeparator }
 
         MenuItem {
-            id: meUpdateStatusItem
+            id: updateStatusItem
             text: qsTr("Update status")
 
             onClicked: {
@@ -194,7 +194,7 @@ Item {
         }
 
         Item {
-            id: meUpdateStatus
+            id: updateStatus
             height: statusMenu.visible ? childrenRect.height + 2 * statusMenu.anchors.topMargin : 0
             width: parent.width
 
@@ -351,13 +351,41 @@ Item {
 
         MenuItem {
             id: updateNickItem
-            text: qsTr("Update user display name")
+            text: qsTr("Change display name")
 
             onClicked: {
                 if (nicknameColumn.visible) {
                     nicknameColumn.opacity = 0;
+                    avatarImage.visible = true;
+                    avatarSeparator.visible = true;
+                    statusRow.visible = true;
+                    statusMessage.visible = true;
+                    statusSeparator.visible = true;
+                    updateStatusItem.visible = true;
+                    updateStatusSeparator.visible = true;
+                    nicknameSeparator.visible = true;
+                    addIMContactItem.visible = true;
+                    addAFriend.visible = true;
+                    friendSeparator.visible = true;
+                    clearHistoryItem.visible = true;
+                    historySeparator.visible = true;
+                    logOutItem.visible = true;
                 } else {
                     nicknameColumn.opacity = 1;
+                    avatarImage.visible = false;
+                    avatarSeparator.visible = false;
+                    statusRow.visible = false;
+                    statusMessage.visible = false;
+                    statusSeparator.visible = false;
+                    updateStatusItem.visible = false;
+                    updateStatusSeparator.visible = false;
+                    nicknameSeparator.visible = false;
+                    addIMContactItem.visible = false;
+                    addAFriend.visible = false;
+                    friendSeparator.visible = false;
+                    clearHistoryItem.visible = false;
+                    historySeparator.visible = false;
+                    logOutItem.visible = false;
                 }
             }
         }
@@ -441,8 +469,36 @@ Item {
                 if(addAFriend.opacity == 1) {
                     addAFriend.opacity = 0;
                     addAFriend.resetHelper();
+                    avatarImage.visible = true;
+                    avatarSeparator.visible = true;
+                    statusRow.visible = true;
+                    statusMessage.visible = true;
+                    statusSeparator.visible = true;
+                    updateStatusItem.visible = true;
+                    updateStatusSeparator.visible = true;
+                    updateNick.visible = true;
+                    updateNickItem.visible = true;
+                    nicknameSeparator.visible = true;
+                    friendSeparator.visible = true;
+                    clearHistoryItem.visible = true;
+                    historySeparator.visible = true;
+                    logOutItem.visible = true;
                 } else {
                     addAFriend.opacity = 1;
+                    avatarImage.visible = false;
+                    avatarSeparator.visible = false;
+                    statusRow.visible = false;
+                    statusMessage.visible = false;
+                    statusSeparator.visible = false;
+                    updateStatusItem.visible = false;
+                    updateStatusSeparator.visible = false;
+                    updateNick.visible = false;
+                    updateNickItem.visible = false;
+                    nicknameSeparator.visible = false;
+                    friendSeparator.visible = false;
+                    clearHistoryItem.visible = false;
+                    historySeparator.visible = false;
+                    logOutItem.visible = false;
                 }
             }
         }

@@ -13,7 +13,7 @@ import TelepathyQML 0.1
 
 Item {
     width: parent.width
-    property int itemHeight: 50
+    property int itemHeight: theme_commonBoxHeight
     height: itemHeight
     id: mainArea
 
@@ -26,26 +26,38 @@ Item {
 
     Avatar {
         id: avatar
-        width: mainArea.height - 4
-        height: mainArea.height - 4
-        anchors.margins: 2
-        anchors.left: mainArea.left
-        anchors.top: mainArea.top
+
+        anchors.left: parent.left
+        anchors.top:  parent.top
+        anchors.bottom: parent.bottom
 
         source: model.avatar
     }
 
-    Text {
-        id: displayText
+    Column {
         anchors.margins: 10
         anchors.left: avatar.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: acceptButton.left
-        // TODO: check width and display alias or username accordingly
-        text: qsTr("Request from %1").arg(model.aliasName)
-        elide: Text.ElideRight
-        font.weight: Font.Bold
-        color: theme_fontColorNormal
+
+        Text {
+            text: qsTr("Friend request from")
+            elide: Text.ElideRight
+            color: theme_fontColorNormal
+            width: parent.width
+        }
+
+
+        Text {
+            id: displayText
+
+            // TODO: check width and display alias or username accordingly
+            text: model.aliasName
+            elide: Text.ElideRight
+            font.weight: Font.Bold
+            color: theme_fontColorNormal
+            width: parent.width
+        }
     }
 
     Button {
@@ -56,7 +68,6 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        height: mainArea.height - 10
         text: qsTr("Accept")
         textColor: theme_buttonFontColor
         bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
@@ -73,7 +84,6 @@ Item {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-        height: mainArea.height - 10
 
         text: qsTr("Cancel")
         textColor: theme_buttonFontColor

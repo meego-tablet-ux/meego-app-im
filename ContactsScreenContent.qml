@@ -123,7 +123,7 @@ Labs.ApplicationPage {
             ListView {
                 id: requestsView
                 interactive: false
-                property int itemHeight: 55;
+                property int itemHeight: theme_commonBoxHeight;
 
                 height: itemHeight * count
 

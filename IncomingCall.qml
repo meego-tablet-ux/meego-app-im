@@ -2,7 +2,7 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
@@ -14,8 +14,6 @@ import TelepathyQML 0.1
 ModalDialog {
     id: container
     title: qsTr("Incoming Call")
-    width: 420
-    height:  480
     acceptButtonEnabled: true
     acceptButtonText: qsTr("Accept")
     acceptButtonImage: "image://meegotheme/images/btn_blue_up"
@@ -23,44 +21,69 @@ ModalDialog {
     cancelButtonText: qsTr("Decline")
     cancelButtonImage: "image://meegotheme/images/btn_red_up"
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
-    content: Item {
 
-        height: 400
-        width:  420
+    content:
+        Row {
+            spacing: 10
+            height: avatarItem.height * 2
+            width: childrenRect.width
+            anchors.horizontalCenter: parent.horizontalCenter
 
-        Column {
-            spacing: 5
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            Avatar {
+                id: avatarItem
+                height: 75
+                width: 75
+                anchors.verticalCenter: parent.verticalCenter
 
-            Text {
-                id: dialogText
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width - 10
-
-                text: scene.incomingContactItem.data(AccountsModel.AliasRole);
-                elide: Text.ElideRight
-                horizontalAlignment: Text.AlignHCenter
+                source: scene.incomingContactItem.data(AccountsModel.AvatarRole)
+                noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
             }
 
-            Item {
+            Column {
+                id: nameColumn
+                width: parent.width
 
-                height: 300
-                width: 300
+                anchors {
+                    left: avatarItem.right
+                    verticalCenter: avatarItem.verticalCenter
+                    margins: 10
+                }
+                height: childrenRect.height
 
-                anchors.horizontalCenter: parent.horizontalCenter
+                Text {
+                    id: dialogText
+                    anchors.top: avatarItem.top
 
-                Avatar {
-                    id: avatarItem
+                    text: scene.incomingContactItem.data(AccountsModel.AliasRole);
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                }
 
-                    source: scene.incomingContactItem.data(AccountsModel.AvatarRole)
-                    noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
+                Row {
+                    spacing: 5
+                    height: message.height
+                    width: parent.width
+
+                    PresenceIcon {
+                        id: presence
+                        status: scene.incomingContactItem.data(AccountsModel.PresenceTypeRole);
+                        anchors.verticalCenter: message.verticalCenter
+                        anchors.topMargin: 5
+                    }
+
+                    Text {
+                        id: message
+                        text: (scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
+                                scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
+                                scene.presenceStatusText(scene.incomingContactItem.data(AccountsModel.PresenceTypeRole)))
+                        width: parent.width - presence.width - 10
+                        color: theme_fontColorNormal
+                        font.pixelSize: theme_fontPixelSizeLarge
+                        elide: Text.ElideRight
+                    }
                 }
             }
         }
-    }
 
     property string accountId: ""
     property string contactId: ""

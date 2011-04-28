@@ -66,10 +66,10 @@ Item {
     }
 
     width: 200
-    height: meColumn.height
+    height: optionColumn.height
 
     Column {
-        id: meColumn
+        id: optionColumn
         anchors.right: parent.right
         anchors.left: parent.left
 
@@ -106,6 +106,7 @@ Item {
         }
 
         Item {
+            id: avatarSeparator
             height: 5
             anchors.left: parent.left
             anchors.right: parent.right
@@ -129,7 +130,7 @@ Item {
 
             PresenceIcon {
                 id: presenceIcon
-                anchors.verticalCenter: statusMessage.verticalCenter
+                anchors.verticalCenter: displayName.verticalCenter
                 status: scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole)
             }
         }
@@ -146,7 +147,7 @@ Item {
             anchors.margins: 10
         }
 
-        MenuItemSeparator { }
+        MenuItemSeparator { id: statusSeparator }
 
         MenuItem {
             id: meUpdateStatusItem
@@ -156,8 +157,38 @@ Item {
                 if(statusMenu.visible == false) {
                     statusMenu.opacity = 1;
                     customMessageBox.focus = true;
+                    avatarImage.visible = false;
+                    avatarSeparator.visible = false;
+                    statusRow.visible = false;
+                    statusMessage.visible = false;
+                    statusSeparator.visible = false;
+                    updateStatusSeparator.visible = false;
+                    updateNickItem.visible = false;
+                    updateNick.visible = false;
+                    nicknameSeparator.visible = false;
+                    addIMContactItem.visible = false;
+                    addAFriend.visible = false;
+                    friendSeparator.visible = false;
+                    clearHistoryItem.visible = false;
+                    historySeparator.visible = false;
+                    logOutItem.visible = false;
                 } else {
                     statusMenu.opacity = 0;
+                    avatarImage.visible = true;
+                    avatarSeparator.visible = true;
+                    statusRow.visible = true;
+                    statusMessage.visible = true;
+                    statusSeparator.visible = true;
+                    updateStatusSeparator.visible = true;
+                    updateNickItem.visible = true;
+                    updateNick.visible = true;
+                    nicknameSeparator.visible = true;
+                    addIMContactItem.visible = true;
+                    addAFriend.visible = true;
+                    friendSeparator.visible = true;
+                    clearHistoryItem.visible = true;
+                    historySeparator.visible = true;
+                    logOutItem.visible = true;
                 }
             }
         }
@@ -316,10 +347,10 @@ Item {
             }
         }
 
-        MenuItemSeparator { }
+        MenuItemSeparator { id: updateStatusSeparator }
 
         MenuItem {
-            id: meUpdateNickItem
+            id: updateNickItem
             text: qsTr("Update user display name")
 
             onClicked: {
@@ -332,7 +363,7 @@ Item {
         }
 
         Item {
-            id: meUpdateNick
+            id: updateNick
             height: nicknameColumn.visible ? childrenRect.height + 2 * nicknameColumn.spacing : 0
             width: parent.width
 
@@ -399,7 +430,7 @@ Item {
             }
         }
 
-        MenuItemSeparator { }
+        MenuItemSeparator { id: nicknameSeparator }
 
         MenuItem {
             id: addIMContactItem
@@ -432,7 +463,7 @@ Item {
             }
         }
 
-        MenuItemSeparator { }
+        MenuItemSeparator { id: friendSeparator }
 
         MenuItem {
             id: clearHistoryItem
@@ -443,14 +474,10 @@ Item {
             }
         }
 
-        Image {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-        }
+        MenuItemSeparator { id: historySeparator }
 
         MenuItem {
-            id: meLogOutItem
+            id: logOutItem
             text: (scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
                        qsTr("Log in") : qsTr("Log out"))
 

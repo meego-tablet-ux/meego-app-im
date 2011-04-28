@@ -34,9 +34,12 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: 10
         anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.rightMargin: 10
         color: mouseArea.pressed ? theme_fontColorSelected :
                                    theme_contextMenuFontColor
         font.pixelSize: theme_contextMenuFontPixelSize
+        elide: Text.ElideRight
     }
 
     MouseArea {

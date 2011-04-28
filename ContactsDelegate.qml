@@ -161,7 +161,7 @@ Item {
             anchors.left: parent.left
             anchors.top:  parent.top
             anchors.bottom: parent.bottom
-            anchors.margins: 3
+            anchors.margins: -1
             visible: (model.avatar != "MULTIPLE")
         }
 
@@ -173,7 +173,7 @@ Item {
                 right: chatIcon.left
                 top: mainArea.top
                 bottom: mainArea.bottom
-                margins: 3
+                margins: 0
             }
 
             clip: true

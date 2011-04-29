@@ -54,14 +54,10 @@ Item {
                      "image://meegotheme/widgets/common/avatar/avatar-inactive-overlay")
     }
 
-    Image {
+    BorderImage {
         id: noAvatar
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors.fill: avatarImage
         source: "image://meegotheme/widgets/common/avatar/avatar-default"
         visible: !avatarImage.visible
-        width: height
-        height: parent.height
     }
 }

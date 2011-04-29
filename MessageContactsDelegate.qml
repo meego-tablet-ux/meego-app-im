@@ -18,7 +18,6 @@ Item {
     height: mainArea.height
     property bool tabDiv: false
     property variant currentPage
-    property string nameColor: "black"
     property bool active: (model.presenceType == TelepathyTypes.ConnectionPresenceTypeAvailable
                            || model.presenceType == TelepathyTypes.ConnectionPresenceTypeBusy
                            || model.presenceType == TelepathyTypes.ConnectionPresenceTypeAway
@@ -139,7 +138,7 @@ Item {
                 text: model.aliasName
                 width: parent.width
                 elide: Text.ElideRight
-                color: nameColor
+                color: theme_fontColorNormal
                 font.pixelSize: theme_fontPixelSizeLarge
             }
 
@@ -159,7 +158,7 @@ Item {
                     id: message
                     text: ""
                     width: parent.width - presence.width - 10
-                    color: theme_fontColorNormal
+                    color: theme_fontColorInactive
                     font.pixelSize: theme_fontPixelSizeLarge
                     elide: Text.ElideRight
                 }

@@ -1026,7 +1026,7 @@ Labs.ApplicationPage {
 
     menuWidth: 600
 
-    ModalContextMenu {
+    ContextMenu {
         id: contextMenu
         width: 350
         content: ActionMenu {

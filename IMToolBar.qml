@@ -155,7 +155,7 @@ Item {
             }
         }
 
-        ModalContextMenu {
+        ContextMenu {
             id: smileyContextMenu
 
             content: SmileyGridView {
@@ -178,7 +178,7 @@ Item {
             }
         }
 
-        ModalContextMenu {
+        ContextMenu {
             id: sendFileContextMenu
 
             content: SendFileView {

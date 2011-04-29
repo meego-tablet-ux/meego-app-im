@@ -67,7 +67,7 @@ Item {
             }
         }
 
-        ModalContextMenu {
+        ContextMenu {
             id: contextMenu
             content: ActionMenu {
                 id: actionMenu

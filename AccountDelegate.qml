@@ -85,7 +85,7 @@ Item {
             // onRejected:
         }
 
-        ModalContextMenu {
+        ContextMenu {
             id: contextMenu
 
             // if we don't change the parent here, the maximum height of the context menu is that of the account row,

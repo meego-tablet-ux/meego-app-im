@@ -69,7 +69,7 @@ Item {
             }
         }
 
-        ModalContextMenu {
+        ContextMenu {
             id: contextMenu
             content: Column {
                 id: menuContent

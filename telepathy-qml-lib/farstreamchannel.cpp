@@ -322,21 +322,6 @@ void FarstreamChannel::initAudioInput()
         }
     }
 
-    GstElement *element = addElementToBin(mGstAudioInput, source, "capsfilter");
-    if (!element) {
-        setError("GStreamer audio input caps filter element could not be created");
-    } else {
-        source = element;
-
-        GstCaps *caps = gst_caps_new_simple(
-            "audio/x-raw-int",
-            "rate", G_TYPE_INT, 8000,
-            NULL);
-        if (caps) {
-            g_object_set(G_OBJECT(element), "caps", caps, NULL);
-        }
-    }
-
     mGstAudioInputVolume = addElementToBin(mGstAudioInput, source, "volume");
     if (!mGstAudioInputVolume) {
         setError("GStreamer audio input volume could not be created");

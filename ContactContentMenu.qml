@@ -78,8 +78,6 @@ Item {
             anchors.left: parent.left
             anchors.rightMargin: 10
             anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: 2
             height: width
             anchors.bottomMargin: 2
             source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
@@ -170,6 +168,7 @@ Item {
                     statusMessage.visible = false;
                     statusMessageSeparator.visible = false;
                     statusSeparator.visible = false;
+                    updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
                     updateNickItem.visible = false;
                     updateNick.visible = false;
@@ -258,6 +257,14 @@ Item {
                 }
 
                 property string statusString: ""
+
+                Text {
+                    text: qsTr("Your Status:")
+                    color: theme_fontColorNormal
+                    font.pixelSize: theme_fontPixelSizeNormal
+                    elide: Text.ElideRight
+
+                }
 
                 Repeater {
                     id: statusView

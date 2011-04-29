@@ -16,7 +16,6 @@ Item {
     id: meTabItem
 
     property variant currentPage
-    property string nameColor: "black"
 
     // FIXME remove after full migration to MeegGo.Components
     property variant window : scene
@@ -79,8 +78,6 @@ Item {
             anchors.left: parent.left
             anchors.rightMargin: 10
             anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: 2
             height: width
             anchors.bottomMargin: 2
             source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
@@ -123,8 +120,9 @@ Item {
                 id: displayName
                 width: parent.width - presenceIcon.width - 5
                 text: scene.accountItem.data(AccountsModel.NicknameRole)
-                color: nameColor
-                font.pixelSize: theme_fontPixelSizeSmall
+                color: theme_fontColorNormal
+                font.weight: Font.Bold
+                font.pixelSize: theme_fontPixelSizeNormal
                 elide: Text.ElideRight
             }
 
@@ -138,13 +136,20 @@ Item {
         Text {
             id: statusMessage
             text: ""
-            color: theme_contextMenuFontColor
+            color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
             width: parent.width - presenceIcon.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.margins: 10
+        }
+
+        Item {
+            id: statusMessageSeparator
+            height: 15
+            anchors.left: parent.left
+            anchors.right: parent.right
         }
 
         MenuItemSeparator { id: statusSeparator }
@@ -161,7 +166,9 @@ Item {
                     avatarSeparator.visible = false;
                     statusRow.visible = false;
                     statusMessage.visible = false;
+                    statusMessageSeparator.visible = false;
                     statusSeparator.visible = false;
+                    updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
                     updateNickItem.visible = false;
                     updateNick.visible = false;
@@ -178,6 +185,7 @@ Item {
                     avatarSeparator.visible = true;
                     statusRow.visible = true;
                     statusMessage.visible = true;
+                    statusMessageSeparator.visible = true;
                     statusSeparator.visible = true;
                     updateStatusSeparator.visible = true;
                     updateNickItem.visible = true;
@@ -249,6 +257,14 @@ Item {
                 }
 
                 property string statusString: ""
+
+                Text {
+                    text: qsTr("Your Status:")
+                    color: theme_fontColorNormal
+                    font.pixelSize: theme_fontPixelSizeNormal
+                    elide: Text.ElideRight
+
+                }
 
                 Repeater {
                     id: statusView
@@ -360,6 +376,7 @@ Item {
                     avatarSeparator.visible = true;
                     statusRow.visible = true;
                     statusMessage.visible = true;
+                    statusMessageSeparator.visible = true;
                     statusSeparator.visible = true;
                     updateStatusItem.visible = true;
                     updateStatusSeparator.visible = true;
@@ -376,6 +393,7 @@ Item {
                     avatarSeparator.visible = false;
                     statusRow.visible = false;
                     statusMessage.visible = false;
+                    statusMessageSeparator.visible = false;
                     statusSeparator.visible = false;
                     updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
@@ -473,6 +491,7 @@ Item {
                     avatarSeparator.visible = true;
                     statusRow.visible = true;
                     statusMessage.visible = true;
+                    statusMessageSeparator.visible = true;
                     statusSeparator.visible = true;
                     updateStatusItem.visible = true;
                     updateStatusSeparator.visible = true;
@@ -489,6 +508,7 @@ Item {
                     avatarSeparator.visible = false;
                     statusRow.visible = false;
                     statusMessage.visible = false;
+                    statusMessageSeparator.visible = false;
                     statusSeparator.visible = false;
                     updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;

@@ -15,7 +15,6 @@ Item {
     id: mainArea
 
     property int itemHeight: theme_commonBoxHeight
-    property string nameColor: "black"
     property variant contactItem: model.item
 
     width: parent.width
@@ -45,7 +44,7 @@ Item {
         Text {
             text: qsTr("Friend request from")
             elide: Text.ElideRight
-            color: theme_fontColorNormal
+            color: theme_fontColorInactive
             width: parent.width
             font.pixelSize: theme_fontPixelSizeNormal
         }
@@ -57,7 +56,7 @@ Item {
             // TODO: check width and display alias or username accordingly
             text: model.aliasName
             elide: Text.ElideRight
-            color: nameColor
+            color: theme_fontColorNormal
             width: parent.width
             font.pixelSize: theme_fontPixelSizeLarge
         }

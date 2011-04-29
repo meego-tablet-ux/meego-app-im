@@ -37,6 +37,7 @@ Item {
         id: itemsColumn
         anchors.left: parent.left
         height: childrenRect.height
+        width: 200
 
         Item {
             anchors.left: parent.left

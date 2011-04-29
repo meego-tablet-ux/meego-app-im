@@ -337,6 +337,18 @@ Item {
                     anchors.rightMargin: 15
                     defaultText: qsTr("Custom status message");
                     text: scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
+                    onAccepted: {
+                        var status;
+                        for(var i = 0; i < statusModel.count; ++i) {
+                            if (statusRadioGroup.selectedValue == statusModel.get(i).type) {
+                                status = statusModel.get(i).text;
+                            }
+                        }
+
+                        scene.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        scene.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        currentPage.closeMenu();
+                    }
                 }
 
                 Button {

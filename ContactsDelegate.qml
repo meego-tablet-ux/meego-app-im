@@ -221,7 +221,7 @@ Item {
                     text: ""
                     width: parent.width - presence.width - 10
                     color: theme_fontColorNormal
-                    font.pixelSize: theme_fontPixelSizeLarge
+                    font.pixelSize: theme_fontPixelSizeNormal
                     elide: Text.ElideRight
                 }
             }

@@ -12,12 +12,14 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 Item {
-    width: parent.width
-    property int itemHeight: theme_commonBoxHeight
-    height: itemHeight
     id: mainArea
 
+    property int itemHeight: theme_commonBoxHeight
+    property string nameColor: "black"
     property variant contactItem: model.item
+
+    width: parent.width
+    height: itemHeight
 
     Image {
         anchors.fill: parent
@@ -45,6 +47,7 @@ Item {
             elide: Text.ElideRight
             color: theme_fontColorNormal
             width: parent.width
+            font.pixelSize: theme_fontPixelSizeNormal
         }
 
 
@@ -54,8 +57,9 @@ Item {
             // TODO: check width and display alias or username accordingly
             text: model.aliasName
             elide: Text.ElideRight
-            color: theme_fontColorNormal
+            color: nameColor
             width: parent.width
+            font.pixelSize: theme_fontPixelSizeLarge
         }
     }
 

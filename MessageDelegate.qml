@@ -68,9 +68,8 @@ Item {
         visible: fileTransferItem || messageItem
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: 10
-        anchors.leftMargin: 10
-        width: 100
+        anchors.topMargin: 8
+        anchors.leftMargin: 5
         height: visible ? 100 : 0
         source: messageAvatar()
 
@@ -82,7 +81,7 @@ Item {
         anchors.left: avatar.right
         anchors.right: parent.right
         anchors.topMargin: 10
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: 5
         anchors.leftMargin: -19
         anchors.rightMargin: 0
         smooth: true
@@ -124,6 +123,7 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
+            anchors.bottomMargin: 4
         }
 
         Item {

@@ -51,6 +51,19 @@ Column {
         defaultText: qsTr("friend's username")
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
+
+        onAccepted: {
+            addAFriendInput.addFriend();
+        }
+
+        function addFriend()
+        {
+            if (!alreadyAdding) {
+                alreadyAdding = true;
+                addContactHelper.contactId = addAFriendInput.text;
+                addContactHelper.sendRequest();
+            }
+        }
     }
 
     Button {
@@ -63,19 +76,8 @@ Column {
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
         onClicked: {
-            if (!alreadyAdding) {
-                alreadyAdding = true;
-                addContactHelper.contactId = addAFriendInput.text;
-                addContactHelper.sendRequest();
-            }
+            addAFriendInput.addFriend();
         }
-    }
-
-    Timer {
-        interval: 3000;
-        running: addContactHelper.state == AddContactHelper.StateSent ||
-                 addContactHelper.state == AddContactHelper.StateNoNetwork
-        onTriggered: { column.opacity = 0;}
     }
 
     states: [

@@ -338,6 +338,11 @@ Item {
                     defaultText: qsTr("Custom status message");
                     text: scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
                     onAccepted: {
+                        customMessageBox.updateStatus();
+                    }
+
+                    function updateStatus()
+                    {
                         var status;
                         for(var i = 0; i < statusModel.count; ++i) {
                             if (statusRadioGroup.selectedValue == statusModel.get(i).type) {
@@ -360,16 +365,7 @@ Item {
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
                     onClicked: {
-                        var status;
-                        for(var i = 0; i < statusModel.count; ++i) {
-                            if (statusRadioGroup.selectedValue == statusModel.get(i).type) {
-                                status = statusModel.get(i).text;
-                            }
-                        }
-
-                        scene.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
-                        scene.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
-                        currentPage.closeMenu();
+                        customMessageBox.updateStatus();
                     }
                 }
             }
@@ -383,22 +379,7 @@ Item {
 
             onClicked: {
                 if (nicknameColumn.visible) {
-                    nicknameColumn.opacity = 0;
-                    avatarImage.visible = true;
-                    avatarSeparator.visible = true;
-                    statusRow.visible = true;
-                    statusMessage.visible = true;
-                    statusMessageSeparator.visible = true;
-                    statusSeparator.visible = true;
-                    updateStatusItem.visible = true;
-                    updateStatusSeparator.visible = true;
-                    nicknameSeparator.visible = true;
-                    addIMContactItem.visible = true;
-                    addAFriend.visible = true;
-                    friendSeparator.visible = true;
-                    clearHistoryItem.visible = true;
-                    historySeparator.visible = true;
-                    logOutItem.visible = true;
+                    updateNickItem.hideUpdateNick();
                 } else {
                     nicknameColumn.opacity = 1;
                     avatarImage.visible = false;
@@ -418,6 +399,26 @@ Item {
                     logOutItem.visible = false;
                 }
             }
+
+            function hideUpdateNick()
+            {
+                nicknameColumn.opacity = 0;
+                avatarImage.visible = true;
+                avatarSeparator.visible = true;
+                statusRow.visible = true;
+                statusMessage.visible = true;
+                statusMessageSeparator.visible = true;
+                statusSeparator.visible = true;
+                updateStatusItem.visible = true;
+                updateStatusSeparator.visible = true;
+                nicknameSeparator.visible = true;
+                addIMContactItem.visible = true;
+                addAFriend.visible = true;
+                friendSeparator.visible = true;
+                clearHistoryItem.visible = true;
+                historySeparator.visible = true;
+                logOutItem.visible = true;
+            }
         }
 
         Item {
@@ -430,7 +431,9 @@ Item {
                 interval: 1000
                 repeat: false
 
-                onTriggered: nicknameColumn.opacity = 0
+                onTriggered: {
+                    updateNickItem.hideUpdateNick();
+                }
             }
 
             Column {
@@ -464,6 +467,10 @@ Item {
                     anchors.rightMargin: 15
 
                     text: scene.accountItem.data(AccountsModel.NicknameRole)
+
+                    onAccepted: {
+                        updateNickname();
+                    }
 
                     function updateNickname() {
                         if (nicknameBox.text != "") {

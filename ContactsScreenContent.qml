@@ -151,7 +151,7 @@ Labs.ApplicationPage {
             visible: (!showAccountOffline)
 
             model: contactsModel
-            delegate: ContactsDelegate {}
+            delegate: ContactDelegate {}
             clip: true
 
             header: requestsViewComponent

@@ -12,7 +12,7 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 Item {
-    id: contactsDelegate
+    id: contactDelegate
 
     width: parent.width
     height: childrenRect.height
@@ -46,16 +46,16 @@ Item {
     ContentRow {
         id: mainArea
         width: parent.width
-        active: contactsDelegate.active
+        active: contactDelegate.active
 
         MouseArea {
             ListModel { id: menu}
 
             anchors.fill: parent
             onClicked: {
-                contactsDelegate.ListView.view.currentIndex = index;
+                contactDelegate.ListView.view.currentIndex = index;
 
-                if(contactsDelegate.avatarList == undefined) {
+                if(contactDelegate.avatarList == undefined) {
                     scene.startConversation(model.id);
                 } else {
                     scene.startGroupConversation(model.id);
@@ -156,7 +156,7 @@ Item {
 
         Avatar {
             id: avatar
-            active: contactsDelegate.active
+            active: contactdDelegate.active
             source: model.avatar
             anchors.left: parent.left
             anchors.top:  parent.top
@@ -178,8 +178,8 @@ Item {
 
             clip: true
 
-            avatarList: contactsDelegate.avatarList
-            visible: (contactsDelegate.avatarList != undefined)
+            avatarList: contactdDelegate.avatarList
+            visible: (contactDelegate.avatarList != undefined)
         }
 
         Column {

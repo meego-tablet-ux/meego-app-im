@@ -11,7 +11,7 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 Item {
-    id: contactsDelegate
+    id: contactDelegate
 
     width: parent.width
     height: childrenRect.height
@@ -60,7 +60,7 @@ Item {
 
         Avatar {
             id: avatar
-            active: contactsDelegate.active
+            active: contactDelegate.active
             source: model.avatar
             anchors.left: parent.left
             anchors.top:  parent.top

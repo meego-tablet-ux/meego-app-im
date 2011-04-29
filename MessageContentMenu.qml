@@ -33,7 +33,7 @@ Item {
             id: contactsView
 
             model: scene.chatAgent.contactsModel()
-            delegate: MessageContactsDelegate {
+            delegate: MessageContactDelegate {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 currentPage: container.currentPage

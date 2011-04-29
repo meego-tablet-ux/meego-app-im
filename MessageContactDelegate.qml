@@ -12,7 +12,7 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 Item {
-    id: contactsDelegate
+    id: contactDelegate
 
     width: parent.width
     height: mainArea.height
@@ -43,7 +43,7 @@ Item {
 
             anchors.fill: parent
             onClicked: {
-                contactsDelegate.ListView.view.currentIndex = index;
+                contactDelegate.ListView.view.currentIndex = index;
                 var map = mapToItem(scene, mouseX, mouseY);
                 menu.clear();
 
@@ -57,7 +57,7 @@ Item {
                 }
 
                 // set the global variable to make sure it is available for the menu
-                scene.currentPage = contactsDelegate.currentPage;
+                scene.currentPage = contactDelegate.currentPage;
 
                 // open menu
                 contextMenu.setPosition( map.x, map.y);
@@ -114,7 +114,7 @@ Item {
 
         Avatar {
             id: avatar
-            active: contactsDelegate.active
+            active: contactDelegate.active
             source: model.avatar
             anchors.left: parent.left
             anchors.top:  parent.top

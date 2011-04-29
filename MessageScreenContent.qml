@@ -249,7 +249,7 @@ Labs.ApplicationPage {
 
         LoadingConversationHistory {
             id: loadingConversation
-            visible: false
+            visible: historyFeeder.fetching
             z: 10
             anchors {
                 top: noNetworkItem.bottom
@@ -314,17 +314,17 @@ Labs.ApplicationPage {
         Timer {
             id: historyFeeder
             interval: 1000
-            running: true
+            running: false
             repeat: true
 
             property bool fetching : false
-            property int oldIndex : 0
+            property int oldIndex : -1
 
             onTriggered: {
                 if (conversationView.atYBeginning) {
                     if (!fetching && conversationView.model.canFetchMoreBack()) {
                         fetching = true;
-                        oldIndex = conversationView.indexAt(200,40);
+                        oldIndex = 0;
                         conversationView.model.fetchMoreBack();
                     }
                 }
@@ -336,14 +336,19 @@ Labs.ApplicationPage {
             ignoreUnknownSignals: true
             onBackFetchable: {
                 if (conversationView.model.canFetchMoreBack()) {
-                    loadingConversation.visible = true;
+                    historyFeeder.running = true;
                 }
             }
             onBackFetched: {
-                conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
                 historyFeeder.fetching = false;
+                if (historyFeeder.oldIndex != -1) {
+                    conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
+                } else {
+                    conversationView.positionViewAtIndex(0, ListView.End);
+                }
+
                 if (!conversationView.model.canFetchMoreBack()) {
-                    loadingConversation.visible = false;
+                    historyFeeder.running = false;
                 }
             }
         }

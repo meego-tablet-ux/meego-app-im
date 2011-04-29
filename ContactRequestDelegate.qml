@@ -54,7 +54,6 @@ Item {
             // TODO: check width and display alias or username accordingly
             text: model.aliasName
             elide: Text.ElideRight
-            font.weight: Font.Bold
             color: theme_fontColorNormal
             width: parent.width
         }

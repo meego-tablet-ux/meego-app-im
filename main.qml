@@ -185,6 +185,10 @@ Labs.Window {
             scene.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
             incomingCallDialog.accountId = accountId;
             incomingCallDialog.contactId = contactId;
+            incomingCallDialog.statusMessage = (scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
+                                            scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
+                                            scene.presenceStatusText(scene.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
+            incomingCallDialog.connectionTarget = scene.incomingCallAgent;
             incomingCallDialog.show();
         }
 

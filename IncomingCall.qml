@@ -22,29 +22,37 @@ ModalDialog {
     cancelButtonImage: "image://meegotheme/images/btn_red_up"
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
 
+    property alias statusMessage: message.text
+    property alias connectionTarget: callStatusConnection.target
+
     content:
         Row {
+            anchors.fill: parent
+            anchors.margins: 10
             spacing: 10
-            height: avatarItem.height * 2
-            width: childrenRect.width
-            anchors.horizontalCenter: parent.horizontalCenter
+
+            Item {
+                width: 10
+            }
 
             Avatar {
                 id: avatarItem
-                height: 75
-                width: 75
-                anchors.verticalCenter: parent.verticalCenter
 
-                source: scene.incomingContactItem.data(AccountsModel.AvatarRole)
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
+
+                source: (scene.incomingContactItem != undefined ?
+                             scene.incomingContactItem.data(AccountsModel.AvatarRole) :
+                             noAvatarImage)
                 noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
             }
 
             Column {
                 id: nameColumn
-                width: parent.width
+                width: parent.width - avatarItem.width - 20
 
                 anchors {
-                    left: avatarItem.right
                     verticalCenter: avatarItem.verticalCenter
                     margins: 10
                 }
@@ -52,11 +60,16 @@ ModalDialog {
 
                 Text {
                     id: dialogText
-                    anchors.top: avatarItem.top
+                    width: parent.width
+                    anchors.left: parent.left
 
-                    text: scene.incomingContactItem.data(AccountsModel.AliasRole);
+                    text: (scene.incomingContactItem != undefined ?
+                               scene.incomingContactItem.data(AccountsModel.AliasRole) :
+                               "")
+
+                    color: theme_fontColorNormal
+                    font.pixelSize: theme_fontPixelSizeLarge
                     elide: Text.ElideRight
-                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 Row {
@@ -66,19 +79,19 @@ ModalDialog {
 
                     PresenceIcon {
                         id: presence
-                        status: scene.incomingContactItem.data(AccountsModel.PresenceTypeRole);
+                        status: (scene.incomingContactItem != undefined ?
+                                     scene.incomingContactItem.data(AccountsModel.PresenceTypeRole) :
+                                     0)
                         anchors.verticalCenter: message.verticalCenter
                         anchors.topMargin: 5
                     }
 
                     Text {
                         id: message
-                        text: (scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
-                                scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
-                                scene.presenceStatusText(scene.incomingContactItem.data(AccountsModel.PresenceTypeRole)))
+                        text: ""
                         width: parent.width - presence.width - 10
-                        color: theme_fontColorNormal
-                        font.pixelSize: theme_fontPixelSizeLarge
+                        color: theme_fontColorInactive
+                        font.pixelSize: theme_fontPixelSizeNormal
                         elide: Text.ElideRight
                     }
                 }
@@ -89,7 +102,8 @@ ModalDialog {
     property string contactId: ""
 
     Connections {
-        target: scene.incomingCallAgent
+        id: callStatusConnection
+        target: null
         onCallStatusChanged: {
             if (scene.incomingCallAgent.callStatus == CallAgent.CallStatusNoCall
              || scene.incomingCallAgent.callStatus == CallAgent.CallStatusHangingUp) {

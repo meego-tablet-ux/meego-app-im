@@ -212,7 +212,7 @@ Column {
             id: loginBox
             anchors.margins: 10
             width: parent.width / 2
-            textInput.inputMethodHints: Qt.ImhNoAutoUppercase
+            inputMethodHints: Qt.ImhNoAutoUppercase
             defaultText: qsTr("Name / ID")
 
             onTextChanged: duplicated = false
@@ -231,8 +231,8 @@ Column {
             id: passwordBox
             anchors.margins: 10
             width: parent.width / 2
-            textInput.echoMode: TextInput.Password
-            textInput.inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhHiddenText
+            echoMode: TextInput.Password
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhHiddenText
             defaultText: qsTr("Password")
         }
     }

@@ -76,6 +76,7 @@ Item {
 
                 property variant model
                 height: childrenRect.height
+                width: 200
 
                 MenuItem {
                     id: textChatItem

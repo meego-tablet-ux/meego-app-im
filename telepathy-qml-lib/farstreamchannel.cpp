@@ -520,6 +520,7 @@ void FarstreamChannel::initVideoInput()
             "width", G_TYPE_INT, 320,
             "height", G_TYPE_INT, 240,
             "framerate", GST_TYPE_FRACTION, 15, 1,
+            "format", GST_TYPE_FOURCC, GST_MAKE_FOURCC('I','4','2','0'),
             NULL);
         /*
         GstCaps *caps = gst_caps_new_simple(

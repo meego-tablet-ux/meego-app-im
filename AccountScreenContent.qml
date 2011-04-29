@@ -21,6 +21,13 @@ Labs.ApplicationPage {
         scene.reloadFilterModel();
     }
 
+    Connections {
+        target: scene
+        onComponentsLoaded: {
+            accountsRepeater.model = accountsSortedModel;
+        }
+    }
+
     Item {
         id: mainArea
         parent: accountScreenPage.content
@@ -69,7 +76,6 @@ Labs.ApplicationPage {
 
                     Repeater {
                         id: accountsRepeater
-                        model: accountsSortedModel
                         AccountDelegate {
                             id: accountDelegate
                             width: accountsListView.width

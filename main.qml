@@ -43,6 +43,8 @@ Labs.Window {
     // TODO: check how can we do that on group chat
     property string currentContactId: ""
 
+    signal componentsLoaded
+
     FuzzyDateTime {
         id: fuzzyDateTime
     }
@@ -132,6 +134,7 @@ Labs.Window {
 
             telepathyManager.registerClients();
             reloadFilterModel();
+            componentsLoaded();
         }
     }
 

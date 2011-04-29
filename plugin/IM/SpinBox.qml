@@ -24,7 +24,7 @@ TextEntry {
        value = parseInt(text);
     }
 
-    textInput.validator: IntValidator { }
+    validator: IntValidator { }
 
 
     Image {

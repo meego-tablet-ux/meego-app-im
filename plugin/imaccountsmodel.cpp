@@ -1120,7 +1120,7 @@ void IMAccountsModel::setNotificationManager(NotificationManager *notificationMa
 void IMAccountsModel::setTelepathyManager(TelepathyManager *manager)
 {
     mTelepathyManager = manager;
-    connect(mTelepathyManager, SIGNAL(connectionReady(Tp::ConnectionPtr)),
+    connect(mTelepathyManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
             SLOT(onConnectionReady(Tp::ConnectionPtr)));
 
     // trigger an update on the items

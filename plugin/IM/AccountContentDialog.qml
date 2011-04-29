@@ -139,7 +139,7 @@ Labs.ApplicationPage {
             }
         }
 
-        Spinner {
+        ModalSpinner {
             id: spinner
         }
     }

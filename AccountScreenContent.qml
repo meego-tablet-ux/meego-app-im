@@ -106,6 +106,7 @@ Labs.ApplicationPage {
             }
 
             IconButton {
+                id: settingsButton
                 icon: "image://meegotheme/icons/actionbar/show-settings"
                 iconDown: icon + "-active"
                 anchors.left: parent.left
@@ -117,6 +118,14 @@ Labs.ApplicationPage {
                     var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
                     appModel.launch(cmd);
                 }
+            }
+
+            Image {
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: settingsButton.right
+                anchors.leftMargin: 10
+                source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
             }
         }
     }

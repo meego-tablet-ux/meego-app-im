@@ -41,7 +41,7 @@ Column {
     property alias protocol: accountHelperItem.protocol
     property alias icon: accountHelperItem.icon
     property string accountId: ""
-    property variant accountItem: accountsModel.accountItemForId(accountId)
+    property variant accountItem: accountsModel !== null ? accountsModel.accountItemForId(accountId) : null
     property string serviceName: protocolsModel.titleForId(icon)
 
     property alias advancedOptionsComponent: advancedOptions.sourceComponent
@@ -100,7 +100,7 @@ Column {
         // emit the aboutToCreate signal so that accounts that need proper setup
         aboutToCreateAccount();
 
-        if (accountsModel.isAccountRegistered(connectionManager, protocol, loginBox.text)
+        if (accountsModel !== null && accountsModel.isAccountRegistered(connectionManager, protocol, loginBox.text)
             && oldLogin != loginBox.text) {
             duplicated = true;
             accountCreationAborted();
@@ -170,6 +170,7 @@ Column {
             }
         }
 
+        enabled: accountItem !== null
         visible: ((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
                  ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
                   (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse)))

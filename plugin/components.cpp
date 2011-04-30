@@ -64,6 +64,8 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     mRootContext = engine->rootContext();
     Q_ASSERT(mRootContext);
 
+    mRootContext->setContextProperty(QString::fromLatin1("accountsModel"), (QObject *) 0);
+
     mRootContext->setContextProperty(QString::fromLatin1("telepathyManager"), mTpManager);
     mRootContext->setContextProperty(QString::fromLatin1("protocolsModel"), mProtocolsModel);
     mRootContext->setContextProperty(QString::fromLatin1("accountFactory"), accountFactory);

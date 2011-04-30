@@ -156,7 +156,7 @@ Item {
 
         Avatar {
             id: avatar
-            active: contactdDelegate.active
+            active: contactDelegate.active
             source: model.avatar
             anchors.left: parent.left
             anchors.top:  parent.top
@@ -178,7 +178,7 @@ Item {
 
             clip: true
 
-            avatarList: contactdDelegate.avatarList
+            avatarList: contactDelegate.avatarList
             visible: (contactDelegate.avatarList != undefined)
         }
 

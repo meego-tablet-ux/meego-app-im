@@ -465,7 +465,7 @@ Item {
                     anchors.leftMargin: 10
                     anchors.right: parent.right
                     anchors.rightMargin: 15
-
+                    defaultText: qsTr("Display name")
                     text: scene.accountItem.data(AccountsModel.NicknameRole)
 
                     onAccepted: {

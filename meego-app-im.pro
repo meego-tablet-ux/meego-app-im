@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 SUBDIRS += telepathy-qml-lib telepathy-qml-plugin plugin panels-plugin
 CONFIG += ordered
 
-qmlfiles.files += *.qml *.js images settings
+qmlfiles.files += *.qml *.js settings
 qmlfiles.path += $$INSTALL_ROOT/usr/share/$$TARGET
 
 settingsdesktop.files += im-settings.desktop

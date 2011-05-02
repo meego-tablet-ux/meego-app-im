@@ -394,7 +394,7 @@ Labs.ApplicationPage {
             source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: callToolBar.visible ? callToolBar.top : imToolBar.top
+            anchors.bottom: imToolBar.top
             height: textBox.height
             visible: !scene.fullscreen
 
@@ -558,10 +558,6 @@ Labs.ApplicationPage {
                         height: 0
                         opacity: 0
                     }
-                    PropertyChanges {
-                        target: callToolBar
-                        opacity: 0.7
-                    }
                 }
             ]
 
@@ -613,7 +609,7 @@ Labs.ApplicationPage {
                 y: videoAtBottom() ? parent.height - height - 20 : 20
                 */
                 anchors.bottom: videoAtBottom() ? parent.bottom : undefined
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.top: !videoAtBottom() ? parent.top : undefined
                 anchors.topMargin: 20
                 anchors.left: !videoAtRight() ? parent.left : undefined
@@ -801,7 +797,7 @@ Labs.ApplicationPage {
                 width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -822,7 +818,7 @@ Labs.ApplicationPage {
                 width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -884,7 +880,7 @@ Labs.ApplicationPage {
             IconButton {
                 id: fullscreenButton
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? callToolBar.height : 0
+                anchors.bottomMargin: scene.fullscreen ? imToolBar.height : 0
                 anchors.right: videoWindowPosition != 3 ? parent.right : undefined
                 anchors.left: videoWindowPosition == 3 ? parent.left : undefined
                 icon: "image://meegotheme/icons/actionbar/view-" +
@@ -897,23 +893,9 @@ Labs.ApplicationPage {
             }
         }
 
-        CallToolBar {
-            id: callToolBar
-            width: parent.width
-            anchors.bottom: imToolBar.top
-            opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 500
-                }
-            }
-        }
-
         IMToolBar {
             id: imToolBar
-            width: parent.width
-            anchors.bottom: parent.bottom
+            parent: pageContent
 
             onChatTextEnterPressed: {
                 if(textEdit.text != "") {

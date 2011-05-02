@@ -57,7 +57,8 @@ Item {
             id: videoCallButton
             property int numButton: 0
             x : parent.calculateButtonX(videoCallButton)
-            active: scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+            active: scene.contactItem !== undefined &&
+                    scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
                     scene.callAgent != undefined &&
                     scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
                     !scene.chatAgent.isConference
@@ -95,7 +96,8 @@ Item {
             id: audioCallButton
             property int numButton: 1
             x : parent.calculateButtonX(audioCallButton)
-            active: scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+            active: scene.contactItem !== undefined &&
+                    scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
                     scene.callAgent != undefined &&
                     scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
                     !scene.chatAgent.isConference

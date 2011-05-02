@@ -73,7 +73,7 @@ Item {
             id: olderButton
             text: qsTr("Older")
             width: 180
-            height: 32
+            height: 40
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: newerButton.left
             anchors.margins: 10
@@ -86,7 +86,7 @@ Item {
             id: newerButton
             text: qsTr("Newer")
             width: 180
-            height: 32
+            height: 40
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.margins: 10

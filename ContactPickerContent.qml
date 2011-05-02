@@ -130,8 +130,6 @@ Labs.ApplicationPage {
                         verticalCenter: parent.verticalCenter
                     }
 
-                    height: 32
-
                     text: qsTr("Add")
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-positive"
@@ -168,8 +166,6 @@ Labs.ApplicationPage {
                         margins: 10
                         verticalCenter: parent.verticalCenter
                     }
-
-                    height: 32
 
                     text: qsTr("Cancel")
                     textColor: theme_buttonFontColor

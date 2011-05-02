@@ -456,9 +456,7 @@ Labs.ApplicationPage {
                     verticalCenter: textBox.verticalCenter
                     topMargin: 0
                 }
-
-                height: 32
-
+                height: 40
                 text: qsTr("Send")
                 textColor: theme_buttonFontColor
 

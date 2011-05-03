@@ -379,11 +379,11 @@ void FarstreamChannel::deinitAudioInput()
     }
 }
 
-GstElement *FarstreamChannel::pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional, GstElement **copy)
+GstElement *FarstreamChannel::pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional, GstElement **copy, bool checkLink)
 {
     if (copy)
         *copy = NULL;
-    GstElement *e = addElementToBin(bin, last, factory);
+    GstElement *e = addElementToBin(bin, last, factory, checkLink);
     if (!e) {
         if (optional) {
             qDebug() << "Failed to create or link optional element " << factory;
@@ -416,21 +416,21 @@ void FarstreamChannel::initAudioOutput()
 
     GstElement *source = 0;
     if (strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
-        pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink);
-        pushElement(mGstAudioOutput, source, "volume", true, &mGstAudioOutputVolume);
+        pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink, false);
+        pushElement(mGstAudioOutput, source, "volume", true, &mGstAudioOutputVolume, false);
     }
     else {
         mGstAudioOutputVolume = NULL;
     }
     if (!strcmp(AUDIO_SINK_ELEMENT, "filesink")) {
-        pushElement(mGstAudioOutput, source, "audioconvert");
-        pushElement(mGstAudioOutput, source, "wavenc");
-        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink);
+        pushElement(mGstAudioOutput, source, "audioconvert", false, NULL, false);
+        pushElement(mGstAudioOutput, source, "wavenc", false, NULL, false);
+        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink, false);
         g_object_set(mGstAudioOutputActualSink, "location", AUDIO_FILESINK_OUTPUT_FILE, NULL);
     }
     else {
         GstElement *previous_source = source;
-        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink);
+        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink ,false);
 
         /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
            READY as they can't connect to the pulse daemon. This will cause the
@@ -444,7 +444,7 @@ void FarstreamChannel::initAudioOutput()
               gst_element_unlink(previous_source, mGstAudioOutputActualSink);
             gst_bin_remove(GST_BIN(mGstAudioOutput), mGstAudioOutputActualSink);
             source = previous_source;
-            pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink);
+            pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink, false);
         }
         else {
             // restore sink as we created it
@@ -505,15 +505,15 @@ void FarstreamChannel::initVideoInput()
     GstElement *element = 0;
     GstElement *source = 0;
 
-    pushElement(mGstVideoInput, source, VIDEO_SOURCE_ELEMENT, false, &mGstVideoSource);
+    pushElement(mGstVideoInput, source, VIDEO_SOURCE_ELEMENT, false, &mGstVideoSource, false);
 
     /* Prefer videomaxrate if it's available */
-    if (pushElement(mGstVideoInput, source, "videomaxrate", true) == NULL)
-        pushElement(mGstVideoInput, source, "fsvideoanyrate", true);
-    pushElement(mGstVideoInput, source, "videoscale", false);
-    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false);
+    if (pushElement(mGstVideoInput, source, "videomaxrate", true, NULL, false) == NULL)
+        pushElement(mGstVideoInput, source, "fsvideoanyrate", true, NULL, false);
+    pushElement(mGstVideoInput, source, "videoscale", false, NULL, false);
+    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false, NULL, false);
 
-    GstElement *capsfilter = pushElement(mGstVideoInput, source, "capsfilter", false);
+    GstElement *capsfilter = pushElement(mGstVideoInput, source, "capsfilter", false, NULL, false);
     if (capsfilter) {
         GstCaps *caps = gst_caps_new_simple(
             "video/x-raw-yuv",
@@ -535,18 +535,18 @@ void FarstreamChannel::initVideoInput()
         }
     }
 
-    pushElement(mGstVideoInput, source, "videoflip", true, &mGstVideoFlip);
+    pushElement(mGstVideoInput, source, "videoflip", true, &mGstVideoFlip, false);
     if (mGstVideoFlip) {
         // setup video flip element according to current orientation
         onOrientationChanged(mCurrentOrientation);
     }
 
-    pushElement(mGstVideoInput, source, "tee", false, &mGstVideoTee);
-    pushElement(mGstVideoInput, source, "videoscale", false);
-    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false);
+    pushElement(mGstVideoInput, source, "tee", false, &mGstVideoTee, false);
+    pushElement(mGstVideoInput, source, "videoscale", false, NULL, false);
+    pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false, NULL, false);
 
     element = mGstOutgoingVideoSink; // = GST_ELEMENT(QmlVideoSurfaceGstSink::createSink(mOutgoingSurface));
-    element = addAndLink(GST_BIN(mGstVideoInput), source, element);
+    element = addAndLink(GST_BIN(mGstVideoInput), source, element, false);
     if (!element) {
         setError("GStreamer outgoing video sink could not be created");
     } else {
@@ -631,9 +631,9 @@ void FarstreamChannel::initVideoOutput()
 
     GstElement *source = 0;
 
-    mGstVideoOutputSink = pushElement(mGstVideoOutput, source, "fsfunnel", false, &mGstVideoOutputSink);
-    pushElement(mGstVideoOutput, source, "videoscale", true);
-    pushElement(mGstVideoOutput, source, COLORSPACE_CONVERT_ELEMENT, true);
+    mGstVideoOutputSink = pushElement(mGstVideoOutput, source, "fsfunnel", false, &mGstVideoOutputSink, false);
+    pushElement(mGstVideoOutput, source, "videoscale", true, NULL, false);
+    pushElement(mGstVideoOutput, source, COLORSPACE_CONVERT_ELEMENT, true, NULL, false);
 
     /*
     if (!mIncomingSurface) {
@@ -647,7 +647,7 @@ void FarstreamChannel::initVideoOutput()
     }*/
 
     GstElement *element = mGstIncomingVideoSink; // = GST_ELEMENT(QmlVideoSurfaceGstSink::createSink(mIncomingSurface));
-    element = addAndLink(GST_BIN(mGstVideoOutput), source, element);
+    element = addAndLink(GST_BIN(mGstVideoOutput), source, element, false);
     if (!element) {
         setError("GStreamer qt video sink could not be created");
     } else {
@@ -1033,7 +1033,7 @@ void FarstreamChannel::onGstVideoItemDestroyed(QObject *obj)
     }
 }
 
-GstElement *FarstreamChannel::addElementToBin(GstElement *bin, GstElement *src, const char *factoryName)
+GstElement *FarstreamChannel::addElementToBin(GstElement *bin, GstElement *src, const char *factoryName, bool checkLink)
 {
     qDebug() << "FarstreamChannel::addElementToBin: bin=" << bin << " src=" << src << " factoryName=" << factoryName;
 
@@ -1049,11 +1049,13 @@ GstElement *FarstreamChannel::addElementToBin(GstElement *bin, GstElement *src, 
         return 0;
     }
     
-    return addAndLink(binobj, src, ret);
+    return addAndLink(binobj, src, ret, checkLink);
 }
 
-GstElement *FarstreamChannel::addAndLink(GstBin *binobj, GstElement *src, GstElement *ret)
+GstElement *FarstreamChannel::addAndLink(GstBin *binobj, GstElement *src, GstElement *ret, bool checkLink)
 {
+    gboolean res;
+
     qDebug() << "FarstreamChannel::addAndLink: binobj="
 	     << gst_element_get_name(GST_ELEMENT(binobj)) 
 	     << " src="
@@ -1071,7 +1073,13 @@ GstElement *FarstreamChannel::addAndLink(GstBin *binobj, GstElement *src, GstEle
         return ret;
     }
 
-    if (!gst_element_link(src, ret)) {
+    if (checkLink) {
+      res = gst_element_link(src, ret);
+    }
+    else {
+      res = gst_element_link_pads_full(src, NULL, ret, NULL, GST_PAD_LINK_CHECK_NOTHING);
+    }
+    if (!res) {
         setError(QLatin1String("Failed to link "));
         gst_bin_remove(binobj, ret);
         return 0;

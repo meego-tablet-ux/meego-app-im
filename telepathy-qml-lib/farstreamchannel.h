@@ -146,8 +146,8 @@ private:
     static void onStopSending(TfContent *tfc, FarstreamChannel *self);
     static void onSrcPadAddedContent(TfContent *content, uint handle, FsStream *stream, GstPad *src, FsCodec *codec, FarstreamChannel *self);
 
-    GstElement *addElementToBin(GstElement *bin, GstElement *src, const char *factoryName);
-    GstElement *addAndLink(GstBin *bin, GstElement *src, GstElement * target);
+    GstElement *addElementToBin(GstElement *bin, GstElement *src, const char *factoryName, bool checkLink = true);
+    GstElement *addAndLink(GstBin *bin, GstElement *src, GstElement * target, bool checkLink = true);
 
     // set video flip method, mirrored = UINT_MAX does not change current mirror method
     void setVideoFlipMethod(uint cameraRotation, uint mirrored = UINT_MAX);
@@ -156,7 +156,7 @@ private:
 
     int countCameras() const;
 
-    GstElement *pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional = false, GstElement **copy = NULL);
+    GstElement *pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional = false, GstElement **copy = NULL, bool checkLink = true);
 };
 
 #endif // FARSIGHTCHANNEL_H

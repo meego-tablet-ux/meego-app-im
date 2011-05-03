@@ -237,7 +237,7 @@ BottomToolBar {
 
                     smileyContextMenu.show();
                 }
-                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
+                opacity: (scene.callAgent != undefined && !scene.fullscreen) ? 1 : 0
                 visible: opacity > 0
                 Behavior on opacity {
                     NumberAnimation {

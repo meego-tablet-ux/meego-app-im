@@ -11,7 +11,6 @@ import MeeGo.Components 0.1
 import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
-import "utils.js" as Utils
 
 Labs.ApplicationPage {
     id: messageScreenPage
@@ -576,25 +575,6 @@ Labs.ApplicationPage {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height / 3
-            }
-
-            Text {
-                id: videoText
-                visible: (scene.callAgent != undefined && !scene.callAgent.remoteVideoRender)
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: avatar.top
-                text: Utils.getCallStatusText(scene.callAgent)
-                color: theme_fontColorNormal
-            }
-
-            Timer {
-                //running: (scene.callAgent != undefined && scene.callAgent.callStatus == CallAgent.CallStatusTalking && !scene.callAgent.remoteVideoRender)
-                running: (scene.callAgent != undefined && !scene.callAgent.remoteVideoRender)
-                interval: 1000
-                repeat: true
-                onTriggered: {
-                    videoText.text = Utils.getCallStatusText(scene.callAgent);
-                }
             }
 
             Item {

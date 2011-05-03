@@ -237,6 +237,13 @@ BottomToolBar {
 
                     smileyContextMenu.show();
                 }
+                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
+                visible: opacity > 0
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 500
+                    }
+                }
             },
 
             IconButton {
@@ -244,13 +251,20 @@ BottomToolBar {
                 width: 60
                 icon: "image://meegotheme/icons/actionbar/document-attach"
                 iconDown: icon + "-active"
+                hasBackground: false
+
                 onClicked: {
                     sendFileContextMenu.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
                                                     sendFileButton.y + sendFileButton.height + toolBar.y);
                     sendFileContextMenu.show();
                 }
-                visible: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
-                hasBackground: false
+                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
+                visible: opacity > 0
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 500
+                    }
+                }
             }
         ]
 

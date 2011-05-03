@@ -8,8 +8,8 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
+import MeeGo.Media 0.1
 import TelepathyQML 0.1
 import "utils.js" as Utils
 
@@ -135,10 +135,13 @@ BottomToolBar {
                         volumeLoader.sourceComponent = null;
                     } else {
                         volumeLoader.sourceComponent = volumeControlComponent;
-                        volumeLoader.item.parent = volumeOnButton.parent;
-                        volumeLoader.item.controllerWidth = volumeOnButton.width;
-                        volumeLoader.item.volumeControlX = volumeOnButton.x;
+                        volumeLoader.item.parent = toolBar.parent;
+                        volumeLoader.item.z = 1000
                         volumeLoader.item.volumeControl = volumeControl;
+                        volumeLoader.item.volumeControlX = volumeOnButton.x;
+                        volumeLoader.item.volumeControlY = toolBar.y - volumeLoader.item.volumeHeight;
+                        volumeLoader.item.closeTimer.interval = 3000;
+                        volumeLoader.item.closeTimer.restart();
                     }
                 }
                 opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
@@ -278,7 +281,7 @@ BottomToolBar {
 
         Component {
             id: volumeControlComponent
-            Labs.VolumeController {
+            VolumeSlider {
                 onClose: {
                     volumeLoader.sourceComponent = undefined;
                 }

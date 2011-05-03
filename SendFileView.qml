@@ -14,7 +14,7 @@ Item {
     id: container
 
     // FIXME remove after full migration to MeegGo.Components
-    property variant window : scene
+    property variant window : window
 
     width: itemsColumn.width
     height: itemsColumn.height
@@ -134,7 +134,7 @@ Item {
     TODO: the contacts picker is broken, re-enable when it is fixed
     ContactsPicker {
         id: contactsPicker
-        parent: scene
+        parent: window
 
         onContactSelected: {
             // TODO: check how to send that

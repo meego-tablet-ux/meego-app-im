@@ -12,12 +12,12 @@ import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-Labs.ApplicationPage {
+AppPage {
     id: accountEditPage
     anchors.fill: parent
 
     // The label is used as the user visible string in the crumb trail
-    title: accountFactory.accountServiceName(accountContent.icon)
+    pageTitle: accountFactory.accountServiceName(accountContent.icon)
 
     property variant accountContent
 
@@ -25,16 +25,16 @@ Labs.ApplicationPage {
         accountContent.parent = accountContentPlaceholder;
         accountContent.anchors.top = accountContent.parent.top;
         accountContent.anchors.topMargin = 10;
-        scene.title = accountFactory.accountServiceName(accountContent.icon)
+        pageTitle = accountFactory.accountServiceName(accountContent.icon)
     }
 
     Connections {
         target: accountContent
         onFinished: {
             spinner.hide();
-            scene.previousApplicationPage();
+            window.previousApplicationPage();
             // this second call is for the settings module
-            scene.previousApplicationPage();
+            window.previousApplicationPage();
         }
 
         onAccountCreationAborted: {
@@ -132,7 +132,7 @@ Labs.ApplicationPage {
                             bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                             bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
-                            onClicked: scene.previousApplicationPage();
+                            onClicked: window.previousApplicationPage();
                         }
                     }
                 }

@@ -13,15 +13,10 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 
-Labs.ApplicationPage {
+AppPage {
     id: contactPickerPage
 
     anchors.fill: parent
-    // showSearch: true
-
-    onSearch: {
-        contactsModel.filterByString(needle);
-    }
 
     signal itemSelected(string parentId, string itemId);
     signal itemDeselected(string parentId, string itemId);
@@ -47,12 +42,12 @@ Labs.ApplicationPage {
     }
 
     Component.onCompleted: {
-        scene.title = qsTr("Add contacts to chat");
+        pageTitle = qsTr("Add contacts to chat");
         var contactsList;
-        if(scene.currentContactId == "") {
-            contactsList = accountsModel.channelContacts(scene.currentAccountId, scene.chatAgent.channelPath);
+        if(window.currentContactId == "") {
+            contactsList = accountsModel.channelContacts(window.currentAccountId, window.chatAgent.channelPath);
         } else {
-            contactsList = accountsModel.channelContacts(scene.currentAccountId, scene.currentContactId);
+            contactsList = accountsModel.channelContacts(window.currentAccountId, window.currentContactId);
         }
         contactsModel.skipContacts(contactsList);
         contactsModel.setContactsOnly(true);
@@ -61,6 +56,13 @@ Labs.ApplicationPage {
     Component.onDestruction: {
         contactsModel.setContactsOnly(false);
         contactsModel.clearSkippedContacts();
+    }
+
+    Connections {
+        target: window
+        onSearch: {
+            contactsModel.filterByString(needle);
+        }
     }
 
     ListModel {
@@ -141,21 +143,21 @@ Labs.ApplicationPage {
                             contactsList = contactsList + " " + selectedItems.get(i).itemId; // i18n ok
                         }
 
-                        if(scene.currentContactId == "") {
-                            accountsModel.addContactsToChat(scene.currentAccountId, scene.chatAgent.channelPath, contactsList);
+                        if(window.currentContactId == "") {
+                            accountsModel.addContactsToChat(window.currentAccountId, window.chatAgent.channelPath, contactsList);
                         } else {
-                            accountsModel.addContactsToChat(scene.currentAccountId, scene.currentContactId, contactsList);
+                            accountsModel.addContactsToChat(window.currentAccountId, window.currentContactId, contactsList);
                         }
 
-                        scene.previousApplicationPage();
+                        window.previousApplicationPage();
 
                         // if cannot add contacts, go back to the contacts screen
                         // otherwise reloading the messageScreenPage has problems
                         // the onDestroyed and onCompleted methods don't get called in order
                         // therefore it's safest to go back all the way to the contacts list
                         // then reload the messageScreenPage when the signal is received
-                        if(!scene.chatAgent.canAddContacts) {
-                            scene.previousApplicationPage();
+                        if(!window.chatAgent.canAddContacts) {
+                            window.previousApplicationPage();
                         }
                     }
                 }
@@ -174,7 +176,7 @@ Labs.ApplicationPage {
 
                     // TODO: check if we need to remove the contact
                     onClicked: {
-                        scene.previousApplicationPage();
+                        window.previousApplicationPage();
                     }
                 }
             }

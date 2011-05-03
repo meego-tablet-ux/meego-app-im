@@ -32,7 +32,7 @@ Item {
         Repeater {
             id: contactsView
 
-            model: scene.chatAgent.contactsModel()
+            model: window.chatAgent.contactsModel()
             delegate: MessageContactDelegate {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -43,11 +43,11 @@ Item {
 
         MenuItem {
             id: addContactItem
-            visible: scene.chatAgent.isGroupChatCapable
+            visible: window.chatAgent.isGroupChatCapable
 
             text: qsTr("Add contacts to chat")
             onClicked: {
-                scene.pickContacts(messageScreenPage);
+                window.pickContacts(messageScreenPage);
                 currentPage.closeMenu();
             }
         }
@@ -62,10 +62,10 @@ Item {
             id: meClearHistory
             text: qsTr("Clear chat history")
             onClicked: {
-                if(scene.chatAgent.isConference) {
-                    accountsModel.clearRoomHistory(scene.currentAccountId, scene.chatAgent.channelPath);
+                if(window.chatAgent.isConference) {
+                    accountsModel.clearRoomHistory(window.currentAccountId, window.chatAgent.channelPath);
                 } else {
-                    accountsModel.clearContactHistory(scene.currentAccountId, scene.currentContactId);
+                    accountsModel.clearContactHistory(window.currentAccountId, window.currentContactId);
                 }
                 currentPage.closeMenu();
             }

@@ -12,14 +12,14 @@ import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-Labs.Window {
-    id: scene
+Window {
+    id: window
 
     // FIXME remove once migration to Meego UX components is completed
     signal orientationChangeFinished();
 
-    title: qsTr("Chat")
-    fullscreen: true
+    toolBarTitle: qsTr("Chat")
+    fullScreen: true
 
     property int animationDuration: 250
 
@@ -59,7 +59,7 @@ Labs.Window {
     onCurrentAccountIdChanged: {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
-        accountItem = accountsModel.accountItemForId(scene.currentAccountId);
+        accountItem = accountsModel.accountItemForId(window.currentAccountId);
         currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
         currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
         notificationManager.currentAccount = currentAccountId;
@@ -70,12 +70,13 @@ Labs.Window {
         notificationManager.currentContact = currentContactId;
     }
 
-    onForegroundChanged: {
-        notificationManager.applicationActive = foreground;
+    onIsActiveWindowChanged: {
+        notificationManager.applicationActive = isActiveWindow;
     }
 
     Component.onCompleted: {
-        notificationManager.applicationActive = foreground;
+        notificationManager.applicationActive = isActiveWindow;
+        switchBook(accountScreenContent);
     }
 
     Connections {
@@ -100,9 +101,9 @@ Labs.Window {
             parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {
                 currentAccountId = accountId;
-                accountItem = accountsModel.accountItemForId(scene.currentAccountId);
+                accountItem = accountsModel.accountItemForId(window.currentAccountId);
                 currentAccountId = accountItem.data(AccountsModel.IdRole);
-                addApplicationPage(contactsScreenContent);
+                addPage(contactsScreenContent);
             } else {
                 if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
                     currentAccountId = cmdAccountId;
@@ -113,7 +114,7 @@ Labs.Window {
                         contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
                         startConversation(currentContactId);
                     } else if(cmdCommand == "show-contacts") {
-                        addApplicationPage(contactsScreenContent);
+                        addPage(contactsScreenContent);
                     }
                 }
             }
@@ -160,7 +161,7 @@ Labs.Window {
             if ((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
                 ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
                  (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse))) {
-                scene.addApplicationPage(accountFactory.componentForAccount(accountId, scene));
+                window.addPage(accountFactory.componentForAccount(accountId, window));
             }
 
         }
@@ -175,44 +176,43 @@ Labs.Window {
                 currentAccountId = accountId;
                 contactItem = accountsModel.contactItemForId(accountId, contactId);
                 callAgent = accountsModel.callAgent(accountId, contactId);
-                fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
-                accountsModel.startChat(scene.currentAccountId, contactId);
-                chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
+                fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
+                accountsModel.startChat(window.currentAccountId, contactId);
+                chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
 
-                scene.addApplicationPage(messageScreenContent);
+                window.addPage(messageScreenContent);
             }
         }
 
         onIncomingCallAvailable: {
-            scene.incomingContactItem = accountsModel.contactItemForId(accountId, contactId);
-            scene.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
+            window.incomingContactItem = accountsModel.contactItemForId(accountId, contactId);
+            window.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
             incomingCallDialog.accountId = accountId;
             incomingCallDialog.contactId = contactId;
-            incomingCallDialog.statusMessage = (scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
-                                            scene.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
-                                            scene.presenceStatusText(scene.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
-            incomingCallDialog.connectionTarget = scene.incomingCallAgent;
+            incomingCallDialog.statusMessage = (window.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
+                                            window.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
+                                            window.presenceStatusText(window.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
+            incomingCallDialog.connectionTarget = window.incomingCallAgent;
             incomingCallDialog.show();
         }
 
         onRequestedGroupChatCreated: {
-            scene.chatAgent = agent;
+            window.chatAgent = agent;
 
-            scene.currentContactId = "";
-            scene.contactItem = undefined;
-            scene.callAgent = undefined;
+            window.currentContactId = "";
+            window.contactItem = undefined;
+            window.callAgent = undefined;
 
             // and start the conversation
             if (notificationManager.chatActive) {
-                scene.previousApplicationPage();
+                window.popPage();
             }
-            scene.addApplicationPage(messageScreenContent);
-            scene.title = qsTr("Group conversation");
-            accountsModel.startGroupChat(scene.currentAccountId, scene.chatAgent.channelPath)
+            window.addPage(messageScreenContent);
+            accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
 
         onPasswordRequestRequired: {
-            scene.addApplicationPage(accountFactory.componentForAccount(accountId, scene));
+            window.addPage(accountFactory.componentForAccount(accountId, window));
         }
 
         onDataChanged: {
@@ -220,79 +220,78 @@ Labs.Window {
         }
     }
 
-    filterModel: accountFilterModel
-    applicationPage: accountScreenContent
+    bookMenuModel: accountFilterModel
+
+    /* FIXME: This won't work until Window component is changed to emit a signal when activated
 
     ///When a selection is made in the filter menu, you will get a signal here:
     onFilterTriggered: {
         if(index < accountsSortedModel.length) {
             currentAccountId = accountsSortedModel.dataByRow(index, AccountsModel.IdRole );
             accountItem = accountsModel.accountItemForId(currentAccountId);
-            scene.previousApplicationPage();
-            scene.addApplicationPage(contactsScreenContent);
+            window.popPage();
+            window.addPage(contactsScreenContent);
         } else {
             // go back 4 levels. This should get you to the accounts list
             // FIXME: use this until we have a way to check how many pages to pop until it's on the accounts list screen
-            scene.previousApplicationPage();
-            scene.previousApplicationPage();
-            scene.previousApplicationPage();
-            scene.previousApplicationPage();
+            window.popPage();
+            window.popPage();
+            window.popPage();
+            window.popPage();
         }
-    }
+    }*/
 
     function startConversation(contactId)
     {
         // set the current contact property
         currentContactId = contactId;
-        contactItem = accountsModel.contactItemForId(scene.currentAccountId, scene.currentContactId);
-        callAgent = accountsModel.callAgent(scene.currentAccountId, contactId);
-        fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
+        contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
+        callAgent = accountsModel.callAgent(window.currentAccountId, contactId);
+        fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
 
         // and start the conversation
         if (notificationManager.chatActive) {
-            scene.previousApplicationPage();
+            window.popPage();
         }
 
-        scene.title = qsTr("Chat with %1").arg(scene.contactItem.data(AccountsModel.AliasRole));
-        scene.addApplicationPage(messageScreenContent);
-        accountsModel.startChat(scene.currentAccountId, contactId);
+        window.addPage(messageScreenContent);
+        accountsModel.startChat(window.currentAccountId, contactId);
 
-        chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
+        chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
     }
 
     function startGroupConversation(channelPath)
     {
-        scene.currentContactId = "";
-        scene.contactItem = undefined;
-        scene.callAgent = undefined;
+        window.currentContactId = "";
+        window.contactItem = undefined;
+        window.callAgent = undefined;
 
-        scene.chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, channelPath);
+        window.chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, channelPath);
 
         // and start the conversation
         if (notificationManager.chatActive) {
-            scene.previousApplicationPage();
+            window.popPage();
         }
-        scene.title = qsTr("Group conversation");
-        scene.addApplicationPage(messageScreenContent);
+        window.addPage(messageScreenContent);
 
-        accountsModel.startGroupChat(scene.currentAccountId, scene.chatAgent.channelPath)
+        accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
     }
 
     function acceptCall(accountId, contactId)
     {
         if (notificationManager.chatActive) {
-            scene.previousApplicationPage();
+            window.popPage();
         }
 
         // set the current contact property
-        scene.currentContactId = contactId;
-        scene.currentAccountId = accountId;
-        scene.contactItem = accountsModel.contactItemForId(accountId, contactId);
-        scene.callAgent = accountsModel.callAgent(accountId, contactId);
-        scene.fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
+        window.currentContactId = contactId;
+        window.currentAccountId = accountId;
+        window.contactItem = accountsModel.contactItemForId(accountId, contactId);
+        window.callAgent = accountsModel.callAgent(accountId, contactId);
+        window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
 
         // and start the conversation
-        scene.addApplicationPage(messageScreenContent);
+        window.addPage(messageScreenContent);
         accountsModel.startChat(accountId, contactId);
         chatAgent = accountsModel.chatAgentByKey(accountId, contactId);
     }
@@ -301,47 +300,47 @@ Labs.Window {
     {
         // set the current contact property
         currentContactId = contactId;
-        contactItem = accountsModel.contactItemForId(scene.currentAccountId, scene.currentContactId);
+        contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
 
         //create the audio call agent
         //the message screen will then get the already created agent
-        callAgent = accountsModel.callAgent(scene.currentAccountId, contactId);
-        fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
-        accountsModel.startChat(scene.currentAccountId, contactId);
-        chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
+        callAgent = accountsModel.callAgent(window.currentAccountId, contactId);
+        fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
+        accountsModel.startChat(window.currentAccountId, contactId);
+        chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
         callAgent.audioCall();
 
         // and start the conversation
         if (notificationManager.chatActive) {
-            scene.previousApplicationPage();
+            window.popPage();
         }
-        page.addApplicationPage(messageScreenContent);
+        page.addPage(messageScreenContent);
     }
 
     function startVideoCall(contactId, page)
     {
         // set the current contact property
         currentContactId = contactId;
-        contactItem = accountsModel.contactItemForId(scene.currentAccountId, scene.currentContactId);
+        contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
 
         //create the audio call agent
         //the message screen will then get the already created agent
-        callAgent = accountsModel.callAgent(scene.currentAccountId, contactId);
-        fileTransferAgent = accountsModel.fileTransferAgent(scene.currentAccountId, contactId);
-        accountsModel.startChat(scene.currentAccountId, contactId);
-        chatAgent = accountsModel.chatAgentByKey(scene.currentAccountId, contactId);
+        callAgent = accountsModel.callAgent(window.currentAccountId, contactId);
+        fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
+        accountsModel.startChat(window.currentAccountId, contactId);
+        chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
         callAgent.videoCall();
 
         // and start the conversation
         if (notificationManager.chatActive) {
-            scene.previousApplicationPage();
+            window.popPage()
         }
-        page.addApplicationPage(messageScreenContent);
+        page.addPage(messageScreenContent);
     }
 
     function pickContacts(page)
     {
-        page.addApplicationPage(contactPickerContent)
+        page.addPage(contactPickerContent)
     }
 
     function reloadFilterModel()
@@ -402,10 +401,6 @@ Labs.Window {
                 cmdContactId = parsedParameter.substr(parsedParameter.indexOf("&") + 1, parsedParameter.length - 1);
             }
         }
-    }
-
-    Loader {
-        id: contextLoader
     }
 
     AccountContentFactory {

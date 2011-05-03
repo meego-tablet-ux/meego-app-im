@@ -34,7 +34,7 @@ Item {
     property int fingerX: 0
     property int fingerY: 0
 
-    property variant accountItem: accountsModel.accountItemForId(scene.currentAccountId)
+    property variant accountItem: accountsModel.accountItemForId(window.currentAccountId)
     Connections {
         target: accountItem
         // a small trick to trigger updates

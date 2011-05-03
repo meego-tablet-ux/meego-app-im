@@ -54,7 +54,7 @@ Item {
     function messageAvatar() {
         var avatar = "";
         if (messageSent) {
-            avatar = "image://avatars/" + scene.currentAccountId + // i18n ok
+            avatar = "image://avatars/" + window.currentAccountId + // i18n ok
                         "?" + accountFactory.avatarSerial;
         } else {
             avatar = model.senderAvatar;

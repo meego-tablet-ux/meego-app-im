@@ -28,7 +28,7 @@ Item {
         if(model.presenceMessage != "") {
             message.text = model.presenceMessage;
         } else {
-            message.text = scene.presenceStatusText(model.presenceType);
+            message.text = window.presenceStatusText(model.presenceType);
         }
     }
 
@@ -38,7 +38,7 @@ Item {
             if(model.presenceMessage != "") {
                 message.text = model.presenceMessage;
             } else {
-                message.text = scene.presenceStatusText(model.presenceType);
+                message.text = window.presenceStatusText(model.presenceType);
             }
         }
     }
@@ -56,13 +56,13 @@ Item {
                 contactDelegate.ListView.view.currentIndex = index;
 
                 if(contactDelegate.avatarList == undefined) {
-                    scene.startConversation(model.id);
+                    window.startConversation(model.id);
                 } else {
-                    scene.startGroupConversation(model.id);
+                    window.startGroupConversation(model.id);
                 }
             }
             onPressAndHold: {
-                var map = mapToItem(scene, mouseX, mouseY);
+                var map = mapToItem(window, mouseX, mouseY);
                 contextMenu.setPosition( map.x, map.y);
                 menuContent.model = model;
                 contextMenu.show();
@@ -84,7 +84,7 @@ Item {
                                               qsTr("Open chat"))
                     visible: model.textChat
                     onClicked: {
-                        scene.startConversation(model.id, scene);
+                        window.startConversation(model.id, window);
                         contextMenu.hide();
                     }
                 }
@@ -96,7 +96,7 @@ Item {
                     text: qsTr("Call")
                     visible: model.audioCall
                     onClicked: {
-                        scene.startAudioCall(model.id, scene);
+                        window.startAudioCall(model.id, window);
                         contextMenu.hide();
                     }
                 }
@@ -108,7 +108,7 @@ Item {
                     text: qsTr("Video call")
                     visible: model.videoCall
                     onClicked: {
-                        scene.startVideoCall(model.id, scene);
+                        window.startVideoCall(model.id, window);
                         contextMenu.hide();
                     }
                 }
@@ -122,9 +122,9 @@ Item {
                     visible: model.canBlockContacts
                     onClicked: {
                         if (model.blocked) {
-                        accountsModel.unblockContact(scene.currentAccountId, model.id);
+                        accountsModel.unblockContact(window.currentAccountId, model.id);
                         } else {
-                            accountsModel.blockContact(scene.currentAccountId, model.id);
+                            accountsModel.blockContact(window.currentAccountId, model.id);
                         }
                         contextMenu.hide();
                     }
@@ -137,7 +137,7 @@ Item {
                     text: qsTr("End chat")
                     visible: model.chatOpened
                     onClicked: {
-                        accountsModel.endChat(scene.currentAccountId, model.id);
+                        accountsModel.endChat(window.currentAccountId, model.id);
                         contextMenu.hide();
                     }
                 }
@@ -147,7 +147,7 @@ Item {
                 MenuItem {
                     text: qsTr("Delete contact")
                     onClicked: {
-                        accountsModel.removeContact(scene.currentAccountId, model.id);
+                        accountsModel.removeContact(window.currentAccountId, model.id);
                         contextMenu.hide();
                     }
                 }

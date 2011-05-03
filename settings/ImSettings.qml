@@ -12,9 +12,9 @@ import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
 
-Labs.ApplicationPage {
+AppPage {
     id: container
-    title: qsTr("Instant Messaging Settings")
+    pageTitle: qsTr("Instant Messaging Settings")
     anchors.fill: parent
 
     Connections {
@@ -35,7 +35,7 @@ Labs.ApplicationPage {
     // the account setup page
     Component {
         id: accountSetupComponent
-        Labs.ApplicationPage {
+        AppPage {
             id: accountSetupPage
             anchors.fill: parent
 
@@ -117,7 +117,7 @@ Labs.ApplicationPage {
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
-                    onClicked: container.addApplicationPage(accountSetupComponent)
+                    onClicked: container.addPage(accountSetupComponent)
                 }
             }
 

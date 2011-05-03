@@ -164,8 +164,8 @@ Item {
 
             anchors.fill: parent
             onClicked: {
-                scene.currentAccountId = model.id;
-                accountScreenPage.addApplicationPage(contactsScreenContent);
+                window.currentAccountId = model.id;
+                window.addPage(contactsScreenContent);
             }
 
             onPressAndHold: {
@@ -178,7 +178,7 @@ Item {
                 }
                 menu.append({"modelData":qsTr("Settings")});
 
-                var map = mapToItem(scene, mouseX, mouseY);
+                var map = mapToItem(window, mouseX, mouseY);
                 contextMenu.setPosition( map.x, map.y);
                 actionMenu.model = menu;
                 actionMenu.payload = model.item;

@@ -11,18 +11,17 @@ import MeeGo.Components 0.1
 import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 
-Labs.ApplicationPage {
+AppPage {
     id: accountScreenPage
-    title: qsTr("Account list")
+    pageTitle: qsTr("Account list")
     anchors.fill: parent
 
     Component.onCompleted: {
-        scene.title = qsTr("Account list");
-        scene.reloadFilterModel();
+        window.reloadFilterModel();
     }
 
     Connections {
-        target: scene
+        target: window
         onComponentsLoaded: {
             accountsRepeater.model = accountsSortedModel;
         }
@@ -41,7 +40,7 @@ Labs.ApplicationPage {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: toolBar.top
-
+            clip: true
             contentHeight: flickableContent.height
 
             Item {

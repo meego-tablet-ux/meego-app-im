@@ -12,18 +12,18 @@ import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-Labs.ApplicationPage {
+AppPage {
     id: messageScreenPage
     anchors.fill: parent
 
     // small trick to reload the data() role values when the item changes
     Connections {
-        target: scene.contactItem
-        onChanged: scene.contactItem = scene.contactItem
+        target: window.contactItem
+        onChanged: window.contactItem = window.contactItem
     }
 
-    property string contactId: scene.currentContactId
-    property string contactName: scene.contactItem.data(AccountsModel.AliasRole);
+    property string contactId: window.currentContactId
+    property string contactName: window.contactItem.data(AccountsModel.AliasRole);
     /* Video Window position for the four corners, numbered like this:
        0 1
        2 3 */
@@ -51,85 +51,77 @@ Labs.ApplicationPage {
     function closeConversation()
     {
         // assuming we need to end the chat session when close is pressed
-        if(scene.chatAgent.isConference) {
-            accountsModel.endChat(scene.currentAccountId, scene.chatAgent.channelPath);
+        if(window.chatAgent.isConference) {
+            accountsModel.endChat(window.currentAccountId, window.chatAgent.channelPath);
         } else {
-            accountsModel.endChat(scene.currentAccountId, contactId);
+            accountsModel.endChat(window.currentAccountId, contactId);
         }
 
-        scene.previousApplicationPage();
+        window.previousApplicationPage();
     }
 
     function getCameraAspectRatio() {
         //var cameraAspectRatio = 4.0 / 3.0;
         //var cameraAspectRatio = 352.0 / 288.0;
         var cameraAspectRatio = 320.0 / 240.0;
-        if (scene.orientation == 0 || scene.orientation == 2) {
+        if (window.orientation == 0 || window.orientation == 2) {
             cameraAspectRatio = 1.0 / cameraAspectRatio;
         }
         return cameraAspectRatio;
     }
 
-    // this should be commented unless you are testing the search functionality
-    //showSearch: true
-
-    onSearch: {
-        conversationView.model.searchByString(needle);
-        searchHeader.searchActive = (needle != "");
-    }
-
     Component.onCompleted: {
-        if(scene.chatAgent != undefined && scene.chatAgent.isConference) {
-            scene.title = qsTr("Group conversation");
+        if(window.chatAgent != undefined && window.chatAgent.isConference) {
+            pageTitle = qsTr("Group conversation");
         } else {
-            scene.title = qsTr("Chat with %1").arg(scene.contactItem.data(AccountsModel.AliasRole));
+            pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
         }
 
-        if(scene.chatAgent != undefined && scene.chatAgent.existsChat) {
-            if(scene.chatAgent.isConference) {
-                conversationView.model = accountsModel.groupConversationModel(scene.currentAccountId,
-                                                                              scene.chatAgent.channelPath);
+        if(window.chatAgent != undefined && window.chatAgent.existsChat) {
+            if(window.chatAgent.isConference) {
+                conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
+                                                                              window.chatAgent.channelPath);
                 if (conversationView.model != undefined) {
-                    scene.fileTransferAgent.setModel(conversationView.model);
+                    window.fileTransferAgent.setModel(conversationView.model);
                 }
             } else {
-                conversationView.model = accountsModel.conversationModel(scene.currentAccountId,
-                                                                         scene.currentContactId);
+                conversationView.model = accountsModel.conversationModel(window.currentAccountId,
+                                                                         window.currentContactId);
                 if (conversationView.model != undefined) {
-                    scene.fileTransferAgent.setModel(conversationView.model);
+                    window.fileTransferAgent.setModel(conversationView.model);
                 }
             }
         }
 
         conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
         notificationManager.chatActive = true;
-        if(scene.callAgent != undefined) {
-            var status = scene.callAgent.callStatus;
-            if (status == CallAgent.CallStatusIncomingCall || scene.callAgent.existingCall) {
+        if(window.callAgent != undefined) {
+            var status = window.callAgent.callStatus;
+            if (status == CallAgent.CallStatusIncomingCall || window.callAgent.existingCall) {
                 videoWindow.opacity = 1;
-                scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
-                scene.callAgent.onOrientationChanged(scene.orientation);
-                scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                window.callAgent.onOrientationChanged(window.orientation);
+                window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
             }
         }
 
         // just to be sure, set the focus on the text editor
         textEdit.focus = true;
-        scene.callAgent.resetMissedCalls()
+        window.callAgent.resetMissedCalls()
     }
 
     Component.onDestruction: {
-        if(!scene.chatAgent.isConference) {
-            accountsModel.disconnectConversationModel(scene.currentAccountId,
+        if(!window.chatAgent.isConference) {
+            accountsModel.disconnectConversationModel(window.currentAccountId,
                                                       contactId);
         } else {
-            accountsModel.disconnectGroupConversationModel(scene.currentAccountId,
-                                                           scene.chatAgent.channelPath);
+            accountsModel.disconnectGroupConversationModel(window.currentAccountId,
+                                                           window.chatAgent.channelPath);
         }
 
-        if(scene.callAgent != undefined) {
-            scene.callAgent.setOutgoingVideo(null);
-            scene.callAgent.setIncomingVideo(null);
+        if(window.callAgent != undefined) {
+            window.callAgent.setOutgoingVideo(null);
+            window.callAgent.setIncomingVideo(null);
         }
         notificationManager.chatActive = false;
     }
@@ -137,21 +129,18 @@ Labs.ApplicationPage {
     Connections {
         target: accountsModel
         onChatReady:  {
-            if (accountId == scene.currentAccountId && contactId == scene.currentContactId) {
-                conversationView.model = accountsModel.conversationModel(scene.currentAccountId,
+            if (accountId == window.currentAccountId && contactId == window.currentContactId) {
+                conversationView.model = accountsModel.conversationModel(window.currentAccountId,
                                                                          contactId);
-                scene.fileTransferAgent.setModel(conversationView.model);
+                window.fileTransferAgent.setModel(conversationView.model);
             }
         }
-    }
 
-    Connections {
-        target: accountsModel
         onGroupChatReady:  {
-            if (accountId == scene.currentAccountId && channelPath == scene.chatAgent.channelPath) {
-                conversationView.model = accountsModel.groupConversationModel(scene.currentAccountId,
+            if (accountId == window.currentAccountId && channelPath == window.chatAgent.channelPath) {
+                conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
                                                                               channelPath);
-                scene.fileTransferAgent.setModel(conversationView.model);
+                window.fileTransferAgent.setModel(conversationView.model);
             }
         }
     }
@@ -161,8 +150,8 @@ Labs.ApplicationPage {
         onCallStatusChanged: {
             // Several sounds might play at once here. Should be prioritize, make a queue, or let them all play ?
             if (callAgent.callStatus == CallAgent.CallStatusNoCall) {
-                scene.fullscreen = false;
-                scene.fullContent = false;
+                window.fullscreen = false;
+                window.fullContent = false;
                 videoWindow.opacity = 0;
             }
             // activate call ringing
@@ -189,16 +178,21 @@ Labs.ApplicationPage {
     }
 
     Connections {
-        target: scene
+        target: window
         onOrientationChanged: {
-            scene.callAgent.onOrientationChanged(scene.orientation);
+            window.callAgent.onOrientationChanged(window.orientation);
+        }
+
+        onSearch: {
+            conversationView.model.searchByString(needle);
+            searchHeader.searchActive = (needle != "");
         }
     }
 
     Connections {
-        target: scene.callAgent
+        target: window.callAgent
         onVideoSentChanged: {
-            var sent = scene.callAgent.videoSentOrAboutTo;
+            var sent = window.callAgent.videoSentOrAboutTo;
             if (sent != videoWasSent) {
                 if (sent) {
                     recordingStartSound.playSound();
@@ -221,7 +215,7 @@ Labs.ApplicationPage {
 
         SearchHeader {
             id: searchHeader
-            searchActive: messageScreenPage.showSearch
+            searchActive: window.showToolBarSearch
             searching: conversationView.model.searching
             olderActive : conversationView.model.olderActive
             newerActive : conversationView.model.newerActive
@@ -395,7 +389,7 @@ Labs.ApplicationPage {
             anchors.right: parent.right
             anchors.bottom: imToolBar.top
             height: textBox.height
-            visible: !scene.fullscreen
+            visible: !window.fullscreen
 
             Item {
                 id: textBox
@@ -448,7 +442,7 @@ Labs.ApplicationPage {
 
             Button {
                 id: sendMessageButton
-                visible: !scene.fullscreen
+                visible: !window.fullscreen
                 anchors {
                     margins: 10
                     right: parent.right
@@ -471,16 +465,16 @@ Labs.ApplicationPage {
         Item {
             id: videoWindow
             anchors.right: parent.right
-            anchors.rightMargin: scene.fullscreen ? 0 : 20
+            anchors.rightMargin: window.fullscreen ? 0 : 20
             anchors.top: parent.top
-            anchors.topMargin: scene.fullscreen ? 0 : 20
-            width: getVideoWidth(scene, conversationView)
-            height: getVideoHeight(scene, conversationView)
+            anchors.topMargin: window.fullscreen ? 0 : 20
+            width: getVideoWidth(window, conversationView)
+            height: getVideoHeight(window, conversationView)
             opacity: 0
 
             function getVideoWidth(full, window) {
-                if (scene.fullscreen) {
-                    if (scene.orientation == 0 || scene.orientation == 2) {
+                if (window.fullscreen) {
+                    if (window.orientation == 0 || window.orientation == 2) {
                         return pageContent.height;
                     }
                     return pageContent.width;
@@ -495,8 +489,8 @@ Labs.ApplicationPage {
             }
 
             function getVideoHeight(full, window) {
-                if (scene.fullscreen) {
-                    if (scene.orientation == 0 || scene.orientation == 2) {
+                if (window.fullscreen) {
+                    if (window.orientation == 0 || window.orientation == 2) {
                         return pageContent.width;
                     }
                     return pageContent.height;
@@ -545,10 +539,10 @@ Labs.ApplicationPage {
             states: [
                 State {
                     name: "fullscreen"
-                    when: scene.fullscreen
+                    when: window.fullscreen
                     PropertyChanges {
-                        target: scene
-                        showsearch: false
+                        target: window
+                        showToolBarSearch: false
                         showtoolbar: false
                         fullContent: true
                     }
@@ -558,7 +552,7 @@ Labs.ApplicationPage {
             Rectangle {
                 anchors.margins: -4
                 anchors.fill: parent
-                visible: !scene.fullscreen
+                visible: !window.fullscreen
                 color: "darkgrey"
             }
 
@@ -569,9 +563,9 @@ Labs.ApplicationPage {
 
             Avatar {
                 id: avatar
-                visible: (scene.callAgent != undefined && !scene.callAgent.remoteVideoRender)
-                active: (scene.callAgent != undefined && scene.callAgent.existingCall)
-                source: scene.contactItem.data(AccountsModel.AvatarRole)
+                visible: (window.callAgent != undefined && !window.callAgent.remoteVideoRender)
+                active: (window.callAgent != undefined && window.callAgent.existingCall)
+                source: window.contactItem.data(AccountsModel.AvatarRole)
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height / 3
@@ -584,7 +578,7 @@ Labs.ApplicationPage {
                 y: videoAtBottom() ? parent.height - height - 20 : 20
                 */
                 anchors.bottom: videoAtBottom() ? parent.bottom : undefined
-                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
                 anchors.top: !videoAtBottom() ? parent.top : undefined
                 anchors.topMargin: 20
                 anchors.left: !videoAtRight() ? parent.left : undefined
@@ -595,30 +589,30 @@ Labs.ApplicationPage {
                 //height: 144//140
                 //width: videoWindow.width / 4
                 //height: videoWindow.height / 4
-                width: getVideoWidth(scene, videoWindow)
-                height: getVideoHeight(scene, videoWindow)
+                width: getVideoWidth(window, videoWindow)
+                height: getVideoHeight(window, videoWindow)
                 visible : videoWindow.showCameraVideo
 
                 function getVideoWidth(full, window) {
-                    if (!scene.fullscreen) {
+                    if (!window.fullscreen) {
                         return window.width / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                    var width = scene.width / 4.0;
-                    if (scene.width / scene.height > cameraAspectRatio) {
-                        width = scene.height / 4.0 * cameraAspectRatio;
+                    var width = window.width / 4.0;
+                    if (window.width / window.height > cameraAspectRatio) {
+                        width = window.height / 4.0 * cameraAspectRatio;
                     }
                     return width;
                 }
 
                 function getVideoHeight(full, window) {
-                    if (!scene.fullscreen) {
+                    if (!window.fullscreen) {
                         return window.height / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                    var height = scene.height / 4.0;
-                    if (scene.width / scene.height < cameraAspectRatio) {
-                        height = scene.width / (cameraAspectRatio * 4.0);
+                    var height = window.height / 4.0;
+                    if (window.width / window.height < cameraAspectRatio) {
+                        height = window.width / (cameraAspectRatio * 4.0);
                     }
                     return height;
                 }
@@ -652,7 +646,7 @@ Labs.ApplicationPage {
                         videoOutgoingContainer.anchors.top = undefined;
                     }
                     onMousePositionChanged: {
-                        var tmppos = videoOutgoingDAD.mapToItem(scene, mouseX, mouseY)
+                        var tmppos = videoOutgoingDAD.mapToItem(window, mouseX, mouseY)
                         if (containedIn(tmppos.x, tmppos.y, moveMyVideoTargetTopLeftDropZone)) {
                             videoWindowSwap = false;
                             videoWindowPositionHighlight = 0;
@@ -674,11 +668,11 @@ Labs.ApplicationPage {
                         }
                     }
                     onReleased: {
-                        if (videoWindowSwap && scene.callAgent.canSwapVideos()) {
+                        if (videoWindowSwap && window.callAgent.canSwapVideos()) {
                             cameraWindowSmall  = !cameraWindowSmall;
                             videoWindowSwap = false;
-                            scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
-                            scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                            window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                            window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
                         }
 
                         if (videoWindowPositionHighlight != -1) {
@@ -700,7 +694,7 @@ Labs.ApplicationPage {
                     }
 
                     function containedIn(x, y, obj) {
-                        var tmppos = obj.mapToItem(scene, 0, 0);
+                        var tmppos = obj.mapToItem(window, 0, 0);
                         if (x >= tmppos.x && x <= (tmppos.x + obj.width) &&
                             y >= tmppos.y && y <= (tmppos.y + obj.height)) {
                             return true;
@@ -715,8 +709,8 @@ Labs.ApplicationPage {
                 source: videoWindowPositionHighlight == 0 ?
                             "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
                             "image://meegotheme/widgets/apps/chat/move-video-background"
-                width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
-                height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
+                width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
+                height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.top: parent.top
                 anchors.topMargin: 20
                 anchors.left: parent.left
@@ -736,8 +730,8 @@ Labs.ApplicationPage {
                 source: videoWindowPositionHighlight == 1 ?
                             "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
                             "image://meegotheme/widgets/apps/chat/move-video-background"
-                width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
-                height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
+                width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
+                height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.top: parent.top
                 anchors.topMargin: 20
                 anchors.right: parent.right
@@ -757,10 +751,10 @@ Labs.ApplicationPage {
                 source: videoWindowPositionHighlight == 2 ?
                             "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
                             "image://meegotheme/widgets/apps/chat/move-video-background"
-                width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
-                height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
+                width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
+                height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -778,10 +772,10 @@ Labs.ApplicationPage {
                 source: videoWindowPositionHighlight == 3 ?
                             "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
                             "image://meegotheme/widgets/apps/chat/move-video-background"
-                width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
-                height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
+                width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
+                height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -813,7 +807,7 @@ Labs.ApplicationPage {
             IconButton {
                 id: videoOutInfo
 
-                visible: scene.callAgent != undefined
+                visible: window.callAgent != undefined
                 anchors.bottom: videoOutgoingContainer.bottom
                 anchors.left: videoOutgoingContainer.left
                 icon: "image://meegotheme/widgets/common/button/button-info"
@@ -822,11 +816,11 @@ Labs.ApplicationPage {
                 height: 44
                 hasBackground: false
                 onClicked: {
-                    var map = mapToItem(scene, 0, 0);
+                    var map = mapToItem(window, 0, 0);
                     var menu;
                     var op1 = videoWindow.showCameraVideo ? qsTr("Minimize me") : qsTr("Maximize me");
-                    var op2 = scene.callAgent.videoSentOrAboutTo ? qsTr("Disable camera") : qsTr("Enable camera");
-                    var op3 = scene.callAgent.cameraSwappable() ? qsTr("Swap camera") : null;
+                    var op2 = window.callAgent.videoSentOrAboutTo ? qsTr("Disable camera") : qsTr("Enable camera");
+                    var op3 = window.callAgent.cameraSwappable() ? qsTr("Swap camera") : null;
                     if (op3 == null) {
                         menu = [op1, op2];
                     } else {
@@ -948,11 +942,9 @@ Labs.ApplicationPage {
         return parsedMessage;
     }
 
-    menuContent: MessageContentMenu {
+    actionMenuModel: MessageContentMenu {
         currentPage: messageScreenPage;
     }
-
-    menuWidth: 600
 
     ContextMenu {
         id: contextMenu
@@ -964,9 +956,9 @@ Labs.ApplicationPage {
                     //videoWindow.showCameraVideo = !videoWindow.showCameraVideo
                     payload.showCameraVideo = !payload.showCameraVideo
                 } else if (index == 1) {
-                    scene.callAgent.videoSent = !scene.callAgent.videoSentOrAboutTo;
+                    window.callAgent.videoSent = !window.callAgent.videoSentOrAboutTo;
                 } else if (index == 2) {
-                    scene.callAgent.swapCamera();
+                    window.callAgent.swapCamera();
                 }
 
                 // By setting the sourceComponent of the loader to undefined,

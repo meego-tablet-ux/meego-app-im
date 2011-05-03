@@ -8,11 +8,10 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
-Labs.ApplicationPage {
+AppPage {
     id: contactsScreenPage
     
     property int count: listView.count
@@ -31,15 +30,11 @@ Labs.ApplicationPage {
     // this should be commented unless you are testing the search functionality
     // showSearch: true
 
-    onSearch: {
-        contactsModel.filterByString(needle);
-    }
-
     anchors.fill: parent
 
     Component.onCompleted: {
-        scene.title = scene.currentAccountName;
-        accountStatus = scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        pageTitle = window.currentAccountName;
+        accountStatus = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
     }
 
     onAccountStatusChanged: {
@@ -48,18 +43,25 @@ Labs.ApplicationPage {
     }
 
     Connections {
-        target: scene.accountItem
-
-        onChanged: {
-            accountStatus = scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        target: window
+        onSearch: {
+            contactsModel.filterByString(needle);
         }
     }
 
     Connections {
-        target: scene
+        target: window.accountItem
+
+        onChanged: {
+            accountStatus = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        }
+    }
+
+    Connections {
+        target: window
 
         onCurrentAccountNameChanged: {
-            scene.title = scene.currentAccountName;
+            pageTitle = window.currentAccountName;
         }
     }
 
@@ -68,7 +70,7 @@ Labs.ApplicationPage {
         target: confirmationDialogItem
         onAccepted: {
 
-            var icon = scene.accountItem.data(AccountsModel.IconRole);
+            var icon = window.accountItem.data(AccountsModel.IconRole);
 
             if (confirmationDialogItem.instanceReason != "contact-menu-single-instance") {
                 return;
@@ -76,11 +78,11 @@ Labs.ApplicationPage {
 
             // if the dialog was accepted we should disconnect all other accounts
             // of the same type
-            accountFactory.disconnectOtherAccounts(icon, scene.currentAccountId);
+            accountFactory.disconnectOtherAccounts(icon, window.currentAccountId);
 
             // and set the account online
-            scene.accountItem.setRequestedPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
-            scene.accountItem.setAutomaticPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+            window.accountItem.setRequestedPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
+            window.accountItem.setAutomaticPresence(requestedStatusType, requestedStatus, requestedStatusMessage);
         }
 
         // no need to do anything if the dialog is rejected
@@ -89,7 +91,6 @@ Labs.ApplicationPage {
 
     Item {
         id: pageContent
-        parent: contactsScreenPage.content
         anchors.fill: parent
 
         NoNetworkHeader {
@@ -159,9 +160,7 @@ Labs.ApplicationPage {
         }
     }
 
-    menuContent: ContactContentMenu {
+    actionMenuModel: ContactContentMenu {
         currentPage: contactsScreenPage;
     }
-    menuWidth: 200
-
 }

@@ -42,8 +42,8 @@ ModalDialog {
                 anchors.bottom: parent.bottom
                 anchors.margins: 10
 
-                source: (scene.incomingContactItem != undefined ?
-                             scene.incomingContactItem.data(AccountsModel.AvatarRole) :
+                source: (window.incomingContactItem != undefined ?
+                             window.incomingContactItem.data(AccountsModel.AvatarRole) :
                              noAvatarImage)
                 noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
             }
@@ -63,8 +63,8 @@ ModalDialog {
                     width: parent.width
                     anchors.left: parent.left
 
-                    text: (scene.incomingContactItem != undefined ?
-                               scene.incomingContactItem.data(AccountsModel.AliasRole) :
+                    text: (window.incomingContactItem != undefined ?
+                               window.incomingContactItem.data(AccountsModel.AliasRole) :
                                "")
 
                     color: theme_fontColorNormal
@@ -79,8 +79,8 @@ ModalDialog {
 
                     PresenceIcon {
                         id: presence
-                        status: (scene.incomingContactItem != undefined ?
-                                     scene.incomingContactItem.data(AccountsModel.PresenceTypeRole) :
+                        status: (window.incomingContactItem != undefined ?
+                                     window.incomingContactItem.data(AccountsModel.PresenceTypeRole) :
                                      0)
                         anchors.verticalCenter: message.verticalCenter
                         anchors.topMargin: 5
@@ -105,8 +105,8 @@ ModalDialog {
         id: callStatusConnection
         target: null
         onCallStatusChanged: {
-            if (scene.incomingCallAgent.callStatus == CallAgent.CallStatusNoCall
-             || scene.incomingCallAgent.callStatus == CallAgent.CallStatusHangingUp) {
+            if (window.incomingCallAgent.callStatus == CallAgent.CallStatusNoCall
+             || window.incomingCallAgent.callStatus == CallAgent.CallStatusHangingUp) {
                 container.hide();
             }
         }
@@ -117,15 +117,15 @@ ModalDialog {
     }
 
     onAccepted: {
-        scene.callAgent = scene.incomingCallAgent
-        scene.callAgent.acceptCall();
-        scene.acceptCall(accountId, scene.incomingContactItem.data(AccountsModel.IdRole));
+        window.callAgent = window.incomingCallAgent
+        window.callAgent.acceptCall();
+        window.acceptCall(accountId, window.incomingContactItem.data(AccountsModel.IdRole));
         callSound.stopSound();
         container.hide();
     }
 
     onRejected: {
-        scene.incomingCallAgent.endCall();
+        window.incomingCallAgent.endCall();
         callSound.stopSound();
         container.hide();
     }

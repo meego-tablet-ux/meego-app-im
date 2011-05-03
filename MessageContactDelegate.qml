@@ -27,7 +27,7 @@ Item {
         if(model.presenceMessage != "") {
             message.text = model.presenceMessage;
         } else {
-            message.text = scene.presenceStatusText(model.presenceType);
+            message.text = window.presenceStatusText(model.presenceType);
         }
         console.log("width: " + avatar.width);
         console.log("source: " + avatar.source);
@@ -44,20 +44,20 @@ Item {
             anchors.fill: parent
             onClicked: {
                 contactDelegate.ListView.view.currentIndex = index;
-                var map = mapToItem(scene, mouseX, mouseY);
+                var map = mapToItem(window, mouseX, mouseY);
                 menu.clear();
 
                 // Add items to menu according to contact capabilities
-                if(model.textChat && scene.chatAgent.isConference) {
+                if(model.textChat && window.chatAgent.isConference) {
                     menu.append({"modelData":qsTr("Private chat")});
                 }
                 // check if contact is known
-                if(!accountsModel.isContactKnown(scene.currentAccountId, scene.chatAgent.channelPath, model.id)) {
+                if(!accountsModel.isContactKnown(window.currentAccountId, window.chatAgent.channelPath, model.id)) {
                     menu.append({"modelData":qsTr("Add to contacts")});
                 }
 
                 // set the global variable to make sure it is available for the menu
-                scene.currentPage = contactDelegate.currentPage;
+                window.currentPage = contactDelegate.currentPage;
 
                 // open menu
                 contextMenu.setPosition( map.x, map.y);
@@ -83,10 +83,10 @@ Item {
                     // menu previously used because the contactDelegate is not available when
                     // this is called through the loader. Only the selected index and the payload
                     // are available
-                    if(payload.textChat && scene.chatAgent.isConference) {
+                    if(payload.textChat && window.chatAgent.isConference) {
                         menuIndex.append({"modelData":1});
                     }
-                    if(!accountsModel.isContactKnown(scene.currentAccountId, scene.chatAgent.channelPath, payload.id)) {
+                    if(!accountsModel.isContactKnown(window.currentAccountId, window.chatAgent.channelPath, payload.id)) {
                         menuIndex.append({"modelData":2});
                     }
 
@@ -94,14 +94,14 @@ Item {
                     var actionIndex = menuIndex.get(index).modelData;
                     if (actionIndex == 1) {
                         // chat
-                        var contactid = accountsModel.startPrivateChat(scene.currentAccountId, scene.chatAgent.channelPath, payload.id);
-                        scene.currentPage.closeMenu();
-                        scene.previousApplicationPage();
-                        scene.startConversation(contactid);
+                        var contactid = accountsModel.startPrivateChat(window.currentAccountId, window.chatAgent.channelPath, payload.id);
+                        window.currentPage.closeMenu();
+                        window.previousApplicationPage();
+                        window.startConversation(contactid);
                     } else if (actionIndex == 2) {
                         // add contact
-                        accountsModel.addContactFromGroupChat(scene.currentAccountId, scene.chatAgent.channelPath, payload.id);
-                        scene.currentPage.closeMenu();
+                        accountsModel.addContactFromGroupChat(window.currentAccountId, window.chatAgent.channelPath, payload.id);
+                        window.currentPage.closeMenu();
                     }
 
                     // By setting the sourceComponent of the loader to undefined,
@@ -172,7 +172,7 @@ Item {
             anchors.bottom: parent.bottom
             width: height
             source: "image://meegotheme/widgets/common/menu/menu-item-separator"
-            visible: scene.chatAgent.isGroupChatCapable
+            visible: window.chatAgent.isGroupChatCapable
         }
     }
 }

@@ -17,14 +17,11 @@ Item {
 
     property variant currentPage
 
-    // FIXME remove after full migration to MeegGo.Components
-    property variant window : scene
-
     signal accountChanged
 
     function confirmAccountLogin()
     {
-        var serviceName = protocolsModel.titleForId(scene.accountItem.data(AccountsModel.IconRole));
+        var serviceName = protocolsModel.titleForId(window.accountItem.data(AccountsModel.IconRole));
 
         // show the dialog to ask for user confirmation
         confirmationDialogItem.title = qsTr("Multiple accounts connected");
@@ -34,33 +31,33 @@ Item {
     }
 
     Component.onCompleted: {
-        if (scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
-            statusMessage.text = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
+        if (window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
+            statusMessage.text = window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
         } else {
-            statusMessage.text = scene.presenceStatusText(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
+            statusMessage.text = window.presenceStatusText(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         }
-        statusRadioGroup.select(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
+        statusRadioGroup.select(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
     }
 
     Connections {
-        target: scene.accountItem
+        target: window.accountItem
         // a small trick
         onChanged: {
-            scene.accountItem = scene.accountItem
-            if (scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
-                statusMessage.text = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
+            window.accountItem = window.accountItem
+            if (window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
+                statusMessage.text = window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
             } else {
-                statusMessage.text = scene.presenceStatusText(scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
+                statusMessage.text = window.presenceStatusText(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
             }
-            displayName.text = scene.accountItem.data(AccountsModel.NicknameRole);
-            presenceIcon.status = scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+            displayName.text = window.accountItem.data(AccountsModel.NicknameRole);
+            presenceIcon.status = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
         }
     }
 
     Connections {
-        target: scene
+        target: window
         onCurrentAccountIdChanged: {
-            scene.accountItem = accountsModel.accountItemForId(scene.currentAccountId);
+            window.accountItem = accountsModel.accountItemForId(window.currentAccountId);
         }
     }
 
@@ -80,7 +77,7 @@ Item {
             anchors.right: parent.right
             height: width
             anchors.bottomMargin: 2
-            source: "image://avatars/" + scene.accountItem.data(AccountsModel.IdRole) + // i18n ok
+            source: "image://avatars/" + window.accountItem.data(AccountsModel.IdRole) + // i18n ok
                     "?" + accountFactory.avatarSerial
             noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
 
@@ -88,7 +85,9 @@ Item {
                 id: avatarMenu
                 PictureChangeMenu {
                     id: pictureChangeMenu
-                    onClose: contextLoader.sourceComponent = undefined
+                    onClose: {
+                        currentPage.closeMenu();
+                    }
                 }
             }
 
@@ -119,7 +118,7 @@ Item {
             Text {
                 id: displayName
                 width: parent.width - presenceIcon.width - 5
-                text: scene.accountItem.data(AccountsModel.NicknameRole)
+                text: window.accountItem.data(AccountsModel.NicknameRole)
                 color: theme_fontColorNormal
                 font.weight: Font.Bold
                 font.pixelSize: theme_fontPixelSizeNormal
@@ -129,7 +128,7 @@ Item {
             PresenceIcon {
                 id: presenceIcon
                 anchors.verticalCenter: displayName.verticalCenter
-                status: scene.accountItem.data(AccountsModel.CurrentPresenceTypeRole)
+                status: window.accountItem.data(AccountsModel.CurrentPresenceTypeRole)
             }
         }
 
@@ -282,16 +281,16 @@ Item {
                                 anchors.fill: parent
                                 onClicked: {
                                     statusRadioGroup.select(model.type);
-                                    var icon = scene.accountItem.data(AccountsModel.IconRole);
-                                    var id = scene.accountItem.data(AccountsModel.IdRole);
+                                    var icon = window.accountItem.data(AccountsModel.IconRole);
+                                    var id = window.accountItem.data(AccountsModel.IdRole);
                                     // if the protocol doesn t allow for multiple accounts to be online
                                     // at the same time, we need to ask the user if he wants to disconnect
                                     // the other accounts
                                     if (!protocolsModel.isSingleInstance(icon) ||
                                             accountFactory.otherAccountsOnline(icon, id) == 0 ||
                                             model.type == TelepathyTypes.ConnectionPresenceTypeOffline) {
-                                        scene.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
-                                        scene.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
+                                        window.accountItem.setRequestedPresence(model.type, model.status, customMessageBox.text);
+                                        window.accountItem.setAutomaticPresence(model.type, model.status, customMessageBox.text);
                                     } else {
                                         contactsScreenPage.requestedStatusType = model.type;
                                         contactsScreenPage.requestedStatus = model.status;
@@ -336,7 +335,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 15
                     defaultText: qsTr("Custom status message");
-                    text: scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
+                    text: window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
                     onAccepted: {
                         customMessageBox.updateStatus();
                     }
@@ -350,8 +349,8 @@ Item {
                             }
                         }
 
-                        scene.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
-                        scene.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        window.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
+                        window.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
                         currentPage.closeMenu();
                     }
                 }
@@ -455,7 +454,7 @@ Item {
 
                 onVisibleChanged: {
                     if (visible) {
-                        nicknameBox.text = scene.accountItem.data(AccountsModel.NicknameRole)
+                        nicknameBox.text = window.accountItem.data(AccountsModel.NicknameRole)
                     }
                 }
 
@@ -466,7 +465,7 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 15
                     defaultText: qsTr("Display name")
-                    text: scene.accountItem.data(AccountsModel.NicknameRole)
+                    text: window.accountItem.data(AccountsModel.NicknameRole)
 
                     onAccepted: {
                         updateNickname();
@@ -474,7 +473,7 @@ Item {
 
                     function updateNickname() {
                         if (nicknameBox.text != "") {
-                            scene.accountItem.setNickname(nicknameBox.text);
+                            window.accountItem.setNickname(nicknameBox.text);
                             nicknameHideTimer.start();
                         }
                     }
@@ -500,7 +499,7 @@ Item {
         MenuItem {
             id: addIMContactItem
             text: qsTr("Add a friend")
-            visible: scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected
+            visible: window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected
 
             onClicked: {
                 if(addAFriend.opacity == 1) {
@@ -565,7 +564,7 @@ Item {
             text: qsTr("Clear chat history")
 
             onClicked: {
-                accountsModel.clearAccountHistory(scene.currentAccountId);
+                accountsModel.clearAccountHistory(window.currentAccountId);
             }
         }
 
@@ -573,32 +572,32 @@ Item {
 
         MenuItem {
             id: logOutItem
-            text: (scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
+            text: (window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
                        qsTr("Log in") : qsTr("Log out"))
 
             onClicked: {
-                if(scene.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
+                if(window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
                     contactsScreenPage.requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
                     contactsScreenPage.requestedStatus = "available"; // i18n ok
-                    contactsScreenPage.requestedStatusMessage = scene.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
+                    contactsScreenPage.requestedStatusMessage = window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
 
-                    var icon = scene.accountItem.data(AccountsModel.IconRole);
-                    var id = scene.accountItem.data(AccountsModel.IdRole);
+                    var icon = window.accountItem.data(AccountsModel.IconRole);
+                    var id = window.accountItem.data(AccountsModel.IdRole);
 
                     if (!protocolsModel.isSingleInstance(icon) ||
                             accountFactory.otherAccountsOnline(icon, id) == 0) {
-                        scene.accountItem.setRequestedPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
-                        scene.accountItem.setAutomaticPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
+                        window.accountItem.setRequestedPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
+                        window.accountItem.setAutomaticPresence(contactsScreenPage.requestedStatusType, contactsScreenPage.requestedStatus, customMessageBox.text);
                     } else {
                         confirmAccountLogin();
                     }
                     currentPage.closeMenu();
                 } else {
-                    scene.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                    window.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
                                                            "offline", // i18n ok
-                                                           scene.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
+                                                           window.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
                     currentPage.closeMenu();
-                    scene.previousApplicationPage();
+                    window.previousApplicationPage();
                 }
             }
         }
@@ -612,7 +611,7 @@ Item {
         id: photoPicker
 
         onPhotoSelected: {
-            accountHelper.setAccount(scene.accountItem);
+            accountHelper.setAccount(window.accountItem);
             accountHelper.avatar = uri;
             accountFactory.avatarSerial++;
             avatarImage.source = accountHelper.avatar;

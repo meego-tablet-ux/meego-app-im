@@ -18,7 +18,7 @@ Column {
 
     AddContactHelper {
         id: addContactHelper
-        accountItem: accountsModel.accountItemForId(scene.currentAccountId)
+        accountItem: accountsModel.accountItemForId(window.currentAccountId)
     }
 
     function resetHelper()

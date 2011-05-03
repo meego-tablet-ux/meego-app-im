@@ -31,7 +31,7 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::ContactPtr &contac
     qDebug() << "ChatAgent::ChatAgent: created for contact " << mContact->id();
 
     connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
-        SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+            SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
 
     onAccountConnectionChanged(mAccount->connection());
     // todo check contact readyness
@@ -50,22 +50,6 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const QString &roomName, QOb
              << "for a group chat named " << roomName;
 
     mPendingChannelRequest = mAccount->ensureTextChatroom(roomName, QDateTime::currentDateTime(), QLatin1String("org.freedesktop.Telepathy.Client.MeeGoIM"));
-
-    /*QVariantMap request;
-    request.insert(QLatin1String(TELEPATHY_INTERFACE_CHANNEL ".ChannelType"),
-                   QLatin1String(TELEPATHY_INTERFACE_CHANNEL_TYPE_TEXT));
-    request.insert(QLatin1String(TELEPATHY_INTERFACE_CHANNEL ".TargetHandleType"),
-                   (uint) Tp::HandleTypeRoom);
-    request.insert(QLatin1String(TELEPATHY_INTERFACE_CHANNEL ".TargetHandle"),
-                   mContact->handle()[0]);
-    mPendingChannelRequest = mAccount->ensureChannel(
-                request,
-                QDateTime::currentDateTime(),
-                QLatin1String("org.freedesktop.Telepathy.Client.MeeGoIM"));*/
-
-
-
-
     if (!mPendingChannelRequest) {
         emit error(tr("Unable to create text channel room %1")
                    .arg(roomName));
@@ -80,7 +64,8 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const QString &roomName, QOb
             SIGNAL(channelRequestCreated(Tp::ChannelRequestPtr)),
             SLOT(onPendingChanelRequestCreated(Tp::ChannelRequestPtr)));
     connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
-        SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+            SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+
     onAccountConnectionChanged(mAccount->connection());
 }
 
@@ -98,8 +83,10 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::TextChannelPtr &ch
 
     handleReadyChannel();
     emit isConferenceChanged();
+
     connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
-        SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+            SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+
     onAccountConnectionChanged(mAccount->connection());
 }
 
@@ -228,12 +215,6 @@ void ChatAgent::handleReadyChannel()
     connect(mTextChannel.data(),
             SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
             SLOT(onChannelInvalidated(Tp::DBusProxy*,QString,QString)));
-    connect(mTextChannel.data(),
-            SIGNAL(messageReceived(Tp::ReceivedMessage)),
-            SIGNAL(pendingConversationsChanged()));
-    connect(mTextChannel.data(),
-            SIGNAL(pendingMessageRemoved(Tp::ReceivedMessage)),
-            SIGNAL(pendingConversationsChanged()));
 
     mExistsChat = true;
 
@@ -319,9 +300,10 @@ bool ChatAgent::existsChat()
 
 int ChatAgent::pendingConversations() const
 {
-    if (!mTextChannel.isNull()) {
-        return mTextChannel->messageQueue().count();
+    if (mModel) {
+        return mModel->numPendingMessages();
     }
+
     return 0;
 }
 
@@ -415,6 +397,11 @@ void ChatAgent::createModelForChat()
         mContact,
         mTextChannel,
         this);
+    if (mModel) {
+        connect(mModel,
+                SIGNAL(numPendingMessagesChanged()),
+                SIGNAL(pendingConversationsChanged()));
+    }
 }
 
 Tp::AccountPtr ChatAgent::account() const
@@ -538,4 +525,3 @@ void ChatAgent::onConnectionInvalidated(Tp::DBusProxy *proxy)
         disconnect(conn, 0, this, 0);
     }
 }
-

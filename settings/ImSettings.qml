@@ -117,7 +117,7 @@ AppPage {
                     bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
                     bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
 
-                    onClicked: container.addPage(accountSetupComponent)
+                    onClicked: window.addPage(accountSetupComponent)
                 }
             }
 

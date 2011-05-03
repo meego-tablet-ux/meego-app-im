@@ -315,7 +315,7 @@ Window {
         if (notificationManager.chatActive) {
             window.popPage();
         }
-        page.addPage(messageScreenContent);
+        window.addPage(messageScreenContent);
     }
 
     function startVideoCall(contactId, page)
@@ -336,12 +336,12 @@ Window {
         if (notificationManager.chatActive) {
             window.popPage()
         }
-        page.addPage(messageScreenContent);
+        window.addPage(messageScreenContent);
     }
 
     function pickContacts(page)
     {
-        page.addPage(contactPickerContent)
+        window.addPage(contactPickerContent)
     }
 
     function reloadFilterModel()

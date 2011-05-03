@@ -263,6 +263,7 @@ AppPage {
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true
             currentIndex: count - 1
+            clip: true
 
             section.property : "dateString"
             section.criteria : ViewSection.FullString
@@ -517,7 +518,6 @@ AppPage {
                     PropertyChanges {
                         target: window
                         showToolBarSearch: false
-                        showtoolbar: false
                         fullContent: true
                     }
                 }
@@ -918,7 +918,7 @@ AppPage {
 
     function hideActionMenu()
     {
-        contactContentMenu.hide();
+        messageContentMenu.hide();
     }
 
     function videoAtBottom() {

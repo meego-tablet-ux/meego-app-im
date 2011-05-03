@@ -157,13 +157,13 @@ Column {
     InfoPanel {
         id: accountError
 
-        property int connectionStatus: accountItem.data(AccountsModel.ConnectionStatusRole)
-        property int connectionStatusReason: accountItem.data(AccountsModel.ConnectionStatusReasonRole)
+        property int connectionStatus: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusRole) : TelepathyTypes.ConnectionStatusDisconnected
+        property int connectionStatusReason: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusReasonRole) : TelepathyTypes.ConnectionStatusReasonNoneSpecified
 
         height: childrenRect.height + 20
 
         Connections {
-            target: accountItem
+            target: (accountItem != undefined) ? accountItem : null
             onConnectionStatusChanged: {
                 accountError.connectionStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
                 accountError.connectionStatusReason = accountItem.data(AccountsModel.ConnectionStatusReasonRole);

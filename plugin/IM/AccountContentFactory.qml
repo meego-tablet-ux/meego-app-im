@@ -74,6 +74,36 @@ Item {
         return Qt.createQmlObject(component, parent);
     }
 
+    function embeddedNewAccountContent(type, parent)
+    {
+        // do not i18n any string in this function
+        var component = "import Qt 4.7; "; // i18n ok
+        component += "import MeeGo.Components 0.1;";
+        component += "import \"" + protocolsModel.modulePath + "\";";
+        component += "Component {";
+        component += "    id: accountContentComponent;";
+        component += "    Column {";
+        component += "        id: details;";
+        component += "        anchors.top: parent.top;";
+        component += "        anchors.left: parent.left;";
+        component += "        anchors.right: parent.right;";
+        component += "        height: childrenRect.height;";
+        component += "        property alias accountContent: accountContent;";
+        component += accountContentFactory.contentForType(type) + "{";
+        component += "            id: accountContent;";
+        component += "            Button {"
+        component += "                text: qsTr(\"Sign in\");"
+        component += "                onClicked: {"
+        component += "                    visible = false;"
+        component += "                    accountContent.createAccount();"
+        component += "                }";
+        component += "            }";
+        component += "        }";
+        component += "}    }";
+
+        return Qt.createQmlObject(component, parent);
+    }
+
     function accountIcon(type, status)
     {
         var icon = protocolsModel.iconForId(type);

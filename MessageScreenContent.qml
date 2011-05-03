@@ -15,12 +15,7 @@ import TelepathyQML 0.1
 AppPage {
     id: messageScreenPage
     anchors.fill: parent
-
-    // small trick to reload the data() role values when the item changes
-    Connections {
-        target: window.contactItem
-        onChanged: window.contactItem = window.contactItem
-    }
+    enableCustomActionMenu: true
 
     property string contactId: window.currentContactId
     property string contactName: window.contactItem.data(AccountsModel.AliasRole);
@@ -36,39 +31,7 @@ AppPage {
     property bool videoWindowSwap : false
     property bool videoWasSent : false
 
-    function videoAtBottom() {
-        return videoWindowPosition & 2;
-    }
-
-    function videoAtRight() {
-        return videoWindowPosition & 1;
-    }
-
     x: 45
-
-    // The label is used as the user visible string in the crumb trail
-
-    function closeConversation()
-    {
-        // assuming we need to end the chat session when close is pressed
-        if(window.chatAgent.isConference) {
-            accountsModel.endChat(window.currentAccountId, window.chatAgent.channelPath);
-        } else {
-            accountsModel.endChat(window.currentAccountId, contactId);
-        }
-
-        window.previousApplicationPage();
-    }
-
-    function getCameraAspectRatio() {
-        //var cameraAspectRatio = 4.0 / 3.0;
-        //var cameraAspectRatio = 352.0 / 288.0;
-        var cameraAspectRatio = 320.0 / 240.0;
-        if (window.orientation == 0 || window.orientation == 2) {
-            cameraAspectRatio = 1.0 / cameraAspectRatio;
-        }
-        return cameraAspectRatio;
-    }
 
     Component.onCompleted: {
         if(window.chatAgent != undefined && window.chatAgent.isConference) {
@@ -124,6 +87,17 @@ AppPage {
             window.callAgent.setIncomingVideo(null);
         }
         notificationManager.chatActive = false;
+    }
+
+    onActionMenuIconClicked: {
+        messageContentMenu.setPosition( mouseX, mouseY);
+        messageContentMenu.show();
+    }
+
+    // small trick to reload the data() role values when the item changes
+    Connections {
+        target: window.contactItem
+        onChanged: window.contactItem = window.contactItem
     }
 
     Connections {
@@ -942,8 +916,53 @@ AppPage {
         return parsedMessage;
     }
 
-    actionMenuModel: MessageContentMenu {
-        currentPage: messageScreenPage;
+    function hideActionMenu()
+    {
+        contactContentMenu.hide();
+    }
+
+    function videoAtBottom() {
+        return videoWindowPosition & 2;
+    }
+
+    function videoAtRight() {
+        return videoWindowPosition & 1;
+    }
+
+    function closeConversation()
+    {
+        // assuming we need to end the chat session when close is pressed
+        if(window.chatAgent.isConference) {
+            accountsModel.endChat(window.currentAccountId, window.chatAgent.channelPath);
+        } else {
+            accountsModel.endChat(window.currentAccountId, contactId);
+        }
+        window.popPage();
+    }
+
+    function getCameraAspectRatio() {
+        //var cameraAspectRatio = 4.0 / 3.0;
+        //var cameraAspectRatio = 352.0 / 288.0;
+        var cameraAspectRatio = 320.0 / 240.0;
+        if (window.orientation == 0 || window.orientation == 2) {
+            cameraAspectRatio = 1.0 / cameraAspectRatio;
+        }
+        return cameraAspectRatio;
+    }
+
+    ContextMenu {
+        id: messageContentMenu
+
+        width: 200
+        forceFingerMode: 2
+
+        onVisibleChanged: {
+            actionMenuOpen = visible
+        }
+
+        content: MessageContentMenu {
+            currentPage: messageScreenPage;
+        }
     }
 
     ContextMenu {

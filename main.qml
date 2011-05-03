@@ -20,6 +20,7 @@ Window {
 
     toolBarTitle: qsTr("Chat")
     fullScreen: true
+    customActionMenu: true
 
     property int animationDuration: 250
 
@@ -452,4 +453,6 @@ Window {
         id: confirmationDialogItem
     }
 }
+
+
 

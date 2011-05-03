@@ -95,13 +95,13 @@ Item {
                     if (actionIndex == 1) {
                         // chat
                         var contactid = accountsModel.startPrivateChat(window.currentAccountId, window.chatAgent.channelPath, payload.id);
-                        window.currentPage.closeMenu();
-                        window.previousApplicationPage();
+                        window.currentPage.hideActionMenu();
+                        window.popPage();
                         window.startConversation(contactid);
                     } else if (actionIndex == 2) {
                         // add contact
                         accountsModel.addContactFromGroupChat(window.currentAccountId, window.chatAgent.channelPath, payload.id);
-                        window.currentPage.closeMenu();
+                        window.currentPage.hideActionMenu();
                     }
 
                     // By setting the sourceComponent of the loader to undefined,

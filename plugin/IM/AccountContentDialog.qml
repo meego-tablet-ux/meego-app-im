@@ -32,9 +32,9 @@ AppPage {
         target: accountContent
         onFinished: {
             spinner.hide();
-            window.previousApplicationPage();
+            window.popPage();
             // this second call is for the settings module
-            window.previousApplicationPage();
+            window.popPage();
         }
 
         onAccountCreationAborted: {
@@ -132,7 +132,7 @@ AppPage {
                             bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
                             bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
 
-                            onClicked: window.previousApplicationPage();
+                            onClicked: window.popPage();
                         }
                     }
                 }

@@ -16,8 +16,14 @@ Item {
     property variant currentPage
     property variant contactsModel
 
-    width: 590
+    width: 400
     height: meColumn.height
+
+    onVisibleChanged: {
+        if(visible) {
+            contactsView.model = window.chatAgent.contactsModel();
+        }
+    }
 
     Column {
         id: meColumn
@@ -32,7 +38,6 @@ Item {
         Repeater {
             id: contactsView
 
-            model: window.chatAgent.contactsModel()
             delegate: MessageContactDelegate {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -48,7 +53,7 @@ Item {
             text: qsTr("Add contacts to chat")
             onClicked: {
                 window.pickContacts(messageScreenPage);
-                currentPage.closeMenu();
+                currentPage.hideActionMenu();
             }
         }
 
@@ -67,7 +72,7 @@ Item {
                 } else {
                     accountsModel.clearContactHistory(window.currentAccountId, window.currentContactId);
                 }
-                currentPage.closeMenu();
+                currentPage.hideActionMenu();
             }
         }
 
@@ -82,7 +87,7 @@ Item {
             text: qsTr("End chat")
             onClicked: {
                 currentPage.closeConversation();
-                currentPage.closeMenu();
+                currentPage.hideActionMenu();
             }
         }
     }

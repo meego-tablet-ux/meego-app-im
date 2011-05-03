@@ -86,7 +86,7 @@ Item {
                 PictureChangeMenu {
                     id: pictureChangeMenu
                     onClose: {
-                        currentPage.closeMenu();
+                        currentPage.hideActionMenu();
                     }
                 }
             }
@@ -351,7 +351,7 @@ Item {
 
                         window.accountItem.setRequestedPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
                         window.accountItem.setAutomaticPresence(statusRadioGroup.selectedValue, status, customMessageBox.text);
-                        currentPage.closeMenu();
+                        currentPage.hideActionMenu();
                     }
                 }
 
@@ -591,13 +591,13 @@ Item {
                     } else {
                         confirmAccountLogin();
                     }
-                    currentPage.closeMenu();
+                    currentPage.hideActionMenu();
                 } else {
                     window.accountItem.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
                                                            "offline", // i18n ok
                                                            window.accountItem.data(AccountsModel.CurrentPresenceMessageRole));
-                    currentPage.closeMenu();
-                    window.previousApplicationPage();
+                    currentPage.hideActionMenu();
+                    window.popPage();
                 }
             }
         }

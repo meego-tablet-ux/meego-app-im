@@ -13,6 +13,9 @@ import TelepathyQML 0.1
 
 AppPage {
     id: contactsScreenPage
+
+    anchors.fill: parent
+    enableCustomActionMenu: true
     
     property int count: listView.count
     property bool showLoadingContacts: !count && !showAccountOffline
@@ -21,16 +24,9 @@ AppPage {
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnset
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnknown
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeError)
-
-
     property int requestedStatusType: 0
     property string requestedStatus: ""
     property string requestedStatusMessage: ""
-
-    // this should be commented unless you are testing the search functionality
-    // showSearch: true
-
-    anchors.fill: parent
 
     Component.onCompleted: {
         pageTitle = window.currentAccountName;
@@ -42,11 +38,9 @@ AppPage {
         contactRequestModel.filterByAccountId(currentAccountId);
     }
 
-    Connections {
-        target: window
-        onSearch: {
-            contactsModel.filterByString(needle);
-        }
+    onActionMenuIconClicked: {
+        contactContentMenu.setPosition( mouseX, mouseY);
+        contactContentMenu.show();
     }
 
     Connections {
@@ -62,6 +56,10 @@ AppPage {
 
         onCurrentAccountNameChanged: {
             pageTitle = window.currentAccountName;
+        }
+
+        onSearch: {
+            contactsModel.filterByString(needle);
         }
     }
 
@@ -160,7 +158,23 @@ AppPage {
         }
     }
 
-    actionMenuModel: ContactContentMenu {
-        currentPage: contactsScreenPage;
+    function hideActionMenu()
+    {
+        contactContentMenu.hide();
+    }
+
+    ContextMenu {
+        id: contactContentMenu
+
+        width: 200
+        forceFingerMode: 2
+
+        onVisibleChanged: {
+            actionMenuOpen = visible
+        }
+
+        content: ContactContentMenu {
+            currentPage: contactsScreenPage;
+        }
     }
 }

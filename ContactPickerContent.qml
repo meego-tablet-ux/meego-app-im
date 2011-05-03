@@ -149,7 +149,7 @@ AppPage {
                             accountsModel.addContactsToChat(window.currentAccountId, window.currentContactId, contactsList);
                         }
 
-                        window.previousApplicationPage();
+                        window.popPage();
 
                         // if cannot add contacts, go back to the contacts screen
                         // otherwise reloading the messageScreenPage has problems
@@ -157,7 +157,7 @@ AppPage {
                         // therefore it's safest to go back all the way to the contacts list
                         // then reload the messageScreenPage when the signal is received
                         if(!window.chatAgent.canAddContacts) {
-                            window.previousApplicationPage();
+                            window.popPage();
                         }
                     }
                 }
@@ -176,7 +176,7 @@ AppPage {
 
                     // TODO: check if we need to remove the contact
                     onClicked: {
-                        window.previousApplicationPage();
+                        window.popPage();
                     }
                 }
             }

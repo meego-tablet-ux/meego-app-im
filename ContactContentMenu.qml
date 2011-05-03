@@ -19,17 +19,6 @@ Item {
 
     signal accountChanged
 
-    function confirmAccountLogin()
-    {
-        var serviceName = protocolsModel.titleForId(window.accountItem.data(AccountsModel.IconRole));
-
-        // show the dialog to ask for user confirmation
-        confirmationDialogItem.title = qsTr("Multiple accounts connected");
-        confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
-        confirmationDialogItem.instanceReason = "contact-menu-single-instance"; // i18n ok
-        confirmationDialogItem.show();
-    }
-
     Component.onCompleted: {
         if (window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole) != "") {
             statusMessage.text = window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
@@ -37,6 +26,12 @@ Item {
             statusMessage.text = window.presenceStatusText(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         }
         statusRadioGroup.select(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
+    }
+
+    onVisibleChanged: {
+        if(!visible) {
+            resetMenu();
+        }
     }
 
     Connections {
@@ -616,5 +611,40 @@ Item {
             accountFactory.avatarSerial++;
             avatarImage.source = accountHelper.avatar;
         }
+    }
+
+    function confirmAccountLogin()
+    {
+        var serviceName = protocolsModel.titleForId(window.accountItem.data(AccountsModel.IconRole));
+
+        // show the dialog to ask for user confirmation
+        confirmationDialogItem.title = qsTr("Multiple accounts connected");
+        confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+        confirmationDialogItem.instanceReason = "contact-menu-single-instance"; // i18n ok
+        confirmationDialogItem.show();
+    }
+
+    function resetMenu()
+    {
+        statusMenu.opacity = 0;
+        nicknameColumn.opacity = 0;
+        addAFriend.opacity = 0;
+        avatarImage.visible = true;
+        avatarSeparator.visible = true;
+        statusRow.visible = true;
+        statusMessage.visible = true;
+        statusMessageSeparator.visible = true;
+        statusSeparator.visible = true;
+        updateStatusItem.visible = true;
+        updateStatusSeparator.visible = true;
+        updateNick.visible = true;
+        updateNickItem.visible = true;
+        nicknameSeparator.visible = true;
+        addIMContactItem.visible = true;
+        addAFriend.visible = true;
+        friendSeparator.visible = true;
+        clearHistoryItem.visible = true;
+        historySeparator.visible = true;
+        logOutItem.visible = true;
     }
 }

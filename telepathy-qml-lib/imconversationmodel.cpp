@@ -63,6 +63,9 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
         connect(channel.data(),
                 SIGNAL(chatStateChanged(Tp::ContactPtr,Tp::ChannelChatState)),
                 SLOT(onChatStateChanged(Tp::ContactPtr,Tp::ChannelChatState)));
+        connect(mSessionConversationModel,
+                SIGNAL(numPendingMessagesChanged()),
+                SIGNAL(numPendingMessagesChanged()));
     }
 
     QHash<int, QByteArray> roles = roleNames();
@@ -530,6 +533,15 @@ void IMConversationModel::connectChannelQueue()
     }
 }
 
+bool IMConversationModel::channelQueueConnected() const
+{
+    if (mSessionConversationModel) {
+        return mSessionConversationModel->channelQueueConnected();
+    }
+
+    return false;
+}
+
 int IMConversationModel::numMatchesFound() const
 {
     return mMatchesFound.count();
@@ -672,4 +684,13 @@ void IMConversationModel::onBackFetched()
         qDebug() << "after " << mLoggerConversationModel->rowCount();
         mNumDuplicatedMessages -= numToDelete;
     }
+}
+
+int IMConversationModel::numPendingMessages() const
+{
+    if (mSessionConversationModel) {
+        return mSessionConversationModel->numPendingMessages();
+    }
+
+    return 0;
 }

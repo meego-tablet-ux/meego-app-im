@@ -29,6 +29,7 @@ class IMConversationModel : public MergedModel
     Q_PROPERTY(bool newerActive READ newerActive NOTIFY newerActiveChanged)
     Q_PROPERTY(bool searching READ searching NOTIFY searchingChanged)
     Q_PROPERTY(int currentRowMatch READ currentRowMatch NOTIFY currentRowMatchChanged)
+    Q_PROPERTY(int numPendingMessages READ numPendingMessages NOTIFY numPendingMessagesChanged)
 
 public:
     enum Role {
@@ -70,12 +71,14 @@ public:
     Q_INVOKABLE void sendMessage(const QString &text);
     Q_INVOKABLE void disconnectChannelQueue();
     Q_INVOKABLE void connectChannelQueue();
+    Q_INVOKABLE bool channelQueueConnected() const;
 
     int numMatchesFound() const;
     bool olderActive() const;
     bool newerActive() const;
     bool searching() const;
     int currentRowMatch() const;
+    int numPendingMessages() const;
 
 Q_SIGNALS:
     void backFetchable();
@@ -85,6 +88,7 @@ Q_SIGNALS:
     void newerActiveChanged();
     void searchingChanged();
     void currentRowMatchChanged();
+    void numPendingMessagesChanged();
 
 public Q_SLOTS:
     void searchByString(const QString &search);

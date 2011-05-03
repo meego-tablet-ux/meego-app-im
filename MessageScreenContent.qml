@@ -553,11 +553,6 @@ Labs.ApplicationPage {
                         showtoolbar: false
                         fullContent: true
                     }
-                    PropertyChanges {
-                        target: imToolBar
-                        height: 0
-                        opacity: 0
-                    }
                 }
             ]
 
@@ -699,10 +694,6 @@ Labs.ApplicationPage {
                         }
                     }
                     onReleased: {
-                        // reset the anchors of fullscreenButton before change videoWindowPosition
-                        fullscreenButton.anchors.right = undefined;
-                        fullscreenButton.anchors.left = undefined;
-
                         if (videoWindowSwap && scene.callAgent.canSwapVideos()) {
                             cameraWindowSmall  = !cameraWindowSmall;
                             videoWindowSwap = false;
@@ -725,14 +716,6 @@ Labs.ApplicationPage {
                             videoOutgoingContainer.anchors.right = videoOutgoingContainer.parent.right;
                         } else {
                             videoOutgoingContainer.anchors.left = videoOutgoingContainer.parent.left;
-                        }
-
-                        if (videoWindowPosition == 3) {
-                            fullscreenButton.anchors.right = undefined;
-                            fullscreenButton.anchors.left = fullscreenButton.parent.left;
-                        } else {
-                            fullscreenButton.anchors.right = fullscreenButton.parent.right;
-                            fullscreenButton.anchors.left = undefined;
                         }
                     }
 
@@ -874,21 +857,6 @@ Labs.ApplicationPage {
                     actionMenu.payload = videoWindow;
                     contextMenu.setPosition(map.x, map.y);
                     contextMenu.show();
-                }
-            }
-
-            IconButton {
-                id: fullscreenButton
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? imToolBar.height : 0
-                anchors.right: videoWindowPosition != 3 ? parent.right : undefined
-                anchors.left: videoWindowPosition == 3 ? parent.left : undefined
-                icon: "image://meegotheme/icons/actionbar/view-" +
-                       (scene.fullscreen ? "smallscreen" : "fullscreen")
-                iconDown: icon + "-active"
-                hasBackground: false
-                onClicked: {
-                    scene.fullscreen = !scene.fullscreen
                 }
             }
         }

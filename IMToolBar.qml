@@ -172,8 +172,26 @@ BottomToolBar {
                         duration: 500
                     }
                 }
-            }
+            },
             
+            IconButton {
+                id: fullscreenButton
+                icon: "image://meegotheme/icons/actionbar/view-" +
+                       (scene.fullscreen ? "smallscreen" : "fullscreen")
+                iconDown: icon + "-active"
+                hasBackground: false
+                onClicked: {
+                    scene.fullscreen = !scene.fullscreen
+                }
+                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 500
+                    }
+                }
+            }
         ]
 
         centerContent: [

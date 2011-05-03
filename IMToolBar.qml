@@ -46,8 +46,16 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             },
 
+            
             IconButton {
                 id: videoCallButton
                 width: 60
@@ -74,6 +82,12 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             },
 
             IconButton {
@@ -92,6 +106,12 @@ BottomToolBar {
                     NumberAnimation {
                         duration: 500
                     }
+                }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
                 }
             },
 
@@ -120,6 +140,12 @@ BottomToolBar {
                     NumberAnimation {
                         duration: 500
                     }
+                }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
                 }
             },
 
@@ -152,6 +178,12 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             },
             
             IconButton {
@@ -172,6 +204,12 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             },
             
             IconButton {
@@ -190,6 +228,12 @@ BottomToolBar {
                     NumberAnimation {
                         duration: 500
                     }
+                }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
                 }
             }
         ]
@@ -220,6 +264,12 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             }
         ]
         
@@ -244,6 +294,12 @@ BottomToolBar {
                         duration: 500
                     }
                 }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
+                }
             },
 
             IconButton {
@@ -264,6 +320,12 @@ BottomToolBar {
                     NumberAnimation {
                         duration: 500
                     }
+                }
+                Image
+                {
+                    anchors.right: parent.right
+                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    height: parent.height
                 }
             }
         ]

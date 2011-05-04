@@ -11,7 +11,6 @@ import MeeGo.Components 0.1
 import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
-import "utils.js" as Utils
 
 Labs.ApplicationPage {
     id: messageScreenPage
@@ -394,7 +393,7 @@ Labs.ApplicationPage {
             source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: callToolBar.visible ? callToolBar.top : imToolBar.top
+            anchors.bottom: imToolBar.top
             height: textBox.height
             visible: !scene.fullscreen
 
@@ -553,15 +552,6 @@ Labs.ApplicationPage {
                         showtoolbar: false
                         fullContent: true
                     }
-                    PropertyChanges {
-                        target: imToolBar
-                        height: 0
-                        opacity: 0
-                    }
-                    PropertyChanges {
-                        target: callToolBar
-                        opacity: 0.7
-                    }
                 }
             ]
 
@@ -587,25 +577,6 @@ Labs.ApplicationPage {
                 height: parent.height / 3
             }
 
-            Text {
-                id: videoText
-                visible: (scene.callAgent != undefined && !scene.callAgent.remoteVideoRender)
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: avatar.top
-                text: Utils.getCallStatusText(scene.callAgent)
-                color: theme_fontColorNormal
-            }
-
-            Timer {
-                //running: (scene.callAgent != undefined && scene.callAgent.callStatus == CallAgent.CallStatusTalking && !scene.callAgent.remoteVideoRender)
-                running: (scene.callAgent != undefined && !scene.callAgent.remoteVideoRender)
-                interval: 1000
-                repeat: true
-                onTriggered: {
-                    videoText.text = Utils.getCallStatusText(scene.callAgent);
-                }
-            }
-
             Item {
                 id: videoOutgoingContainer
                 /*
@@ -613,7 +584,7 @@ Labs.ApplicationPage {
                 y: videoAtBottom() ? parent.height - height - 20 : 20
                 */
                 anchors.bottom: videoAtBottom() ? parent.bottom : undefined
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.top: !videoAtBottom() ? parent.top : undefined
                 anchors.topMargin: 20
                 anchors.left: !videoAtRight() ? parent.left : undefined
@@ -703,10 +674,6 @@ Labs.ApplicationPage {
                         }
                     }
                     onReleased: {
-                        // reset the anchors of fullscreenButton before change videoWindowPosition
-                        fullscreenButton.anchors.right = undefined;
-                        fullscreenButton.anchors.left = undefined;
-
                         if (videoWindowSwap && scene.callAgent.canSwapVideos()) {
                             cameraWindowSmall  = !cameraWindowSmall;
                             videoWindowSwap = false;
@@ -729,14 +696,6 @@ Labs.ApplicationPage {
                             videoOutgoingContainer.anchors.right = videoOutgoingContainer.parent.right;
                         } else {
                             videoOutgoingContainer.anchors.left = videoOutgoingContainer.parent.left;
-                        }
-
-                        if (videoWindowPosition == 3) {
-                            fullscreenButton.anchors.right = undefined;
-                            fullscreenButton.anchors.left = fullscreenButton.parent.left;
-                        } else {
-                            fullscreenButton.anchors.right = fullscreenButton.parent.right;
-                            fullscreenButton.anchors.left = undefined;
                         }
                     }
 
@@ -801,7 +760,7 @@ Labs.ApplicationPage {
                 width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -822,7 +781,7 @@ Labs.ApplicationPage {
                 width: videoOutgoingContainer.getVideoWidth(scene, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(scene, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? 20 + callToolBar.height : 20
+                anchors.bottomMargin: scene.fullscreen ? 20 + imToolBar.height : 20
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -880,40 +839,11 @@ Labs.ApplicationPage {
                     contextMenu.show();
                 }
             }
-
-            IconButton {
-                id: fullscreenButton
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: scene.fullscreen ? callToolBar.height : 0
-                anchors.right: videoWindowPosition != 3 ? parent.right : undefined
-                anchors.left: videoWindowPosition == 3 ? parent.left : undefined
-                icon: "image://meegotheme/icons/actionbar/view-" +
-                       (scene.fullscreen ? "smallscreen" : "fullscreen")
-                iconDown: icon + "-active"
-                hasBackground: false
-                onClicked: {
-                    scene.fullscreen = !scene.fullscreen
-                }
-            }
-        }
-
-        CallToolBar {
-            id: callToolBar
-            width: parent.width
-            anchors.bottom: imToolBar.top
-            opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 500
-                }
-            }
         }
 
         IMToolBar {
             id: imToolBar
-            width: parent.width
-            anchors.bottom: parent.bottom
+            parent: pageContent
 
             onChatTextEnterPressed: {
                 if(textEdit.text != "") {

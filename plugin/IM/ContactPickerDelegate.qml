@@ -42,7 +42,6 @@ Item {
             anchors.right: parent.right
             smooth: true
             active:  selected
-            opacity: selected ? 1.0 : 0.25
         }
 
         MouseArea {
@@ -57,6 +56,14 @@ Item {
             }
         }
 
+        BorderImage {
+            id: activeBorder
+            opacity: selected
+            source: "image://meegotheme/widgets/common/toolbar-item/toolbar-item-background-active"
+            anchors.fill: contentRow
+            border.left: 5; border.top: 5
+            border.right: 5; border.bottom: 5
+        }
 
         Avatar {
             id: avatar

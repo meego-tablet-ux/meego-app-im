@@ -30,8 +30,9 @@ BottomToolBar {
                 width: 120
                 active: scene.callAgent != undefined && scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
                         scene.callAgent.callStatus != CallAgent.CallStatusNoCall
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
+
                 icon: "image://meegotheme/icons/actionbar/call-audio-stop"
                 iconDown: icon + "-active"
                 hasBackground: true
@@ -64,7 +65,7 @@ BottomToolBar {
                         scene.callAgent != undefined &&
                         scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
                         !scene.chatAgent.isConference
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 0 : 1
+                opacity: scene.callAgent == undefined || !scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/turn-video-on"
@@ -92,8 +93,15 @@ BottomToolBar {
 
             IconButton {
                 id: videoOnOffButton
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                width: 60
+                active: scene.contactItem !== undefined &&
+                        scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                        scene.callAgent != undefined &&
+                        scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                        !scene.chatAgent.isConference
+                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
+
                 icon: scene.callAgent.videoSent ?
                            "image://meegotheme/icons/actionbar/turn-video-off" :
                            "image://meegotheme/icons/actionbar/turn-video-on"
@@ -123,7 +131,7 @@ BottomToolBar {
                         scene.callAgent != undefined &&
                         scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
                         !scene.chatAgent.isConference
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 0 : 1
+                opacity: scene.callAgent == undefined || !scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/call-audio-start"
@@ -170,7 +178,7 @@ BottomToolBar {
                         volumeLoader.item.closeTimer.restart();
                     }
                 }
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -196,7 +204,7 @@ BottomToolBar {
                 onClicked: {
                     scene.callAgent.setMuteCall(!scene.callAgent.mutedCall);
                 }
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -256,7 +264,7 @@ BottomToolBar {
                         callInfoText.text = Utils.getCallStatusText(scene.callAgent);
                     }
                 }
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -282,11 +290,11 @@ BottomToolBar {
                 onClicked: {
                     smileyContextMenu.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
                                                   insertSmileyButton.y + insertSmileyButton.height + toolBar.y);
-
                     smileyContextMenu.show();
                 }
-                opacity: (scene.callAgent != undefined && !scene.fullscreen) ? 1 : 0
+                opacity: !scene.fullscreen ? 1 : 0
                 visible: opacity > 0
+
                 Behavior on opacity {
                     NumberAnimation {
                         duration: 500
@@ -305,15 +313,15 @@ BottomToolBar {
                 width: 60
                 icon: "image://meegotheme/icons/actionbar/document-attach"
                 iconDown: icon + "-active"
-                hasBackground: false
-
                 onClicked: {
                     sendFileContextMenu.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
                                                     sendFileButton.y + sendFileButton.height + toolBar.y);
                     sendFileContextMenu.show();
                 }
-                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole))
+                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
                 visible: opacity > 0
+
+                hasBackground: false
                 Behavior on opacity {
                     NumberAnimation {
                         duration: 500

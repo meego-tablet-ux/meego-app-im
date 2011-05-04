@@ -81,14 +81,7 @@ AppPage {
 
     Item {
         id: pageContent
-        parent: contactPickerPage.content
         anchors.fill: parent
-
-        Image {
-            id: background
-            anchors.fill: parent
-            source: "image://meegotheme/widgets/common/picker/picker-background"
-        }
 
         ListView {
             id: listView
@@ -148,7 +141,6 @@ AppPage {
                         } else {
                             accountsModel.addContactsToChat(window.currentAccountId, window.currentContactId, contactsList);
                         }
-
                         window.popPage();
 
                         // if cannot add contacts, go back to the contacts screen

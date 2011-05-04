@@ -21,6 +21,7 @@ Window {
     toolBarTitle: qsTr("Chat")
     fullScreen: true
     customActionMenu: true
+    automaticBookSwitching: false
 
     property int animationDuration: 250
 
@@ -80,6 +81,19 @@ Window {
         switchBook(accountScreenContent);
     }
 
+    onBookMenuTriggered: {
+        if(selectedItem != "") {
+            currentAccountId = selectedItem;
+            accountItem = accountsModel.accountItemForId(currentAccountId);
+            window.switchBook(accountScreenContent);
+            componentsLoaded();
+            window.addPage(contactsScreenContent);
+        } else {
+            window.switchBook(accountScreenContent);
+            componentsLoaded();
+        }
+    }
+
     Connections {
         target:  null;
         id: accountItemConnections
@@ -130,13 +144,13 @@ Window {
         ignoreUnknownSignals: true
         onComponentsLoaded: {
             // the other signals should now be set up, so plug them in
-            console.log("Setting up accountsModel and contactsModel connections");
             contactsModelConnections.target = contactsModel;
             accountsModelConnections.target = accountsModel;
 
             telepathyManager.registerClients();
             reloadFilterModel();
             componentsLoaded();
+            buildBookMenuPayloadModel();
         }
     }
 
@@ -204,10 +218,6 @@ Window {
             window.contactItem = undefined;
             window.callAgent = undefined;
 
-            // and start the conversation
-            if (notificationManager.chatActive) {
-                window.popPage();
-            }
             window.addPage(messageScreenContent);
             accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
@@ -219,28 +229,23 @@ Window {
         onDataChanged: {
             reloadFilterModel();
         }
+
+        onAccountCountChanged: {
+            buildBookMenuPayloadModel();
+        }
     }
 
     bookMenuModel: accountFilterModel
 
-    /* FIXME: This won't work until Window component is changed to emit a signal when activated
-
-    ///When a selection is made in the filter menu, you will get a signal here:
-    onFilterTriggered: {
-        if(index < accountsSortedModel.length) {
-            currentAccountId = accountsSortedModel.dataByRow(index, AccountsModel.IdRole );
-            accountItem = accountsModel.accountItemForId(currentAccountId);
-            window.popPage();
-            window.addPage(contactsScreenContent);
-        } else {
-            // go back 4 levels. This should get you to the accounts list
-            // FIXME: use this until we have a way to check how many pages to pop until it's on the accounts list screen
-            window.popPage();
-            window.popPage();
-            window.popPage();
-            window.popPage();
+    function buildBookMenuPayloadModel()
+    {
+        var payload = new Array();
+        for (var i = 0; i < accountsSortedModel.length; ++i) {
+            payload[i] = accountsSortedModel.dataByRow(i, AccountsModel.IdRole );
         }
-    }*/
+        payload[accountsSortedModel.length] = "";
+        bookMenuPayload = payload;
+    }
 
     function startConversation(contactId)
     {
@@ -274,7 +279,6 @@ Window {
             window.popPage();
         }
         window.addPage(messageScreenContent);
-
         accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
     }
 
@@ -339,7 +343,7 @@ Window {
         window.addPage(messageScreenContent);
     }
 
-    function pickContacts(page)
+    function pickContacts()
     {
         window.addPage(contactPickerContent)
     }

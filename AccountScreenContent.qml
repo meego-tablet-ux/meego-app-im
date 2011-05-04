@@ -29,7 +29,6 @@ AppPage {
 
     Item {
         id: mainArea
-        parent: accountScreenPage.content
         anchors.fill: parent
 
         Flickable {

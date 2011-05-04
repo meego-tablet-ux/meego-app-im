@@ -15,6 +15,9 @@ import MeeGo.Media 0.1
 Item {
     id: meTabItem
 
+    width: 200
+    height: optionColumn.height
+
     property variant currentPage
 
     signal accountChanged
@@ -55,9 +58,6 @@ Item {
             window.accountItem = accountsModel.accountItemForId(window.currentAccountId);
         }
     }
-
-    width: 200
-    height: optionColumn.height
 
     Column {
         id: optionColumn

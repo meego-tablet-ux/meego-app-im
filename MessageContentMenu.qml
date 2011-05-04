@@ -53,7 +53,7 @@ Item {
             text: qsTr("Add contacts to chat")
             onClicked: {
                 currentPage.hideActionMenu();
-                window.pickContacts(messageScreenPage);
+                window.pickContacts();
             }
         }
 

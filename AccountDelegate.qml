@@ -104,7 +104,7 @@ Item {
                         if(payload.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected) {
                             payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
                                                 "offline", // i18n ok
-                                                payload.data(AccountsModel.ConnectionStatusRole));
+                                                payload.data(AccountsModel.RequestedPresenceStatusMessageRole));
                         } else {
                             var icon = payload.data(AccountsModel.IconRole);
                             var id = payload.data(AccountsModel.IdRole);
@@ -121,9 +121,15 @@ Item {
                                 confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
                                 confirmationDialogItem.show();
                             } else {
-                                payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
-                                                             "available", // i18n ok
-                                                             payload.data(AccountsModel.CurrentPresenceStatusMessageRole));
+                                if(payload.data(AccountsModel.AutomaticPresenceTypeRole) != TelepathyTypes.ConnectionPresenceTypeOffline) {
+                                    payload.setRequestedPresence(payload.data(AccountsModel.AutomaticPresenceTypeRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                } else {
+                                    payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
+                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                }
                             }
                         }
 

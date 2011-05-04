@@ -84,7 +84,7 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const Tp::TextChannelPtr &ch
     emit isConferenceChanged();
 
     connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
-            SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
+            SLOT(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
 
     onAccountConnectionChanged(mAccount->connection());
 }

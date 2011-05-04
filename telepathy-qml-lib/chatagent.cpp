@@ -64,8 +64,7 @@ ChatAgent::ChatAgent(const Tp::AccountPtr &account, const QString &roomName, QOb
             SIGNAL(channelRequestCreated(Tp::ChannelRequestPtr)),
             SLOT(onPendingChanelRequestCreated(Tp::ChannelRequestPtr)));
     connect(mAccount.data(), SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
-            SIGNAL(onAccountConnectionChanged(const Tp::ConnectionPtr&)));
-
+            SLOT(onAccountConnectionChanged(Tp::ConnectionPtr)));
     onAccountConnectionChanged(mAccount->connection());
 }
 

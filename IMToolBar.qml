@@ -238,7 +238,7 @@ BottomToolBar {
             }
         ]
 
-        centerContent: [
+        rightContent: [
             Text {
                 id: callInfoText
                 elide: Text.ElideLeft
@@ -270,10 +270,8 @@ BottomToolBar {
                     source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
-            }
-        ]
-        
-        rightContent: [
+            },
+
             IconButton {
                 id: insertSmileyButton
                 width: 60

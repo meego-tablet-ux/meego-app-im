@@ -22,7 +22,6 @@ BottomToolBar {
     // Bottom row to initiate calls & chat
     content: BottomToolBarRow {
         id: bottomRow
-        visible: true
 
         leftContent: [
             IconButton {
@@ -60,12 +59,11 @@ BottomToolBar {
             IconButton {
                 id: videoCallButton
                 width: 60
-                active: scene.contactItem !== undefined &&
+                opacity: scene.callAgent == undefined || (!scene.callAgent.existingCall &&
                         scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
                         scene.callAgent != undefined &&
                         scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        !scene.chatAgent.isConference
-                opacity: scene.callAgent == undefined || !scene.callAgent.existingCall ? 1 : 0
+                        !scene.chatAgent.isConference) ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/turn-video-on"
@@ -94,12 +92,11 @@ BottomToolBar {
             IconButton {
                 id: videoOnOffButton
                 width: 60
-                active: scene.contactItem !== undefined &&
+                opacity: scene.contactItem !== undefined &&
                         scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
-                        scene.callAgent != undefined &&
-                        scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        !scene.chatAgent.isConference
-                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
+                        scene.callAgent != undefined && scene.callAgent.existingCall &&
+                        scene.callAgent.callStatus != CallAgent.CallStatusNoCall &&
+                        !scene.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 
                 icon: scene.callAgent.videoSent ?
@@ -160,7 +157,6 @@ BottomToolBar {
             IconButton {
                 id: volumeOnButton
                 width: 60
-                active: true
                 icon: "image://meegotheme/icons/actionbar/turn-audio-off"
                 iconDown: icon + "-active"
                 hasBackground: false
@@ -172,7 +168,7 @@ BottomToolBar {
                         volumeLoader.item.parent = toolBar.parent;
                         volumeLoader.item.z = 1000
                         volumeLoader.item.volumeControl = volumeControl;
-                        volumeLoader.item.volumeControlX = volumeOnButton.x;
+                        volumeLoader.item.volumeControlX = volumeOnButton.x + (volumeOnButton.width - volumeLoader.item.volumeWidth) / 2;
                         volumeLoader.item.volumeControlY = toolBar.y - volumeLoader.item.volumeHeight;
                         volumeLoader.item.closeTimer.interval = 3000;
                         volumeLoader.item.closeTimer.restart();
@@ -196,6 +192,7 @@ BottomToolBar {
             
             IconButton {
                 id: muteButton
+                width: 60
                 icon: scene.callAgent.mutedCall ?
                         "image://meegotheme/icons/actionbar/microphone-unmute" :
                         "image://meegotheme/icons/actionbar/microphone-mute"
@@ -222,6 +219,7 @@ BottomToolBar {
             
             IconButton {
                 id: fullscreenButton
+                width: 60
                 icon: "image://meegotheme/icons/actionbar/view-" +
                        (scene.fullscreen ? "smallscreen" : "fullscreen")
                 iconDown: icon + "-active"
@@ -286,6 +284,7 @@ BottomToolBar {
                 icon: "image://meegotheme/icons/actionbar/insert-emote"
                 iconDown: icon + "-active"
                 hasBackground: false
+                visible: smileyContextMenu.content != null && !scene.fullscreen
 
                 onClicked: {
                     smileyContextMenu.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
@@ -318,7 +317,7 @@ BottomToolBar {
                                                     sendFileButton.y + sendFileButton.height + toolBar.y);
                     sendFileContextMenu.show();
                 }
-                opacity: (scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
+                opacity: (!scene.fullscreen && scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
                 visible: opacity > 0
 
                 hasBackground: false
@@ -353,10 +352,6 @@ BottomToolBar {
             forceFingerMode: 3
             width: 200
             height: 200
-
-            Component.onCompleted: {
-                insertSmileyButton.visible = smileyContextMenu.content != null
-            }
         }
 
         ContextMenu {

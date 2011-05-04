@@ -124,7 +124,7 @@ AppPage {
         onCallStatusChanged: {
             // Several sounds might play at once here. Should be prioritize, make a queue, or let them all play ?
             if (callAgent.callStatus == CallAgent.CallStatusNoCall) {
-                window.fullscreen = false;
+                window.fullScreen = false;
                 window.fullContent = false;
                 videoWindow.opacity = 0;
             }
@@ -364,7 +364,7 @@ AppPage {
             anchors.right: parent.right
             anchors.bottom: imToolBar.top
             height: textBox.height
-            visible: !window.fullscreen
+            visible: !window.fullScreen
 
             Item {
                 id: textBox
@@ -417,7 +417,7 @@ AppPage {
 
             Button {
                 id: sendMessageButton
-                visible: !window.fullscreen
+                visible: !window.fullScreen
                 anchors {
                     margins: 10
                     right: parent.right
@@ -440,15 +440,15 @@ AppPage {
         Item {
             id: videoWindow
             anchors.right: parent.right
-            anchors.rightMargin: window.fullscreen ? 0 : 20
+            anchors.rightMargin: window.fullScreen ? 0 : 20
             anchors.top: parent.top
-            anchors.topMargin: window.fullscreen ? 0 : 20
+            anchors.topMargin: window.fullScreen ? 0 : 20
             width: getVideoWidth(window, conversationView)
             height: getVideoHeight(window, conversationView)
             opacity: 0
 
             function getVideoWidth(full, window) {
-                if (window.fullscreen) {
+                if (window.fullScreen) {
                     if (window.orientation == 0 || window.orientation == 2) {
                         return pageContent.height;
                     }
@@ -464,7 +464,7 @@ AppPage {
             }
 
             function getVideoHeight(full, window) {
-                if (window.fullscreen) {
+                if (window.fullScreen) {
                     if (window.orientation == 0 || window.orientation == 2) {
                         return pageContent.width;
                     }
@@ -514,7 +514,7 @@ AppPage {
             states: [
                 State {
                     name: "fullscreen"
-                    when: window.fullscreen
+                    when: window.fullScreen
                     PropertyChanges {
                         target: window
                         showToolBarSearch: false
@@ -526,7 +526,7 @@ AppPage {
             Rectangle {
                 anchors.margins: -4
                 anchors.fill: parent
-                visible: !window.fullscreen
+                visible: !window.fullScreen
                 color: "darkgrey"
             }
 
@@ -552,7 +552,7 @@ AppPage {
                 y: videoAtBottom() ? parent.height - height - 20 : 20
                 */
                 anchors.bottom: videoAtBottom() ? parent.bottom : undefined
-                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
                 anchors.top: !videoAtBottom() ? parent.top : undefined
                 anchors.topMargin: 20
                 anchors.left: !videoAtRight() ? parent.left : undefined
@@ -568,7 +568,7 @@ AppPage {
                 visible : videoWindow.showCameraVideo
 
                 function getVideoWidth(full, window) {
-                    if (!window.fullscreen) {
+                    if (!window.fullScreen) {
                         return window.width / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
@@ -580,7 +580,7 @@ AppPage {
                 }
 
                 function getVideoHeight(full, window) {
-                    if (!window.fullscreen) {
+                    if (!window.fullScreen) {
                         return window.height / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
@@ -728,7 +728,7 @@ AppPage {
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -749,7 +749,7 @@ AppPage {
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: window.fullscreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 visible: videoOutgoingDAD.drag.active

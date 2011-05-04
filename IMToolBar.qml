@@ -221,11 +221,11 @@ BottomToolBar {
                 id: fullscreenButton
                 width: 60
                 icon: "image://meegotheme/icons/actionbar/view-" +
-                       (window.fullscreen ? "smallscreen" : "fullscreen")
+                       (window.fullScreen ? "smallscreen" : "fullscreen")
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    window.fullscreen = !window.fullscreen
+                    window.fullScreen = !window.fullScreen
                 }
                 opacity: (window.callAgent != undefined && window.callAgent.existingCall) ? 1 : 0
                 visible: opacity > 0
@@ -290,7 +290,7 @@ BottomToolBar {
                                                   insertSmileyButton.y + insertSmileyButton.height + toolBar.y);
                     smileyContextMenu.show();
                 }
-                opacity: !window.fullscreen ? 1 : 0
+                opacity: !window.fullScreen ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -316,7 +316,7 @@ BottomToolBar {
                                                     sendFileButton.y + sendFileButton.height + toolBar.y);
                     sendFileContextMenu.show();
                 }
-                opacity: (!window.fullscreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
+                opacity: (!window.fullScreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
                 visible: opacity > 0
 
                 hasBackground: false

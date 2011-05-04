@@ -27,9 +27,12 @@ BottomToolBar {
             IconButton {
                 id: endCallButton
                 width: 120
-                active: window.callAgent != undefined && window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                active: window.callAgent != undefined &&
+                        window.contactItem != undefined &&
+                        window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
                         window.callAgent.callStatus != CallAgent.CallStatusNoCall
-                opacity: window.callAgent != undefined && window.callAgent.existingCall ? 1 : 0
+                opacity: window.callAgent != undefined &&
+                         window.callAgent.callStatus != CallAgent.CallStatusNoCall ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/call-audio-stop"
@@ -123,12 +126,11 @@ BottomToolBar {
             IconButton {
                 id: audioCallButton
                 width: 60
-                active: window.contactItem !== undefined &&
-                        window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
-                        window.callAgent != undefined &&
-                        window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        !window.chatAgent.isConference
-                opacity: window.callAgent == undefined || !window.callAgent.existingCall ? 1 : 0
+                opacity: window.contactItem !== undefined &&
+                         window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                         window.callAgent != undefined &&
+                         window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                         !window.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/call-audio-start"
@@ -272,6 +274,7 @@ BottomToolBar {
                 }
                 Image
                 {
+                    visible: insertSmileyButton.visible || sendFileButton.visible
                     anchors.right: parent.right
                     source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
@@ -300,6 +303,7 @@ BottomToolBar {
                 }
                 Image
                 {
+                    visible: sendFileButton.visible
                     anchors.right: parent.right
                     source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
                     height: parent.height

@@ -107,7 +107,6 @@ Item {
 
         onPhotoSelected: {
             container.fileSelected(uri.replace("file://", ""));
-            container.visible = false;
         }
     }
 
@@ -116,7 +115,6 @@ Item {
 
         onVideoSelected: {
             container.fileSelected(uri.replace("file://", ""));
-            container.visible = false;
         }
     }
 
@@ -126,7 +124,6 @@ Item {
 
         onSongSelected: {
             container.fileSelected(uri.replace("file://", ""));
-            container.visible = false;
         }
     }
 

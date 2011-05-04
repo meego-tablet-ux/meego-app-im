@@ -27,9 +27,9 @@ BottomToolBar {
             IconButton {
                 id: endCallButton
                 width: 120
-                active: scene.callAgent != undefined && scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
-                        scene.callAgent.callStatus != CallAgent.CallStatusNoCall
-                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
+                active: window.callAgent != undefined && window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                        window.callAgent.callStatus != CallAgent.CallStatusNoCall
+                opacity: window.callAgent != undefined && window.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/call-audio-stop"
@@ -39,7 +39,7 @@ BottomToolBar {
                 bgSourceDn: "image://meegotheme/images/btn_red_dn"
 
                 onClicked: {
-                    scene.callAgent.endCall();
+                    window.callAgent.endCall();
                 }
                 Behavior on opacity {
                     NumberAnimation {
@@ -59,11 +59,11 @@ BottomToolBar {
             IconButton {
                 id: videoCallButton
                 width: 60
-                opacity: scene.callAgent == undefined || (!scene.callAgent.existingCall &&
-                        scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
-                        scene.callAgent != undefined &&
-                        scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        !scene.chatAgent.isConference) ? 1 : 0
+                opacity: window.callAgent == undefined || (!window.callAgent.existingCall &&
+                        window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                        window.callAgent != undefined &&
+                        window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                        !window.chatAgent.isConference) ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/turn-video-on"
@@ -71,10 +71,10 @@ BottomToolBar {
                 hasBackground: false
                 onClicked: {
                     videoWindow.opacity = 1;
-                    scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
-                    scene.callAgent.onOrientationChanged(scene.orientation);
-                    scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
-                    scene.callAgent.videoCall();
+                    window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                    window.callAgent.onOrientationChanged(window.orientation);
+                    window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                    window.callAgent.videoCall();
                 }
                 Behavior on opacity {
                     NumberAnimation {
@@ -92,20 +92,20 @@ BottomToolBar {
             IconButton {
                 id: videoOnOffButton
                 width: 60
-                opacity: scene.contactItem !== undefined &&
-                        scene.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
-                        scene.callAgent != undefined && scene.callAgent.existingCall &&
-                        scene.callAgent.callStatus != CallAgent.CallStatusNoCall &&
-                        !scene.chatAgent.isConference ? 1 : 0
+                opacity: window.contactItem !== undefined &&
+                        window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                        window.callAgent != undefined && window.callAgent.existingCall &&
+                        window.callAgent.callStatus != CallAgent.CallStatusNoCall &&
+                        !window.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 
-                icon: scene.callAgent.videoSent ?
+                icon: window.callAgent.videoSent ?
                            "image://meegotheme/icons/actionbar/turn-video-off" :
                            "image://meegotheme/icons/actionbar/turn-video-on"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    scene.callAgent.videoSent = !scene.callAgent.videoSent;
+                    window.callAgent.videoSent = !window.callAgent.videoSent;
                 }
                 Behavior on opacity {
                     NumberAnimation {
@@ -123,12 +123,12 @@ BottomToolBar {
             IconButton {
                 id: audioCallButton
                 width: 60
-                active: scene.contactItem !== undefined &&
-                        scene.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
-                        scene.callAgent != undefined &&
-                        scene.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        !scene.chatAgent.isConference
-                opacity: scene.callAgent == undefined || !scene.callAgent.existingCall ? 1 : 0
+                active: window.contactItem !== undefined &&
+                        window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                        window.callAgent != undefined &&
+                        window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                        !window.chatAgent.isConference
+                opacity: window.callAgent == undefined || !window.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 icon: "image://meegotheme/icons/actionbar/call-audio-start"
@@ -136,10 +136,10 @@ BottomToolBar {
                 hasBackground: false
                 onClicked: {
                     videoWindow.opacity = 1;
-                    scene.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
-                    scene.callAgent.onOrientationChanged(scene.orientation);
-                    scene.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
-                    scene.callAgent.audioCall();
+                    window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                    window.callAgent.onOrientationChanged(window.orientation);
+                    window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                    window.callAgent.audioCall();
                 }
                 Behavior on opacity {
                     NumberAnimation {
@@ -174,7 +174,7 @@ BottomToolBar {
                         volumeLoader.item.closeTimer.restart();
                     }
                 }
-                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
+                opacity: window.callAgent != undefined && window.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -193,15 +193,15 @@ BottomToolBar {
             IconButton {
                 id: muteButton
                 width: 60
-                icon: scene.callAgent.mutedCall ?
+                icon: window.callAgent.mutedCall ?
                         "image://meegotheme/icons/actionbar/microphone-unmute" :
                         "image://meegotheme/icons/actionbar/microphone-mute"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    scene.callAgent.setMuteCall(!scene.callAgent.mutedCall);
+                    window.callAgent.setMuteCall(!window.callAgent.mutedCall);
                 }
-                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
+                opacity: window.callAgent != undefined && window.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -221,13 +221,13 @@ BottomToolBar {
                 id: fullscreenButton
                 width: 60
                 icon: "image://meegotheme/icons/actionbar/view-" +
-                       (scene.fullscreen ? "smallscreen" : "fullscreen")
+                       (window.fullscreen ? "smallscreen" : "fullscreen")
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    scene.fullscreen = !scene.fullscreen
+                    window.fullscreen = !window.fullscreen
                 }
-                opacity: (scene.callAgent != undefined && scene.callAgent.existingCall) ? 1 : 0
+                opacity: (window.callAgent != undefined && window.callAgent.existingCall) ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -250,19 +250,19 @@ BottomToolBar {
                 elide: Text.ElideLeft
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignRight
-                text: Utils.getCallStatusText(scene.callAgent)
+                text: Utils.getCallStatusText(window.callAgent)
                 color: theme_buttonFontColor
 
                 Timer {
-                    //running: scene.callAgent.callStatus == CallAgent.CallStatusTalking
+                    //running: window.callAgent.callStatus == CallAgent.CallStatusTalking
                     running: true
                     interval: 1000
                     repeat: true
                     onTriggered: {
-                        callInfoText.text = Utils.getCallStatusText(scene.callAgent);
+                        callInfoText.text = Utils.getCallStatusText(window.callAgent);
                     }
                 }
-                opacity: scene.callAgent != undefined && scene.callAgent.existingCall ? 1 : 0
+                opacity: window.callAgent != undefined && window.callAgent.existingCall ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -284,14 +284,13 @@ BottomToolBar {
                 icon: "image://meegotheme/icons/actionbar/insert-emote"
                 iconDown: icon + "-active"
                 hasBackground: false
-                visible: smileyContextMenu.content != null && !scene.fullscreen
 
                 onClicked: {
                     smileyContextMenu.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
                                                   insertSmileyButton.y + insertSmileyButton.height + toolBar.y);
                     smileyContextMenu.show();
                 }
-                opacity: !scene.fullscreen ? 1 : 0
+                opacity: !window.fullscreen ? 1 : 0
                 visible: opacity > 0
 
                 Behavior on opacity {
@@ -317,7 +316,7 @@ BottomToolBar {
                                                     sendFileButton.y + sendFileButton.height + toolBar.y);
                     sendFileContextMenu.show();
                 }
-                opacity: (!scene.fullscreen && scene.contactItem != undefined && scene.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
+                opacity: (!window.fullscreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
                 visible: opacity > 0
 
                 hasBackground: false
@@ -390,15 +389,15 @@ BottomToolBar {
             property bool mute: false
 
             onVolumeChanged: {
-                scene.callAgent.volume = volumeControl.volume / 100;
+                window.callAgent.volume = volumeControl.volume / 100;
             }
             onMuteChanged: {
-                scene.callAgent.mutedCall = volumeControl.mute;
+                window.callAgent.mutedCall = volumeControl.mute;
             }
 
             Component.onCompleted: {
-                volumeControl.volume = scene.callAgent.volume * 100;
-                volumeControl.mute = scene.callAgent.mutedCall;
+                volumeControl.volume = window.callAgent.volume * 100;
+                volumeControl.mute = window.callAgent.mutedCall;
             }
         }
         Loader {

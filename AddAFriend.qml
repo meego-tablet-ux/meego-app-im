@@ -48,7 +48,7 @@ Column {
         id: addAFriendInput
         width: parent.width
         text: ""
-        defaultText: qsTr("friend's username")
+        defaultText: qsTr("Friend's username")
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
 

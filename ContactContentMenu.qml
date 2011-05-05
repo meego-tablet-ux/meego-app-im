@@ -173,24 +173,7 @@ Item {
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
-                } else {
-                    statusMenu.opacity = 0;
-                    avatarImage.visible = true;
-                    avatarSeparator.visible = true;
-                    statusRow.visible = true;
-                    statusMessage.visible = true;
-                    statusMessageSeparator.visible = true;
-                    statusSeparator.visible = true;
-                    updateStatusSeparator.visible = true;
-                    updateNickItem.visible = true;
-                    updateNick.visible = true;
-                    nicknameSeparator.visible = true;
-                    addIMContactItem.visible = true;
-                    addAFriend.visible = true;
-                    friendSeparator.visible = true;
-                    clearHistoryItem.visible = true;
-                    historySeparator.visible = true;
-                    logOutItem.visible = true;
+                    customMessageBox.textInput.forceActiveFocus();
                 }
             }
         }
@@ -391,6 +374,7 @@ Item {
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
+                    nicknameBox.textInput.forceActiveFocus();
                 }
             }
 
@@ -532,6 +516,7 @@ Item {
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
+                    addAFriend.textInput.textInput.forceActiveFocus();
                 }
             }
         }

@@ -15,6 +15,7 @@ import Qt 4.7
 
 Column {
     property bool alreadyAdding: false
+    property alias textInput: addAFriendInput
 
     AddContactHelper {
         id: addContactHelper

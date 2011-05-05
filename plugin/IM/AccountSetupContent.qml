@@ -35,7 +35,7 @@ Item {
                     detailsComponent: accountFactory.embeddedNewAccountContent(model.id, contentRow)
 
                     Connections {
-                        target: contentRow.detailsItem.accountContent
+                        target: contentRow.detailsItem != null ? contentRow.detailsItem.accountContent : null
 
                         onFinished: {
                             contentRow.expanded = false

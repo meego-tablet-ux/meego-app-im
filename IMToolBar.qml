@@ -367,6 +367,9 @@ BottomToolBar {
                     fileTransferAgent.sendFile(fileName);
                     sendFileContextMenu.hide();
                 }
+                onCancelled: {
+                    sendFileContextMenu.hide();
+                }
             }
 
             forceFingerMode: 3

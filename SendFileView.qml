@@ -9,6 +9,8 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import MeeGo.Components 0.1
+import MeeGo.Labs.Components 0.1 as Labs
+import MeeGo.App.Contacts 0.1
 
 Item {
     id: container
@@ -20,12 +22,13 @@ Item {
     height: itemsColumn.height
 
     signal fileSelected(string fileName);
+    signal cancelled
 
     function hidePickers() {
         photoPicker.hide();
         videoPicker.hide();
         musicPicker.hide();
-        //contactsPicker.hide();
+        contactsPicker.visible = false;
     }
 
     onVisibleChanged: {
@@ -97,7 +100,7 @@ Item {
             text: qsTr("Contact Details")
 
             onClicked: {
-                //contactsPicker.show()
+                contactsPicker.show();
             }
         }
     }
@@ -127,15 +130,25 @@ Item {
         }
     }
 
-    /*
-    TODO: the contacts picker is broken, re-enable when it is fixed
-    ContactsPicker {
+    Labs.ContactsPicker {
         id: contactsPicker
         parent: window
+        promptString: qsTr("Select contact")
 
         onContactSelected: {
-            // TODO: check how to send that
-            container.visible = false;
+            var filename = contact.name.firstName + "_" + contact.name.lastName;
+            filename = filename.replace(" ", "_");
+            filename = "/tmp/vcard_" +filename + ".vcf";
+            peopleModel.exportContact(contact.guid.guid, filename);
+            container.fileSelected(filename);
         }
-    }*/
+        onCancelled: {
+            container.cancelled();
+        }
+    }
+
+    PeopleModel {
+        id: peopleModel
+    }
+
 }

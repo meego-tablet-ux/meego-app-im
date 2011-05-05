@@ -43,7 +43,7 @@ Item {
             case TelepathyTypes.ConnectionPresenceTypeUnknown:
             case TelepathyTypes.ConnectionPresenceTypeError:
             default:
-                icon = "image://meegotheme/widgets/apps/contacts/contact-unavailable";
+                icon = "";
                 break;
             }
             return icon;

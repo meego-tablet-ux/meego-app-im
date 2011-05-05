@@ -208,7 +208,7 @@ Window {
                                             window.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
                                             window.presenceStatusText(window.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
             incomingCallDialog.connectionTarget = window.incomingCallAgent;
-            incomingCallDialog.show();
+            incomingCallDialog.start();
         }
 
         onRequestedGroupChatCreated: {

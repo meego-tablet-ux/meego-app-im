@@ -112,7 +112,8 @@ ModalDialog {
         }
     }
 
-    Component.onCompleted: {
+    function start() {
+        show();
         callSound.playSound();
     }
 

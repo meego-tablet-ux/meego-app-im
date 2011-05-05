@@ -19,34 +19,14 @@ Item {
         id: panel
 
         Text {
-            id:loadingText
+            id:noFriendsText
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             color: theme_fontColorHighlight
             font.pixelSize: theme_fontPixelSizeLarge
-            text: qsTr("Loading contacts")
+            text: qsTr("You haven't added any friends yet")
             verticalAlignment: Text.AlignVCenter
-        }
-
-        Item {
-
-            anchors.verticalCenter: loadingText.verticalCenter
-            anchors.left: loadingText.right
-            anchors.leftMargin: 15
-            Labs.Spinner {
-                id: loadingIcon
-
-                width: theme_fontPixelSizeLarge
-                height: theme_fontPixelSizeLarge
-                spinning: container.visible
-
-                onSpinningChanged: {
-                    if(container.visible && !spinning) {
-                        spinning = true;
-                    }
-                }
-            }
         }
     }
 }

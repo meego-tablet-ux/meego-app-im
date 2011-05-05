@@ -18,12 +18,12 @@ AppPage {
     enableCustomActionMenu: true
     
     property int count: listView.count
-    property bool showLoadingContacts: !count && !showAccountOffline
     property int accountStatus: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionPresenceTypeOffline
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnset
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnknown
                                        || accountStatus == TelepathyTypes.ConnectionPresenceTypeError)
+    property bool showAddFriends: !count && !showAccountOffline
     property int requestedStatusType: 0
     property string requestedStatus: ""
     property string requestedStatusMessage: ""
@@ -106,14 +106,15 @@ AppPage {
             visible: showAccountOffline
         }
 
-        ContactsLoading {
-            id: contactsLoading
+        NoFriends {
+            id: noFriendsInfo
+
             anchors {
                 top: accountOfflineInfo.bottom
                 left: parent.left
                 right: parent.right
             }
-            visible: showLoadingContacts
+            visible: showAddFriends
         }
 
         Component {
@@ -142,7 +143,7 @@ AppPage {
             id: listView
 
             anchors {
-                top: contactsLoading.bottom
+                top: noFriendsInfo.bottom
                 bottom: parent.bottom
                 left: parent.left
                 right: parent.right
@@ -155,6 +156,23 @@ AppPage {
 
             header: requestsViewComponent
             interactive: contentHeight > height
+        }
+
+        Title {
+            id: friendsTitle
+            anchors.top: noFriendsInfo.bottom
+            text: qsTr("Add a friend")
+            visible: showAddFriends
+        }
+
+        AddAFriend {
+            id: addAFriendItem
+
+            visible: showAddFriends
+            width: 200
+            anchors.top: friendsTitle.bottom
+            anchors.margins: 10
+            anchors.left: parent.left
         }
     }
 

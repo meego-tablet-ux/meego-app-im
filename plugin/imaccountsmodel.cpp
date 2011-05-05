@@ -396,8 +396,12 @@ void IMAccountsModel::addContactsToChat(const QString &accountId, const QString 
     } else {
         // create a new group chat
         // add contacts from the existing channel, if possible
-        if(chatAgent) {
-            contactsList.append(chatAgent->textChannel()->groupContacts().toList());
+        if (chatAgent) {
+            foreach (Tp::ContactPtr contact, chatAgent->textChannel()->groupContacts().toList()) {
+                if (chatAgent->textChannel()->connection()->selfContact() != contact) {
+                    contactsList.append(contact);
+                }
+            }
         }
 
         // retrieve account object

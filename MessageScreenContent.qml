@@ -31,8 +31,6 @@ AppPage {
     property bool videoWindowSwap : false
     property bool videoWasSent : false
 
-    x: 45
-
     Component.onCompleted: {
         if(window.chatAgent != undefined && window.chatAgent.isConference) {
             pageTitle = qsTr("Group conversation");
@@ -256,7 +254,7 @@ AppPage {
                 top: loadingConversation.bottom
                 left: parent.left
                 right: parent.right
-                bottom: textBar.top
+                bottom: window.fullScreen ? imToolBar.top : textBar.top
                 margins: 10
             }
 
@@ -552,7 +550,7 @@ AppPage {
                 y: videoAtBottom() ? parent.height - height - 20 : 20
                 */
                 anchors.bottom: videoAtBottom() ? parent.bottom : undefined
-                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: 20
                 anchors.top: !videoAtBottom() ? parent.top : undefined
                 anchors.topMargin: 20
                 anchors.left: !videoAtRight() ? parent.left : undefined
@@ -728,7 +726,7 @@ AppPage {
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: 20
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 visible: videoOutgoingDAD.drag.active
@@ -749,7 +747,7 @@ AppPage {
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: window.fullScreen ? 20 + imToolBar.height : 20
+                anchors.bottomMargin: 20
                 anchors.right: parent.right
                 anchors.rightMargin: 20
                 visible: videoOutgoingDAD.drag.active

@@ -67,7 +67,7 @@ AppPage {
         }
 
         // just to be sure, set the focus on the text editor
-        textEdit.focus = true;
+        textEdit.textEditFocus = true;
         window.callAgent.resetMissedCalls()
     }
 
@@ -370,37 +370,25 @@ AppPage {
                 anchors.right: sendMessageButton.left
                 anchors.rightMargin: 5
 
-                height: textEdit.height + 2 * textEdit.anchors.margins + 2 * textArea.anchors.margins
+                height: textEdit.height + 2 * textEdit.anchors.margins
 
-                BorderImage {
-                    id: textArea
+                TextField {
+                    id: textEdit
                     anchors.fill: parent
                     anchors.margins: 10
-                    source: textEdit.focus ?
-                                "image://meegotheme/widgets/common/text-area/text-area-background-active" :
-                                "image://meegotheme/widgets/common/text-area/text-area-background"
-
-                    border.left: 5; border.top: 5
-                    border.right: 5; border.bottom: 5
-                }
-
-                TextArea {
-                    id: textEdit
-                    anchors.left: textArea.left
-                    anchors.right: textArea.right
-                    anchors.top: textArea.top
-                    anchors.margins: 10
                     textFormat: Text.RichText
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    focus: true;
+                    font.pixelSize: theme.fontPixelSizeLarge
+                    height: 34
+                    //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    textEditFocus: true
                     Keys.onEnterPressed: {
-                        if(!textEdit.isEmpty()) {
+                        if(textEdit.text != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
                             textEdit.text = "";
                         }
                     }
                     Keys.onReturnPressed: {
-                        if(!textEdit.isEmpty()) {
+                        if(textEdit.text != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
                             textEdit.text = "";
                         }
@@ -824,7 +812,7 @@ AppPage {
                 textEdit.text = textEdit.text + "<img src=\"" + sourceName + "\" >";
 
                 // give the focus back to the text editor
-                textEdit.focus = true;
+                textEdit.textEditFocus = true;
                 textEdit.cursorPosition = position + 1;
             }
         }

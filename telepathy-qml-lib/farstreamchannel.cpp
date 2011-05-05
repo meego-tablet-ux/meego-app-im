@@ -364,6 +364,11 @@ void FarstreamChannel::deinitAudioInput()
 {
     LIFETIME_TRACER();
 
+    if (!mGstAudioInput) {
+      qDebug() << "Audio input not initialized, doing nothing";
+      return;
+    }
+
     releaseGhostPad(mGstAudioInput, SRC_GHOST_PAD_NAME, NULL);
 
     if (mGstAudioInput) {
@@ -465,6 +470,13 @@ void FarstreamChannel::initAudioOutput()
 void FarstreamChannel::deinitAudioOutput()
 {
     LIFETIME_TRACER();
+
+    if (!mGstAudioOutput) {
+      qDebug() << "Audio output not initialized, doing nothing";
+      return;
+    }
+
+
     releaseGhostPad(mGstAudioOutput, SINK_GHOST_PAD_NAME, NULL);
 
     if (mGstAudioOutput) {
@@ -580,6 +592,11 @@ void FarstreamChannel::deinitVideoInput()
 {
     LIFETIME_TRACER();
 
+    if (!mGstVideoInput) {
+      qDebug() << "Video input not initialized, doing nothing";
+      return;
+    }
+
     releaseGhostPad(mGstVideoInput, SRC_GHOST_PAD_NAME, mGstVideoTee);
 
     if (mGstVideoTee) {
@@ -667,6 +684,11 @@ void FarstreamChannel::initVideoOutput()
 void FarstreamChannel::deinitVideoOutput()
 {
     LIFETIME_TRACER();
+
+    if (!mGstVideoOutput) {
+      qDebug() << "Video output not initialized, doing nothing";
+      return;
+    }
 
     releaseGhostPad(mGstVideoOutput, SINK_GHOST_PAD_NAME, mGstVideoOutputSink);
 

@@ -10,7 +10,7 @@ import Qt 4.7
 import MeeGo.Labs.Components 0.1 as Labs
 
 TextEdit {
-    Labs.CCPContextArea {
+    /*Labs.CCPContextArea {
         editor: parent
-    }
+    }*/
 }

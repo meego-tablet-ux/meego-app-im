@@ -1580,6 +1580,7 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
           if (!gst_pad_unlink (gst_pad_get_peer(pad), pad)) {
             qWarning() << "Ghost pad was not linked, but audio output bin existed";
           }
+          bin = self->mGstAudioOutput;
           goto link_only;
         }
         self->initAudioOutput();
@@ -1590,10 +1591,12 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
     case TP_MEDIA_STREAM_TYPE_VIDEO:
         if (self->mGstVideoOutput) {
           qDebug() << "Video output already exists, relinking only";
+          gst_element_set_state (self->mGstVideoOutput, GST_STATE_READY);
           pad = gst_element_get_static_pad(self->mGstVideoOutput, SINK_GHOST_PAD_NAME);
           if (!gst_pad_unlink (gst_pad_get_peer(pad), pad)) {
             qWarning() << "Ghost pad was not linked, but video output bin existed";
           }
+          bin = self->mGstVideoOutput;
           goto link_only;
         }
         self->initIncomingVideoWidget();
@@ -1665,6 +1668,8 @@ link_only:
         return;
     }
 
+    gst_element_set_state (bin, GST_STATE_PLAYING);
+
     self->setState(Tp::MediaStreamStateConnected);
 
     if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
@@ -1675,3 +1680,4 @@ link_only:
 
     //GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(self->mGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "impipeline2");
 }
+

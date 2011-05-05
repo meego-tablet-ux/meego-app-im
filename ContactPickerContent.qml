@@ -8,10 +8,8 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
-
 
 AppPage {
     id: contactPickerPage

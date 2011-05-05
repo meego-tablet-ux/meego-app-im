@@ -1533,17 +1533,24 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
     guint media_type;
     g_object_get(content, "media-type", &media_type, NULL);
 
-    qDebug() << "FarstreamChannel::onSrcPadAddedContent: stream=" << stream << " type=" << media_type;
+    qDebug() << "FarstreamChannel::onSrcPadAddedContent: stream=" << stream << " type=" << media_type << "pad = " << src;
 
     GstElement *bin = 0;
     GstElement *sinkElement = 0;
     GstPad *pad = 0;
     gboolean res = FALSE;
     GstPad *sinkPad = NULL;
+    GstStateChangeReturn ret;
+
     switch (media_type) {
     case TP_MEDIA_STREAM_TYPE_AUDIO:
         if (self->mGstAudioOutput) {
-            self->deinitAudioOutput();
+          qDebug() << "Audio output already exists, relinking only";
+          pad = gst_element_get_static_pad(self->mGstAudioOutput, SINK_GHOST_PAD_NAME);
+          if (!gst_pad_unlink (gst_pad_get_peer(pad), pad)) {
+            qWarning() << "Ghost pad was not linked, but audio output bin existed";
+          }
+          goto link_only;
         }
         self->initAudioOutput();
         bin = self->mGstAudioOutput;
@@ -1552,7 +1559,12 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
         break;
     case TP_MEDIA_STREAM_TYPE_VIDEO:
         if (self->mGstVideoOutput) {
-            self->deinitVideoOutput();
+          qDebug() << "Video output already exists, relinking only";
+          pad = gst_element_get_static_pad(self->mGstVideoOutput, SINK_GHOST_PAD_NAME);
+          if (!gst_pad_unlink (gst_pad_get_peer(pad), pad)) {
+            qWarning() << "Ghost pad was not linked, but video output bin existed";
+          }
+          goto link_only;
         }
         self->initIncomingVideoWidget();
         self->initVideoOutput();
@@ -1608,13 +1620,14 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
 
     gst_object_unref(sinkPad);
 
-    GstStateChangeReturn ret = gst_element_set_state(bin, GST_STATE_PLAYING);
+    ret = gst_element_set_state(bin, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) {
         //tf_content_error(content, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR, "Could not link sink");
         self->setError("GStreamer output element cannot be played");
         return;
     }
 
+link_only:
     GstPadLinkReturn resLink = gst_pad_link(src, pad);
     if (resLink != GST_PAD_LINK_OK && resLink != GST_PAD_LINK_WAS_LINKED) {
         //tf_content_error(content, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR, "Could not link sink");

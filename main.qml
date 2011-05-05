@@ -367,15 +367,17 @@ Window {
     function presenceStatusText(type)
     {
         if(type == TelepathyTypes.ConnectionPresenceTypeAvailable) {
-            return qsTr("available");
+            return qsTr("Available");
         } else if(type == TelepathyTypes.ConnectionPresenceTypeBusy) {
-            return qsTr("busy");
+            return qsTr("Busy");
         } else if(type == TelepathyTypes.ConnectionPresenceTypeAway) {
-            return qsTr("away");
+            return qsTr("Away");
         } else if(type == TelepathyTypes.ConnectionPresenceTypeExtendedAway) {
-            return qsTr("extended away");
+            return qsTr("Extended away");
         } else if(type == TelepathyTypes.ConnectionPresenceTypeOffline) {
-            return qsTr("offline");
+            return qsTr("Offline");
+        } else if(type == TelepathyTypes.ConnectionPresenceTypeHidden) {
+            return qsTr("Invisible");
         } else {
             return "";
         }

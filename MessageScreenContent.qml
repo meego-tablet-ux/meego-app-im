@@ -66,7 +66,7 @@ AppPage {
         }
 
         // just to be sure, set the focus on the text editor
-        textEdit.textEditFocus = true;
+        textEdit.textFocus = true;
         window.callAgent.resetMissedCalls()
     }
 
@@ -379,7 +379,7 @@ AppPage {
                     font.pixelSize: theme.fontPixelSizeLarge
                     height: 34
                     //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    textEditFocus: true
+                    textFocus: true
                     Keys.onEnterPressed: {
                         if(textEdit.text != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
@@ -811,7 +811,7 @@ AppPage {
                 textEdit.text = textEdit.text + "<img src=\"" + sourceName + "\" >";
 
                 // give the focus back to the text editor
-                textEdit.textEditFocus = true;
+                textEdit.textFocus = true;
                 textEdit.cursorPosition = position + 1;
             }
         }

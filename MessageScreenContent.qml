@@ -381,13 +381,13 @@ AppPage {
                     //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     textFocus: true
                     Keys.onEnterPressed: {
-                        if(textEdit.text != "") {
+                        if(parseChatText(textEdit.text) != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
                             textEdit.text = "";
                         }
                     }
                     Keys.onReturnPressed: {
-                        if(textEdit.text != "") {
+                        if(parseChatText(textEdit.text) != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
                             textEdit.text = "";
                         }

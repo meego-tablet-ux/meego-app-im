@@ -178,7 +178,7 @@ AppPage {
 
     Item {
         id: pageContent
-        parent: messageScreenPage.content
+        parent: messageScreenPage
         anchors.fill: parent
         // if the messages roll over the main bar, uncomment this line to
         // force clipping

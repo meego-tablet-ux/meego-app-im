@@ -12,10 +12,13 @@ import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
 
-AppPage {
+Labs.ApplicationPage {
     id: container
-    pageTitle: qsTr("Instant Messaging Settings")
+    //pageTitle: qsTr("Instant Messaging Settings")
+    title: qsTr("Instant Messaging Settings")
     anchors.fill: parent
+
+    //property alias window: scene
 
     Connections {
         target: accountsModel

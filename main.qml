@@ -221,6 +221,17 @@ Window {
             accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
 
+        onAcceptCallFinished: {
+            window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, window.currentContactId);
+
+            // and start the conversation
+            console.log("switching to message screen");
+            window.addPage(messageScreenContent);
+            accountsModel.startChat(window.currentAccountId, window.currentContactId);
+            chatAgent = agent;
+            console.log("acceptCall finished");
+        }
+
         onPasswordRequestRequired: {
             window.addPage(accountFactory.componentForAccount(accountId, window));
         }
@@ -288,16 +299,12 @@ Window {
         }
 
         // set the current contact property
+        window.callAgent = window.incomingCallAgent
+        window.callAgent.acceptCall();
+
         window.currentContactId = contactId;
         window.currentAccountId = accountId;
-        window.contactItem = accountsModel.contactItemForId(accountId, contactId);
-        window.callAgent = accountsModel.callAgent(accountId, contactId);
-        window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
-
-        // and start the conversation
-        window.addPage(messageScreenContent);
-        accountsModel.startChat(accountId, contactId);
-        chatAgent = accountsModel.chatAgentByKey(accountId, contactId);
+        window.contactItem = incomingContactItem;
     }
 
     function startAudioCall(contactId, page)

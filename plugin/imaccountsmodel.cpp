@@ -1019,7 +1019,15 @@ void IMAccountsModel::onCallChannelAvailable(const QString &accountId, Tpy::Call
     agent->onChannelAvailable(channel);
     if (!channel->isRequested()) {
         emit incomingCallAvailable(accountId, contact->id());
+        connect(agent, SIGNAL(acceptCallFinished(CallAgent*)),
+                SLOT(onAcceptCallFinished(CallAgent*)));
     }
+}
+
+void IMAccountsModel::onAcceptCallFinished(CallAgent *agent)
+{
+    qDebug() << "IMAccountsModel::onAcceptCallFinished";
+    emit acceptCallFinished(agent);
 }
 
 void IMAccountsModel::onIncomingFileTransferChannelAvailable(const QString &accountId, Tp::IncomingFileTransferChannelPtr channel)

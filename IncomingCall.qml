@@ -118,11 +118,9 @@ ModalDialog {
     }
 
     onAccepted: {
-        window.callAgent = window.incomingCallAgent
-        window.callAgent.acceptCall();
-        window.acceptCall(accountId, window.incomingContactItem.data(AccountsModel.IdRole));
         callSound.stopSound();
         container.hide();
+        window.acceptCall(accountId, window.incomingContactItem.data(AccountsModel.IdRole));
     }
 
     onRejected: {

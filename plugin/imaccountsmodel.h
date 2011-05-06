@@ -108,6 +108,7 @@ Q_SIGNALS:
     void incomingCallAvailable(const QString &accountId, const QString &contactId);
     void requestedGroupChatCreated(QObject *agent);
     void passwordRequestRequired(const QString &accountId);
+    void acceptCallFinished(QObject *agent);
 
 public Q_SLOTS:
     void onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel);
@@ -142,6 +143,7 @@ private Q_SLOTS:
     void onAccountCountChanged();
     void onAccountConnectionStatusChanged(const QString &accountId, const int status);
     void onConnectionReady(Tp::ConnectionPtr connection);
+    void onAcceptCallFinished(CallAgent *agent);
 
 private:
     Tpl::LoggerPtr mLogger;

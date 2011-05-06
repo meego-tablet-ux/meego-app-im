@@ -157,6 +157,7 @@ Q_SIGNALS:
     void missedVideoCallsChanged();
     void remoteVideoRenderChanged();
     void error(const QString &errorMessage);
+    void acceptCallFinished(CallAgent *agent);
 
 public Q_SLOTS:
     // to be called for new channels from channel handler

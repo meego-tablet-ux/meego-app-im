@@ -1257,6 +1257,7 @@ void CallAgent::onAcceptCallFinished(Tp::PendingOperation *op)
                        .arg(op->errorMessage()));
         return;
     }
+    emit acceptCallFinished(this);
 }
 
 void CallAgent::onRequestHoldFinished(Tp::PendingOperation *op)

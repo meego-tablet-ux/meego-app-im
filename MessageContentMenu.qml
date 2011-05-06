@@ -39,6 +39,7 @@ Item {
             id: contactsView
 
             delegate: MessageContactDelegate {
+                parent: meColumn
                 anchors.left: parent.left
                 anchors.right: parent.right
                 currentPage: container.currentPage

@@ -29,8 +29,6 @@ Item {
         } else {
             message.text = window.presenceStatusText(model.presenceType);
         }
-        console.log("width: " + avatar.width);
-        console.log("source: " + avatar.source);
     }
 
     Item {

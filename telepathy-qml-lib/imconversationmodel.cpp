@@ -512,6 +512,11 @@ void IMConversationModel::fetchMoreBack()
     }
 }
 
+void IMConversationModel::clearLog()
+{
+    mLoggerConversationModel->removeRows(0, mLoggerConversationModel->rowCount());
+}
+
 void IMConversationModel::sendMessage(const QString &text)
 {
     if (mSessionConversationModel) {

@@ -1556,7 +1556,12 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
     if (accountItem) {
         Tpl::LoggerPtr logger = Tpl::Logger::create();
         mLogger->clearContact(accountItem->account(), contactId);
+        ChatAgent *chatAgent = chatAgentByKey(accountId, contactId);
+        if(chatAgent) {
+            chatAgent->model()->clearLog();
+        }
     }
+
 }
 
 void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
@@ -1568,6 +1573,7 @@ void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QStr
         if(chatAgent) {
             QString roomName = chatAgent->textChannel()->immutableProperties().value(TP_QT4_IFACE_CHANNEL + QLatin1String(".TargetID")).toString();
             mLogger->clearRoom(accountItem->account(), roomName);
+            chatAgent->model()->clearLog();
         }
     }
 }

@@ -433,8 +433,8 @@ AppPage {
             opacity: 0
 
             function getVideoWidth(full, window) {
-                if (window.fullScreen) {
-                    if (window.orientation == 0 || window.orientation == 2) {
+                if (full.fullScreen) {
+                    if (window.orientation == 1 || window.orientation == 3) {
                         return pageContent.height;
                     }
                     return pageContent.width;
@@ -449,11 +449,11 @@ AppPage {
             }
 
             function getVideoHeight(full, window) {
-                if (window.fullScreen) {
-                    if (window.orientation == 0 || window.orientation == 2) {
-                        return pageContent.width;
+                if (full.fullScreen) {
+                    if (window.orientation == 1 || window.orientation == 3) {
+                        return pageContent.width - imToolBar.height;
                     }
-                    return pageContent.height;
+                    return pageContent.height - imToolBar.height;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
                 var width = window.width - 20;
@@ -509,10 +509,19 @@ AppPage {
             ]
 
             Rectangle {
-                anchors.margins: -4
                 anchors.fill: parent
-                visible: !window.fullScreen
-                color: "darkgrey"
+                color: "#e6e6e6"
+                
+                BorderImage {
+                    source: "image://themedimage/widgets/common/menu/menu-background-shadow"
+                    anchors.margins: -4
+                    anchors.fill: parent
+                    border.left: 11
+                    border.top: 11
+                    border.bottom: 11
+                    border.right: 11
+                    visible: !scene.fullscreen
+                }
             }
 
             VideoItem {

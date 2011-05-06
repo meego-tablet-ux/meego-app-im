@@ -376,7 +376,7 @@ AppPage {
                     anchors.fill: parent
                     anchors.margins: 10
                     textFormat: Text.RichText
-                    font.pixelSize: theme.fontPixelSizeLarge
+                    font.pixelSize: theme_fontPixelSizeLarge
                     height: 34
                     //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     textFocus: true

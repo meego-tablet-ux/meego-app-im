@@ -15,9 +15,6 @@ import MeeGo.App.Contacts 0.1
 Item {
     id: container
 
-    // FIXME remove after full migration to MeegGo.Components
-    //property variant window : window
-
     width: itemsColumn.width
     height: itemsColumn.height
 

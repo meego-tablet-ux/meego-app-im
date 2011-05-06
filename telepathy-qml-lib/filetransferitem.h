@@ -24,7 +24,8 @@ class FileTransferItem : public Tpy::EventItem
     Q_PROPERTY(QString filePath READ filePath)
     Q_PROPERTY(float percentTransferred READ percentTransferred)
 public:
-    explicit FileTransferItem(Tp::ContactPtr contact,
+    explicit FileTransferItem(Tp::ContactPtr sender,
+                              Tp::ContactPtr receiver,
                               FileTransferAgent *agent,
                               Tp::FileTransferChannelPtr channel,
                               QObject *parent = 0);
@@ -48,7 +49,6 @@ Q_SIGNALS:
 
 private:
     bool mIncoming;
-    Tp::ContactPtr mContact;
     Tp::IncomingFileTransferChannelPtr mIncomingChannel;
     Tp::OutgoingFileTransferChannelPtr mOutgoingChannel;
     Tp::FileTransferChannelPtr mChannel;

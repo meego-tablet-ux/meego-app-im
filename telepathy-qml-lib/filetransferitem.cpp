@@ -9,12 +9,13 @@
 #include "filetransferitem.h"
 #include <QDateTime>
 
-FileTransferItem::FileTransferItem(Tp::ContactPtr contact,
+FileTransferItem::FileTransferItem(Tp::ContactPtr sender,
+                                   Tp::ContactPtr receiver,
                                    FileTransferAgent *agent,
                                    Tp::FileTransferChannelPtr channel,
                                    QObject *parent)
-: Tpy::EventItem(contact, agent->contact(), QDateTime::currentDateTime(), parent),
-  mContact(contact), mChannel(channel), mAgent(agent)
+: Tpy::EventItem(sender, receiver, QDateTime::currentDateTime(), parent),
+  mChannel(channel), mAgent(agent)
 {
     mIncomingChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);
     mIncoming = !mIncomingChannel.isNull();

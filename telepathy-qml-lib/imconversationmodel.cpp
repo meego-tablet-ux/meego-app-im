@@ -453,7 +453,9 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
 
 void IMConversationModel::notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel)
 {
-    FileTransferItem *item = new FileTransferItem(contact, agent, channel, this);
+    Tp::ContactPtr sender = channel->initiatorContact();
+    Tp::ContactPtr receiver = (contact != sender) ? contact : channel->connection()->selfContact();
+    FileTransferItem *item = new FileTransferItem(sender, receiver, agent, channel, this);
     connect(item, SIGNAL(itemChanged()), SLOT(onItemChanged()));
 
     if (mSessionConversationModel) {

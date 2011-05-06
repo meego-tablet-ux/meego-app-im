@@ -509,10 +509,20 @@ AppPage {
             ]
 
             Rectangle {
-                anchors.margins: -4
                 anchors.fill: parent
                 visible: !window.fullScreen
                 color: "darkgrey"
+                
+                BorderImage {
+                    source: "image://themedimage/widgets/common/menu/menu-background-shadow"
+                    anchors.margins: -4
+                    anchors.fill: parent
+                    border.left: 11
+                    border.top: 11
+                    border.bottom: 11
+                    border.right: 11
+                    visible: !scene.fullscreen
+                }
             }
 
             VideoItem {

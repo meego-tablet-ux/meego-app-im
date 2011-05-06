@@ -428,20 +428,20 @@ AppPage {
             anchors.rightMargin: window.fullScreen ? 0 : 20
             anchors.top: parent.top
             anchors.topMargin: window.fullScreen ? 0 : 20
-            width: getVideoWidth(window, conversationView)
-            height: getVideoHeight(window, conversationView)
+            width: getVideoWidth(window, pageContent)
+            height: getVideoHeight(window, pageContent)
             opacity: 0
 
             function getVideoWidth(full, window) {
-                if (window.fullScreen) {
-                    if (window.orientation == 0 || window.orientation == 2) {
-                        return pageContent.height;
+                if (full.fullScreen) {
+                    if (window.orientation == 1 || window.orientation == 3) {
+                        return window.height;
                     }
-                    return pageContent.width;
+                    return window.width;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                var width = window.width - 20;
-                var height = window.height - 20;
+                var width = window.width * 0.4;
+                var height = window.height * 0.4;
                 if (width / height > cameraAspectRatio) {
                     width = height * cameraAspectRatio;
                 }
@@ -449,15 +449,15 @@ AppPage {
             }
 
             function getVideoHeight(full, window) {
-                if (window.fullScreen) {
-                    if (window.orientation == 0 || window.orientation == 2) {
-                        return pageContent.width;
+                if (full.fullScreen) {
+                    if (window.orientation == 1 || window.orientation == 3) {
+                        return window.width - imToolBar.height;
                     }
-                    return pageContent.height;
+                    return window.height - imToolBar.height;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                var width = window.width - 20;
-                var height = window.height - 20;
+                var width = window.width * 0.4;
+                var height = window.height * 0.4;
                 if (width / height < cameraAspectRatio) {
                     height = width / cameraAspectRatio;
                 }
@@ -509,10 +509,19 @@ AppPage {
             ]
 
             Rectangle {
-                anchors.margins: -4
                 anchors.fill: parent
-                visible: !window.fullScreen
-                color: "darkgrey"
+                color: "#e6e6e6"
+                
+                BorderImage {
+                    source: "image://themedimage/widgets/common/menu/menu-background-shadow"
+                    anchors.margins: -4
+                    anchors.fill: parent
+                    border.left: 11
+                    border.top: 11
+                    border.bottom: 11
+                    border.right: 11
+                    visible: !scene.fullscreen
+                }
             }
 
             VideoItem {

@@ -9,15 +9,14 @@ Item {
 
     function stopSound()
     {
-        //audio.stop();
+        audio.stop();
     }
 
     function playSound()
     {
-        //audio.play();
+        audio.play();
     }
 
-/*
     Audio {
         id: audio
         source: container.soundSource
@@ -31,5 +30,4 @@ Item {
             }
         }
     }
-*/
 }

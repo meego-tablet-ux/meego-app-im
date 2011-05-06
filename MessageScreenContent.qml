@@ -520,7 +520,7 @@ AppPage {
                     border.top: 11
                     border.bottom: 11
                     border.right: 11
-                    visible: !scene.fullscreen
+                    visible: window.fullscreen
                 }
             }
 
@@ -529,14 +529,25 @@ AppPage {
                 size: Qt.size(parent.width, parent.height)
             }
 
-            Avatar {
-                id: avatar
+            Image {
+                id: audioCallImage
                 visible: (window.callAgent != undefined && !window.callAgent.remoteVideoRender)
-                active: (window.callAgent != undefined && window.callAgent.existingCall)
-                source: window.contactItem.data(AccountsModel.AvatarRole)
+                source: "image://themedimage/widgets/apps/chat/call-fullscreen-default"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                height: parent.height / 3
+                width: !window.fullScreen ? parent.width / 2 : undefined
+                height: !window.fullScreen ? parent.height / 2 : undefined
+
+                Text {
+                    id: audioCallLabel
+                    anchors.top: parent.bottom
+                    anchors.topMargin: 5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    visible: window.fullScreen
+                    text: qsTr("Call with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
+                    color: theme_buttonFontColor
+                    font.pixelSize: theme_fontPixelSizeLarge
+                }
             }
 
             Item {

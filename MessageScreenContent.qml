@@ -428,20 +428,20 @@ AppPage {
             anchors.rightMargin: window.fullScreen ? 0 : 20
             anchors.top: parent.top
             anchors.topMargin: window.fullScreen ? 0 : 20
-            width: getVideoWidth(window, conversationView)
-            height: getVideoHeight(window, conversationView)
+            width: getVideoWidth(window, pageContent)
+            height: getVideoHeight(window, pageContent)
             opacity: 0
 
             function getVideoWidth(full, window) {
                 if (full.fullScreen) {
                     if (window.orientation == 1 || window.orientation == 3) {
-                        return pageContent.height;
+                        return window.height;
                     }
-                    return pageContent.width;
+                    return window.width;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                var width = window.width - 20;
-                var height = window.height - 20;
+                var width = window.width * 0.4;
+                var height = window.height * 0.4;
                 if (width / height > cameraAspectRatio) {
                     width = height * cameraAspectRatio;
                 }
@@ -451,13 +451,13 @@ AppPage {
             function getVideoHeight(full, window) {
                 if (full.fullScreen) {
                     if (window.orientation == 1 || window.orientation == 3) {
-                        return pageContent.width - imToolBar.height;
+                        return window.width - imToolBar.height;
                     }
-                    return pageContent.height - imToolBar.height;
+                    return window.height - imToolBar.height;
                 }
                 var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
-                var width = window.width - 20;
-                var height = window.height - 20;
+                var width = window.width * 0.4;
+                var height = window.height * 0.4;
                 if (width / height < cameraAspectRatio) {
                     height = width / cameraAspectRatio;
                 }

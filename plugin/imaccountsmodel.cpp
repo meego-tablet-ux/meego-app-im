@@ -1540,6 +1540,9 @@ bool IMAccountsModel::openedChatByAccount(const QString &accountId) const
 void IMAccountsModel::clearHistory()
 {
     mLogger->clearLog();
+    foreach (ChatAgent *agent, mChatAgents) {
+        agent->model()->clearLog();
+    }
 }
 
 void IMAccountsModel::clearAccountHistory(const QString &accountId)
@@ -1547,6 +1550,9 @@ void IMAccountsModel::clearAccountHistory(const QString &accountId)
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         mLogger->clearAccount(accountItem->account());
+        foreach(ChatAgent *agent, chatAgentsByAccount(accountId)) {
+            agent->model()->clearLog();
+        }
     }
 }
 

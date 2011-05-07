@@ -373,11 +373,12 @@ AppPage {
 
                 TextField {
                     id: textEdit
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
                     anchors.margins: 10
                     textFormat: Text.RichText
                     font.pixelSize: theme_fontPixelSizeLarge
-                    height: 34
                     //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     textFocus: true
                     Keys.onEnterPressed: {

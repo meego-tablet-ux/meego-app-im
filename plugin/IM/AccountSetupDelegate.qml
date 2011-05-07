@@ -42,7 +42,7 @@ Item {
         Text {
             id: accountTypeName
             anchors.left: serviceIcon.right
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenter: serviceIcon.verticalCenter
             anchors.margins: 10
             text: model.displayName
             elide: Text.ElideRight

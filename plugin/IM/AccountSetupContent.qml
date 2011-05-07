@@ -43,21 +43,27 @@ Item {
                         }
                     }
 
-                    Image {
-                        id: serviceIcon
-                        anchors.verticalCenter: parent.verticalCenter
+                    Item {
+                        anchors.top: parent.top
                         anchors.left: parent.left
-                        source: model.icon
-                    }
+                        anchors.right: parent.right
+                        height: theme_commonBoxHeight
+                        Image {
+                            id: serviceIcon
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            source: model.icon
+                        }
 
-                    Text {
-                        id: accountSetupLabel
-                        anchors.margins: 10
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: serviceIcon.right
-                        text: model.title
-                        font.pixelSize: theme_fontPixelSizeLargest
-                        font.bold: true
+                        Text {
+                            id: accountSetupLabel
+                            anchors.margins: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: serviceIcon.right
+                            text: model.title
+                            font.pixelSize: theme_fontPixelSizeLargest
+                            font.bold: true
+                        }
                     }
                 }
             }

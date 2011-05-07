@@ -91,11 +91,14 @@ Item {
         component += "        property alias accountContent: accountContent;";
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
-        component += "            Button {"
-        component += "                text: qsTr(\"Sign in\");"
-        component += "                onClicked: {"
-        component += "                    visible = false;"
-        component += "                    accountContent.createAccount();"
+        component += "            Button {";
+        component += "                text: qsTr(\"Sign in\");";
+        component += "                textColor: theme_buttonFontColor;";
+        component += "                bgSourceUp: \"image://meegotheme/widgets/common/button/button-default\";";
+        component += "                bgSourceDn: \"image://meegotheme/widgets/common/button/button-default-pressed\";";
+        component += "                onClicked: {";
+        component += "                    visible = false;";
+        component += "                    accountContent.createAccount();";
         component += "                }";
         component += "            }";
         component += "        }";

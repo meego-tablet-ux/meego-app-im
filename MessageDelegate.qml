@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.App.IM 0.1
+import MeeGo.Components 0.1
 
 Item {
     id: mainArea
@@ -187,6 +188,11 @@ Item {
                 }
             }
 
+            /*
+                FIXME: enable Text and remove TextEdit once meego-ux-componets supports
+                CCPContextArea for Text components.
+            */
+            /*
             Text {
                 id: messageBody
                 anchors.top: messageHeader.bottom
@@ -199,8 +205,30 @@ Item {
                 text: parseChatText(model.messageText)
                 wrapMode: Text.WordWrap
                 textFormat: Text.RichText
-
                 color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
+            }*/
+
+            TextEdit {
+                id: messageBody
+                anchors.top: messageHeader.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.topMargin: 15
+                anchors.leftMargin: messageTop.border.left
+                anchors.rightMargin: messageTop.border.right
+
+                text: parseChatText(model.messageText)
+                wrapMode: Text.Wrap
+                textFormat: Text.RichText
+                color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
+
+                readOnly: true
+                font.pixelSize: theme_fontPixelSizeLarger
+
+                CCPContextArea {
+                    editor: parent
+                    copyOnly: true
+                }
             }
         }
 

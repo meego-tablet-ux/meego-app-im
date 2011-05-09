@@ -84,7 +84,24 @@ Column {
 
             // TODO: maybe it would be good to ask if the user really
             // wants to remove the account?
-            onClicked: accountContent.removeAccount();
+            onClicked: messageBox.show();
+        }
+    }
+
+    ModalMessageBox {
+        id: messageBox
+        text: qsTr("Are you sure to delete this account?")
+
+        title: qsTr("Delete account")
+        showAcceptButton: true
+        showCancelButton: true
+        fogClickable: false
+        onAccepted: {
+            accountContent.removeAccount();
+            hide();
+        }
+        onRejected: {
+            hide();
         }
     }
 }

@@ -225,11 +225,9 @@ Window {
             window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, window.currentContactId);
 
             // and start the conversation
-            console.log("switching to message screen");
             window.addPage(messageScreenContent);
             accountsModel.startChat(window.currentAccountId, window.currentContactId);
             chatAgent = agent;
-            console.log("acceptCall finished");
         }
 
         onPasswordRequestRequired: {
@@ -294,9 +292,9 @@ Window {
 
     function acceptCall(accountId, contactId)
     {
-        if (notificationManager.chatActive) {
-            window.popPage();
-        }
+        //if (notificationManager.chatActive) {
+        //    window.popPage();
+        //}
 
         // set the current contact property
         window.callAgent = window.incomingCallAgent

@@ -512,7 +512,7 @@ AppPage {
             Rectangle {
                 anchors.fill: parent
                 color: "#e6e6e6"
-                
+
                 BorderImage {
                     source: "image://themedimage/widgets/common/menu/menu-background-shadow"
                     anchors.margins: -4
@@ -574,7 +574,7 @@ AppPage {
                 visible : videoWindow.showCameraVideo
 
                 function getVideoWidth(full, window) {
-                    if (!window.fullScreen) {
+                    if (!full.fullScreen) {
                         return window.width / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();
@@ -586,7 +586,7 @@ AppPage {
                 }
 
                 function getVideoHeight(full, window) {
-                    if (!window.fullScreen) {
+                    if (!full.fullScreen) {
                         return window.height / 4.0;
                     }
                     var cameraAspectRatio = messageScreenPage.getCameraAspectRatio();

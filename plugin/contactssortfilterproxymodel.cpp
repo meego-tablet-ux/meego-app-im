@@ -160,11 +160,11 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     }
 
                     // whether the contacts matches the filtered connection
-                    filtered = (mConnection == contact->manager()->connection());
+                    filtered = (!contact->manager().isNull() && mConnection == contact->manager()->connection());
 
                     // if the contact is accepted, it also has to match the string filter
                     // the string filter matches the id or alias to a user-entered string
-                    if (filtered and !mStringFilter.isEmpty()) {
+                    if (filtered && !mStringFilter.isEmpty()) {
                         if (contact->alias().contains(mStringFilter, Qt::CaseInsensitive) ||
                                 contact->id().contains(mStringFilter, Qt::CaseInsensitive)) {
                             filtered = true;

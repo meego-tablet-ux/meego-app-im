@@ -61,12 +61,13 @@ void FileTransferAgent::onIncomingTransferAvailable(Tp::IncomingFileTransferChan
     transfer.channel = channel;
     transfer.file = 0;
     transfer.channel->setProperty("fileName", transfer.channel->fileName());
+    transfer.dateTime = QDateTime::currentDateTime();
 
     mIncomingTransfers.append(transfer);
     emit pendingTransfersChanged();
 
     if (mModel) {
-        mModel->notifyFileTransfer(mContact, this, channel);
+        mModel->notifyFileTransfer(mContact, this, channel, transfer.dateTime);
     }
 }
 
@@ -100,6 +101,7 @@ void FileTransferAgent::onOutgoingTransferAvailable(Tp::OutgoingFileTransferChan
     OutgoingTransfer transfer;
     transfer.channel = channel;
     transfer.file = new QFile(request->property("filePath").toString());
+    transfer.dateTime = QDateTime::currentDateTime();
 
     channel->setProperty("filePath", request->property("filePath"));
     channel->setProperty("fileName", request->property("fileName"));
@@ -124,7 +126,7 @@ void FileTransferAgent::onOutgoingTransferAvailable(Tp::OutgoingFileTransferChan
             SLOT(onChannelStateChanged(Tp::FileTransferState,Tp::FileTransferStateChangeReason)));
 
     if (mModel) {
-        mModel->notifyFileTransfer(mContact, this, channel);
+        mModel->notifyFileTransfer(mContact, this, channel, transfer.dateTime);
     }
 }
 
@@ -252,11 +254,19 @@ void FileTransferAgent::setModel(QObject *model)
 
     // append any available file transfers
     foreach(const IncomingTransfer &transfer, mIncomingTransfers) {
-        mModel->notifyFileTransfer(mContact, this, transfer.channel);
+        if (!transfer.channel.isNull() &&
+            transfer.channel->state() != Tp::FileTransferStateCompleted &&
+            transfer.channel->state() != Tp::FileTransferStateCancelled) {
+            mModel->notifyFileTransfer(mContact, this, transfer.channel, transfer.dateTime);
+        }
     }
 
     foreach(const OutgoingTransfer &transfer, mOutgoingTransfers) {
-        mModel->notifyFileTransfer(mContact, this, transfer.channel);
+        if (!transfer.channel.isNull() &&
+            transfer.channel->state() != Tp::FileTransferStateCompleted &&
+            transfer.channel->state() != Tp::FileTransferStateCancelled) {
+            mModel->notifyFileTransfer(mContact, this, transfer.channel, transfer.dateTime);
+        }
     }
 }
 

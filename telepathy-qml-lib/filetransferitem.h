@@ -26,6 +26,7 @@ class FileTransferItem : public Tpy::EventItem
 public:
     explicit FileTransferItem(Tp::ContactPtr sender,
                               Tp::ContactPtr receiver,
+                              const QDateTime & dateTime,
                               FileTransferAgent *agent,
                               Tp::FileTransferChannelPtr channel,
                               QObject *parent = 0);

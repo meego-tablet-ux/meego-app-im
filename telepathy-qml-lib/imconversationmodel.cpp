@@ -451,11 +451,12 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
     mLoggerConversationModel->addItem(item);
 }
 
-void IMConversationModel::notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel)
+void IMConversationModel::notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent,
+                                             Tp::FileTransferChannelPtr channel, const QDateTime & dateTime)
 {
     Tp::ContactPtr sender = channel->initiatorContact();
     Tp::ContactPtr receiver = (contact != sender) ? contact : channel->connection()->selfContact();
-    FileTransferItem *item = new FileTransferItem(sender, receiver, agent, channel, this);
+    FileTransferItem *item = new FileTransferItem(sender, receiver, dateTime, agent, channel, this);
     connect(item, SIGNAL(itemChanged()), SLOT(onItemChanged()));
 
     if (mSessionConversationModel) {

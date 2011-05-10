@@ -11,10 +11,11 @@
 
 FileTransferItem::FileTransferItem(Tp::ContactPtr sender,
                                    Tp::ContactPtr receiver,
+                                   const QDateTime & dateTime,
                                    FileTransferAgent *agent,
                                    Tp::FileTransferChannelPtr channel,
                                    QObject *parent)
-: Tpy::EventItem(sender, receiver, QDateTime::currentDateTime(), parent),
+: Tpy::EventItem(sender, receiver, dateTime, parent),
   mChannel(channel), mAgent(agent)
 {
     mIncomingChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);

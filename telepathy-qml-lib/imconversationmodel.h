@@ -61,7 +61,7 @@ public:
     QString searchString() const;
     void notifyCallStatusChanged(CallAgent *callAgent, CallAgent::CallStatus oldCallStatus, CallAgent::CallStatus newCallStatus);
     void notifyCallError(Tp::ContactPtr contact, const QString & errorString);
-    void notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel);
+    void notifyFileTransfer(Tp::ContactPtr contact, FileTransferAgent *agent, Tp::FileTransferChannelPtr channel, const QDateTime &dateTime);
 
     static QString friendlyFileSize(qulonglong size);
 

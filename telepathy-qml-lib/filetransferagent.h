@@ -28,6 +28,7 @@ class IncomingTransfer
 public:
     QFile *file;
     Tp::IncomingFileTransferChannelPtr channel;
+    QDateTime dateTime;
 };
 
 class OutgoingTransfer
@@ -35,6 +36,7 @@ class OutgoingTransfer
 public:
     QFile *file;
     Tp::OutgoingFileTransferChannelPtr channel;
+    QDateTime dateTime;
 };
 
 class FileTransferAgent : public QObject

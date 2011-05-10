@@ -545,6 +545,7 @@ Item {
 
             onClicked: {
                 accountsModel.clearAccountHistory(window.currentAccountId);
+                currentPage.hideActionMenu();
             }
         }
 

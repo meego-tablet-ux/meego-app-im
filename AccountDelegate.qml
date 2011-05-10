@@ -25,6 +25,7 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        color: (mouseArea.pressed? theme_fontColorHighlight : theme_commonBoxColor)
 
         Image {
             id: serviceIcon
@@ -166,7 +167,7 @@ Item {
         ListModel { id: menu}
 
         MouseArea {
-
+            id: mouseArea
 
             anchors.fill: parent
             onClicked: {

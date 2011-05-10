@@ -113,7 +113,7 @@ Item {
         anchors.leftMargin: messageTop.border.left
         anchors.rightMargin: messageTop.border.right
 
-        height: childrenRect.height
+        height: childrenRect.height + 10
 
         Text {
             id: fileName
@@ -150,7 +150,6 @@ Item {
                 var cmd = "xdg-open \"" + model.filePath + "\"";
                 appModel.launch(cmd);
             }
-
 
             visible: finished && model.incomingTransfer
         }
@@ -229,7 +228,7 @@ Item {
 
             visible: mainArea.active || (!model.incomingTransfer && mainArea.pending)
 
-            height: visible ? childrenRect.height + 10 : 0
+            height: visible ? childrenRect.height + 20 : 0
 
             Button {
                 id: cancelButton

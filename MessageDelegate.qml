@@ -18,7 +18,7 @@ Item {
 
     anchors.leftMargin: 10
     anchors.rightMargin: 10
-    anchors.topMargin: 5
+    anchors.topMargin: 1
 
     property bool eventItem: model.eventType == "Tpy::CustomEventItem"
     property bool fileTransferItem: model.eventType == "FileTransferItem"

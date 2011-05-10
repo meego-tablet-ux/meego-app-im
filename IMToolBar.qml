@@ -290,7 +290,7 @@ BottomToolBar {
 
                 onClicked: {
                     smileyContextMenu.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
-                                                  insertSmileyButton.y + insertSmileyButton.height + toolBar.y);
+                                                  insertSmileyButton.mapToItem(window, insertSmileyButton.x, insertSmileyButton.y).y + 10);
                     smileyContextMenu.show();
                 }
                 opacity: !window.fullScreen ? 1 : 0
@@ -317,7 +317,7 @@ BottomToolBar {
                 iconDown: icon + "-active"
                 onClicked: {
                     sendFileContextMenu.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
-                                                    sendFileButton.y + sendFileButton.height + toolBar.y);
+                                                    sendFileButton.mapToItem(window, sendFileButton.x, sendFileButton.y).y + 10);
                     sendFileContextMenu.show();
                 }
                 opacity: (!window.fullScreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0

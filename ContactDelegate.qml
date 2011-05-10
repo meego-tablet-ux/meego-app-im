@@ -47,8 +47,10 @@ Item {
         id: mainArea
         width: parent.width
         active: contactDelegate.active
+        color: (mouseArea.pressed? theme_fontColorHighlight : theme_commonBoxColor)
 
         MouseArea {
+            id: mouseArea
             ListModel { id: menu}
 
             anchors.fill: parent

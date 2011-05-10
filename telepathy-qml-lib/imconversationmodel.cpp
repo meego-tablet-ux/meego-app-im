@@ -254,6 +254,10 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     // if it is a new contact, add it to the list
     if(!mContactsList.contains(contact->id())) {
         mContactsList.append(contact->id());
+        QString joinMessage = tr("%1 joined the chat").arg(contact->alias());
+        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
+            QDateTime::currentDateTime(), joinMessage, Tpy::CustomEventItem::CustomEventUserDefined, this);
+        mSessionConversationModel->addItem(item);
     }
 
     // build the message
@@ -274,7 +278,11 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
         break;
     }
     case Tp::ChannelChatStateGone: {
-        // already processed
+        QString goneMessage = tr("%1 left the chat").arg(contact->alias());
+        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
+            QDateTime::currentDateTime(), goneMessage, Tpy::CustomEventItem::CustomEventUserLeftChat, this);
+        mSessionConversationModel->addItem(item);
+        mContactsList.removeOne(contact->id());
         break;
     }
     case Tp::ChannelChatStatePaused: {
@@ -299,7 +307,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
             qDebug("previous running item found, deleting");
             mChatRunningItems.removeOne(item);
             mSessionConversationModel->deleteItem(item);
-            item = 0;
+            delete item;
         }
     }
 

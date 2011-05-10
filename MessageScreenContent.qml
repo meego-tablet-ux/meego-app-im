@@ -381,6 +381,7 @@ AppPage {
                     font.pixelSize: theme_fontPixelSizeLarge
                     //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     textFocus: true
+                    height: contentHeight + 2 * anchors.margins
                     Keys.onEnterPressed: {
                         if(parseChatText(textEdit.text) != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));

@@ -36,7 +36,7 @@ Item {
 
         }
 
-        Labs.Spinner {
+        Spinner {
             id: loadingIcon
             anchors.centerIn: serviceIcon
             visible: model.connectionStatus == TelepathyTypes.ConnectionStatusConnecting

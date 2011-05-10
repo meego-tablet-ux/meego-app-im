@@ -61,7 +61,7 @@ Item {
             anchors.verticalCenter: searchText.verticalCenter
             anchors.left: searchText.right
             anchors.leftMargin: 15
-            Labs.Spinner {
+            Spinner {
                 id: loadingIcon
                 width: theme_fontPixelSizeLarge
                 height: theme_fontPixelSizeLarge

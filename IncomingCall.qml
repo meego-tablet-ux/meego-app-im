@@ -114,25 +114,19 @@ ModalDialog {
 
     function start() {
         show();
-        callSound.playSound();
+        window.playIncomingCallSound();
     }
 
     onAccepted: {
-        callSound.stopSound();
+        window.stopSound();
         container.hide();
         window.acceptCall(accountId, window.incomingContactItem.data(AccountsModel.IdRole));
     }
 
     onRejected: {
         window.incomingCallAgent.endCall();
-        callSound.stopSound();
+        window.stopSound();
         container.hide();
-    }
-
-    IMSound {
-        id: callSound
-        repeat: true
-        soundSource: "/usr/share/sounds/meego/stereo/ring-1.wav"
     }
 }
 

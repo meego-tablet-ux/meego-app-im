@@ -127,19 +127,19 @@ AppPage {
             }
             // activate call ringing
             if(callAgent.callStatus == CallAgent.CallStatusRinging) {
-                outgoingCallSound.playSound();
+                window.playOutgoingCallSound();
             } else {
-                outgoingCallSound.stopSound();
+                window.stopSound();
             }
             // connection established
             if (callAgent.callStatus == CallAgent.CallStatusTalking) {
-                callConnectedSound.playSound();
+                window.playConnectedCallSound();
             }
             if (callAgent.callStatus == CallAgent.CallStatusHangingUp) {
-                callHangupSound.playSound();
+                window.playHangUpCallSound();
             }
             if (callAgent.error) {
-                errorSound.playSound();
+                window.playErrorSound();
                 // do not clear error on purpose, so other components do not miss it;
                 // we might see the error twice, and cannot really tell if it is the same error or not,
                 // but we don't really care as we'd just play the error sound twice,
@@ -166,10 +166,10 @@ AppPage {
             var sent = window.callAgent.videoSentOrAboutTo;
             if (sent != videoWasSent) {
                 if (sent) {
-                    recordingStartSound.playSound();
+                    window.playRecordingStartSound();
                 }
                 else {
-                    recordingStopSound.playSound();
+                    window.playRecordingStopSound();
                 }
             }
             videoWasSent = sent;
@@ -269,7 +269,7 @@ AppPage {
             interactive: contentHeight > height
 
             onCountChanged: {
-                textSound.playSound();
+                window.playIncomingMessageSound();
             }
         }
 
@@ -316,42 +316,6 @@ AppPage {
                     historyFeeder.running = false;
                 }
             }
-        }
-
-        IMSound {
-            id: textSound
-            soundSource: "/usr/share/sounds/meego/stereo/chat-fg.wav"
-        }
-
-        IMSound {
-            id: outgoingCallSound
-            soundSource: "/usr/share/sounds/meego/stereo/ring-4.wav"
-            repeat: true
-        }
-
-        IMSound {
-            id: callConnectedSound
-            soundSource: "/usr/share/sounds/meego/stereo/connect.wav"
-        }
-
-        IMSound {
-            id: callHangupSound
-            soundSource: "/usr/share/sounds/meego/stereo/disconnect.wav"
-        }
-
-        IMSound {
-            id: recordingStartSound
-            soundSource: "/usr/share/sounds/meego/stereo/rec-start.wav"
-        }
-
-        IMSound {
-            id: recordingStopSound
-            soundSource: "/usr/share/sounds/meego/stereo/rec-stop.wav"
-        }
-
-        IMSound {
-            id: errorSound
-            soundSource: "/usr/share/sounds/meego/stereo/error.wav"
         }
 
         Image {

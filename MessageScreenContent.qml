@@ -64,9 +64,9 @@ AppPage {
                 window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
             }
         }
-
         // just to be sure, set the focus on the text editor
-        textEdit.textFocus = true;
+        textEdit.focus = true;
+
         window.callAgent.resetMissedCalls()
     }
 
@@ -105,6 +105,7 @@ AppPage {
                                                                          contactId);
                 window.fileTransferAgent.setModel(conversationView.model);
             }
+            textEdit.focus = true;
         }
 
         onGroupChatReady:  {
@@ -113,6 +114,7 @@ AppPage {
                                                                               channelPath);
                 window.fileTransferAgent.setModel(conversationView.model);
             }
+            textEdit.focus = true;
         }
     }
 
@@ -343,8 +345,6 @@ AppPage {
                     anchors.margins: 10
                     textFormat: Text.RichText
                     font.pixelSize: theme_fontPixelSizeLarge
-                    //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    textFocus: true
                     height: contentHeight + 2 * anchors.margins
                     Keys.onEnterPressed: {
                         if(parseChatText(textEdit.text) != "") {
@@ -799,7 +799,7 @@ AppPage {
                 textEdit.text = textEdit.text + "<img src=\"" + sourceName + "\" >";
 
                 // give the focus back to the text editor
-                textEdit.textFocus = true;
+                textEdit.focus = true;
                 textEdit.cursorPosition = position + 1;
             }
         }

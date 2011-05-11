@@ -25,7 +25,7 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        color: (mouseArea.pressed? theme_fontColorHighlight : theme_commonBoxColor)
+        color: (mouseArea.pressed || contextMenu.visible? theme_buttonFontColorActive : theme_commonBoxColor)
 
         Image {
             id: serviceIcon

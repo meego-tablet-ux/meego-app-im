@@ -27,10 +27,9 @@ QmlPainterVideoSurface *FarstreamChannel::mOutgoingSurface = 0;
 //#define AUDIO_SINK_ELEMENT "autoaudiosink"
 //#define AUDIO_SINK_ELEMENT "alsasink"
 #define AUDIO_SINK_ELEMENT "pulsesink"
-//#define AUDIO_SINK_ELEMENT "filesink"
 
-// only used when the audio sink is a filesink
-#define AUDIO_FILESINK_OUTPUT_FILE "/tmp/im-output.wav"
+// when defined, incoming audio is teed there
+#define AUDIO_OUTPUT_FILE "/tmp/im-output.wav"
 
 #define COLORSPACE_CONVERT_ELEMENT "ffmpegcolorspace"
 
@@ -406,6 +405,49 @@ GstElement *FarstreamChannel::pushElement(GstElement *bin, GstElement *&last, co
     return e;
 }
 
+void FarstreamChannel::writeAudioToFile(GstElement *bin, GstElement *tee)
+{
+#ifdef AUDIO_OUTPUT_FILE
+    GstPad *src, *sink;
+    GstElement *source, *filesink;
+
+    src = gst_element_get_request_pad(tee, "src%d");
+    if (!src) {
+        qWarning() << "Failed to get src pad from audio output tee";
+        return;
+    }
+    source = gst_element_factory_make("queue", 0);
+    if (!source) {
+        qWarning() << "Failed to create queue element";
+        return;
+    }
+    if (!gst_bin_add (GST_BIN (bin), source)) {
+        qWarning() << "Failed to add queue to audio file bin";
+        return;
+    }
+    sink = gst_element_get_static_pad (source, "sink");
+    if (!sink) {
+        qWarning() << "Failed to find static sink pad in queue";
+        return;
+    }
+    if (gst_pad_link (src, sink) != GST_PAD_LINK_OK) {
+        qWarning() << "Failed to link audio file tee to queue";
+        return;
+    }
+    pushElement(bin, source, "queue", false, NULL, false);
+    pushElement(bin, source, "wavenc", false, NULL, false);
+    filesink = pushElement(bin, source, "filesink", false, NULL, false);
+    if (filesink == NULL) {
+        qWarning() << "Failed to push filesink";
+        return;
+    }
+    g_object_set(filesink, "location", AUDIO_OUTPUT_FILE, NULL);
+#else
+    (void)bin;
+    (void)tee;
+#endif
+}
+
 void FarstreamChannel::initAudioOutput()
 {
     LIFETIME_TRACER();
@@ -420,51 +462,50 @@ void FarstreamChannel::initAudioOutput()
     gst_object_sink(mGstAudioOutput);
 
     GstElement *source = 0;
+    pushElement(mGstAudioOutput, source, "queue", false, &mGstAudioOutputSink, false);
+    GstElement *tee = pushElement(mGstAudioOutput, source, "tee", false);
+
     if (strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
-        pushElement(mGstAudioOutput, source, "audioresample", true, &mGstAudioOutputSink, false);
+        pushElement(mGstAudioOutput, source, "audioresample", true, NULL, false);
         pushElement(mGstAudioOutput, source, "volume", true, &mGstAudioOutputVolume, false);
     }
     else {
         mGstAudioOutputVolume = NULL;
     }
-    if (!strcmp(AUDIO_SINK_ELEMENT, "filesink")) {
-        pushElement(mGstAudioOutput, source, "audioconvert", false, NULL, false);
-        pushElement(mGstAudioOutput, source, "wavenc", false, NULL, false);
-        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink, false);
-        g_object_set(mGstAudioOutputActualSink, "location", AUDIO_FILESINK_OUTPUT_FILE, NULL);
+    GstElement *previous_source = source;
+    pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink ,false);
+
+    /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
+       READY as they can't connect to the pulse daemon. This will cause the
+       entire pipeline to fail to set to PLAYING. So we try to get pulsesink
+       to READY temporarily here, and replace it by fakesink if it fails, so
+       the pipeline can run happily */
+    GstStateChangeReturn scr = gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_READY);
+    if (scr == GST_STATE_CHANGE_FAILURE) {
+        qDebug() << "Audio sink \"" AUDIO_SINK_ELEMENT "\" failed to get to READY, replacing with a fake audio sink";
+        if (previous_source)
+          gst_element_unlink(previous_source, mGstAudioOutputActualSink);
+        gst_bin_remove(GST_BIN(mGstAudioOutput), mGstAudioOutputActualSink);
+        source = previous_source;
+        pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink, false);
     }
     else {
-        GstElement *previous_source = source;
-        pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink ,false);
-
-        /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
-           READY as they can't connect to the pulse daemon. This will cause the
-           entire pipeline to fail to set to PLAYING. So we try to get pulsesink
-           to READY temporarily here, and replace it by fakesink if it fails, so
-           the pipeline can run happily */
-        GstStateChangeReturn scr = gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_READY);
-        if (scr == GST_STATE_CHANGE_FAILURE) {
-            qDebug() << "Audio sink \"" AUDIO_SINK_ELEMENT "\" failed to get to READY, replacing with a fake audio sink";
-            if (previous_source)
-              gst_element_unlink(previous_source, mGstAudioOutputActualSink);
-            gst_bin_remove(GST_BIN(mGstAudioOutput), mGstAudioOutputActualSink);
-            source = previous_source;
-            pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink, false);
-        }
-        else {
-            // restore sink as we created it
-            gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_NULL);
-        }
-
-        if (!mGstAudioOutputSink) {
-            mGstAudioOutputSink = mGstAudioOutputActualSink;
-            gst_object_ref(mGstAudioOutputSink);
-        }
-
-        if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
-            setPhoneMediaRole(mGstAudioOutputActualSink);
-        }
+        // restore sink as we created it
+        gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_NULL);
     }
+
+    if (!mGstAudioOutputSink) {
+        mGstAudioOutputSink = mGstAudioOutputActualSink;
+        gst_object_ref(mGstAudioOutputSink);
+    }
+
+    if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
+        setPhoneMediaRole(mGstAudioOutputActualSink);
+    }
+
+#ifdef AUDIO_OUTPUT_FILE
+    writeAudioToFile(mGstAudioOutput, tee);
+#endif
 }
 
 void FarstreamChannel::deinitAudioOutput()

@@ -157,6 +157,7 @@ private:
     int countCameras() const;
 
     GstElement *pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional = false, GstElement **copy = NULL, bool checkLink = true);
+    void writeAudioToFile(GstElement *bin, GstElement *tee);
 };
 
 #endif // FARSIGHTCHANNEL_H

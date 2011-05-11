@@ -560,7 +560,7 @@ Window {
 
     Labs.ContactsPicker {
         id: contactsPicker
-        parent: window
+        parent: pageStack.currentPage
         promptString: qsTr("Select contact")
     }
 

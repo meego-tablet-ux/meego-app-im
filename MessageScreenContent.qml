@@ -297,7 +297,7 @@ AppPage {
         }
 
         Connections {
-            target: typeof(conversationView.model) != 'undefined' ? conversationView.model : null
+            target: conversationView.model != undefined ? conversationView.model : null
             ignoreUnknownSignals: true
             onBackFetchable: {
                 if (conversationView.model.canFetchMoreBack()) {

@@ -223,7 +223,7 @@ Item {
                 color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
 
                 readOnly: true
-                font.pixelSize: theme_fontPixelSizeLarger
+                font.pixelSize: theme_fontPixelSizeLarge
 
                 CCPContextArea {
                     editor: parent

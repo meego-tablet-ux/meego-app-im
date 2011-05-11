@@ -9,8 +9,6 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
-import MeeGo.App.Contacts 0.1
 
 Item {
     id: container
@@ -64,6 +62,7 @@ Item {
             text: qsTr("Photo")
 
             onClicked: {
+                photoPicker.parent = container;
                 photoPicker.show();
             }
         }
@@ -75,6 +74,7 @@ Item {
             text: qsTr("Video")
 
             onClicked: {
+                videoPicker.parent = container;
                 videoPicker.show()
             }
         }
@@ -86,6 +86,7 @@ Item {
             text: qsTr("Music")
 
             onClicked: {
+                musicPicker.parent = container;
                 musicPicker.show()
             }
         }
@@ -102,36 +103,29 @@ Item {
         }
     }
 
-    PhotoPicker {
-        id: photoPicker
-
+    Connections {
+        target: photoPicker
         onPhotoSelected: {
             container.fileSelected(uri.replace("file://", ""));
         }
     }
 
-    VideoPicker {
-        id: videoPicker
-
+    Connections {
+        target: videoPicker
         onVideoSelected: {
             container.fileSelected(uri.replace("file://", ""));
         }
     }
 
-    MusicPicker {
-        id: musicPicker
-        selectSongs: true
-
+    Connections {
+        target: musicPicker
         onSongSelected: {
             container.fileSelected(uri.replace("file://", ""));
         }
     }
 
-    Labs.ContactsPicker {
-        id: contactsPicker
-        parent: window
-        promptString: qsTr("Select contact")
-
+    Connections {
+        target: contactsPicker
         onContactSelected: {
             var filename = contact.name.firstName + "_" + contact.name.lastName;
             filename = filename.replace(" ", "_");
@@ -143,9 +137,4 @@ Item {
             container.cancelled();
         }
     }
-
-    PeopleModel {
-        id: peopleModel
-    }
-
 }

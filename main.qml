@@ -10,6 +10,8 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import MeeGo.Labs.Components 0.1 as Labs
+import MeeGo.App.Contacts 0.1
 
 Window {
     id: window
@@ -257,6 +259,7 @@ Window {
 
     function startConversation(contactId)
     {
+        console.log("window.startConversation: contactId=" + contactId);
         // set the current contact property
         currentContactId = contactId;
         contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
@@ -272,10 +275,12 @@ Window {
         accountsModel.startChat(window.currentAccountId, contactId);
 
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
+        console.log("window.startConversation: finished");
     }
 
     function startGroupConversation(channelPath)
     {
+        console.log("window.startGroupConversation: channelPath=" + channelPath);
         window.currentContactId = "";
         window.contactItem = undefined;
         window.callAgent = undefined;
@@ -288,6 +293,7 @@ Window {
         }
         window.addPage(messageScreenContent);
         accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
+        console.log("window.startGroupConversation: finished");
     }
 
     function acceptCall(accountId, contactId)
@@ -535,6 +541,33 @@ Window {
     ConfirmationDialog {
         id: confirmationDialogItem
     }
+
+    PhotoPicker {
+        id: photoPicker
+        parent: pageStack.currentPage
+    }
+
+    VideoPicker {
+        id: videoPicker
+        parent: pageStack.currentPage
+    }
+
+    MusicPicker {
+        id: musicPicker
+        selectSongs: true
+        parent: pageStack.currentPage
+    }
+
+    Labs.ContactsPicker {
+        id: contactsPicker
+        parent: window
+        promptString: qsTr("Select contact")
+    }
+
+    PeopleModel {
+        id: peopleModel
+    }
+
 }
 
 

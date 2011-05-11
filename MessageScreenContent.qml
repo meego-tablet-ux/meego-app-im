@@ -774,7 +774,9 @@ AppPage {
                 source: videoWindowSwap ?
                             "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
                             "image://meegotheme/widgets/apps/chat/move-video-background"
-                anchors.fill: avatar
+                width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
+                height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
+                anchors.centerIn: parent
                 visible: videoOutgoingDAD.drag.active
 
                 Item {

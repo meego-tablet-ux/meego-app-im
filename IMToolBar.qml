@@ -62,7 +62,8 @@ BottomToolBar {
             IconButton {
                 id: videoCallButton
                 width: 60
-                opacity: window.callAgent == undefined || (!window.callAgent.existingCall &&
+                opacity: (window.callAgent == undefined && !window.chatAgent.isConference) ||
+                         (!window.callAgent.existingCall &&
                         window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
                         window.callAgent != undefined &&
                         window.callAgent.callStatus == CallAgent.CallStatusNoCall &&

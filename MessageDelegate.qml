@@ -252,7 +252,7 @@ Item {
 
         Text {
             id: eventMessageText
-            horizontalAlignment: Text.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
             // i18n: the first argument is the event itself, the second one is the fuzzy time

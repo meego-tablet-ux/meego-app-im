@@ -66,6 +66,7 @@ BottomToolBar {
                         window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
                         window.callAgent != undefined &&
                         window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                        window.chatAgent != undefined &&
                         !window.chatAgent.isConference) ? 1 : 0
                 visible: opacity > 0
 
@@ -130,6 +131,7 @@ BottomToolBar {
                          window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
                          window.callAgent != undefined &&
                          window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                         window.chatAgent != undefined &&
                          !window.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 

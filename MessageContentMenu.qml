@@ -49,7 +49,7 @@ Item {
 
         MenuItem {
             id: addContactItem
-            visible: window.chatAgent.isGroupChatCapable
+            visible: window.chatAgent != undefined ? window.chatAgent.isGroupChatCapable : false
 
             text: qsTr("Add contacts to chat")
             onClicked: {

@@ -143,7 +143,7 @@ Column {
 
     function wrapUndefined(value, type)
     {
-        if (typeof(value) == 'undefined') {
+        if (value == undefined) {
             if (type == "string")
                 return "";
             else if (type == "number")

@@ -187,10 +187,10 @@ AppPage {
         SearchHeader {
             id: searchHeader
             searchActive: window.showToolBarSearch
-            searching: conversationView.model.searching
-            olderActive : conversationView.model.olderActive
-            newerActive : conversationView.model.newerActive
-            numMatchesFound: conversationView.model.numMatchesFound
+            searching: conversationView.model != undefined ? conversationView.model.searching : false
+            olderActive : conversationView.model != undefined ? conversationView.model.olderActive : false
+            newerActive : conversationView.model != undefined ? conversationView.model.newerActive : false
+            numMatchesFound: conversationView.model != undefined ? conversationView.model.numMatchesFound : 0
             onOlderClicked: {
                 conversationView.model.olderMatch();
             }
@@ -200,7 +200,7 @@ AppPage {
         }
 
         Connections {
-            target: conversationView.model
+            target: conversationView.model != undefined ? conversationView.model : null
             onCurrentRowMatchChanged: {
                 conversationView.positionViewAtIndex(conversationView.model.currentRowMatch, ListView.Center);
             }

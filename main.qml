@@ -355,7 +355,7 @@ Window {
     function reloadFilterModel()
     {
         // do not do anything if accountsSortedModel is not created yet
-        if (typeof(accountsSortedModel) == 'undefined')
+        if (accountsSortedModel == undefined)
             return;
 
         accountFilterModel = [];

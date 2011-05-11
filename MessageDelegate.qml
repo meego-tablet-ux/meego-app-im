@@ -27,6 +27,7 @@ Item {
     property bool messageSent: !model.incomingEvent
     property string color: model.bubbleColor
 
+    /*
     Component.onCompleted: {
         console.log("-------------------------------------------------------")
         console.log("model.eventType=" + model.eventType);
@@ -50,7 +51,7 @@ Item {
         console.log("model.customEventText=" + model.customEventText);
         console.log("model.customEventType=" + model.customEventType);
         console.log("callItem=" + callItem);
-    }
+    }*/
 
     function messageAvatar() {
         var avatar = "";

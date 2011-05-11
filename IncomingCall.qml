@@ -21,6 +21,7 @@ ModalDialog {
     cancelButtonText: qsTr("Decline")
     cancelButtonImage: "image://meegotheme/images/btn_red_up"
     cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
+    fogMaskVisible: false
 
     property alias statusMessage: message.text
     property alias connectionTarget: callStatusConnection.target

@@ -368,6 +368,8 @@ void FarstreamChannel::deinitAudioInput()
       return;
     }
 
+    gst_element_set_state(mGstAudioInput, GST_STATE_NULL);
+
     releaseGhostPad(mGstAudioInput, SRC_GHOST_PAD_NAME, NULL);
 
     if (mGstAudioInput) {
@@ -515,6 +517,7 @@ void FarstreamChannel::deinitAudioOutput()
       return;
     }
 
+    gst_element_set_state(mGstAudioOutput, GST_STATE_NULL);
 
     releaseGhostPad(mGstAudioOutput, SINK_GHOST_PAD_NAME, NULL);
 
@@ -636,6 +639,8 @@ void FarstreamChannel::deinitVideoInput()
       return;
     }
 
+    gst_element_set_state(mGstVideoInput, GST_STATE_NULL);
+
     releaseGhostPad(mGstVideoInput, SRC_GHOST_PAD_NAME, mGstVideoTee);
 
     if (mGstVideoTee) {
@@ -728,6 +733,8 @@ void FarstreamChannel::deinitVideoOutput()
       qDebug() << "Video output not initialized, doing nothing";
       return;
     }
+
+    gst_element_set_state(mGstVideoOutput, GST_STATE_NULL);
 
     releaseGhostPad(mGstVideoOutput, SINK_GHOST_PAD_NAME, mGstVideoOutputSink);
 

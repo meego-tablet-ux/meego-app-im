@@ -118,14 +118,14 @@ ModalDialog {
     }
 
     onAccepted: {
-        window.stopSound();
+        window.stopLoopedSound();
         container.hide();
         window.acceptCall(accountId, window.incomingContactItem.data(AccountsModel.IdRole));
     }
 
     onRejected: {
         window.incomingCallAgent.endCall();
-        window.stopSound();
+        window.stopLoopedSound();
         container.hide();
     }
 }

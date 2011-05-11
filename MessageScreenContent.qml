@@ -129,7 +129,7 @@ AppPage {
             if(callAgent.callStatus == CallAgent.CallStatusRinging) {
                 window.playOutgoingCallSound();
             } else {
-                window.stopSound();
+                window.stopLoopedSound();
             }
             // connection established
             if (callAgent.callStatus == CallAgent.CallStatusTalking) {

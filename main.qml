@@ -416,66 +416,64 @@ Window {
 
     function playIncomingMessageSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/chat-fg.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/chat-fg.wav");
     }
 
     function playIncomingCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/ring-1.wav", true);
+        playLoopedSound("/usr/share/sounds/meego/stereo/ring-1.wav");
     }
 
     function playOutgoingCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/ring-4.wav", true);
+        playLoopedSound("/usr/share/sounds/meego/stereo/ring-4.wav");
     }
 
     function playConnectedCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/connect.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/connect.wav");
     }
 
     function playHangUpCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/disconnect.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/disconnect.wav");
     }
 
     function playRecordingStartSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/rec-start.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/rec-start.wav");
     }
 
     function playRecordingStopSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/rec-stop.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/rec-stop.wav");
     }
 
     function playErrorSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/error.wav", false);
+        playSound("/usr/share/sounds/meego/stereo/error.wav");
     }
 
-    function playSound(soundSource, repeat)
+    function playSound(soundSource)
     {
-        if (repeat == null) {
-            repeat = false;
-        }
-
-        console.log("playSound " + soundSource + " repeat=" + repeat);
-        if (repeat) {
-            imSoundPlayerRepeat.soundSource = soundSource;
-            imSoundPlayerRepeat.playSound();
-        } else {
-            imSoundPlayer.soundSource = soundSource;
-            imSoundPlayer.playSound();
-        }
+        console.log("playSound " + soundSource);
+        imSoundPlayer.soundSource = soundSource;
+        imSoundPlayer.playSound();
     }
 
-    function stopSound()
+    function playLoopedSound(soundSource)
     {
-        if (imSoundPlayerRepeat.soundSource != "") {
-            console.log("stopSound " + imSoundPlayerRepeat.soundSource);
-            imSoundPlayerRepeat.stopSound();
-            imSoundPlayerRepeat.soundSource = "";
+        console.log("playLoopedSound " + soundSource);
+        imLoopedSoundPlayer.soundSource = soundSource;
+        imLoopedSoundPlayer.playSound();
+    }
+
+    function stopLoopedSound()
+    {
+        if (imLoopedSoundPlayer.soundSource != "") {
+            console.log("stopLoopedSound " + imLoopedSoundPlayer.soundSource);
+            imLoopedSoundPlayer.stopSound();
+            imLoopedSoundPlayer.soundSource = "";
         }
     }
 
@@ -485,7 +483,7 @@ Window {
     }
 
     IMSound {
-        id: imSoundPlayerRepeat
+        id: imLoopedSoundPlayer
         repeat: true
     }
 

@@ -24,6 +24,7 @@ AppPage {
         target: window
         onComponentsLoaded: {
             accountsRepeater.model = accountsSortedModel;
+            loadingAccounts.visible = false;
         }
     }
 
@@ -51,9 +52,19 @@ AppPage {
                     id: noNetworkItem
                 }
 
+                LoadingAccounts {
+                    id: loadingAccounts
+                    visible: true
+                    anchors {
+                        top: noNetworkItem.bottom
+                        left: parent.left
+                        right: parent.right
+                    }
+                }
+
                 Title {
                     id: accountsHeader
-                    anchors.top: noNetworkItem.bottom
+                    anchors.top: loadingAccounts.bottom
                     text: qsTr("Choose an account")
                     visible: accountsRepeater.count
                 }

@@ -21,7 +21,7 @@ Item {
         detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
 
         property int itemWidth: parent.width
-        property int accountStatus: model.statusType
+        property int accountStatus: model.connectionStatus
         property variant accountContent: detailsItem.accountContent
         //property bool expanded: false
         property int detailsHeight: childrenRect.height

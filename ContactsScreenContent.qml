@@ -19,10 +19,8 @@ AppPage {
     
     property int count: listView.count
     property int accountStatus: 0
-    property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionPresenceTypeOffline
-                                       || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnset
-                                       || accountStatus == TelepathyTypes.ConnectionPresenceTypeUnknown
-                                       || accountStatus == TelepathyTypes.ConnectionPresenceTypeError)
+    property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
+                                       || accountStatus == TelepathyTypes.ConnectionStatusConnecting)
     property bool showAddFriends: !count && !showAccountOffline
     property int requestedStatusType: 0
     property string requestedStatus: ""
@@ -30,12 +28,14 @@ AppPage {
 
     Component.onCompleted: {
         pageTitle = window.currentAccountName;
-        accountStatus = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
+        accountOfflineInfo.setInfoMessage(accountStatus);
     }
 
     onAccountStatusChanged: {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
+        accountOfflineInfo.setInfoMessage(accountStatus);
     }
 
     onActionMenuIconClicked: {
@@ -47,7 +47,7 @@ AppPage {
         target: window.accountItem
 
         onChanged: {
-            accountStatus = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+            accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
         }
     }
 

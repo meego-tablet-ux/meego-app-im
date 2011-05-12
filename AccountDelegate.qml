@@ -16,7 +16,7 @@ import TelepathyQML 0.1
 Item {
     id: mainArea
 
-    property int accountStatus: model.statusType
+    property int accountStatus: model.connectionStatus
 
     height: childrenRect.height
 

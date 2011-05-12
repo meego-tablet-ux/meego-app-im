@@ -63,7 +63,7 @@ Window {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
         accountItem = accountsModel.accountItemForId(window.currentAccountId);
-        currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+        currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
         currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
         notificationManager.currentAccount = currentAccountId;
         accountItemConnections.target = accountItem;
@@ -100,7 +100,7 @@ Window {
         id: accountItemConnections
 
         onChanged: {
-            currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+            currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
             currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
             notificationManager.currentAccount = currentAccountId;
         }
@@ -167,7 +167,7 @@ Window {
                 contactsModel.filterByAccountId(currentAccountId);
                 contactRequestModel.filterByAccountId(currentAccountId);
                 accountItem = item;
-                currentAccountStatus = accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+                currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
             }
 
             // check if there is a connection error and show the config dialog

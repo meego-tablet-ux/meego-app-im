@@ -14,6 +14,7 @@ Item {
     id: container
 
     height: (visible? panel.height : 0)
+
     InfoPanel {
         id: panel
 
@@ -22,7 +23,7 @@ Item {
         Text {
             id: accountOfflineText
 
-            text: qsTr("Account is offline")
+            text: qsTr("Account is offline");
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 verticalCenter: parent.verticalCenter
@@ -30,6 +31,17 @@ Item {
             color: theme_fontColorHighlight
             font.pixelSize: theme_fontPixelSizeLarge
             font.weight: Font.Bold
+        }
+    }
+
+    function setInfoMessage(status)
+    {
+        if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
+            accountOfflineText.text = qsTr("Account is offline");
+        } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
+            accountOfflineText.text = qsTr("Account is connecting...");
+        } else {
+            accountOfflineText.text = "";
         }
     }
 

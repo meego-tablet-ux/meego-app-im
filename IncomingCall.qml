@@ -108,6 +108,7 @@ ModalDialog {
         onCallStatusChanged: {
             if (window.incomingCallAgent.callStatus == CallAgent.CallStatusNoCall
              || window.incomingCallAgent.callStatus == CallAgent.CallStatusHangingUp) {
+                window.stopLoopedSound();
                 container.hide();
             }
         }

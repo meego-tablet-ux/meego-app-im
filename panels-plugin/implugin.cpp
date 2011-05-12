@@ -25,7 +25,7 @@
 IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
 {
     Tp::registerTypes();
-
+    Tpy::registerTypes();
 
     qDebug() << "IMPlugin constructor";
 

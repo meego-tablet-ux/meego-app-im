@@ -17,6 +17,12 @@ AppPage {
     pageTitle: qsTr("Instant Messaging Settings")
     anchors.fill: parent
 
+    //property alias window: scene
+
+    Labs.ApplicationsModel {
+        id: appModel
+    }
+
     Connections {
         target: accountsModel
         onComponentsLoaded: {

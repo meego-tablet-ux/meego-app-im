@@ -8,7 +8,6 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.App.IM 0.1
 
 AppPage {
@@ -115,10 +114,6 @@ AppPage {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-
-            Labs.ApplicationsModel {
-                id: appModel
-            }
 
             IconButton {
                 id: settingsButton

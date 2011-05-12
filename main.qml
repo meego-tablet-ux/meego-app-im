@@ -568,6 +568,10 @@ Window {
         id: peopleModel
     }
 
+    Labs.ApplicationsModel {
+        id: appModel
+    }
+
 }
 
 

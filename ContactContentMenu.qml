@@ -500,6 +500,7 @@ Item {
                     historySeparator.visible = true;
                     logOutItem.visible = true;
                 } else {
+                    addAFriend.resetHelper();
                     addAFriend.opacity = 1;
                     avatarImage.visible = false;
                     avatarSeparator.visible = false;

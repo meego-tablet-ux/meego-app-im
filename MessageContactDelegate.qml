@@ -169,7 +169,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             width: height
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
+            source: "image://themedimage/widgets/common/menu/menu-item-separator"
             visible: window.chatAgent.isGroupChatCapable
         }
     }

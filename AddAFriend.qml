@@ -72,8 +72,8 @@ Column {
         height: 40
         text: qsTr("Send")
         textColor: theme_buttonFontColor
-        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+        bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+        bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
         onClicked: {

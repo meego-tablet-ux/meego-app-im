@@ -106,7 +106,7 @@ AppPage {
                 bottom: parent.bottom
             }
             height: 100
-            source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
+            source: "image://themedimage/widgets/common/action-bar/action-bar-background"
 
             Row {
                 id: buttonRow
@@ -125,8 +125,8 @@ AppPage {
 
                     text: qsTr("Add")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-positive"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-positive-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-positive"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-positive-pressed"
 
                     onClicked: {
                         var contactsList = ""; // i18n ok
@@ -161,8 +161,8 @@ AppPage {
 
                     text: qsTr("Cancel")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                     // TODO: check if we need to remove the contact
                     onClicked: {

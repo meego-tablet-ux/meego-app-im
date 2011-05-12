@@ -22,7 +22,7 @@ Item {
 
     Image {
         anchors.fill: parent
-        source: "image://meegotheme/widgets/apps/chat/friend-request-background"
+        source: "image://themedimage/widgets/apps/chat/friend-request-background"
     }
 
     Avatar {
@@ -72,8 +72,8 @@ Item {
 
         text: qsTr("Accept")
         textColor: theme_buttonFontColor
-        bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-        bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+        bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+        bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
         onClicked: contactItem.setData(AccountsModel.PublishStateRole,
                                        TelepathyTypes.PresenceStateYes)
@@ -89,8 +89,8 @@ Item {
 
         text: qsTr("Cancel")
         textColor: theme_buttonFontColor
-        bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-        bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+        bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+        bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
         // TODO: check if we need to remove the contact
         onClicked: contactItem.setData(AccountsModel.PublishStateRole,

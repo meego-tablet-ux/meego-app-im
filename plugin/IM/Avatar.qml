@@ -50,14 +50,14 @@ Item {
         visible: avatarImage.visible
 
         source: (active ?
-                     "image://meegotheme/widgets/common/avatar/avatar-shadow" :
-                     "image://meegotheme/widgets/common/avatar/avatar-inactive-overlay")
+                     "image://themedimage/widgets/common/avatar/avatar-shadow" :
+                     "image://themedimage/widgets/common/avatar/avatar-inactive-overlay")
     }
 
     BorderImage {
         id: noAvatar
         anchors.fill: avatarImage
-        source: "image://meegotheme/widgets/common/avatar/avatar-default"
+        source: "image://themedimage/widgets/common/avatar/avatar-default"
         visible: !avatarImage.visible
     }
 }

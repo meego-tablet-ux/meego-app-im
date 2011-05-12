@@ -74,7 +74,7 @@ Item {
             anchors.bottomMargin: 2
             source: "image://avatars/" + window.accountItem.data(AccountsModel.IdRole) + // i18n ok
                     "?" + accountFactory.avatarSerial
-            noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
+            noAvatarImage: "image://themedimage/widgets/common/avatar/avatar-default"
 
             Component {
                 id: avatarMenu
@@ -339,8 +339,8 @@ Item {
                     anchors.leftMargin: 10
                     text: qsTr("Update")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
                     onClicked: {
                         customMessageBox.updateStatus();
                     }
@@ -464,8 +464,8 @@ Item {
                     anchors.leftMargin: 10
                     text: qsTr("Update")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
                     onClicked: {
                         nicknameBox.updateNickname();
                     }

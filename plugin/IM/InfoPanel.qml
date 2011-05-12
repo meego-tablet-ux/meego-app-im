@@ -10,7 +10,7 @@ import Qt 4.7
 
 BorderImage {
     width: parent.width
-    source: "image://meegotheme/widgets/common/infobar/infobar-background"
+    source: "image://themedimage/widgets/common/infobar/infobar-background"
     border.left: 5
     border.right: 5
     border.top: 5

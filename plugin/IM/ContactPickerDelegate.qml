@@ -59,7 +59,7 @@ Item {
         BorderImage {
             id: activeBorder
             opacity: selected
-            source: "image://meegotheme/widgets/common/toolbar-item/toolbar-item-background-active"
+            source: "image://themedimage/widgets/common/toolbar-item/toolbar-item-background-active"
             anchors.fill: contentRow
             border.left: 5; border.top: 5
             border.right: 5; border.bottom: 5

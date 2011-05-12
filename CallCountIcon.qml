@@ -34,7 +34,7 @@ Item {
             visible: showChat && messageCount > 0
 
             BorderImage {
-                source: "image://meegotheme/widgets/apps/chat/message-unread-background"
+                source: "image://themedimage/widgets/apps/chat/message-unread-background"
                 width: chatCount.width + border.left + border.right
                 anchors.verticalCenter: parent.verticalCenter
                 smooth: true
@@ -69,7 +69,7 @@ Item {
             visible: showMissed
 
             BorderImage {
-                source: "image://meegotheme/widgets/apps/chat/message-unread-background"
+                source: "image://themedimage/widgets/apps/chat/message-unread-background"
                 width: callCount.width + border.left + border.right
                 anchors.verticalCenter: parent.verticalCenter
                 smooth: true
@@ -97,7 +97,7 @@ Item {
 
         Image {
             id: chatImage
-            source: "image://meegotheme/widgets/apps/chat/message-unread"
+            source: "image://themedimage/widgets/apps/chat/message-unread"
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             smooth: true
@@ -106,7 +106,7 @@ Item {
 
         Image {
             id: audioImage
-            source: "image://meegotheme/widgets/apps/chat/call-audio-missed"
+            source: "image://themedimage/widgets/apps/chat/call-audio-missed"
             height: 37
             width: 37
             anchors.verticalCenter: parent.verticalCenter
@@ -117,7 +117,7 @@ Item {
 
         Image {
             id: videoImage
-            source: "image://meegotheme/widgets/apps/chat/call-video-missed"
+            source: "image://themedimage/widgets/apps/chat/call-video-missed"
             height: 27
             width: 37
             anchors.verticalCenter: parent.verticalCenter

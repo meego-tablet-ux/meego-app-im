@@ -110,7 +110,7 @@ AppPage {
         BorderImage {
             id: toolBar
             verticalTileMode: BorderImage.Stretch
-            source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
+            source: "image://themedimage/widgets/common/action-bar/action-bar-background"
 
             anchors.left: parent.left
             anchors.right: parent.right
@@ -122,7 +122,7 @@ AppPage {
 
             IconButton {
                 id: settingsButton
-                icon: "image://meegotheme/icons/actionbar/show-settings"
+                icon: "image://themedimage/icons/actionbar/show-settings"
                 iconDown: icon + "-active"
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
@@ -140,7 +140,7 @@ AppPage {
                 anchors.bottom: parent.bottom
                 anchors.left: settingsButton.right
                 anchors.leftMargin: 10
-                source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
             }
         }
     }

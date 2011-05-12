@@ -143,8 +143,8 @@ Item {
 
             text: qsTr("Open")
             textColor: theme_buttonFontColor
-            bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-            bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+            bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+            bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
             onClicked: {
                 var cmd = "xdg-open \"" + model.filePath + "\"";
@@ -195,8 +195,8 @@ Item {
 
                 text: qsTr("Save")
                 textColor: theme_buttonFontColor
-                bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
                 onClicked: item.acceptTransfer();
             }
@@ -209,8 +209,8 @@ Item {
 
                 text: qsTr("Decline")
                 textColor: theme_buttonFontColor
-                bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                 onClicked: item.cancelTransfer()
             }
@@ -237,8 +237,8 @@ Item {
 
                 text: qsTr("Cancel")
                 textColor: theme_buttonFontColor
-                bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                 onClicked: item.cancelTransfer();
             }
@@ -266,7 +266,7 @@ Item {
                         right: 2
                     }
 
-                    source: "image://meegotheme/widgets/common/progress-bar/progress-bar-backgound"
+                    source: "image://themedimage/widgets/common/progress-bar/progress-bar-backgound"
                 }
 
                 BorderImage {
@@ -283,7 +283,7 @@ Item {
                     }
 
                     width: backgroundBar.width * (model.percentTransferred / 100.)
-                    source: "image://meegotheme/widgets/common/progress-bar/progress-bar-fill"
+                    source: "image://themedimage/widgets/common/progress-bar/progress-bar-fill"
 
                     visible: model.percentTransferred > 0
 

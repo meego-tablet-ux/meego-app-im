@@ -35,11 +35,11 @@ BottomToolBar {
                          window.callAgent.callStatus != CallAgent.CallStatusNoCall ? 1 : 0
                 visible: opacity > 0
 
-                icon: "image://meegotheme/icons/actionbar/call-audio-stop"
+                icon: "image://themedimage/icons/actionbar/call-audio-stop"
                 iconDown: icon + "-active"
                 hasBackground: true
-                bgSourceUp: "image://meegotheme/images/btn_red_up"
-                bgSourceDn: "image://meegotheme/images/btn_red_dn"
+                bgSourceUp: "image://themedimage/images/btn_red_up"
+                bgSourceDn: "image://themedimage/images/btn_red_dn"
 
                 onClicked: {
                     window.callAgent.endCall();
@@ -53,7 +53,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -71,7 +71,7 @@ BottomToolBar {
                         !window.chatAgent.isConference) ? 1 : 0
                 visible: opacity > 0
 
-                icon: "image://meegotheme/icons/actionbar/turn-video-on"
+                icon: "image://themedimage/icons/actionbar/turn-video-on"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
@@ -89,7 +89,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -105,8 +105,8 @@ BottomToolBar {
                 visible: opacity > 0
 
                 icon: window.callAgent.videoSentOrAboutTo ?
-                           "image://meegotheme/icons/actionbar/turn-video-off" :
-                           "image://meegotheme/icons/actionbar/turn-video-on"
+                           "image://themedimage/icons/actionbar/turn-video-off" :
+                           "image://themedimage/icons/actionbar/turn-video-on"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
@@ -120,7 +120,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -136,7 +136,7 @@ BottomToolBar {
                          !window.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 
-                icon: "image://meegotheme/icons/actionbar/call-audio-start"
+                icon: "image://themedimage/icons/actionbar/call-audio-start"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
@@ -154,7 +154,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -162,7 +162,7 @@ BottomToolBar {
             IconButton {
                 id: volumeOnButton
                 width: 60
-                icon: "image://meegotheme/icons/actionbar/turn-audio-off"
+                icon: "image://themedimage/icons/actionbar/turn-audio-off"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
@@ -190,7 +190,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -199,8 +199,8 @@ BottomToolBar {
                 id: muteButton
                 width: 60
                 icon: window.callAgent.mutedCall ?
-                        "image://meegotheme/icons/actionbar/microphone-unmute" :
-                        "image://meegotheme/icons/actionbar/microphone-mute"
+                        "image://themedimage/icons/actionbar/microphone-unmute" :
+                        "image://themedimage/icons/actionbar/microphone-mute"
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
@@ -217,7 +217,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -225,7 +225,7 @@ BottomToolBar {
             IconButton {
                 id: fullscreenButton
                 width: 60
-                icon: "image://meegotheme/icons/actionbar/view-" +
+                icon: "image://themedimage/icons/actionbar/view-" +
                        (window.fullScreen ? "smallscreen" : "fullscreen")
                 iconDown: icon + "-active"
                 hasBackground: false
@@ -243,7 +243,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             }
@@ -279,7 +279,7 @@ BottomToolBar {
                 {
                     visible: insertSmileyButton.visible || sendFileButton.visible
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -287,7 +287,7 @@ BottomToolBar {
             IconButton {
                 id: insertSmileyButton
                 width: 60
-                icon: "image://meegotheme/icons/actionbar/insert-emote"
+                icon: "image://themedimage/icons/actionbar/insert-emote"
                 iconDown: icon + "-active"
                 hasBackground: false
 
@@ -308,7 +308,7 @@ BottomToolBar {
                 {
                     visible: sendFileButton.visible
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             },
@@ -316,7 +316,7 @@ BottomToolBar {
             IconButton {
                 id: sendFileButton
                 width: 60
-                icon: "image://meegotheme/icons/actionbar/document-attach"
+                icon: "image://themedimage/icons/actionbar/document-attach"
                 iconDown: icon + "-active"
                 onClicked: {
                     sendFileContextMenu.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
@@ -335,7 +335,7 @@ BottomToolBar {
                 Image
                 {
                     anchors.right: parent.right
-                    source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                    source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                     height: parent.height
                 }
             }

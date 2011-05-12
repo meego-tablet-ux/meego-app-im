@@ -38,8 +38,8 @@ Column {
 
                 text: qsTr("Update")
                 textColor: theme_buttonFontColor
-                bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
                 onClicked: accountContent.createAccount()
             }
@@ -54,8 +54,8 @@ Column {
 
                 text: qsTr("Cancel")
                 textColor: theme_buttonFontColor
-                bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                 // reset the values to the ones previously set
                 onClicked: accountContent.prepareAccountEdit()
@@ -79,8 +79,8 @@ Column {
 
             text: qsTr("Delete account")
             textColor: theme_buttonFontColor
-            bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-            bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+            bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+            bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
             // TODO: maybe it would be good to ask if the user really
             // wants to remove the account?

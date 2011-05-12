@@ -16,11 +16,11 @@ ModalDialog {
     title: qsTr("Incoming Call")
     acceptButtonEnabled: true
     acceptButtonText: qsTr("Accept")
-    acceptButtonImage: "image://meegotheme/images/btn_blue_up"
-    acceptButtonImagePressed:  "image://meegotheme/images/btn_blue_dn"
+    acceptButtonImage: "image://themedimage/images/btn_blue_up"
+    acceptButtonImagePressed:  "image://themedimage/images/btn_blue_dn"
     cancelButtonText: qsTr("Decline")
-    cancelButtonImage: "image://meegotheme/images/btn_red_up"
-    cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
+    cancelButtonImage: "image://themedimage/images/btn_red_up"
+    cancelButtonImagePressed: "image://themedimage/images/btn_red_dn"
     fogMaskVisible: false
 
     property alias statusMessage: message.text
@@ -46,7 +46,7 @@ ModalDialog {
                 source: (window.incomingContactItem != undefined ?
                              window.incomingContactItem.data(AccountsModel.AvatarRole) :
                              noAvatarImage)
-                noAvatarImage: "image://meegotheme/widgets/common/avatar/avatar-default"
+                noAvatarImage: "image://themedimage/widgets/common/avatar/avatar-default"
             }
 
             Column {

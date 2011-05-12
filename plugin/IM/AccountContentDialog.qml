@@ -109,8 +109,8 @@ AppPage {
 
                             text: qsTr("Done")
                             textColor: theme_buttonFontColor
-                            bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                            bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                            bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                            bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
                             onClicked: {
                                 spinner.show();
@@ -128,8 +128,8 @@ AppPage {
 
                             text: qsTr("Cancel")
                             textColor: theme_buttonFontColor
-                            bgSourceUp: "image://meegotheme/widgets/common/button/button-negative"
-                            bgSourceDn: "image://meegotheme/widgets/common/button/button-negative-pressed"
+                            bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                            bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                             onClicked: window.popPage();
                         }

@@ -94,8 +94,8 @@ Item {
         component += "            Button {";
         component += "                text: qsTr(\"Sign in\");";
         component += "                textColor: theme_buttonFontColor;";
-        component += "                bgSourceUp: \"image://meegotheme/widgets/common/button/button-default\";";
-        component += "                bgSourceDn: \"image://meegotheme/widgets/common/button/button-default-pressed\";";
+        component += "                bgSourceUp: \"image://themedimage/widgets/common/button/button-default\";";
+        component += "                bgSourceDn: \"image://themedimage/widgets/common/button/button-default-pressed\";";
         component += "                onClicked: {";
         component += "                    visible = false;";
         component += "                    accountContent.createAccount();";

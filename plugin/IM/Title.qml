@@ -32,8 +32,8 @@ Item {
 
         //use big if a subtitle is present, otherwise use the small image
         source: (subtitleLabel.text == "" ?
-                     "image://meegotheme/widgets/common/header/header-small" :
-                     "image://meegotheme/widgets/common/header/header")
+                     "image://themedimage/widgets/common/header/header-small" :
+                     "image://themedimage/widgets/common/header/header")
         border {
             left: 2
             top: 2

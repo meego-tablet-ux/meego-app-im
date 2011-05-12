@@ -414,7 +414,7 @@ void IMFeedModel::onPresencePublicationRequested(const Tp::Contacts &contacts)
                                                     contact->id(),
                                                     tr("Add as friend?"),
                                                     QDateTime::currentDateTime(),
-                                                    QString("image://meegotheme/widgets/common/avatar/avatar-default"),
+                                                    QString("image://themedimage/widgets/common/avatar/avatar-default"),
                                                     new McaActions(),
                                                     RequestType,
                                                     token);

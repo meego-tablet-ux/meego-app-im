@@ -7,4 +7,4 @@ Id=im-google-talk
 Content=GoogleTalkAccountContent
 ConnectionManager=gabble
 Protocol=jabber
-Icon=image://meegotheme/icons/services/gtalk
+Icon=image://themedimage/icons/services/gtalk

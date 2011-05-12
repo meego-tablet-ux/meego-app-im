@@ -32,7 +32,7 @@ Item {
 
         BorderImage {
             id: searchHeaderBorder
-            source: "image://meegotheme/widgets/common/infobar/bg_overlaybar"
+            source: "image://themedimage/widgets/common/infobar/bg_overlaybar"
             anchors.fill: parent
             border {
                 left: 5

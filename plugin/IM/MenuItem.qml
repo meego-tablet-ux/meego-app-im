@@ -25,7 +25,7 @@ Item {
         border.top: 5
         border.bottom: 5
 
-        source: "image://meegotheme/widgets/common/menu/menu-item-active"
+        source: "image://themedimage/widgets/common/menu/menu-item-active"
         visible: mouseArea.pressed
     }
 

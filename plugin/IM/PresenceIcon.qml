@@ -30,14 +30,14 @@ Item {
             var icon
             switch (type) {
             case TelepathyTypes.ConnectionPresenceTypeAvailable:
-                icon = "image://meegotheme/widgets/apps/contacts/contact-available";
+                icon = "image://themedimage/widgets/apps/contacts/contact-available";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeBusy:
-                icon = "image://meegotheme/widgets/apps/contacts/contact-busy";
+                icon = "image://themedimage/widgets/apps/contacts/contact-busy";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeAway:
             case TelepathyTypes.ConnectionPresenceTypeExtendedAway:
-                icon = "image://meegotheme/widgets/apps/contacts/contact-idle";
+                icon = "image://themedimage/widgets/apps/contacts/contact-idle";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeHidden:
             case TelepathyTypes.ConnectionPresenceTypeUnknown:

@@ -93,7 +93,7 @@ Item {
 
         BorderImage {
             id: messageTop
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-top"
+            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-top"
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
@@ -105,7 +105,7 @@ Item {
 
         BorderImage {
             id: messageCenter
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-middle"
+            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-middle"
             border.left: messageTop.border.left
             border.right: messageTop.border.right
 
@@ -117,7 +117,7 @@ Item {
 
         BorderImage {
             id: messageBottom
-            source: "image://meegotheme/widgets/apps/chat/bubble-" + color + "-bottom"
+            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-bottom"
             border.left: messageTop.border.left
             border.right: messageTop.border.right
             border.bottom: 5
@@ -281,8 +281,8 @@ Item {
             anchors.right: callMessageText.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: 20
-            //source: "image://meegotheme/widgets/apps/chat/call-video-missed
-            source: "image://meegotheme/widgets/apps/chat/call-audio-missed"
+            //source: "image://themedimage/widgets/apps/chat/call-video-missed
+            source: "image://themedimage/widgets/apps/chat/call-audio-missed"
             visible: callItem && (model.missedCall || model.rejectedCall)
         }
 

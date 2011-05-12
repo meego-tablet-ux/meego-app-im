@@ -244,7 +244,7 @@ AppPage {
                 Image {
                     anchors.top: dateText.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "image://meegotheme/images/dialog-separator"
+                    source: "image://themedimage/images/dialog-separator"
                 }
             }
         }
@@ -322,7 +322,7 @@ AppPage {
 
         Image {
             id: textBar
-            source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
+            source: "image://themedimage/widgets/common/action-bar/action-bar-background"
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: imToolBar.top
@@ -652,8 +652,8 @@ AppPage {
             Image {
                 id: moveMyVideoTargetTopLeft
                 source: videoWindowPositionHighlight == 0 ?
-                            "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
-                            "image://meegotheme/widgets/apps/chat/move-video-background"
+                            "image://themedimage/widgets/apps/chat/move-video-background-highlight" :
+                            "image://themedimage/widgets/apps/chat/move-video-background"
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.top: parent.top
@@ -673,8 +673,8 @@ AppPage {
             Image {
                 id: moveMyVideoTargetTopRight
                 source: videoWindowPositionHighlight == 1 ?
-                            "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
-                            "image://meegotheme/widgets/apps/chat/move-video-background"
+                            "image://themedimage/widgets/apps/chat/move-video-background-highlight" :
+                            "image://themedimage/widgets/apps/chat/move-video-background"
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.top: parent.top
@@ -694,8 +694,8 @@ AppPage {
             Image {
                 id: moveMyVideoTargetBottomLeft
                 source: videoWindowPositionHighlight == 2 ?
-                            "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
-                            "image://meegotheme/widgets/apps/chat/move-video-background"
+                            "image://themedimage/widgets/apps/chat/move-video-background-highlight" :
+                            "image://themedimage/widgets/apps/chat/move-video-background"
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
@@ -715,8 +715,8 @@ AppPage {
             Image {
                 id: moveMyVideoTargetBottomRight
                 source: videoWindowPositionHighlight == 3 ?
-                            "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
-                            "image://meegotheme/widgets/apps/chat/move-video-background"
+                            "image://themedimage/widgets/apps/chat/move-video-background-highlight" :
+                            "image://themedimage/widgets/apps/chat/move-video-background"
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.bottom: parent.bottom
@@ -736,8 +736,8 @@ AppPage {
             Image {
                 id: moveMyVideoTargetCenter
                 source: videoWindowSwap ?
-                            "image://meegotheme/widgets/apps/chat/move-video-background-highlight" :
-                            "image://meegotheme/widgets/apps/chat/move-video-background"
+                            "image://themedimage/widgets/apps/chat/move-video-background-highlight" :
+                            "image://themedimage/widgets/apps/chat/move-video-background"
                 width: videoOutgoingContainer.getVideoWidth(window, videoWindow)
                 height: videoOutgoingContainer.getVideoHeight(window, videoWindow)
                 anchors.centerIn: parent
@@ -757,7 +757,7 @@ AppPage {
                 visible: window.callAgent != undefined
                 anchors.bottom: videoOutgoingContainer.bottom
                 anchors.left: videoOutgoingContainer.left
-                icon: "image://meegotheme/widgets/common/button/button-info"
+                icon: "image://themedimage/widgets/common/button/button-info"
                 iconDown: icon + "-pressed"
                 hasBackground: false
                 onClicked: {

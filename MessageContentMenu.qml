@@ -61,7 +61,7 @@ Item {
         Image {
             anchors.left: parent.left
             anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
+            source: "image://themedimage/widgets/common/menu/menu-item-separator"
         }
 
         MenuItem {
@@ -80,7 +80,7 @@ Item {
         Image {
             anchors.left: parent.left
             anchors.right: parent.right
-            source: "image://meegotheme/widgets/common/menu/menu-item-separator"
+            source: "image://themedimage/widgets/common/menu/menu-item-separator"
         }
 
         MenuItem {

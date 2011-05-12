@@ -28,7 +28,7 @@ IMFeedModelItem::IMFeedModelItem(QString accountId, QString contactName, QString
 
     // use a standard no avatar picture if empty
     if (mAvatarUrl.isEmpty()) {
-        mAvatarUrl = "image://meegotheme/widgets/common/avatar/avatar-default";
+        mAvatarUrl = "image://themedimage/widgets/common/avatar/avatar-default";
     }
 
     // if timestamp is null, use current time

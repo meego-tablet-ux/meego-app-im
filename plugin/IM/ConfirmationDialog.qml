@@ -13,10 +13,10 @@ ModalMessageBox {
     height: 480
 
     acceptButtonText: qsTr("Yes")
-    acceptButtonImage: "image://meegotheme/images/btn_blue_up"
-    acceptButtonImagePressed: "image://meegotheme/images/btn_blue_dn"
+    acceptButtonImage: "image://themedimage/images/btn_blue_up"
+    acceptButtonImagePressed: "image://themedimage/images/btn_blue_dn"
     cancelButtonText: qsTr("No")
-    cancelButtonImage: "image://meegotheme/images/btn_red_up"
-    cancelButtonImagePressed: "image://meegotheme/images/btn_red_dn"
+    cancelButtonImage: "image://themedimage/images/btn_red_up"
+    cancelButtonImagePressed: "image://themedimage/images/btn_red_dn"
 
 }

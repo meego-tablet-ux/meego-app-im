@@ -117,25 +117,22 @@ AppPage {
             visible: showAddFriends
         }
 
-        Component {
-            id: requestsViewComponent
+        ListView {
+            id: requestsView
+            interactive: false
+            property int itemHeight: theme_commonBoxHeight;
 
-            ListView {
-                id: requestsView
-                interactive: false
-                property int itemHeight: theme_commonBoxHeight;
+            height: itemHeight * count
 
-                height: itemHeight * count
-
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-                visible: listView.visible
-                model: contactRequestModel
-                delegate: ContactRequestDelegate {
-                    itemHeight: requestsView.itemHeight
-                }
+            anchors {
+                top: noFriendsInfo.bottom
+                left: parent.left
+                right: parent.right
+            }
+            visible: listView.visible
+            model: contactRequestModel
+            delegate: ContactRequestDelegate {
+                itemHeight: requestsView.itemHeight
             }
         }
 
@@ -143,7 +140,7 @@ AppPage {
             id: listView
 
             anchors {
-                top: noFriendsInfo.bottom
+                top: requestsView.bottom
                 bottom: parent.bottom
                 left: parent.left
                 right: parent.right
@@ -154,13 +151,12 @@ AppPage {
             delegate: ContactDelegate {}
             clip: true
 
-            header: requestsViewComponent
             interactive: contentHeight > height
         }
 
         Title {
             id: friendsTitle
-            anchors.top: noFriendsInfo.bottom
+            anchors.top: requestsView.bottom
             text: qsTr("Add a friend")
             visible: showAddFriends
         }

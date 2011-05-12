@@ -37,9 +37,6 @@ public:
     bool isFinished() const;
 
 public Q_SLOTS:
-    void initializeAccounts();
-    void initializeConnection(const Tp::ConnectionPtr &conn);
-    void initializeContacts(const Tp::ContactManagerPtr &contactManager);
     void initializeChannelHandler();
     void registerClients(void);
 

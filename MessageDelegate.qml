@@ -74,7 +74,6 @@ Item {
         anchors.leftMargin: 5
         height: visible ? 100 : 0
         source: messageAvatar()
-
     }
 
     Item {
@@ -256,12 +255,11 @@ Item {
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
             // i18n: the first argument is the event itself, the second one is the fuzzy time
-            text: qsTr("%1 - %2").arg(model.customEventText)
-                                 .arg(fuzzyDateTime.getFuzzy(model.dateTime))
+            text: eventItem ? qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime)) : ""
             wrapMode: Text.WordWrap
 
             Connections {
-                target: fuzzyDateTimeUpdater
+                target: eventItem ? fuzzyDateTimeUpdater : null
                 onTriggered: {
                     eventMessageText.text = qsTr("%1 - %2").arg(model.customEventText)
                                                            .arg(fuzzyDateTime.getFuzzy(model.dateTime));
@@ -294,11 +292,11 @@ Item {
             verticalAlignment: Text.AlignVCenter
             color: theme_fontColorInactive
             font.pixelSize: theme_fontPixelSizeSmall
-            text: getCallMessageText()
+            text: callItem ? getCallMessageText() : ""
             wrapMode: Text.WordWrap
 
             Connections {
-                target: fuzzyDateTimeUpdater
+                target: callItem ? fuzzyDateTimeUpdater : null
                 onTriggered: {
                     callMessageText.text = callMessageText.getCallMessageText();
                 }

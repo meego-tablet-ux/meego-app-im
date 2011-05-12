@@ -104,7 +104,7 @@ BottomToolBar {
                         !window.chatAgent.isConference ? 1 : 0
                 visible: opacity > 0
 
-                icon: window.callAgent.videoSent ?
+                icon: window.callAgent.videoSentOrAboutTo ?
                            "image://meegotheme/icons/actionbar/turn-video-off" :
                            "image://meegotheme/icons/actionbar/turn-video-on"
                 iconDown: icon + "-active"
@@ -416,7 +416,7 @@ BottomToolBar {
     }
 
     Component.onCompleted: {
-      toolBar.show();
+        toolBar.show();
     }
 
 }

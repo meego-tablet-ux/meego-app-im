@@ -106,6 +106,7 @@ void CallAgent::call(bool withVideo)
     if (withVideo) {
         request.insert(TP_QT4_YELL_IFACE_CHANNEL_TYPE_CALL + QLatin1String(".InitialVideo"), true);
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
     }
     mPendingChannelRequest = mAccount->ensureChannel(
                 request,
@@ -340,6 +341,7 @@ void CallAgent::setVideoSend(bool send)
             qDebug() << "Waiting for pending call to finish";
             connect(pcc, SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(onRequestContentFinished(Tp::PendingOperation*)));
+            emit videoSentOrAboutTo();
         }
     } else {
         foreach (Tpy::CallContentPtr content, mCallChannel->contentsForType(Tp::MediaStreamTypeVideo)) {
@@ -348,6 +350,7 @@ void CallAgent::setVideoSend(bool send)
                 qDebug() << "Found video, waiting for pending call to finish";
                 connect(op, SIGNAL(finished(Tp::PendingOperation*)),
                         SLOT(onRemoveContentFinished(Tp::PendingOperation*)));
+                emit videoSentOrAboutTo();
             }
         }
     }
@@ -484,6 +487,7 @@ void CallAgent::onChannelAvailable(Tp::ChannelPtr channel)
         //int initialVideo = props.value("InitialVideo",0).toInt();
         emit videoReceivedChanged();
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
         emit audioReceivedChanged();
         emit audioSentChanged();
         setCallStatus(CallStatusIncomingCall);
@@ -600,6 +604,11 @@ void CallAgent::handleReadyChannel()
                 }
             }
         }
+        emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
+        emit videoReceivedChanged();
+        emit audioSentChanged();
+        emit audioReceivedChanged();
     }
 
     // create the gstreamer handler
@@ -996,6 +1005,7 @@ void CallAgent::onContentAdded(const Tpy::CallContentPtr &content)
         emit audioReceivedChanged();
     } else if (content->type() == Tp::MediaStreamTypeVideo) {
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
         emit videoReceivedChanged();
     }
 
@@ -1025,6 +1035,7 @@ void CallAgent::onContentRemoved(const Tpy::CallContentPtr &content)
         emit audioReceivedChanged();
     } else if (content->type() == Tp::MediaStreamTypeVideo) {
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
         emit videoReceivedChanged();
     }
 
@@ -1198,6 +1209,7 @@ void CallAgent::onRequestContentFinished(Tp::PendingOperation *op)
     } else if (content->type() == Tp::MediaStreamTypeVideo) {
         qDebug() << "Just got video added";
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
         emit videoReceivedChanged();
     }
 }
@@ -1229,6 +1241,7 @@ void CallAgent::onRemoveContentFinished(Tp::PendingOperation *op)
     }
     if (type & type_video) {
         emit videoSentChanged();
+        emit videoSentOrAboutToChanged();
         emit videoReceivedChanged();
     }
 }

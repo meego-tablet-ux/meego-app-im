@@ -34,7 +34,7 @@ class CallAgent : public QObject
     Q_PROPERTY(QDateTime startTime READ startTime NOTIFY startTimeChanged)
     Q_PROPERTY(bool audioSent READ audioSent WRITE setAudioSend NOTIFY audioSentChanged)
     Q_PROPERTY(bool videoSent READ videoSent WRITE setVideoSend NOTIFY videoSentChanged)
-    Q_PROPERTY(bool videoSentOrAboutTo READ videoSentOrAboutTo)
+    Q_PROPERTY(bool videoSentOrAboutTo READ videoSentOrAboutTo NOTIFY videoSentOrAboutToChanged)
     Q_PROPERTY(bool existingCall READ existingCall NOTIFY existingCallChanged)
     Q_PROPERTY(bool incomingAudioCall READ incomingAudioCall NOTIFY incomingAudioCallChanged)
     Q_PROPERTY(bool incomingVideoCall READ incomingVideoCall NOTIFY incomingVideoCallChanged)
@@ -145,6 +145,7 @@ Q_SIGNALS:
     void startTimeChanged();
     void audioSentChanged();
     void videoSentChanged();
+    void videoSentOrAboutToChanged();
     void audioReceivedChanged();
     void videoReceivedChanged();
     void existingCallChanged();

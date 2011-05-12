@@ -90,7 +90,7 @@ Item {
             text: fuzzyDateTime.getFuzzy(model.dateTime)
 
             Connections {
-                target: fuzzyDateTimeUpdater
+                target: mainArea.visible ? fuzzyDateTimeUpdater : null
                 onTriggered: {
                     time.text = fuzzyDateTime.getFuzzy(model.dateTime);
                 }

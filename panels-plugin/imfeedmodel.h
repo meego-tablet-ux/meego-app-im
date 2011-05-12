@@ -99,6 +99,7 @@ protected slots:
     // You should test the action string and ignore any unknown ones.
     void performAction(QString action, QString uniqueid);
     void onItemChanged(int row);
+    void onModelItemChanged(IMFeedModelItem *item);
     void onTextChannelReady(Tp::PendingOperation *op);
     void onCallChannelReady(Tp::PendingOperation *op);
     void onFileTransferChannelReady(Tp::PendingOperation *op);

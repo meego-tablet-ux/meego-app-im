@@ -9,14 +9,12 @@
 #include "imfeedmodelitem.h"
 #include "imfeedmodel.h"
 
-IMFeedModelItem::IMFeedModelItem(QString accountId, QString contactName, QString contactId, QString message, QDateTime time, QString avatar, McaActions *actions, int type, QString token)
+IMFeedModelItem::IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact, QString message, QDateTime time, McaActions *actions, int type, QString token)
     : mItemType(type),
-      mAccountId(accountId),
-      mContactName(contactName),
-      mContactId(contactId),
+      mAccount(account),
+      mContact(contact),
       mMessage(message),
       mTimestamp(time),
-      mAvatarUrl(avatar),
       mActions(actions),
       mUniqueId(token),
       mRelevance(0)
@@ -26,11 +24,6 @@ IMFeedModelItem::IMFeedModelItem(QString accountId, QString contactName, QString
         mRelevance = 1.0;
     }
 
-    // use a standard no avatar picture if empty
-    if (mAvatarUrl.isEmpty()) {
-        mAvatarUrl = "image://themedimage/widgets/common/avatar/avatar-default";
-    }
-
     // if timestamp is null, use current time
     if (mTimestamp.isNull()) {
         mTimestamp = QDateTime::currentDateTime();
@@ -38,8 +31,13 @@ IMFeedModelItem::IMFeedModelItem(QString accountId, QString contactName, QString
 
     // if token is empty, use contact id and current time
     if (mUniqueId.isEmpty()) {
-        mUniqueId = QString(mItemType + "&&" + mContactId + mTimestamp.toString(Qt::ISODate));
+        mUniqueId = QString(mItemType + "&&" + mContact->id() + mTimestamp.toString(Qt::ISODate));
     }
+
+    connect(mContact.data(), SIGNAL(avatarDataChanged(Tp::AvatarData)),
+            SLOT(onContactChanged()));
+    connect(mContact.data(), SIGNAL(aliasChanged(QString)),
+            SLOT(onContactChanged()));
 }
 
 IMFeedModelItem::~IMFeedModelItem()
@@ -48,17 +46,21 @@ IMFeedModelItem::~IMFeedModelItem()
 
 QString IMFeedModelItem::avatarUrl() const
 {
-    return mAvatarUrl;
+    if (!mContact->avatarData().fileName.isEmpty()) {
+        return mContact->avatarData().fileName;
+    } else {
+        return QString("image://themedimage/widgets/common/avatar/avatar-default");
+    }
 }
 
 QString IMFeedModelItem::contactName() const
 {
-    return mContactName;
+    return mContact->alias();
 }
 
 QString IMFeedModelItem::contactId() const
 {
-    return mContactId;
+    return mContact->id();
 }
 
 QString IMFeedModelItem::message() const
@@ -81,17 +83,6 @@ QString IMFeedModelItem::uniqueId() const
     return mUniqueId;
 }
 
-
-void IMFeedModelItem::setContactName(const QString &name)
-{
-    mContactName = name;
-}
-
-void IMFeedModelItem::setAvatarUrl(const QString &url)
-{
-    mAvatarUrl = url;
-}
-
 McaActions *IMFeedModelItem::actions()
 {
     return mActions;
@@ -100,4 +91,9 @@ McaActions *IMFeedModelItem::actions()
 qreal IMFeedModelItem::relevance(void) const
 {
     return mRelevance;
+}
+
+void IMFeedModelItem::onContactChanged()
+{
+    emit itemChanged(this);
 }

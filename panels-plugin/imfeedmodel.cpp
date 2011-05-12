@@ -218,34 +218,28 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
         features << Tp::Contact::FeatureAlias
             << Tp::Contact::FeatureAvatarData;
         QList<Tp::ContactPtr>  contacts;
-        contact->setProperty("messagetext", message.text());
-        contact->setProperty("timesent", message.sent());
-        contact->setProperty("feedtype", MessageType);
-        contact->setProperty("messagetoken", token);
         contacts.append(contact);
 
         connect(contact->manager()->upgradeContacts(contacts, features),
                 SIGNAL(finished(Tp::PendingOperation*)),
                 SLOT(onContactUpgraded(Tp::PendingOperation*)));
-    } else {
-        QString avatar = contact->avatarData().fileName;
-        QString alias = contact->alias();
-
-        IMFeedModelItem *item = new IMFeedModelItem(mAccountId, alias, contact->id(),message.text(), message.sent(),
-                                                    avatar, new McaActions(), MessageType, token);
-        connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                this, SLOT(performAction(QString,QString)));
-
-        insertItem(item);
-
-        if (mPlaceNotifications) {
-            mNotificationManager.notifyPendingMessage(mAccountId,
-                                                      contact->id(),
-                                                      alias,
-                                                      message.sent(),
-                                                      message.text());
-        }
     }
+
+    IMFeedModelItem *item = new IMFeedModelItem(mAccount, contact, message.text(), message.sent(),
+                                                new McaActions(), MessageType, token);
+    connect(item->actions(), SIGNAL(standardAction(QString,QString)),
+            this, SLOT(performAction(QString,QString)));
+
+    insertItem(item);
+
+    if (mPlaceNotifications) {
+        mNotificationManager.notifyPendingMessage(mAccountId,
+                                                  contact->id(),
+                                                  contact->alias(),
+                                                  message.sent(),
+                                                  message.text());
+    }
+
 }
 
 void IMFeedModel::onNewTextChannel(const Tp::AccountPtr &account, const Tp::TextChannelPtr &textChannel)
@@ -291,93 +285,6 @@ void IMFeedModel::onContactUpgraded(Tp::PendingOperation *op)
         qWarning() << "Contacts cannot be upgraded";
         return;
     }
-
-    Tp::PendingContacts *pendingContacts = qobject_cast<Tp::PendingContacts *>(op);
-    QList<Tp::ContactPtr> contacts = pendingContacts->contacts();
-
-    // go through each contact in the model and update the data of the upgraded contact
-    foreach (Tp::ContactPtr contact, contacts) {
-        int type = contact->property("feedtype").toInt();
-        if (type == MessageType) {
-            QString messageText = contact->property("messagetext").toString();
-            QString token = contact->property("messagetoken").toString();
-            QDateTime sent = contact->property("timesent").toDateTime();
-
-            if (!messageText.isEmpty()) {
-                IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                            contact->alias(),
-                                                            contact->id(),
-                                                            messageText,
-                                                            sent,
-                                                            contact->avatarData().fileName,
-                                                            new McaActions(),
-                                                            MessageType,
-                                                            token);
-                connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                        this, SLOT(performAction(QString,QString)));
-                insertItem(item);
-
-                if (mPlaceNotifications) {
-                    mNotificationManager.notifyPendingMessage(mAccountId,
-                                                              contact->id(),
-                                                              contact->alias(),
-                                                              sent,
-                                                              messageText);
-                }
-            }
-        } else if (type == InformationType // an information message
-                  || (type == RequestType && // or there was a request and it was accepted by the user
-                      contact->publishState() == Tp::Contact::PresenceStateYes)) {
-            QString messageText =  qApp->translate("Message indicating the contact has been added",
-                                                           "has been added as contact");
-
-            QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
-            IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                        contact->alias(),
-                                                        contact->id(),
-                                                        messageText,
-                                                        QDateTime(),
-                                                        contact->avatarData().fileName,
-                                                        new McaActions(),
-                                                        InformationType,
-                                                        token);
-            connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                    this, SLOT(performAction(QString,QString)));
-            insertItem(item);
-        } else if (type == CallType) {
-            QString messageText =  tr("Incoming call from %1").arg(contact->alias());
-
-            QString token = QString(CallType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
-            IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                        contact->alias(),
-                                                        contact->id(),
-                                                        messageText,
-                                                        QDateTime(),
-                                                        contact->avatarData().fileName,
-                                                        new McaActions(),
-                                                        InformationType,
-                                                        token);
-            connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                    this, SLOT(performAction(QString,QString)));
-            insertItem(item);
-        } else if (type == FileTransferType) {
-            QString messageText = tr("Incoming file transfer from %1").arg(contact->alias());
-
-            QString token = QString(FileTransferType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
-            IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                        contact->alias(),
-                                                        contact->id(),
-                                                        messageText,
-                                                        QDateTime(),
-                                                        contact->avatarData().fileName,
-                                                        new McaActions(),
-                                                        InformationType,
-                                                        token);
-            connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                    this, SLOT(performAction(QString,QString)));
-            insertItem(item);
-        }
-    }
 }
 
 void IMFeedModel::insertItem(IMFeedModelItem *item)
@@ -385,6 +292,8 @@ void IMFeedModel::insertItem(IMFeedModelItem *item)
     qDebug("item inserted");
     beginInsertRows(QModelIndex(), 0, 0);
     mItems.prepend(item);
+    connect(item, SIGNAL(itemChanged(IMFeedModelItem*)),
+            SLOT(onModelItemChanged(IMFeedModelItem*)));
     endInsertRows();
 }
 
@@ -402,6 +311,14 @@ void IMFeedModel::onItemChanged(int row)
     emit dataChanged(index, index);
 }
 
+void IMFeedModel::onModelItemChanged(IMFeedModelItem *item)
+{
+    int index = mItems.indexOf(item);
+    if( index >= 0) {
+        onItemChanged(index);
+    }
+}
+
 void IMFeedModel::onPresencePublicationRequested(const Tp::Contacts &contacts)
 {
     // Add new items
@@ -409,12 +326,10 @@ void IMFeedModel::onPresencePublicationRequested(const Tp::Contacts &contacts)
         QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
         contact->setProperty("feedtype", RequestType);
         contact->setProperty("messagetoken", token);
-        IMFeedModelItem *item = new IMFeedModelItem(mAccountId,
-                                                    contact->id(),
-                                                    contact->id(),
+        IMFeedModelItem *item = new IMFeedModelItem(mAccount,
+                                                    contact,
                                                     tr("Add as friend?"),
                                                     QDateTime::currentDateTime(),
-                                                    QString("image://themedimage/widgets/common/avatar/avatar-default"),
                                                     new McaActions(),
                                                     RequestType,
                                                     token);
@@ -542,38 +457,33 @@ void IMFeedModel::createNewChannelItem(const Tp::ChannelPtr &channel, const Feed
         features << Tp::Contact::FeatureAlias
             << Tp::Contact::FeatureAvatarData;
         QList<Tp::ContactPtr>  contacts;
-        contact->setProperty("timesent", QDateTime::currentDateTime());
-        contact->setProperty("feedtype", type);
-        contact->setProperty("messagetoken", token);
         contacts.append(contact);
 
         connect(contact->manager()->upgradeContacts(contacts, features),
                 SIGNAL(finished(Tp::PendingOperation*)),
                 SLOT(onContactUpgraded(Tp::PendingOperation*)));
-    } else {
-        QString avatar = contact->avatarData().fileName;
-        QString alias = contact->alias();
-        QString message;
-
-        switch(type) {
-        case CallType:
-            message = tr("Incoming call from %1").arg(alias);
-            break;
-        case FileTransferType:
-            message = tr("Incoming file transfer from %1").arg(contact->alias());
-            break;
-        default:
-            message.clear();
-            break;
-        }
-
-        IMFeedModelItem *item = new IMFeedModelItem(mAccountId, alias, contact->id(), message, QDateTime::currentDateTime(),
-                                                    avatar, new McaActions(), MessageType, token);
-        connect(item->actions(), SIGNAL(standardAction(QString,QString)),
-                this, SLOT(performAction(QString,QString)));
-
-        insertItem(item);
     }
+    QString alias = contact->alias();
+    QString message;
+
+    switch(type) {
+    case CallType:
+        message = tr("Incoming call from %1").arg(alias);
+        break;
+    case FileTransferType:
+        message = tr("Incoming file transfer from %1").arg(contact->alias());
+        break;
+    default:
+        message.clear();
+        break;
+    }
+
+    IMFeedModelItem *item = new IMFeedModelItem(mAccount, contact, message, QDateTime::currentDateTime(),
+                                                new McaActions(), MessageType, token);
+    connect(item->actions(), SIGNAL(standardAction(QString,QString)),
+            this, SLOT(performAction(QString,QString)));
+
+    insertItem(item);
 }
 
 void IMFeedModel::onAllKnownContactsChanged(const Tp::Contacts &contactsAdded,
@@ -596,21 +506,36 @@ void IMFeedModel::onAllKnownContactsChanged(const Tp::Contacts &contactsAdded,
 
 void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
 {
-    //only process if it was added and it's a contact marked as InformationType
+    //only process if it has been added
     if (state == Tp::Contact::PresenceStateYes) {
         Tp::Contact *contact = qobject_cast<Tp::Contact *>(sender());
-        if (contact->property("feedtype").toInt() == InformationType) {
+        Tp::ContactPtr contactPtr(contact);
+        if (!contact->actualFeatures().contains(Tp::Contact::FeatureAlias)
+                || !contact->actualFeatures().contains(Tp::Contact::FeatureAvatarData)) {
             Tp::Features features;
             features << Tp::Contact::FeatureAlias
                 << Tp::Contact::FeatureAvatarData;
             QList<Tp::ContactPtr>  contacts;
-            contacts.append(Tp::ContactPtr(contact));
+            contacts.append(contactPtr);
 
             //upgrade the contact
-            //it will be added to the model once it's upgraded
             connect(contact->manager()->upgradeContacts(contacts, features),
                     SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(onContactUpgraded(Tp::PendingOperation*)));
         }
+        // prepare the item to insert
+        QString messageText =  qApp->translate("Message indicating the contact has been added",
+                                                       "has been added as contact");
+        QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
+        IMFeedModelItem *item = new IMFeedModelItem(mAccount,
+                                                    contactPtr,
+                                                    messageText,
+                                                    QDateTime(),
+                                                    new McaActions(),
+                                                    InformationType,
+                                                    token);
+        connect(item->actions(), SIGNAL(standardAction(QString,QString)),
+                this, SLOT(performAction(QString,QString)));
+        insertItem(item);
     }
 }

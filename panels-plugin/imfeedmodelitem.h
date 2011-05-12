@@ -13,13 +13,15 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <TelepathyQt4/Account>
+#include <TelepathyQt4/Contact>
 
 class IMFeedModelItem : public QObject
 {
     Q_OBJECT
 
 public:
-    IMFeedModelItem(QString accountId, QString contactName, QString contactId, QString message, QDateTime time, QString avatar, McaActions *actions, int type, QString token);
+    IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact, QString message, QDateTime time, McaActions *actions, int type, QString token);
     ~IMFeedModelItem();
 
     QString contactName(void) const;
@@ -32,17 +34,18 @@ public:
     QString uniqueId(void) const;
     qreal relevance(void) const;
 
-    void setContactName(const QString &name);
-    void setAvatarUrl(const QString &url);
+Q_SIGNALS:
+    void itemChanged(IMFeedModelItem* item);
+
+protected Q_SLOTS:
+    void onContactChanged();
 
 private:
     int mItemType;
-    QString mAccountId;
-    QString mContactName;
-    QString mContactId;
+    Tp::AccountPtr mAccount;
+    Tp::ContactPtr mContact;
     QString mMessage;
     QDateTime mTimestamp;
-    QString mAvatarUrl;
     McaActions *mActions;
     QString mUniqueId;
     qreal mRelevance;

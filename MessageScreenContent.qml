@@ -759,11 +759,9 @@ AppPage {
                 anchors.left: videoOutgoingContainer.left
                 icon: "image://meegotheme/widgets/common/button/button-info"
                 iconDown: icon + "-pressed"
-                width: 28
-                height: 44
                 hasBackground: false
                 onClicked: {
-                    var map = mapToItem(window, 0, 0);
+                    var map = mapToItem(window, height/2, width/2);
                     var menu;
                     var op1 = videoWindow.showCameraVideo ? qsTr("Minimize me") : qsTr("Maximize me");
                     var op2 = window.callAgent.videoSentOrAboutTo ? qsTr("Disable camera") : qsTr("Enable camera");

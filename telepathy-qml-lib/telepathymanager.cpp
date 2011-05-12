@@ -24,9 +24,9 @@
 #include <gst/gst.h>
 #include <QSetIterator>
 
-TelepathyManager::TelepathyManager(bool fullStart)
-    : mChannelHandler(0),
-      mFullStart(fullStart),
+TelepathyManager::TelepathyManager(QObject *parent)
+    : QObject(parent),
+      mChannelHandler(0),
       mFinished(false)
 {
     qDebug() << "TelepathyManager::TelepathyManager: ";

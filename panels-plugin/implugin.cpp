@@ -29,7 +29,7 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
 
     qDebug() << "IMPlugin constructor";
 
-    m_tpManager = new TelepathyManager(false);
+    m_tpManager = new TelepathyManager(this);
     m_protocolsModel = new IMProtocolsModel(this);
     m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
     connect(m_tpManager,

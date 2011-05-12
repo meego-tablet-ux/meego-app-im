@@ -52,7 +52,7 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     Tpl::init();
 
-    mTpManager = new TelepathyManager(true);
+    mTpManager = new TelepathyManager(this);
     connect(mTpManager, SIGNAL(accountManagerReady()), SLOT(onAccountManagerReady()));
 
     mProtocolsModel = new IMProtocolsModel(this);

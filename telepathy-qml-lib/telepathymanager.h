@@ -22,7 +22,7 @@ class TelepathyManager : public QObject
     Q_OBJECT
 
 public:
-    explicit TelepathyManager(bool fullStart = false);
+    explicit TelepathyManager(QObject *parent = NULL);
     ~TelepathyManager();
     Tp::AccountManagerPtr accountManager(void);
     ChannelHandler *channelHandler() const;
@@ -71,7 +71,6 @@ private:
     Tp::Features mConnectionFeatures;
     ChannelHandler *mChannelHandler;
     Tp::ClientRegistrarPtr mClientRegistrar;
-    bool mFullStart;
     bool mFinished;
     QMap<QString,QString> mProtocols;
 };

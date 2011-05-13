@@ -16,9 +16,6 @@ import MeeGo.App.Contacts 0.1
 Window {
     id: window
 
-    // FIXME remove once migration to Meego UX components is completed
-    signal orientationChangeFinished();
-
     toolBarTitle: qsTr("Chat")
     fullScreen: true
     customActionMenu: true

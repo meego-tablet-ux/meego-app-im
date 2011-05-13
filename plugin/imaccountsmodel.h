@@ -92,6 +92,8 @@ public:
 
     Q_INVOKABLE QStringList channelContacts(const QString &accountId, const QString &channelPath) const;
 
+    Q_INVOKABLE bool existingUnreadMessages() const;
+
     void setNotificationManager(NotificationManager *notificationManager);
     void setTelepathyManager(TelepathyManager *manager);
 

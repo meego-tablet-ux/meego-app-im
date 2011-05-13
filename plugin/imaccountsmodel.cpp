@@ -1591,3 +1591,20 @@ void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QStr
         }
     }
 }
+
+bool IMAccountsModel::existingUnreadMessages() const
+{
+    foreach (ChatAgent *agent, mChatAgents) {
+        if(agent->pendingConversations() > 0) {
+            return true;
+        }
+    }
+
+    foreach (FileTransferAgent *agent, mFileTransferAgents) {
+        if(agent->pendingTransfers() > 0) {
+            return true;
+        }
+    }
+
+    return false;
+}

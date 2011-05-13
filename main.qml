@@ -116,10 +116,13 @@ Window {
             // used account
             parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {
-                currentAccountId = accountId;
-                accountItem = accountsModel.accountItemForId(window.currentAccountId);
-                currentAccountId = accountItem.data(AccountsModel.IdRole);
-                addPage(contactsScreenContent);
+                // only open last used account if there are no unread messages
+                if (!accountsModel.existingUnreadMessages()) {
+                    currentAccountId = accountId;
+                    accountItem = accountsModel.accountItemForId(window.currentAccountId);
+                    currentAccountId = accountItem.data(AccountsModel.IdRole);
+                    addPage(contactsScreenContent);
+                }
             } else {
                 if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
                     currentAccountId = cmdAccountId;

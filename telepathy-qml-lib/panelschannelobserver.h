@@ -38,18 +38,20 @@ public:
                     const QList<Tp::ChannelRequestPtr> &requestsSatisfied,
                     const Tp::AbstractClientObserver::ObserverInfo &observerInfo);
 
+    void emitExistingChannels();
+
 Q_SIGNALS:
-    void newTextChannel(const Tp::AccountPtr &account, const Tp::TextChannelPtr &channel);
-    void newCallChannel(const Tp::AccountPtr &account, const Tpy::CallChannelPtr &channel);
-    void newFileTransferChannel(const Tp::AccountPtr &account, const Tp::IncomingFileTransferChannelPtr &channel);
+    void newTextChannel(const QString &accountId, const Tp::TextChannelPtr &channel);
+    void newCallChannel(const QString &accountId, const Tpy::CallChannelPtr &channel);
+    void newFileTransferChannel(const QString &accountId, const Tp::IncomingFileTransferChannelPtr &channel);
 
 public slots:
-            void onTextChannelReady(Tp::PendingOperation *op);
+    void onTextChannelReady(Tp::PendingOperation *op);
 
 private:
-            QList<Tp::TextChannelPtr> mTextChannels;
-            QList<Tpy::CallChannelPtr> mCallChannels;
-            QList<Tp::IncomingFileTransferChannelPtr>  mFileTransferChannels;
+    QList<Tp::TextChannelPtr> mTextChannels;
+    QList<Tpy::CallChannelPtr> mCallChannels;
+    QList<Tp::IncomingFileTransferChannelPtr>  mFileTransferChannels;
 };
 
 #endif // PANELSCHANNELOBSERVER_H

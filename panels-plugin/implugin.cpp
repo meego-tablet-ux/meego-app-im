@@ -32,9 +32,6 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
     m_tpManager = new TelepathyManager(this);
     m_protocolsModel = new IMProtocolsModel(this);
     m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
-    connect(m_tpManager,
-            SIGNAL(accountManagerReady()),
-            SLOT(onAccountManagerReady()));
 
     m_tpManager->setProtocolNames(m_protocolsModel->protocolNames());
 

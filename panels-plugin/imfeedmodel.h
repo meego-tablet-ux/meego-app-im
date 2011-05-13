@@ -67,11 +67,11 @@ public Q_SLOTS:
 
 protected slots:
 
-    void onNewTextChannel(const Tp::AccountPtr &account, const Tp::TextChannelPtr &textChannel);
-    void onNewCallChannel(const Tp::AccountPtr &account, const Tpy::CallChannelPtr &callChannel);
-    void onNewFileTransferChannel(const Tp::AccountPtr &account, const Tp::IncomingFileTransferChannelPtr &fileTransferChannel);
-    void onMessageReceived(const Tp::ReceivedMessage &message);
+    void onNewTextChannel(const QString &accountId, const Tp::TextChannelPtr &textChannel);
+    void onNewCallChannel(const QString &accountId, const Tpy::CallChannelPtr &callChannel);
+    void onNewFileTransferChannel(const QString &accountId, const Tp::IncomingFileTransferChannelPtr &fileTransferChannel);
 
+    void onMessageReceived(const Tp::ReceivedMessage &message);
     void onInformationReceived();
     void onContactUpgraded(Tp::PendingOperation *op);
 

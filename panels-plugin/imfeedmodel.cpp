@@ -42,14 +42,17 @@ IMFeedModel::IMFeedModel(PanelsChannelObserver *observer, Tp::AccountPtr account
             SIGNAL(serviceUnregistered(QString)),
             SLOT(onServiceUnregistered()));
     connect(observer,
-            SIGNAL(newTextChannel(Tp::AccountPtr,Tp::TextChannelPtr)),
-            SLOT(onNewTextChannel(Tp::AccountPtr,Tp::TextChannelPtr)));
+            SIGNAL(newTextChannel(QString,Tp::TextChannelPtr)),
+            SLOT(onNewTextChannel(QString,Tp::TextChannelPtr)));
     connect(observer,
-            SIGNAL(newCallChannel(Tp::AccountPtr,Tpy::CallChannelPtr)),
-            SLOT(onNewCallChannel(Tp::AccountPtr,Tpy::CallChannelPtr)));
+            SIGNAL(newCallChannel(QString,Tpy::CallChannelPtr)),
+            SLOT(onNewCallChannel(QString,Tpy::CallChannelPtr)));
     connect(observer,
-            SIGNAL(newFileTransferChannel(Tp::AccountPtr,Tp::IncomingFileTransferChannelPtr)),
-            SLOT(onNewFileTransferChannel(Tp::AccountPtr,Tp::IncomingFileTransferChannelPtr)));
+            SIGNAL(newFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)),
+            SLOT(onNewFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)));
+
+    // get existing channels
+    mObserver->emitExistingChannels();
 }
 
 IMFeedModel::~IMFeedModel()
@@ -242,9 +245,9 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
 
 }
 
-void IMFeedModel::onNewTextChannel(const Tp::AccountPtr &account, const Tp::TextChannelPtr &textChannel)
+void IMFeedModel::onNewTextChannel(const QString &accountId, const Tp::TextChannelPtr &textChannel)
 {
-    if (account->uniqueIdentifier() == mAccountId) {
+    if (accountId == mAccountId) {
         // enable the features we need to receive incoming messages
         connect(textChannel->becomeReady(Tp::Features()
                         << Tp::TextChannel::FeatureCore
@@ -256,9 +259,9 @@ void IMFeedModel::onNewTextChannel(const Tp::AccountPtr &account, const Tp::Text
     }
 }
 
-void IMFeedModel::onNewCallChannel(const Tp::AccountPtr &account, const Tpy::CallChannelPtr &callChannel)
+void IMFeedModel::onNewCallChannel(const QString &accountId, const Tpy::CallChannelPtr &callChannel)
 {
-    if (account->uniqueIdentifier() == mAccountId) {
+    if (accountId == mAccountId) {
         // enable the features we need to receive incoming messages
         connect(callChannel->becomeReady(Tp::Features()
                         << Tpy::CallChannel::FeatureCore
@@ -268,9 +271,9 @@ void IMFeedModel::onNewCallChannel(const Tp::AccountPtr &account, const Tpy::Cal
     }
 }
 
-void IMFeedModel::onNewFileTransferChannel(const Tp::AccountPtr &account, const Tp::IncomingFileTransferChannelPtr &fileTransferChannel)
+void IMFeedModel::onNewFileTransferChannel(const QString &accountId, const Tp::IncomingFileTransferChannelPtr &fileTransferChannel)
 {
-    if (account->uniqueIdentifier() == mAccountId) {
+    if (accountId == mAccountId) {
         // enable the features we need to receive incoming messages
         connect(fileTransferChannel->becomeReady(Tp::Features()
                         << Tp::IncomingFileTransferChannel::FeatureCore),

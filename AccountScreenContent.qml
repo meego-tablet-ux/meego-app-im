@@ -31,11 +31,15 @@ AppPage {
         id: mainArea
         anchors.fill: parent
 
+        NoNetworkHeader {
+            id: noNetworkItem
+        }
+
         Flickable {
             id: flickable
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
-            anchors.top: parent.top
+            anchors.top: noNetworkItem.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: toolBar.top
@@ -47,15 +51,11 @@ AppPage {
                 width:  parent.width
                 height: childrenRect.height
 
-                NoNetworkHeader {
-                    id: noNetworkItem
-                }
-
                 LoadingAccounts {
                     id: loadingAccounts
                     visible: true
                     anchors {
-                        top: noNetworkItem.bottom
+                        top: parent.top
                         left: parent.left
                         right: parent.right
                     }
@@ -72,7 +72,7 @@ AppPage {
                     id: accountsListView
 
                     anchors.top: accountsHeader.visible ? accountsHeader.bottom :
-                    noNetworkItem.bottom
+                    loadingAccounts.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
 

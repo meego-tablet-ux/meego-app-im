@@ -7,7 +7,6 @@
  */
 
 #include "imfeedmodelfilter.h"
-
 #include <QDebug>
 
 #include <QSettings>
@@ -18,7 +17,7 @@
 // public methods
 //
 
-IMFeedModelFilter::IMFeedModelFilter(QAbstractItemModel *source, QObject *parent):
+IMFeedModelFilter::IMFeedModelFilter(IMFeedModel *source, QObject *parent):
         QSortFilterProxyModel(parent)
 {
     setSourceModel(source);

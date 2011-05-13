@@ -14,9 +14,9 @@
 #ifndef IMFEEDMODELFILTER_H
 #define IMFEEDMODELFILTER_H
 
-#include <QSortFilterProxyModel>
+#include "imfeedmodel.h"
 
-#include <feedmodel.h>
+#include <QSortFilterProxyModel>
 
 class McaActions;
 
@@ -25,7 +25,7 @@ class IMFeedModelFilter: public QSortFilterProxyModel, public McaSearchableFeed
     Q_OBJECT
 
 public:
-    IMFeedModelFilter(QAbstractItemModel *source, QObject *parent = NULL);
+    IMFeedModelFilter(IMFeedModel *source, QObject *parent = NULL);
     ~IMFeedModelFilter();
 
     void setSearchText(const QString& text);

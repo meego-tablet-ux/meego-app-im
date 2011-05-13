@@ -42,11 +42,28 @@ Window {
     property string cmdContactId: ""
     property variant accountFilterModel: [ ]
 
+    property QtObject contactsScreenContent: null
+    property string contactsScreenContentString: ""
+
+    property QtObject messageScreenContent: null
+    property string messageScreenContentString: ""
+
+    property QtObject contactPickerContent: null
+    property string contactPickerContentString: ""
+
     // this property will be set right before opening the conversation screen
     // TODO: check how can we do that on group chat
     property string currentContactId: ""
 
     signal componentsLoaded
+
+    Component {
+       id: accountScreenContent
+        AccountScreenContent {
+            id: accountScreenItem
+            anchors.fill: parent
+        }
+    }
 
     FuzzyDateTime {
         id: fuzzyDateTime
@@ -78,6 +95,7 @@ Window {
     }
 
     Component.onCompleted: {
+        buildComponentStrings();
         notificationManager.applicationActive = isActiveWindow;
         switchBook(accountScreenContent);
     }
@@ -121,7 +139,7 @@ Window {
                     currentAccountId = accountId;
                     accountItem = accountsModel.accountItemForId(window.currentAccountId);
                     currentAccountId = accountItem.data(AccountsModel.IdRole);
-                    addPage(contactsScreenContent);
+                    showContactsScreen();
                 }
             } else {
                 if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
@@ -199,7 +217,7 @@ Window {
                 accountsModel.startChat(window.currentAccountId, contactId);
                 chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
 
-                window.addPage(messageScreenContent);
+                window.showMessageScreen();
             }
         }
 
@@ -222,7 +240,7 @@ Window {
             window.contactItem = undefined;
             window.callAgent = undefined;
 
-            window.addPage(messageScreenContent);
+            window.showMessageScreen();
             accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
 
@@ -230,7 +248,7 @@ Window {
             window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, window.currentContactId);
 
             // and start the conversation
-            window.addPage(messageScreenContent);
+            window.showMessageScreen();
             accountsModel.startChat(window.currentAccountId, window.currentContactId);
             chatAgent = agent;
         }
@@ -249,6 +267,53 @@ Window {
     }
 
     bookMenuModel: accountFilterModel
+
+    function buildComponentStrings()
+    {
+        // clean it before cosntructing the string
+        var contactsComponent = "import Qt 4.7;";
+        contactsComponent += "import MeeGo.Components 0.1;";
+        contactsComponent += "Component {";
+        contactsComponent += "    ContactsScreenContent {";
+        contactsComponent += "        id: contactsScreenItem;";
+        contactsComponent += "        anchors.fill: parent;";
+        contactsComponent += "}   }";
+        contactsScreenContentString = contactsComponent;
+
+        var messageComponent = "import Qt 4.7;";
+        messageComponent += "Component {";
+        messageComponent += "    MessageScreenContent {";
+        messageComponent += "        id: messageScreenItem;";
+        messageComponent += "        anchors.fill: parent;";
+        messageComponent += "}   }";
+        messageScreenContentString = messageComponent;
+
+        var contactPicker = "import Qt 4.7;";
+        contactPicker += "Component {";
+        contactPicker += "    ContactPickerContent {";
+        contactPicker += "        id: contactPickerItem;";
+        contactPicker += "        anchors.fill: parent;";
+        contactPicker += "}    }";
+        contactPickerContentString = contactPicker;
+    }
+
+    function showContactsScreen()
+    {
+        if (contactsScreenContent == null) {
+            contactsScreenContent = Qt.createQmlObject(contactsScreenContentString, window);
+        }
+
+        addPage(contactsScreenContent);
+    }
+
+    function showMessageScreen()
+    {
+        if (messageScreenContent == null) {
+            messageScreenContent = Qt.createQmlObject(messageScreenContentString, window);
+        }
+
+        addPage(messageScreenContent);
+    }
 
     function buildBookMenuPayloadModel()
     {
@@ -274,7 +339,7 @@ Window {
             window.popPage();
         }
 
-        window.addPage(messageScreenContent);
+        window.showMessageScreen();
         accountsModel.startChat(window.currentAccountId, contactId);
 
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
@@ -294,7 +359,7 @@ Window {
         if (notificationManager.chatActive) {
             window.popPage();
         }
-        window.addPage(messageScreenContent);
+        window.showMessageScreen();
         accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         console.log("window.startGroupConversation: finished");
     }
@@ -332,7 +397,7 @@ Window {
         if (notificationManager.chatActive) {
             window.popPage();
         }
-        window.addPage(messageScreenContent);
+        window.showMessageScreen();
     }
 
     function startVideoCall(contactId, page)
@@ -353,12 +418,16 @@ Window {
         if (notificationManager.chatActive) {
             window.popPage()
         }
-        window.addPage(messageScreenContent);
+        window.showMessageScreen();
     }
 
     function pickContacts()
     {
-        window.addPage(contactPickerContent)
+        if (contactPickerContent == null) {
+            contactPickerContent = Qt.createQmlObject(contactPickerContentString, window);
+        }
+
+        addPage(contactPickerContent);
     }
 
     function reloadFilterModel()
@@ -500,44 +569,11 @@ Window {
         id: accountFactory
     }
 
-    Component {
-        id: contactsScreenContent
-        ContactsScreenContent {
-            id: contactsScreenItem
-            anchors.fill: parent
-        }
-    }
-
-    Component {
-        id: accountScreenContent
-        AccountScreenContent {
-            id: accountScreenItem
-            anchors.fill: parent
-        }
-    }
-
-    Component {
-        id: messageScreenContent
-        MessageScreenContent {
-            id: messageScreenItem
-            anchors.fill: parent
-        }
-    }
-
-
     IncomingCall {
         id: incomingCallDialog
         anchors {
             verticalCenter: parent.verticalCenter
             horizontalCenter: parent.horizontalCenter
-        }
-    }
-
-    Component {
-        id: contactPickerContent
-        ContactPickerContent {
-            id: contactPickerItem
-            anchors.fill: parent
         }
     }
 

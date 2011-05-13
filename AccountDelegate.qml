@@ -167,7 +167,7 @@ Item {
             anchors.fill: parent
             onClicked: {
                 window.currentAccountId = model.id;
-                window.addPage(contactsScreenContent);
+                window.showContactsScreen();
             }
 
             onPressAndHold: {

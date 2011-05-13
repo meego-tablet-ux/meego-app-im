@@ -46,7 +46,7 @@ AppPage {
         notificationManager.chatActive = true;
         if(window.callAgent != undefined) {
             var status = window.callAgent.callStatus;
-            if (status == CallAgent.CallStatusIncomingCall || window.callAgent.existingCall) {
+            if (status != CallAgent.CallStatusNoCall) {
                 messageScreenPage.loadVideoWindow();
                 var videoWindow = messageScreenPage.getVideoWindow();
                 videoWindow.opacity = 1;

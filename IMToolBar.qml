@@ -75,10 +75,12 @@ BottomToolBar {
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
+                    messageScreenPage.loadVideoWindow();
+                    var videoWindow = messageScreenPage.getVideoWindow();
                     videoWindow.opacity = 1;
-                    window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                    window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);
-                    window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                    window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
                     window.callAgent.videoCall();
                 }
                 Behavior on opacity {
@@ -140,10 +142,12 @@ BottomToolBar {
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
+                    messageScreenPage.loadVideoWindow();
+                    var videoWindow = messageScreenPage.getVideoWindow();
                     videoWindow.opacity = 1;
-                    window.callAgent.setOutgoingVideo(cameraWindowSmall ? videoOutgoing : videoIncoming);
+                    window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);
-                    window.callAgent.setIncomingVideo(cameraWindowSmall ? videoIncoming : videoOutgoing);
+                    window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
                     window.callAgent.audioCall();
                 }
                 Behavior on opacity {

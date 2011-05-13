@@ -65,240 +65,107 @@ Item {
         return avatar;
     }
 
-    Avatar {
-        id: avatar
-        visible: fileTransferItem || messageItem
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.topMargin: 8
-        anchors.leftMargin: 5
-        height: visible ? 100 : 0
-        source: messageAvatar()
+    Loader {
+        width: parent.width
+        sourceComponent: messageItem ? textMessageComponent :
+                         fileTransferItem ? fileTransferComponent :
+                         eventItem ? eventMessageComponent :
+                         callItem ? callMessageComponent : null
     }
 
-    Item {
-        id: messageBubble
-        anchors.top: parent.top
-        anchors.left: avatar.right
-        anchors.right: parent.right
-        anchors.topMargin: 10
-        anchors.bottomMargin: 5
-        anchors.leftMargin: -19
-        anchors.rightMargin: 0
-        smooth: true
-        visible: messageItem || fileTransferItem
-
-        height: visible ? Math.max(childrenRect.height, avatar.height) : 0
-
-        BorderImage {
-            id: messageTop
-            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-top"
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            border.left: 40
-            border.right: 10
-            border.top: 5
-        }
-
-        BorderImage {
-            id: messageCenter
-            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-middle"
-            border.left: messageTop.border.left
-            border.right: messageTop.border.right
-
-            anchors.top: messageTop.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: messageBottom.top
-        }
-
-        BorderImage {
-            id: messageBottom
-            source: "image://themedimage/widgets/apps/chat/bubble-" + color + "-bottom"
-            border.left: messageTop.border.left
-            border.right: messageTop.border.right
-            border.bottom: 5
-
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 4
-        }
-
-        Item {
+    Component {
+        id: textMessageComponent
+        TextMessageDelegate {
             id: textMessage
-            visible: messageItem
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: visible ? childrenRect.height + 10 : 0
+            bubbleColor: model.bubbleColor
+            avatarSource: messageAvatar()
+            presence: model.status
+            sender: model.sender
+            time: fuzzyDateTime.getFuzzy(model.dateTime)
+            message: parseChatText(model.messageText)
+            messageColor: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
 
-            Item {
-                id: messageHeader
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                height: childrenRect.height
-
-                PresenceIcon {
-                    id: presence
-                    anchors.left: parent.left
-                    anchors.verticalCenter: contact.verticalCenter
-                    anchors.margins: 5
-                    anchors.leftMargin: messageTop.border.left
-
-                    status: model.status
-                }
-
-                Text {
-                    id: contact
-                    anchors.left: presence.right
-                    anchors.top: parent.top
-                    anchors.topMargin: 10
-                    anchors.bottomMargin: 10
-                    anchors.leftMargin:5
-                    anchors.right: time.left
-                    anchors.rightMargin: 10
-                    color: Qt.rgba(0.3,0.3,0.3,1)
-                    font.pixelSize: theme_fontPixelSizeSmall
-                    elide: Text.ElideRight
-
-                    text: model.sender
-                }
-
-                Text {
-                    id: time
-                    anchors.right: parent.right
-                    anchors.bottom: contact.bottom
-                    anchors.rightMargin: messageTop.border.right
-                    color: Qt.rgba(0.3,0.3,0.3,1)
-                    font.pixelSize: theme_fontPixelSizeSmall
-
-                    text: fuzzyDateTime.getFuzzy(model.dateTime)
-
-                    Connections {
-                        target: fuzzyDateTimeUpdater
-                        onTriggered: {
-                            time.text = fuzzyDateTime.getFuzzy(model.dateTime);
-                        }
-                    }
-                }
-            }
-
-            /*
-                FIXME: enable Text and remove TextEdit once meego-ux-componets supports
-                CCPContextArea for Text components.
-            */
-            /*
-            Text {
-                id: messageBody
-                anchors.top: messageHeader.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.topMargin: 15
-                anchors.leftMargin: messageTop.border.left
-                anchors.rightMargin: messageTop.border.right
-
-                text: parseChatText(model.messageText)
-                wrapMode: Text.WordWrap
-                textFormat: Text.RichText
-                color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
-            }*/
-
-            TextEdit {
-                id: messageBody
-                anchors.top: messageHeader.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.topMargin: 15
-                anchors.leftMargin: messageTop.border.left
-                anchors.rightMargin: messageTop.border.right
-
-                text: parseChatText(model.messageText)
-                wrapMode: Text.Wrap
-                textFormat: Text.RichText
-                color: model.fromLogger ? theme_fontColorInactive : theme_fontColorNormal
-
-                readOnly: true
-                font.pixelSize: theme_fontPixelSizeLarge
-
-                CCPContextArea {
-                    editor: parent
-                    copyOnly: true
+            Connections {
+                target: fuzzyDateTimeUpdater
+                onTriggered: {
+                    textMessage.time = fuzzyDateTime.getFuzzy(model.dateTime);
                 }
             }
         }
+    }
 
+    Component {
+        id: fileTransferComponent
         FileTransferDelegate {
             id: fileTransferMessage
-            visible: fileTransferItem
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.right: parent.right
-            height: visible ? childrenRect.height : 0
+            bubbleColor: model.bubbleColor
+            avatarSource: messageAvatar()
+            presence: model.status
+            sender: senderMessage()
+            time: fuzzyDateTime.getFuzzy(model.dateTime)
+            transferState: model.transferState
+            item: model.item
+            fileName: model.fileName
+            fileSize: qsTr("(%1)").arg(model.fileSize)
+            filePath: model.filePath
+            incomingTransfer: model.incomingTransfer
+            transferStateReason: model.transferStateReason
+            percentTransferred: model.percentTransferred
+
+            Connections {
+                target: fuzzyDateTimeUpdater
+                onTriggered: {
+                    fileTransferMessage.time = fuzzyDateTime.getFuzzy(model.dateTime);
+                }
+            }
+
+            function senderMessage() {
+                if (messageSent) {
+                    if (canceled) {
+                        return qsTr("Upload canceled:");
+                    } else if (finished) {
+                        return qsTr("Sent:");
+                    } else {
+                        return qsTr("Uploading:");
+                    }
+                } else {
+                    if (finished) {
+                        return qsTr("%1 has sent you:").arg(model.sender);
+                    } else {
+                        return qsTr("%1 is sending you:").arg(model.sender);
+                    }
+                }
+                return "";
+            }
         }
     }
 
-    Item {
-        id: eventMessage
-        visible: eventItem
-        width: parent.width
-        height: visible ? childrenRect.height : 0
-        anchors.margins: 10
-
-        Text {
-            id: eventMessageText
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: theme_fontColorInactive
-            font.pixelSize: theme_fontPixelSizeSmall
-            // i18n: the first argument is the event itself, the second one is the fuzzy time
-            text: eventItem ? qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime)) : ""
-            wrapMode: Text.WordWrap
-
+    Component {
+        id: eventMessageComponent
+        InlineMessageDelegate {
+            id: eventMessage
+            text: qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime))
             Connections {
-                target: eventItem ? fuzzyDateTimeUpdater : null
+                target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    eventMessageText.text = qsTr("%1 - %2").arg(model.customEventText)
-                                                           .arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                    eventMessage.text = qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
         }
     }
 
-    Item {
-        id: callMessage
-        visible: callItem
-        width: parent.width
-        height: visible ? 30 : 0
-
-        Image {
-            id: callIcon
-            anchors.right: callMessageText.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 20
+    Component {
+        id: callMessageComponent
+        InlineMessageDelegate {
+            id: callMessage
             //source: "image://themedimage/widgets/apps/chat/call-video-missed
-            source: "image://themedimage/widgets/apps/chat/call-audio-missed"
-            visible: callItem && (model.missedCall || model.rejectedCall)
-        }
-
-        Text {
-            id: callMessageText
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            color: theme_fontColorInactive
-            font.pixelSize: theme_fontPixelSizeSmall
-            text: callItem ? getCallMessageText() : ""
-            wrapMode: Text.WordWrap
+            source: model.missedCall || model.rejectedCall ? "image://themedimage/widgets/apps/chat/call-audio-missed" : ""
+            text: getCallMessageText()
 
             Connections {
-                target: callItem ? fuzzyDateTimeUpdater : null
+                target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    callMessageText.text = callMessageText.getCallMessageText();
+                    callMessage.text = callMessageText.getCallMessageText();
                 }
             }
 

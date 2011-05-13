@@ -12,15 +12,28 @@ import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 
 Item {
-    id: mainArea
+    id: root
+    width: parent.width
+    height: childrenRect.height
 
-    property bool pending: model.transferState == TelepathyTypes.FileTransferStatePending
-    property bool active: model.transferState == TelepathyTypes.FileTransferStateOpen
-    property bool finished: model.transferState == TelepathyTypes.FileTransferStateCompleted
-    property bool canceled: model.transferState == TelepathyTypes.FileTransferStateCancelled
-    property variant item: model.item
+    property string bubbleColor : "white"
+    property alias avatarSource : avatar.source
+    property alias presence : presence.status
+    property alias sender : contact.text
+    property alias time : time.text
+    property int transferState
+    property variant item
+    property alias fileName : fileName.text
+    property alias fileSize : fileSize.text
+    property string filePath
+    property bool incomingTransfer
+    property int transferStateReason
+    property double percentTransferred
 
-    height: childrenRect.height + 10
+    property bool pending: transferState == TelepathyTypes.FileTransferStatePending
+    property bool active: transferState == TelepathyTypes.FileTransferStateOpen
+    property bool finished: transferState == TelepathyTypes.FileTransferStateCompleted
+    property bool canceled: transferState == TelepathyTypes.FileTransferStateCancelled
 
     Behavior on height {
         NumberAnimation {
@@ -28,263 +41,278 @@ Item {
         }
     }
 
-    Item {
-        id: messageHeader
+    Avatar {
+        id: avatar
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.right: parent.right
-
-        height: childrenRect.height
-
-        PresenceIcon {
-            id: presence
-            anchors.left: parent.left
-            anchors.verticalCenter: contact.verticalCenter
-            anchors.margins: 5
-            anchors.leftMargin: messageTop.border.left
-
-            status: model.status
-        }
-
-        Text {
-            id: contact
-
-            anchors.left: presence.right
-            anchors.top: parent.top
-            anchors.topMargin: 10
-            anchors.bottomMargin: 10
-            anchors.leftMargin:5
-            anchors.right: time.left
-            anchors.rightMargin: 10
-            color: Qt.rgba(0.3,0.3,0.3,1)
-            font.pixelSize: theme_fontPixelSizeSmall
-            elide: Text.ElideRight
-
-            text: {
-                if (messageSent) {
-                    if (canceled) {
-                        qsTr("Upload canceled:");
-                    } else if (finished) {
-                        qsTr("Sent:");
-                    } else {
-                        qsTr("Uploading:");
-                    }
-                } else {
-                    if (finished) {
-                        qsTr("%1 has sent you:").arg(model.sender);
-                    } else {
-                        qsTr("%1 is sending you:").arg(model.sender);
-                    }
-                }
-            }
-        }
-
-        Text {
-            id: time
-            anchors.right: parent.right
-            anchors.bottom: contact.bottom
-            anchors.rightMargin: messageTop.border.right
-            color: Qt.rgba(0.3,0.3,0.3,1)
-            font.pixelSize: theme_fontPixelSizeSmall
-
-            text: fuzzyDateTime.getFuzzy(model.dateTime)
-
-            Connections {
-                target: mainArea.visible ? fuzzyDateTimeUpdater : null
-                onTriggered: {
-                    time.text = fuzzyDateTime.getFuzzy(model.dateTime);
-                }
-            }
-        }
+        anchors.topMargin: 8
+        anchors.leftMargin: 5
+        height: 100
     }
 
     Item {
-        id: messageBody
-
-        anchors.top: messageHeader.bottom
-        anchors.left: parent.left
+        id: messageBubble
+        anchors.top: parent.top
+        anchors.left: avatar.right
         anchors.right: parent.right
-        anchors.topMargin: 15
-        anchors.leftMargin: messageTop.border.left
-        anchors.rightMargin: messageTop.border.right
+        anchors.topMargin: 10
+        anchors.bottomMargin: 5
+        anchors.leftMargin: -19
+        anchors.rightMargin: 0
+        smooth: true
+        height: Math.max(childrenRect.height, avatar.height)
 
-        height: childrenRect.height + 10
-
-        Text {
-            id: fileName
+        BorderImage {
+            id: messageTop
+            source: "image://themedimage/widgets/apps/chat/bubble-" + root.bubbleColor + "-top"
             anchors.top: parent.top
             anchors.left: parent.left
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-
-            text: model.fileName
-            color: theme_fontColorNormal
+            anchors.right: parent.right
+            border.left: 40
+            border.right: 10
+            border.top: 5
         }
 
-        Text {
-            id: fileSize
-            anchors.verticalCenter: fileName.verticalCenter
-            anchors.left: fileName.right
-            anchors.margins: 5
-            text: qsTr("(%1)").arg(model.fileSize)
-            color: theme_fontColorInactive
-        }
-
-        Button {
-            id: openButton
-            anchors.top: fileName.bottom
-            anchors.left: fileName.left
-            anchors.topMargin: 10
-
-            text: qsTr("Open")
-            textColor: theme_buttonFontColor
-            bgSourceUp: "image://themedimage/widgets/common/button/button-default"
-            bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
-
-            onClicked: {
-                var cmd = "xdg-open \"" + model.filePath + "\"";
-                appModel.launch(cmd);
-            }
-
-            visible: finished && model.incomingTransfer
-        }
-
-        Text {
-            id: errorText
-            anchors.top: fileName.bottom
-            anchors.left: fileName.left
-            anchors.topMargin: 10
-            text: {
-                if (canceled &&
-                        (model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonRemoteError
-                         || model.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonLocalError)) {
-                    if (model.incomingTransfer) {
-                        qsTr("There was a problem downloading");
-                    } else {
-                        qsTr("There was a problem uploading");
-                    }
-                } else {
-                    qsTr("Canceled") // TODO: report other errors
-                }
-            }
-            color: theme_fontColorHighlight
-
-            visible: canceled
-        }
-
-
-        Item {
-            id: buttonsParent
-            width: childrenRect.width
-            height: visible ? childrenRect.height + 20 : 0
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: fileName.bottom
-            anchors.margins: 10
-
-            visible: pending && model.incomingTransfer
-
-            Button {
-                id: saveButton
-                anchors.top: parent.top
-                anchors.left: parent.left
-
-                text: qsTr("Save")
-                textColor: theme_buttonFontColor
-                bgSourceUp: "image://themedimage/widgets/common/button/button-default"
-                bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
-
-                onClicked: item.acceptTransfer();
-            }
-
-            Button {
-                id: declineButton
-                anchors.top: parent.top
-                anchors.leftMargin: 10
-                anchors.left: saveButton.right
-
-                text: qsTr("Decline")
-                textColor: theme_buttonFontColor
-                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
-                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
-
-                onClicked: item.cancelTransfer()
-            }
-        }
-
-        Item {
-            id: progressItem
-            anchors.topMargin: 10
-            anchors.leftMargin: 10
-            anchors.rightMargin: 10
-
+        BorderImage {
+            id: messageCenter
+            source: "image://themedimage/widgets/apps/chat/bubble-" + root.bubbleColor + "-middle"
+            border.left: messageTop.border.left
+            border.right: messageTop.border.right
+            anchors.top: messageTop.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: fileName.bottom
+            anchors.bottom: messageBottom.top
+        }
 
-            visible: mainArea.active || (!model.incomingTransfer && mainArea.pending)
+        BorderImage {
+            id: messageBottom
+            source: "image://themedimage/widgets/apps/chat/bubble-" + root.bubbleColor + "-bottom"
+            border.left: messageTop.border.left
+            border.right: messageTop.border.right
+            border.bottom: 5
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 4
+        }
 
-            height: visible ? childrenRect.height + 20 : 0
+        Item {
+            id: textMessage
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: childrenRect.height + 10
 
-            Button {
-                id: cancelButton
+            Item {
+                id: messageHeader
                 anchors.top: parent.top
+                anchors.left: parent.left
                 anchors.right: parent.right
+                height: childrenRect.height
 
-                text: qsTr("Cancel")
-                textColor: theme_buttonFontColor
-                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
-                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
+                PresenceIcon {
+                    id: presence
+                    anchors.left: parent.left
+                    anchors.verticalCenter: contact.verticalCenter
+                    anchors.margins: 5
+                    anchors.leftMargin: messageTop.border.left
+                }
 
-                onClicked: item.cancelTransfer();
+                Text {
+                    id: contact
+                    anchors.left: presence.right
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.leftMargin:5
+                    anchors.right: time.left
+                    anchors.rightMargin: 10
+                    color: Qt.rgba(0.3,0.3,0.3,1)
+                    font.pixelSize: theme_fontPixelSizeSmall
+                    elide: Text.ElideRight
+                    text: root.sender
+                }
+
+                Text {
+                    id: time
+                    anchors.right: parent.right
+                    anchors.bottom: contact.bottom
+                    anchors.rightMargin: messageTop.border.right
+                    color: Qt.rgba(0.3,0.3,0.3,1)
+                    font.pixelSize: theme_fontPixelSizeSmall
+                }
             }
 
             Item {
-                id: progressBar
-
+                id: messageBody
+                anchors.top: messageHeader.bottom
                 anchors.left: parent.left
-                anchors.right: cancelButton.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.margins: 10
+                anchors.right: parent.right
+                anchors.topMargin: 15
+                anchors.leftMargin: messageTop.border.left
+                anchors.rightMargin: messageTop.border.right
+                height: childrenRect.height + 10
 
-                BorderImage {
-                    id: backgroundBar
-
+                Text {
+                    id: fileName
+                    anchors.top: parent.top
                     anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    border {
-                        top: 2
-                        bottom: 2
-                        left: 2
-                        right: 2
-                    }
-
-                    source: "image://themedimage/widgets/common/progress-bar/progress-bar-backgound"
+                    anchors.topMargin: 10
+                    anchors.leftMargin: 10
+                    color: theme_fontColorNormal
                 }
 
-                BorderImage {
-                    id: foregroundBar
+                Text {
+                    id: fileSize
+                    anchors.verticalCenter: fileName.verticalCenter
+                    anchors.left: fileName.right
+                    anchors.margins: 5
+                    color: theme_fontColorInactive
+                }
 
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
+                Button {
+                    id: openButton
+                    anchors.top: fileName.bottom
+                    anchors.left: fileName.left
+                    anchors.topMargin: 10
+                    text: qsTr("Open")
+                    textColor: theme_buttonFontColor
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
-                    border {
-                        top: 2
-                        bottom: 2
-                        left: 2
-                        right: 2
+                    onClicked: {
+                        var cmd = "xdg-open \"" + root.filePath + "\"";
+                        appModel.launch(cmd);
                     }
 
-                    width: backgroundBar.width * (model.percentTransferred / 100.)
-                    source: "image://themedimage/widgets/common/progress-bar/progress-bar-fill"
+                    visible: finished && root.incomingTransfer
+                }
 
-                    visible: model.percentTransferred > 0
+                Text {
+                    id: errorText
+                    anchors.top: fileName.bottom
+                    anchors.left: fileName.left
+                    anchors.topMargin: 10
+                    text: {
+                        if (canceled &&
+                                (root.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonRemoteError
+                                 || root.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonLocalError)) {
+                            if (root.incomingTransfer) {
+                                qsTr("There was a problem downloading");
+                            } else {
+                                qsTr("There was a problem uploading");
+                            }
+                        } else {
+                            qsTr("Canceled") // TODO: report other errors
+                        }
+                    }
+                    color: theme_fontColorHighlight
 
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 500
+                    visible: canceled
+                }
+
+
+                Item {
+                    id: buttonsParent
+                    width: childrenRect.width
+                    height: visible ? childrenRect.height : 0
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: fileName.bottom
+                    anchors.margins: 10
+
+                    visible: pending && root.incomingTransfer
+
+                    Button {
+                        id: saveButton
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+
+                        text: qsTr("Save")
+                        textColor: theme_buttonFontColor
+                        bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                        bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
+
+                        onClicked: item.acceptTransfer();
+                    }
+
+                    Button {
+                        id: declineButton
+                        anchors.top: parent.top
+                        anchors.leftMargin: 10
+                        anchors.left: saveButton.right
+
+                        text: qsTr("Decline")
+                        textColor: theme_buttonFontColor
+                        bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                        bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
+
+                        onClicked: item.cancelTransfer()
+                    }
+                }
+
+                Item {
+                    id: progressItem
+                    anchors.topMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: fileName.bottom
+                    visible: root.active || (!root.incomingTransfer && root.pending)
+                    height: visible ? childrenRect.height : 0
+
+                    Button {
+                        id: cancelButton
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        text: qsTr("Cancel")
+                        textColor: theme_buttonFontColor
+                        bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                        bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
+                        onClicked: item.cancelTransfer();
+                    }
+
+                    Item {
+                        id: progressBar
+                        anchors.left: parent.left
+                        anchors.right: cancelButton.left
+                        anchors.top: parent.top
+                        anchors.bottom: cancelButton.bottom
+                        anchors.margins: 10
+
+                        BorderImage {
+                            id: backgroundBar
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            border {
+                                top: 2
+                                bottom: 2
+                                left: 2
+                                right: 2
+                            }
+                            source: "image://themedimage/widgets/common/progress-bar/progress-bar-backgound"
+                        }
+
+                        BorderImage {
+                            id: foregroundBar
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            border {
+                                top: 2
+                                bottom: 2
+                                left: 2
+                                right: 2
+                            }
+                            width: backgroundBar.width * (root.percentTransferred / 100.)
+                            source: "image://themedimage/widgets/common/progress-bar/progress-bar-fill"
+                            visible: root.percentTransferred > 0
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 500
+                                }
+                            }
                         }
                     }
                 }

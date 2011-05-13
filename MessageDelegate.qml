@@ -183,132 +183,26 @@ Item {
 
     function parseChatText(message) {
         var parsedMessage = message;
+        var smileyMap = {
+            ":-{"   : "emote-angry",        ":-&amp;"   : "emote-angry",
+            ":S"    : "emote-confused",     ":-S"       : "emote-confused",
+            ":-["   : "emote-embarressed",
+            ":)"    : "emote-happy",        ":-)"       : "emote-happy",
+            "&lt;3" : "emote-love",
+            ":("    : "emote-sad",          ":'("       : "emote-sad",
+            "(*)"   : "emote-star",
+            "|-("   : "emote-tired",
+            ";)"    : "emote-wink",         ";-)"       : "emote-wink"
+        };
 
-        //recurse as long as there is an image to replace
-        while(parsedMessage.indexOf(":-{") > -1) {
-            var index = parsedMessage.indexOf(":-{");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-angry.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":-&amp;") > -1) {
-            var index = parsedMessage.indexOf(":-&amp;");
-            var endIndex = index + 7;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-angry.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":S") > -1) {
-            var index = parsedMessage.indexOf(":S");
-            var endIndex = index + 2;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-confused.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":-S") > -1) {
-            var index = parsedMessage.indexOf(":-S");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-confused.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":-[") > -1) {
-            var index = parsedMessage.indexOf(":-[");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-embarressed.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":)") > -1) {
-            var index = parsedMessage.indexOf(":)");
-            var endIndex = index + 2;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-happy.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":-)") > -1) {
-            var index = parsedMessage.indexOf(":-)");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-happy.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf("&lt;3") > -1) {
-            var index = parsedMessage.indexOf("&lt;3");
-            var endIndex = index + 5;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-love.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":(") > -1) {
-            var index = parsedMessage.indexOf(":(");
-            var endIndex = index + 2;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-sad.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(":'(") > -1) {
-            var index = parsedMessage.indexOf(":'(");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-sad.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf("(*)") > -1) {
-            var index = parsedMessage.indexOf("(*)");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-star.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf("|-(") > -1) {
-            var index = parsedMessage.indexOf("|-(");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-tired.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(";)") > -1) {
-            var index = parsedMessage.indexOf(";)");
-            var endIndex = index + 2;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-wink.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
-        }
-
-        while(parsedMessage.indexOf(";-)") > -1) {
-            var index = parsedMessage.indexOf(";-)");
-            var endIndex = index + 3;
-
-            var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/emote-wink.png"
-            var imageTag = imageTagging(emoticonSource);
-            parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
+        for(var face in smileyMap) {
+            var index;
+            while((index = parsedMessage.indexOf(face)) > -1) {
+                var endIndex = index + face.length;
+                var emoticonSource = "/usr/share/themes/" + theme_name + "/icons/emotes/" +  smileyMap[face] + ".png"
+                var imageTag = imageTagging(emoticonSource);
+                parsedMessage = parsedMessage.substr(0, index) + imageTag + parsedMessage.substr(endIndex);
+            }
         }
 
         return parsedMessage;

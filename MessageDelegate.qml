@@ -165,7 +165,7 @@ Item {
             Connections {
                 target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    callMessage.text = callMessageText.getCallMessageText();
+                    callMessage.text = getCallMessageText();
                 }
             }
 

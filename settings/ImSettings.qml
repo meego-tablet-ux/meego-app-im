@@ -68,7 +68,6 @@ AppPage {
     }
 
     Flickable {
-        parent: container.content
         anchors.fill: parent
         flickableDirection: Flickable.VerticalFlick
         contentHeight: contentColumn.height
@@ -101,7 +100,7 @@ AppPage {
 
             Repeater {
                     id: accountsView
-                    model: accountsSortedModel
+                    model: typeof(accountsSortedModel) != 'undefined' ? accountsSortedModel : null
 
                     AccountSetupDelegate {
                         parent: contentColumn
@@ -116,7 +115,8 @@ AppPage {
                 height: childrenRect.height + 20
                 Button {
                     id: addAccountButton
-                    anchors.centerIn: parent
+                    y: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     text: qsTr("Add another account")
                     textColor: theme_buttonFontColor
@@ -175,7 +175,6 @@ AppPage {
                 height: 10
             }
 
-
             /*Text {
                     anchors.margins: 10
                     text: qsTr("Audio alert on new message")
@@ -208,7 +207,6 @@ AppPage {
                     anchors.right: parent.right
                 }
             }
-
                 /*Text {
                     anchors.margins: 10
                     text: qsTr("Vibrate on new message")
@@ -220,7 +218,6 @@ AppPage {
                     on: settingsHelper.enableVibrate
                     onToggled: settingsHelper.enableVibrate = isOn;
                 }*/
-
             Item {
                 width: 10
                 height: 10
@@ -232,7 +229,8 @@ AppPage {
                 height: childrenRect.height + 20
                 Button {
                     id: clearHistoryButton
-                    anchors.centerIn: parent
+                    y: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     text: qsTr("Clear chat history")
                     textColor: theme_buttonFontColor
@@ -253,7 +251,7 @@ AppPage {
                 width: parent.width
                 source: "image://theme/settings/subheader"
 
-                visible: contactsModel.rowCount > 0
+                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
 
                 Text{
                     anchors.left: parent.left
@@ -277,13 +275,13 @@ AppPage {
                 id: blockedList
                 anchors.margins: 10
                 width: parent.width
-                visible: contactsModel.rowCount > 0
+                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
             }
 
             Item {
                 width: 10
                 height: 10
-                visible: contactsModel.rowCount > 0
+                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
             }
         }
     }

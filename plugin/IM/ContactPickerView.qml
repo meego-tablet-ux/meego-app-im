@@ -36,10 +36,10 @@ Item {
 
         ListView {
             id: blockedContactsList
-            model: contactsModel
+            model: typeof(contactsModel) != 'undefined' ? contactsModel : null
             delegate: ContactPickerDelegate {}
 
-            height: 121 * contactsModel.rowCount
+            height: typeof(contactsModel) != 'undefined' ? 121 * contactsModel.rowCount : 0
             anchors.left: parent.left
             anchors.right: parent.right
             interactive: false

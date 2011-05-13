@@ -120,8 +120,8 @@ AppPage {
 
                     text: qsTr("Add another account")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
                     onClicked: window.addPage(accountSetupComponent)
                 }
@@ -236,8 +236,8 @@ AppPage {
 
                     text: qsTr("Clear chat history")
                     textColor: theme_buttonFontColor
-                    bgSourceUp: "image://meegotheme/widgets/common/button/button-default"
-                    bgSourceDn: "image://meegotheme/widgets/common/button/button-default-pressed"
+                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
 
                     onClicked: accountsModel.clearHistory();
                 }

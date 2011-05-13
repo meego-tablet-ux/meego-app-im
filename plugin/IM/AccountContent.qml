@@ -240,7 +240,7 @@ Column {
 
     BorderImage {
         id: advancedHandler
-        source: "image://meegotheme/widgets/common/header/header"
+        source: "image://themedimage/widgets/common/header/header"
 
         property bool expanded: false
         anchors.left: parent.left

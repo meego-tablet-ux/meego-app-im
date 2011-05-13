@@ -17,7 +17,7 @@ AppPage {
     anchors.fill: parent
     enableCustomActionMenu: true
     
-    property int count: listView.count
+    property int count: listView.count + contactRequestModel.rowCount
     property int accountStatus: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
                                        || accountStatus == TelepathyTypes.ConnectionStatusConnecting)
@@ -117,30 +117,34 @@ AppPage {
             visible: showAddFriends
         }
 
-        ListView {
-            id: requestsView
-            interactive: false
-            property int itemHeight: theme_commonBoxHeight;
+        Component {
+            id: requestsViewComponent
 
-            height: itemHeight * count
+            ListView {
+                id: requestsView
+                interactive: false
+                property int itemHeight: theme_commonBoxHeight;
 
-            anchors {
-                top: noFriendsInfo.bottom
-                left: parent.left
-                right: parent.right
+                height: itemHeight * count
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+                visible: listView.visible
+                model: contactRequestModel
+                delegate: ContactRequestDelegate {
+                    itemHeight: requestsView.itemHeight
+                }
             }
-            visible: listView.visible
-            model: contactRequestModel
-            delegate: ContactRequestDelegate {
-                itemHeight: requestsView.itemHeight
-            }
+
         }
 
         ListView {
             id: listView
 
             anchors {
-                top: requestsView.bottom
+                top: noFriendsInfo.bottom
                 bottom: parent.bottom
                 left: parent.left
                 right: parent.right
@@ -149,6 +153,7 @@ AppPage {
 
             model: contactsModel
             delegate: ContactDelegate {}
+            header: requestsViewComponent
             clip: true
 
             interactive: contentHeight > height
@@ -156,7 +161,7 @@ AppPage {
 
         Title {
             id: friendsTitle
-            anchors.top: requestsView.bottom
+            anchors.top: noFriendsInfo.bottom
             text: qsTr("Add a friend")
             visible: showAddFriends
         }

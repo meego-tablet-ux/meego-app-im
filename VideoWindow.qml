@@ -84,6 +84,8 @@ Item {
             window.callAgent.setOutgoingVideo(null);
             window.callAgent.setIncomingVideo(null);
         }
+        console.log("enabled screen saver");
+        window.inhibitScreenSaver = false;
     }
 
     Connections {
@@ -92,9 +94,13 @@ Item {
             var sent = window.callAgent.videoSentOrAboutTo;
             if (sent != videoWasSent) {
                 if (sent) {
+                    console.log("inhibit screen saver");
+                    window.inhibitScreenSaver = true;
                     window.playRecordingStartSound();
                 }
                 else {
+                    console.log("enabled screen saver");
+                    window.inhibitScreenSaver = false;
                     window.playRecordingStopSound();
                 }
             }

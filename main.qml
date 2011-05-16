@@ -310,6 +310,7 @@ Window {
         }
 
         addPage(messageScreenContent);
+        fastPageSwitch = false;
     }
 
     function buildBookMenuPayloadModel()
@@ -333,6 +334,7 @@ Window {
 
         // and start the conversation
         if (notificationManager.chatActive) {
+            fastPageSwitch = true;
             window.popPage();
         }
 
@@ -354,6 +356,7 @@ Window {
 
         // and start the conversation
         if (notificationManager.chatActive) {
+            fastPageSwitch = true;
             window.popPage();
         }
         window.showMessageScreen();
@@ -363,9 +366,10 @@ Window {
 
     function acceptCall(accountId, contactId)
     {
-        //if (notificationManager.chatActive) {
-        //    window.popPage();
-        //}
+        if (notificationManager.chatActive) {
+            fastPageSwitch = true;
+            window.popPage();
+        }
 
         // set the current contact property
         window.callAgent = window.incomingCallAgent
@@ -392,6 +396,7 @@ Window {
 
         // and start the conversation
         if (notificationManager.chatActive) {
+            fastPageSwitch = true;
             window.popPage();
         }
         window.showMessageScreen();
@@ -413,6 +418,7 @@ Window {
 
         // and start the conversation
         if (notificationManager.chatActive) {
+            fastPageSwitch = true;
             window.popPage()
         }
         window.showMessageScreen();

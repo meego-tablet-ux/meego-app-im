@@ -29,15 +29,18 @@ AppPage {
                 pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
                 conversationView.model = accountsModel.conversationModel(window.currentAccountId,
                                                                          window.currentContactId);
+                if (conversationView.model != undefined) {
+                    window.fileTransferAgent.setModel(conversationView.model);
+                }
             }
-            if (conversationView.model != undefined) {
-                window.fileTransferAgent.setModel(conversationView.model);
-            }
+            // just to be sure, set the focus on the text editor
+            textEdit.focus = true;
         }
 
         conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
         notificationManager.chatActive = true;
         if(window.callAgent != undefined) {
+            callAgentConnections.target = window.callAgent;
             var status = window.callAgent.callStatus;
             if (status != CallAgent.CallStatusNoCall) {
                 messageScreenPage.loadVideoWindow();
@@ -47,11 +50,8 @@ AppPage {
                 window.callAgent.onOrientationChanged(window.orientation);
                 window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
             }
+            window.callAgent.resetMissedCalls();
         }
-        // just to be sure, set the focus on the text editor
-        textEdit.focus = true;
-
-        window.callAgent.resetMissedCalls()
     }
 
     Component.onDestruction: {
@@ -87,26 +87,28 @@ AppPage {
             if (accountId == window.currentAccountId && contactId == window.currentContactId) {
                 conversationView.model = accountsModel.conversationModel(window.currentAccountId,
                                                                          contactId);
+                conversationModelConnections.target = conversationView.model;
                 window.fileTransferAgent.setModel(conversationView.model);
+                textEdit.focus = true;
             }
-            textEdit.focus = true;
         }
 
         onGroupChatReady:  {
             if (accountId == window.currentAccountId && channelPath == window.chatAgent.channelPath) {
                 conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
                                                                               channelPath);
-                window.fileTransferAgent.setModel(conversationView.model);
+                conversationModelConnections.target = conversationView.model;
+                textEdit.focus = true;
             }
-            textEdit.focus = true;
         }
     }
 
     Connections {
-        target: callAgent
+        id: callAgentConnections
+        target: null
         onCallStatusChanged: {
             // Several sounds might play at once here. Should be prioritize, make a queue, or let them all play ?
-            if (callAgent.callStatus == CallAgent.CallStatusNoCall) {
+            if (window.callAgent.callStatus == CallAgent.CallStatusNoCall) {
                 window.fullScreen = false;
                 window.fullContent = false;
                 var videoWindow = messageScreenPage.getVideoWindow();
@@ -114,19 +116,19 @@ AppPage {
                 messageScreenPage.unloadVideoWindow();
             }
             // activate call ringing
-            if(callAgent.callStatus == CallAgent.CallStatusRinging) {
+            if(window.callAgent.callStatus == CallAgent.CallStatusRinging) {
                 window.playOutgoingCallSound();
             } else {
                 window.stopLoopedSound();
             }
             // connection established
-            if (callAgent.callStatus == CallAgent.CallStatusTalking) {
+            if (window.callAgent.callStatus == CallAgent.CallStatusTalking) {
                 window.playConnectedCallSound();
             }
-            if (callAgent.callStatus == CallAgent.CallStatusHangingUp) {
+            if (window.callAgent.callStatus == CallAgent.CallStatusHangingUp) {
                 window.playHangUpCallSound();
             }
-            if (callAgent.error) {
+            if (window.callAgent.error) {
                 window.playErrorSound();
                 // do not clear error on purpose, so other components do not miss it;
                 // we might see the error twice, and cannot really tell if it is the same error or not,
@@ -141,6 +143,33 @@ AppPage {
         onSearch: {
             conversationView.model.searchByString(needle);
             searchHeader.searchActive = (needle != "");
+        }
+    }
+
+    Connections {
+        id: conversationModelConnections
+        target: null
+
+        onCurrentRowMatchChanged: {
+            conversationView.positionViewAtIndex(conversationView.model.currentRowMatch, ListView.Center);
+        }
+
+        onBackFetchable: {
+            if (conversationView.model.canFetchMoreBack()) {
+                historyFeeder.running = true;
+            }
+        }
+        onBackFetched: {
+            historyFeeder.fetching = false;
+            if (historyFeeder.oldIndex != -1) {
+                conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
+            } else {
+                conversationView.positionViewAtIndex(0, ListView.End);
+            }
+
+            if (!conversationView.model.canFetchMoreBack()) {
+                historyFeeder.running = false;
+            }
         }
     }
 
@@ -164,13 +193,6 @@ AppPage {
             }
             onNewerClicked: {
                 conversationView.model.newerMatch();
-            }
-        }
-
-        Connections {
-            target: conversationView.model != undefined ? conversationView.model : null
-            onCurrentRowMatchChanged: {
-                conversationView.positionViewAtIndex(conversationView.model.currentRowMatch, ListView.Center);
             }
         }
 
@@ -264,28 +286,6 @@ AppPage {
             }
         }
 
-        Connections {
-            target: conversationView.model != undefined ? conversationView.model : null
-            ignoreUnknownSignals: true
-            onBackFetchable: {
-                if (conversationView.model.canFetchMoreBack()) {
-                    historyFeeder.running = true;
-                }
-            }
-            onBackFetched: {
-                historyFeeder.fetching = false;
-                if (historyFeeder.oldIndex != -1) {
-                    conversationView.positionViewAtIndex(historyFeeder.oldIndex + numItems, ListView.Beginning);
-                } else {
-                    conversationView.positionViewAtIndex(0, ListView.End);
-                }
-
-                if (!conversationView.model.canFetchMoreBack()) {
-                    historyFeeder.running = false;
-                }
-            }
-        }
-
         Image {
             id: textBar
             source: "image://themedimage/widgets/common/action-bar/action-bar-background"
@@ -312,6 +312,7 @@ AppPage {
                     textFormat: Text.RichText
                     font.pixelSize: theme_fontPixelSizeLarge
                     height: contentHeight + 2 * anchors.margins
+                    enabled: (model != undefined? true : false)
                     Keys.onEnterPressed: {
                         if(parseChatText(textEdit.text) != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
@@ -388,6 +389,21 @@ AppPage {
                 textEdit.focus = true;
                 textEdit.cursorPosition = position + 1;
             }
+        }
+    }
+
+    ContextMenu {
+        id: messageContentMenu
+
+        width: 200
+        forceFingerMode: 2
+
+        onVisibleChanged: {
+            actionMenuOpen = visible
+        }
+
+        content: MessageContentMenu {
+            currentPage: messageScreenPage;
         }
     }
 
@@ -489,21 +505,6 @@ AppPage {
             accountsModel.endChat(window.currentAccountId, contactId);
         }
         window.popPage();
-    }
-
-    ContextMenu {
-        id: messageContentMenu
-
-        width: 200
-        forceFingerMode: 2
-
-        onVisibleChanged: {
-            actionMenuOpen = visible
-        }
-
-        content: MessageContentMenu {
-            currentPage: messageScreenPage;
-        }
     }
 
     function loadVideoWindow() {

@@ -20,25 +20,18 @@ AppPage {
     property string contactName: window.contactItem.data(AccountsModel.AliasRole);
 
     Component.onCompleted: {
-        if(window.chatAgent != undefined && window.chatAgent.isConference) {
-            pageTitle = qsTr("Group conversation");
-        } else {
-            pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
-        }
-
         if(window.chatAgent != undefined && window.chatAgent.existsChat) {
-            if(window.chatAgent.isConference) {
+            if (window.chatAgent.isConference) {
+                pageTitle = qsTr("Group conversation");
                 conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
                                                                               window.chatAgent.channelPath);
-                if (conversationView.model != undefined) {
-                    window.fileTransferAgent.setModel(conversationView.model);
-                }
             } else {
+                pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
                 conversationView.model = accountsModel.conversationModel(window.currentAccountId,
                                                                          window.currentContactId);
-                if (conversationView.model != undefined) {
-                    window.fileTransferAgent.setModel(conversationView.model);
-                }
+            }
+            if (conversationView.model != undefined) {
+                window.fileTransferAgent.setModel(conversationView.model);
             }
         }
 

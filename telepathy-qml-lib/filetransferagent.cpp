@@ -29,6 +29,20 @@ FileTransferAgent::~FileTransferAgent()
 {
     qDebug() << "FileTransferAgent::~FileTransferAgent: destroyed for contact " << mContact->id();
 
+    
+    QList<IncomingTransfer>::iterator it = mIncomingTransfers.begin();
+    while (it != mIncomingTransfers.end()) {
+        delete (*it).file;
+        (*it).file = NULL;
+        ++it;
+    }
+    QList<OutgoingTransfer>::iterator ot = mOutgoingTransfers.begin();
+    while (ot != mOutgoingTransfers.end()) {
+        delete (*ot).file;
+        (*ot).file = NULL;
+        ++ot;
+    }
+
     // todo deallocate whatever is needed
 }
 
@@ -160,8 +174,6 @@ void FileTransferAgent::onChannelStateChanged(Tp::FileTransferState state, Tp::F
                         if ((*it).file->isOpen()) {
                             (*it).file->close();
                         }
-                        delete (*it).file;
-                        (*it).file = 0;
                     }
                 }
             }
@@ -175,8 +187,6 @@ void FileTransferAgent::onChannelStateChanged(Tp::FileTransferState state, Tp::F
                         if ((*it).file->isOpen()) {
                             (*it).file->close();
                         }
-                        delete (*it).file;
-                        (*it).file = 0;
                     }
                 }
             }
@@ -325,7 +335,10 @@ void FileTransferAgent::acceptTransfer(Tp::IncomingFileTransferChannelPtr channe
                 transfer.file->remove();
             }
 
-            transfer.file->open(QIODevice::WriteOnly);
+            if (!transfer.file->open(QIODevice::WriteOnly)) {
+                qWarning() << "Failed to open file " << info.absoluteFilePath() << " for writing";
+                break;
+            }
             channel->acceptFile(0, transfer.file);
             break;
         }

@@ -142,6 +142,7 @@ void CallAgent::endCall()
     }
 
     if (mFarstreamChannel != 0) {
+        mFarstreamChannel->stop();
         mFarstreamChannel->deleteLater();
         mFarstreamChannel = 0;
     }

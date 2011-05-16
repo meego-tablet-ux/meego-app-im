@@ -52,6 +52,8 @@ public:
     void setIncomingVideo(QmlGstVideoItem *item);
     void setOutgoingVideo(QmlGstVideoItem *item);
 
+    void stop();
+
 signals:
     void stateChanged();
     void error(const QString &errorMessage);

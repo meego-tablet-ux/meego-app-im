@@ -1081,6 +1081,13 @@ void FarstreamChannel::setOutgoingVideo(QmlGstVideoItem *item)
     initOutgoingVideoWidget();
 }
 
+void FarstreamChannel::stop()
+{
+  if (mGstPipeline) {
+    gst_element_set_state(mGstPipeline, GST_STATE_NULL);
+  }
+}
+
 bool FarstreamChannel::canSwapVideos() const
 {
     return (mGstVideoOutput != NULL);

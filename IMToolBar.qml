@@ -103,7 +103,7 @@ BottomToolBar {
                         window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
                         window.callAgent != undefined && window.callAgent.existingCall &&
                         window.callAgent.callStatus != CallAgent.CallStatusNoCall &&
-                        !window.chatAgent.isConference ? 1 : 0
+                        !(window.chatAgent != undefined && window.chatAgent.isConference) ? 1 : 0
                 visible: opacity > 0
 
                 icon: window.callAgent.videoSentOrAboutTo ?

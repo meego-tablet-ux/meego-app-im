@@ -164,12 +164,12 @@ Item {
                     statusSeparator.visible = false;
                     updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
-                    updateNickItem.visible = false;
+                    updateNickItem.showUpdateNick = false;
                     updateNick.visible = false;
-                    nicknameSeparator.visible = false;
-                    addIMContactItem.visible = false;
+                    nicknameSeparator.showUpdateNick = false;
+                    addIMContactItem.showAddFriend = false;
                     addAFriend.visible = false;
-                    friendSeparator.visible = false;
+                    friendSeparator.showAddFriend = false;
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
@@ -353,6 +353,9 @@ Item {
         MenuItem {
             id: updateNickItem
             text: qsTr("Change display name")
+            visible: (showUpdateNick && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
+
+            property bool showUpdateNick: true
 
             onClicked: {
                 if (nicknameColumn.visible) {
@@ -367,10 +370,10 @@ Item {
                     statusSeparator.visible = false;
                     updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
-                    nicknameSeparator.visible = false;
-                    addIMContactItem.visible = false;
+                    nicknameSeparator.showUpdateNick = false;
+                    addIMContactItem.showAddFriend = false;
                     addAFriend.visible = false;
-                    friendSeparator.visible = false;
+                    friendSeparator.showAddFriend = false;
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
@@ -389,10 +392,10 @@ Item {
                 statusSeparator.visible = true;
                 updateStatusItem.visible = true;
                 updateStatusSeparator.visible = true;
-                nicknameSeparator.visible = true;
-                addIMContactItem.visible = true;
+                nicknameSeparator.showUpdateNick = true;
+                addIMContactItem.showAddFriend = true;
                 addAFriend.visible = true;
-                friendSeparator.visible = true;
+                friendSeparator.showAddFriend = true;
                 clearHistoryItem.visible = true;
                 historySeparator.visible = true;
                 logOutItem.visible = true;
@@ -473,12 +476,19 @@ Item {
             }
         }
 
-        MenuItemSeparator { id: nicknameSeparator }
+        MenuItemSeparator {
+            id: nicknameSeparator
+            visible: (showUpdateNick && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
+
+            property bool showUpdateNick: true
+        }
 
         MenuItem {
             id: addIMContactItem
             text: qsTr("Add a friend")
-            visible: window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected
+            visible: (showAddFriend && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
+
+            property bool showAddFriend: true
 
             onClicked: {
                 if(addAFriend.opacity == 1) {
@@ -493,9 +503,9 @@ Item {
                     updateStatusItem.visible = true;
                     updateStatusSeparator.visible = true;
                     updateNick.visible = true;
-                    updateNickItem.visible = true;
-                    nicknameSeparator.visible = true;
-                    friendSeparator.visible = true;
+                    updateNickItem.showUpdateNick = true;
+                    nicknameSeparator.showUpdateNick = true;
+                    friendSeparator.showAddFriend = true;
                     clearHistoryItem.visible = true;
                     historySeparator.visible = true;
                     logOutItem.visible = true;
@@ -511,9 +521,9 @@ Item {
                     updateStatusItem.visible = false;
                     updateStatusSeparator.visible = false;
                     updateNick.visible = false;
-                    updateNickItem.visible = false;
-                    nicknameSeparator.visible = false;
-                    friendSeparator.visible = false;
+                    updateNickItem.showUpdateNick = false;
+                    nicknameSeparator.showUpdateNick = false;
+                    friendSeparator.showAddFriend = false;
                     clearHistoryItem.visible = false;
                     historySeparator.visible = false;
                     logOutItem.visible = false;
@@ -538,7 +548,12 @@ Item {
             }
         }
 
-        MenuItemSeparator { id: friendSeparator }
+        MenuItemSeparator {
+            id: friendSeparator
+            visible: (showAddFriend && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
+
+            property bool showAddFriend: true
+        }
 
         MenuItem {
             id: clearHistoryItem
@@ -554,11 +569,11 @@ Item {
 
         MenuItem {
             id: logOutItem
-            text: (window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected?
+            text: (window.currentAccountStatus == TelepathyTypes.ConnectionStatusDisconnected?
                        qsTr("Log in") : qsTr("Log out"))
 
             onClicked: {
-                if(window.accountItem.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusDisconnected) {
+                if(window.currentAccountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
                     contactsScreenPage.requestedStatusType = TelepathyTypes.ConnectionPresenceTypeAvailable;
                     contactsScreenPage.requestedStatus = "available"; // i18n ok
                     contactsScreenPage.requestedStatusMessage = window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole);
@@ -625,11 +640,11 @@ Item {
         updateStatusItem.visible = true;
         updateStatusSeparator.visible = true;
         updateNick.visible = true;
-        updateNickItem.visible = true;
-        nicknameSeparator.visible = true;
-        addIMContactItem.visible = true;
+        updateNickItem.showUpdateNick = true;
+        nicknameSeparator.showUpdateNick = true;
+        addIMContactItem.showAddFriend = true;
         addAFriend.visible = true;
-        friendSeparator.visible = true;
+        friendSeparator.showAddFriend = true;
         clearHistoryItem.visible = true;
         historySeparator.visible = true;
         logOutItem.visible = true;

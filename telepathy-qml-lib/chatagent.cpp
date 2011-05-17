@@ -285,6 +285,9 @@ void ChatAgent::endChat()
     disconnect(mTextChannel.data(), SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                this, SLOT(onChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
+    // flush the message queue
+    model()->connectChannelQueue();
+
     // todo set status, clean objects, member vars
     // todo handle close
     mTextChannel->requestClose();

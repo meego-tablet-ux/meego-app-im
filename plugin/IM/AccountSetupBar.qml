@@ -90,6 +90,7 @@ Column {
 
     ModalMessageBox {
         id: messageBox
+        parent: window
         text: qsTr("Are you sure to delete this account?")
 
         title: qsTr("Delete account")

@@ -80,9 +80,10 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
                                       SettingsHelper::self());
 
     // get the network status and load it
-    mNetworkConfigManager = new QNetworkConfigurationManager();
-    connect(mNetworkConfigManager, SIGNAL(onlineStateChanged(bool)), this, SLOT(onNetworkStatusChanged(bool)));
-    onNetworkStatusChanged(mNetworkConfigManager->isOnline());
+    mNetworkStateProperty = new ContextProperty("Internet.NetworkState", this);
+    mNetworkStateProperty->subscribe();
+    connect(mNetworkStateProperty, SIGNAL(valueChanged()), this, SLOT(onNetworkStatusChanged()));
+    onNetworkStatusChanged();
 }
 
 void Components::registerTypes(const char *uri)
@@ -142,7 +143,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     connect(mTpManager, SIGNAL(handlerRegistered()), SLOT(onHandlerRegistered()));
     connect(mTpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
             this, SLOT(onContactsUpgraded()));
-    connect(mNetworkConfigManager, SIGNAL(onlineStateChanged(bool)),
+    connect(this, SIGNAL(networkStatusChanged(bool)),
             mAccountsModel, SLOT(onNetworkStatusChanged(bool)));
 
     mAccountsModel->setNotificationManager(mNotificationManager);
@@ -193,9 +194,16 @@ void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *m
     }
 }
 
-void Components::onNetworkStatusChanged(bool isOnline)
+void Components::onNetworkStatusChanged()
 {
+    QString networkState = mNetworkStateProperty->value().toString();
+    qDebug() << "Components::onNetworkStatusChanged: Network state value: " << networkState;
+    bool isOnline = true;
+    if (!networkState.isEmpty() && networkState == "disconnected") {
+        isOnline = false;
+    }
     mRootContext->setContextProperty(QString::fromLatin1("networkOnline"), QVariant(isOnline));
+    emit networkStatusChanged(isOnline);
 }
 
 void Components::onHandlerRegistered()

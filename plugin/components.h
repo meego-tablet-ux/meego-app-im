@@ -20,6 +20,8 @@
 #include "../telepathy-qml-lib/notificationmanager.h"
 #include "../telepathy-qml-lib/improtocolsmodel.h"
 
+#include <contextsubscriber/contextproperty.h>
+
 #include <QtDeclarative/QDeclarativeContext>
 #include <QtDeclarative/QDeclarativeExtensionPlugin>
 #include <QtNetwork/QNetworkConfigurationManager>
@@ -41,18 +43,18 @@ Q_SIGNALS:
     void contactsModelCreated();
     void chatModelCreated();
     void requestsModelCreated();
+    void networkStatusChanged(bool online);
 
 protected:
     void loadLastUsedAccount(const QString accountId, IMAccountsModel *model);
 
 private Q_SLOTS:
     void onContactsUpgraded();
-    void onNetworkStatusChanged(bool isOnline);
+    void onNetworkStatusChanged();
     void onHandlerRegistered();
     void onApproverRegistered();
 
 private:
-    QNetworkConfigurationManager *mNetworkConfigManager;
     QDeclarativeContext *mRootContext;
     TelepathyManager *mTpManager;
     ChannelHandler *mChannelHandler;
@@ -64,7 +66,7 @@ private:
     SettingsHelper *mSettingsHelper;
     IMGroupChatModel *mGroupChatModel;
     IMProtocolsModel *mProtocolsModel;
-
+    ContextProperty *mNetworkStateProperty;
 };
 
 #endif // COMPONENTS_H

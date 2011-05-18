@@ -849,9 +849,11 @@ gboolean FarstreamChannel::onBusWatch(GstBus *bus, GstMessage *message, Farstrea
         FsMediaType type;
         g_object_get(session, "media-type", &type, NULL);
 
+        gchar *codec_string = fs_codec_to_string(codec);
         qDebug() << "FarstreamChannel::onBusWatch: farsight-send-codec-changed "
                  << " type=" << type
-                 << " codec=" << fs_codec_to_string(codec);
+                 << " codec=" << codec_string;
+        g_free(codec_string);
 
     } else if (gst_structure_has_name(s, "farsight-recv-codecs-changed")) {
 
@@ -889,7 +891,9 @@ gboolean FarstreamChannel::onBusWatch(GstBus *bus, GstMessage *message, Farstrea
         GList *list;
         for (list = codecs; list != NULL; list = g_list_next(list)) {
             FsCodec *codec = static_cast<FsCodec *> (list->data);
-            qDebug() << "       codec " << fs_codec_to_string(codec);
+            gchar *codec_string = fs_codec_to_string(codec);
+            qDebug() << "       codec " << codec_string;
+            g_free(codec_string);
         }
 
         g_object_unref(session);

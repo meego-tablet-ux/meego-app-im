@@ -574,14 +574,14 @@ Window {
 
     IncomingCall {
         id: incomingCallDialog
-        anchors {
-            verticalCenter: parent.verticalCenter
-            horizontalCenter: parent.horizontalCenter
-        }
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     ConfirmationDialog {
         id: confirmationDialogItem
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     PhotoPicker {

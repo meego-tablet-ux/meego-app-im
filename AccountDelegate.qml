@@ -71,6 +71,11 @@ Item {
                     return;
                 }
 
+                // filter out signals that are not for this account
+                if (confirmationDialogItem.accountId != model.id) {
+                    return;
+                }
+
                 // if the dialog was accepted we should disconnect all other accounts
                 // of the same type
                 accountFactory.disconnectOtherAccounts(model.icon, model.id);
@@ -113,8 +118,9 @@ Item {
                                 // show the dialog asking the user if he really wants to connect the account
 
                                 confirmationDialogItem.title = qsTr("Multiple accounts connected");
-                                confirmationDialogItem.mainText = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                                confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
                                 confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
+                                confirmationDialogItem.accountId = id;
                                 confirmationDialogItem.show();
                             } else {
                                 if(payload.data(AccountsModel.AutomaticPresenceTypeRole) != TelepathyTypes.ConnectionPresenceTypeOffline) {

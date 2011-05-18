@@ -5,12 +5,12 @@ import MeeGo.App.IM 0.1
 ModalMessageBox {
     id: container
 
-    property string mainText: ""
-    property string subText: ""
     property string instanceReason: ""
+    property string accountId: ""
 
     width: 420
     height: 480
+    fogMaskVisible: false
 
     acceptButtonText: qsTr("Yes")
     acceptButtonImage: "image://themedimage/images/btn_blue_up"

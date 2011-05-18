@@ -623,6 +623,7 @@ Item {
         confirmationDialogItem.title = qsTr("Multiple accounts connected");
         confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
         confirmationDialogItem.instanceReason = "contact-menu-single-instance"; // i18n ok
+        confirmationDialogItem.accountId = window.currentAccountId;
         confirmationDialogItem.show();
     }
 

@@ -75,10 +75,14 @@ Column {
             if (confirmationDialogItem.instanceReason != "account-setup-single-instance") {
                 return;
             }
+            var currentAccount = (edit ? accountId : "");
+            if (confirmationDialogItem.accountId != currentAccount) {
+                return;
+            }
 
             // if the dialog was accepted we should disconnect all other accounts
             // of the same type
-            accountFactory.disconnectOtherAccounts(icon, (edit ? accountId : ""));
+            accountFactory.disconnectOtherAccounts(icon, currentAccount);
 
             // and finally create the account
             accountHelper.createAccount();
@@ -111,11 +115,13 @@ Column {
         // check if the service allows for more than one account to be used at the same time
         if (protocolsModel.isSingleInstance(icon)) {
             // check if there is any other account of type online
-            if (accountFactory.otherAccountsOnline(icon, (edit ? accountId : "")) > 0) {
+            var currentAccount = (edit ? accountId : "")
+            if (accountFactory.otherAccountsOnline(icon, currentAccount) > 0) {
                 // TODO: show the dialog asking if the other accounts should be signed off
                 confirmationDialogItem.instanceReason = "account-setup-single-instance"; // i18n ok
                 confirmationDialogItem.title = qsTr("Multiple accounts connected");
                 confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                confirmationDialogItem.accountId = currentAccount;
                 confirmationDialogItem.show();
                 return;
             }

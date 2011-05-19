@@ -17,31 +17,15 @@ AppPage {
     enableCustomActionMenu: true
 
     property string contactId: window.currentContactId
-    property string contactName: window.contactItem.data(AccountsModel.AliasRole);
+    property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
 
     Component.onCompleted: {
-        if (window.chatAgent != undefined) {
-            setupDataFromChatAgent();
-        }
-
         notificationManager.chatActive = true;
-        if(window.callAgent != undefined) {
-            callAgentConnections.target = window.callAgent;
-            var status = window.callAgent.callStatus;
-            if (status != CallAgent.CallStatusNoCall) {
-                messageScreenPage.loadVideoWindow();
-                var videoWindow = messageScreenPage.getVideoWindow();
-                videoWindow.opacity = 1;
-                window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
-                window.callAgent.onOrientationChanged(window.orientation);
-                window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
-            }
-            window.callAgent.resetMissedCalls();
-        }
+        initPage();
     }
 
     Component.onDestruction: {
-        if(!window.chatAgent.isConference) {
+        if(window.chatAgent != undefined && !window.chatAgent.isConference) {
             accountsModel.disconnectConversationModel(window.currentAccountId,
                                                       contactId);
         } else {
@@ -526,6 +510,27 @@ AppPage {
             }
             // FIXME: do this until the bug in pageTitle update is fixed
             window.toolBarTitle = pageTitle;
+        }
+    }
+
+    function initPage()
+    {
+        if (window.chatAgent != undefined) {
+            setupDataFromChatAgent();
+        }
+
+        if(window.callAgent != undefined) {
+            callAgentConnections.target = window.callAgent;
+            var status = window.callAgent.callStatus;
+            if (status != CallAgent.CallStatusNoCall) {
+                messageScreenPage.loadVideoWindow();
+                var videoWindow = messageScreenPage.getVideoWindow();
+                videoWindow.opacity = 1;
+                window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
+                window.callAgent.onOrientationChanged(window.orientation);
+                window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
+            }
+            window.callAgent.resetMissedCalls();
         }
     }
 }

@@ -139,16 +139,11 @@ AppPage {
                         } else {
                             accountsModel.addContactsToChat(window.currentAccountId, window.currentContactId, contactsList);
                         }
-                        window.popPage();
 
-                        // if cannot add contacts, go back to the contacts screen
-                        // otherwise reloading the messageScreenPage has problems
-                        // the onDestroyed and onCompleted methods don't get called in order
-                        // therefore it's safest to go back all the way to the contacts list
-                        // then reload the messageScreenPage when the signal is received
-                        if(!window.chatAgent.canAddContacts) {
-                            window.popPage();
-                        }
+                        // set chatActive before going back to the message screen
+                        // if in the future, this screen could be called from another screen, this should be fixed
+                        notificationManager.chatActive = true;
+                        window.popPage();
                     }
                 }
 

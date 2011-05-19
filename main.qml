@@ -237,7 +237,13 @@ Window {
             window.contactItem = undefined;
             window.callAgent = undefined;
 
-            window.showMessageScreen();
+            // reuse the existing message screen if possible
+            if (notificationManager.chatActive) {
+                window.pageStack.currentPage.initPage();
+            } else {
+                window.showMessageScreen();
+            }
+
             accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
 

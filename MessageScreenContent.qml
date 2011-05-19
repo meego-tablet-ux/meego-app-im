@@ -20,24 +20,10 @@ AppPage {
     property string contactName: window.contactItem.data(AccountsModel.AliasRole);
 
     Component.onCompleted: {
-        if(window.chatAgent != undefined && window.chatAgent.existsChat) {
-            if (window.chatAgent.isConference) {
-                pageTitle = qsTr("Group conversation");
-                conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
-                                                                              window.chatAgent.channelPath);
-            } else {
-                pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
-                conversationView.model = accountsModel.conversationModel(window.currentAccountId,
-                                                                         window.currentContactId);
-                if (conversationView.model != undefined) {
-                    window.fileTransferAgent.setModel(conversationView.model);
-                }
-            }
-            // just to be sure, set the focus on the text editor
-            textEdit.focus = true;
+        if (window.chatAgent != undefined) {
+            setupDataFromChatAgent();
         }
 
-        conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
         notificationManager.chatActive = true;
         if(window.callAgent != undefined) {
             callAgentConnections.target = window.callAgent;
@@ -85,20 +71,13 @@ AppPage {
         target: accountsModel
         onChatReady:  {
             if (accountId == window.currentAccountId && contactId == window.currentContactId) {
-                conversationView.model = accountsModel.conversationModel(window.currentAccountId,
-                                                                         contactId);
-                conversationModelConnections.target = conversationView.model;
-                window.fileTransferAgent.setModel(conversationView.model);
-                textEdit.focus = true;
+                setupDataFromChatAgent();
             }
         }
 
         onGroupChatReady:  {
             if (accountId == window.currentAccountId && channelPath == window.chatAgent.channelPath) {
-                conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
-                                                                              channelPath);
-                conversationModelConnections.target = conversationView.model;
-                textEdit.focus = true;
+                setupDataFromChatAgent();
             }
         }
     }
@@ -312,7 +291,7 @@ AppPage {
                     textFormat: Text.RichText
                     font.pixelSize: theme_fontPixelSizeLarge
                     height: contentHeight + 2 * anchors.margins
-                    enabled: (model != undefined? true : false)
+                    enabled: (conversationView.model != undefined? true : false)
                     Keys.onEnterPressed: {
                         if(parseChatText(textEdit.text) != "") {
                             conversationView.model.sendMessage(parseChatText(textEdit.text));
@@ -407,7 +386,8 @@ AppPage {
         }
     }
 
-    function parseChatText(message) {
+    function parseChatText(message)
+    {
         var parsedMessage;
 
         // first remove the head
@@ -507,13 +487,15 @@ AppPage {
         window.popPage();
     }
 
-    function loadVideoWindow() {
+    function loadVideoWindow()
+    {
         if (videoWindowLoader.item == null) {
             videoWindowLoader.sourceComponent = videoWindowComponent;
         }
     }
 
-    function unloadVideoWindow() {
+    function unloadVideoWindow()
+    {
         videoWindowLoader.sourceComponent = undefined;
     }
 
@@ -521,4 +503,29 @@ AppPage {
         return videoWindowLoader.item;
     }
 
+    function setupDataFromChatAgent()
+    {
+        if(window.chatAgent != undefined && window.chatAgent.existsChat) {
+            if (window.chatAgent.isConference) {
+                pageTitle = qsTr("Group conversation");
+                conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
+                                                                              window.chatAgent.channelPath);
+            } else {
+                pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
+                conversationView.model = accountsModel.conversationModel(window.currentAccountId,
+                                                                         window.currentContactId);
+                if (conversationView.model != undefined) {
+                    window.fileTransferAgent.setModel(conversationView.model);
+                }
+            }
+
+            if (conversationView.model != undefined) {
+                conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
+                conversationModelConnections.target = conversationView.model;
+                textEdit.focus = true;
+            }
+            // FIXME: do this until the bug in pageTitle update is fixed
+            window.toolBarTitle = pageTitle;
+        }
+    }
 }

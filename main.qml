@@ -337,12 +337,9 @@ Window {
             fastPageSwitch = true;
             window.popPage();
         }
-
         window.showMessageScreen();
         accountsModel.startChat(window.currentAccountId, contactId);
-
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
-        console.log("window.startConversation: finished");
     }
 
     function startGroupConversation(channelPath)

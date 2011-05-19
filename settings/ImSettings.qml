@@ -23,6 +23,12 @@ AppPage {
         id: appModel
     }
 
+    Component.onCompleted: {
+        if (contactsModel != undefined && contactsModel != null) {
+            contactsModel.setBlockedOnly(true);
+        }
+    }
+
     Connections {
         target: accountsModel
         onComponentsLoaded: {

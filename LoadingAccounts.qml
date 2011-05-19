@@ -25,8 +25,27 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             color: theme_fontColorHighlight
             font.pixelSize: theme_fontPixelSizeLarge
-            text: qsTr("Loading accounts...")
+            text: qsTr("Loading accounts")
             verticalAlignment: Text.AlignVCenter
+        }
+
+        Item {
+            anchors.verticalCenter: loadingText.verticalCenter
+            anchors.left: loadingText.right
+            anchors.leftMargin: 15
+            Spinner {
+                id: loadingIcon
+
+                width: theme_fontPixelSizeLarge
+                height: theme_fontPixelSizeLarge
+                spinning: container.visible
+
+                onSpinningChanged: {
+                    if(container.visible && !spinning) {
+                        spinning = true;
+                    }
+                }
+            }
         }
     }
 }

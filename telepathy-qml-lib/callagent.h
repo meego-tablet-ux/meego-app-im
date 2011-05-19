@@ -191,11 +191,14 @@ protected Q_SLOTS:
     void onRemoteSendingStateChanged(const QHash< Tp::ContactPtr, Tpy::SendingState > &remoteSendingStates);
     void onRemoteMembersRemoved(const Tp::Contacts &remoteMembers);
     void onRequestContentFinished(Tp::PendingOperation *op);
+    void onRequestContentFinishedSwitchOn(Tp::PendingOperation *op);
     void onRemoveContentFinished(Tp::PendingOperation *op);
     void onRequestCloseFinished(Tp::PendingOperation *op);
     void onAcceptCallFinished(Tp::PendingOperation *op);
     void onRequestHoldFinished(Tp::PendingOperation *op);
     void onFarstreamChannelCreated(Tp::PendingOperation *op);
+    void onRequestSendingVideoFinished(Tp::PendingOperation *op);
+    void onRequestSendingAudioFinished(Tp::PendingOperation *op);
 
 protected:
     Tp::AccountPtr mAccount;
@@ -229,6 +232,9 @@ protected:
     void setupFarstreamChannel(FarstreamChannel *farstreamChannel);
     void handleReadyChannel();
     Tpy::SendingState getVideoSentState() const;
+
+    void handleRequestContentFinished(Tp::PendingOperation *op, bool switchOn);
+    void requestSendingVideo(Tpy::CallContentPtr content, bool send);
 
     static const char *streamType(Tp::MediaStreamType streamType);
 };

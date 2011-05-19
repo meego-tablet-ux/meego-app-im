@@ -275,6 +275,7 @@ static void releaseGhostPad(GstElement *bin, const char *name, GstElement *sink)
                 }
                 gst_object_unref(pad);
             }
+            gst_element_remove_pad(GST_ELEMENT(bin), ghostPad);
         }
     }
 }
@@ -282,6 +283,11 @@ static void releaseGhostPad(GstElement *bin, const char *name, GstElement *sink)
 void FarstreamChannel::initAudioInput()
 {
     LIFETIME_TRACER();
+
+    if (mGstAudioInput) {
+      qDebug() << "Audio input already initialized, doing nothing";
+      return;
+    }
 
     mGstAudioInput = gst_bin_new("audio-input-bin");
     if (!mGstAudioInput) {
@@ -329,15 +335,6 @@ void FarstreamChannel::initAudioInput()
         gst_object_ref (mGstAudioInputVolume);
     }
 
-    /*
-    GstElement *level = addElementToBin(mGstAudioInput, source, "level");
-    if (!level) {
-        setError("GStreamer audio input level could not be created");
-    } else {
-        source = level;
-    }
-    */
-
     GstPad *src = gst_element_get_static_pad(source, "src");
     if (!src) {
         setError("GStreamer audio volume source pad failed");
@@ -374,7 +371,6 @@ void FarstreamChannel::deinitAudioInput()
 
     if (mGstAudioInput) {
         gst_element_set_state(mGstAudioInput, GST_STATE_NULL);
-        gst_bin_remove (GST_BIN(mGstPipeline), mGstAudioInput);
         gst_object_unref(mGstAudioInput);
         mGstAudioInput = 0;
     }
@@ -454,6 +450,11 @@ void FarstreamChannel::initAudioOutput()
 {
     LIFETIME_TRACER();
 
+    if (mGstAudioOutput) {
+      qDebug() << "Audio output already initialized, doing nothing";
+      return;
+    }
+
     mGstAudioOutputSink = NULL;
     mGstAudioOutput = gst_bin_new("audio-output-bin");
     if (!mGstAudioOutput) {
@@ -524,7 +525,6 @@ void FarstreamChannel::deinitAudioOutput()
     if (mGstAudioOutput) {
         gst_element_set_state(mGstAudioOutput, GST_STATE_NULL);
         gst_object_unref(mGstAudioOutput);
-        gst_bin_remove (GST_BIN(mGstPipeline), mGstAudioOutput);
         mGstAudioOutput = 0;
     }
 
@@ -547,6 +547,11 @@ void FarstreamChannel::deinitAudioOutput()
 void FarstreamChannel::initVideoInput()
 {
     LIFETIME_TRACER();
+
+    if (mGstVideoInput) {
+      qDebug() << "Video input already initialized, doing nothing";
+      return;
+    }
 
     mGstVideoInput = gst_bin_new("video-input-bin");
     if (!mGstVideoInput) {
@@ -665,22 +670,19 @@ void FarstreamChannel::deinitVideoInput()
     if (mGstVideoInput) {
         gst_element_set_state(mGstVideoInput, GST_STATE_NULL);
         gst_bin_remove(GST_BIN(mGstVideoInput), mGstOutgoingVideoSink);
-        gst_bin_remove (GST_BIN(mGstPipeline), mGstVideoInput);
         gst_object_unref(mGstVideoInput);
         mGstVideoInput = 0;
     }
-
-    /*
-    if (mOutgoingSurface) {
-      delete mOutgoingSurface;
-      mOutgoingSurface = 0;
-    }
-    */
 }
 
 void FarstreamChannel::initVideoOutput()
 {
     LIFETIME_TRACER();
+
+    if (mGstVideoOutput) {
+      qDebug() << "Video output already initialized, doing nothing";
+      return;
+    }
 
     mGstVideoOutput = gst_bin_new("video-output-bin");
     if (!mGstVideoOutput) {
@@ -716,13 +718,6 @@ void FarstreamChannel::initVideoOutput()
         gst_object_ref(mGstIncomingVideoSink);
         //g_object_set(G_OBJECT(element), "async", false, "sync", false, "force-aspect-ratio", true, NULL);
     }
-
-/*
-    GstStateChangeReturn resState = gst_element_set_state(mGstVideoOutput, GST_STATE_PLAYING);
-    if (resState == GST_STATE_CHANGE_FAILURE) {
-        setError("GStreamer input could not be set to playing");
-        return;
-    }*/
 }
 
 void FarstreamChannel::deinitVideoOutput()
@@ -750,17 +745,9 @@ void FarstreamChannel::deinitVideoOutput()
     if (mGstVideoOutput) {
         gst_element_set_state(mGstVideoOutput, GST_STATE_NULL);
         gst_bin_remove(GST_BIN(mGstVideoOutput), mGstIncomingVideoSink);
-        gst_bin_remove (GST_BIN(mGstPipeline), mGstVideoOutput);
         gst_object_unref(mGstVideoOutput);
         mGstVideoOutput = 0;
     }
-
-    /*
-    if (mIncomingSurface) {
-      delete mIncomingSurface;
-      mIncomingSurface = 0;
-    }
-    */
 }
 
 void FarstreamChannel::initOutgoingVideoWidget()
@@ -1092,6 +1079,20 @@ void FarstreamChannel::stop()
   }
 }
 
+void FarstreamChannel::onIncomingVideo(bool incoming)
+{
+    /* We don't get any notification from farstream about disconnection of streams,
+       so we'd just stay at hte latest sent frame, waiting for more. So we make sure
+       we tear the pipeline down when the call agent tells us about it, so we'll be
+       clearing out the frozen frame at the same time. */
+    if (incoming) {
+        /* We already get src-pad-added. Coolness. */
+    }
+    else {
+        onStopReceiving(TP_MEDIA_STREAM_TYPE_VIDEO);
+    }
+}
+
 bool FarstreamChannel::canSwapVideos() const
 {
     return (mGstVideoOutput != NULL);
@@ -1386,6 +1387,19 @@ void FarstreamChannel::onFsConferenceRemoved(TfChannel *tfc, FsConference * conf
     }
 }
 
+static const char *get_media_type_string(guint type)
+{
+  switch (type) {
+    case TP_MEDIA_STREAM_TYPE_AUDIO:
+      return "audio";
+    case TP_MEDIA_STREAM_TYPE_VIDEO:
+      return "video";
+    default:
+      Q_ASSERT(false);
+      return "unknown";
+  }
+}
+
 void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, FarstreamChannel *self)
 {
     Q_UNUSED(tfc);
@@ -1418,13 +1432,8 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
                      G_CALLBACK(&FarstreamChannel::onSrcPadAddedContent), self);
 
     guint media_type;
-    GstPad *sink;
-    g_object_get(content, "media-type", &media_type, "sink-pad", &sink, NULL);
-    if (!sink) {
-        self->setError("GStreamer cannot get sink pad from content");
-        return;
-    }
-    qDebug() << "FarstreamChannel::onContentAdded: content=" << content << " type=" << media_type;
+    g_object_get(content, "media-type", &media_type, NULL);
+    qDebug() << "FarstreamChannel::onContentAdded: content=" << content << " type=" << media_type << "(" << get_media_type_string(media_type) << ")";
 
     /*
     FsSession *session;
@@ -1455,56 +1464,6 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
         }
     }*/
 
-    GstElement *sourceElement = 0;
-    if (media_type == TP_MEDIA_STREAM_TYPE_AUDIO) {
-        qDebug() << "Got audio sink, initializing audio input";
-        if (!self->mGstAudioInput) {
-            self->initAudioInput();
-        }
-        sourceElement = self->mGstAudioInput;
-    } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
-        qDebug() << "Got video sink, initializing video intput";
-        if (!self->mGstVideoInput) {
-            self->initVideoInput();
-            self->initOutgoingVideoWidget();
-        }
-        sourceElement = self->mGstVideoInput;
-    } else {
-        Q_ASSERT(false);
-    }
-
-    if (!sourceElement) {
-        self->setError("GStreamer source element not found");
-        return;
-    }
-
-    gboolean res = gst_bin_add(GST_BIN(self->mGstPipeline), sourceElement);
-    if (!res) {
-        self->setError("GStreamer could not add source to the pipeline");
-        return;
-    }
-
-    GstPad *pad = gst_element_get_static_pad(sourceElement, "src");
-    if (!pad) {
-        self->setError("GStreamer get source element source pad failed");
-        return;
-    }
-
-    GstPadLinkReturn resLink = gst_pad_link(pad, sink);
-    gst_object_unref(pad);
-    gst_object_unref(sink);
-    if (resLink != GST_PAD_LINK_OK && resLink != GST_PAD_LINK_WAS_LINKED) {
-        self->setError("GStreamer could not link input source pad to sink");
-        return;
-    }
-
-    GstStateChangeReturn resState = gst_element_set_state(sourceElement, GST_STATE_PLAYING);
-    if (resState == GST_STATE_CHANGE_FAILURE) {
-        self->setError("GStreamer input could not be set to playing");
-        return;
-    }
-
-    //GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(self->mGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "impipeline1");
 }
 
 void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, FarstreamChannel *self)
@@ -1526,13 +1485,162 @@ void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, Far
     }
 
     guint media_type;
+    g_object_get(content, "media-type", &media_type, NULL);
+    qDebug() << "FarstreamChannel::onContentRemoved: content=" << content << " type=" << media_type << "(" << get_media_type_string(media_type) << ")";
+
+    GstElement *bin = 0;
+    if (media_type == TP_MEDIA_STREAM_TYPE_AUDIO) {
+        qDebug() << "Got audio src";
+        if (!self->mGstAudioOutput) {
+            return;
+        }
+        bin = self->mGstAudioOutput;
+    } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
+        qDebug() << "Got video src";
+        if (!self->mGstVideoOutput) {
+            return;
+        }
+        bin = self->mGstVideoOutput;
+    } else {
+        Q_ASSERT(false);
+        return;
+    }
+
+    if (!bin) {
+        self->setError("GStreamer bin not found");
+        return;
+    }
+
+    if (gst_element_set_state(bin, GST_STATE_NULL) == GST_STATE_CHANGE_FAILURE) {
+        self->setError("Failed to stop bin");
+        return;
+    }
+
+    TRACE();
+    GstPad *pad = gst_element_get_static_pad(bin, "sink");
+    if (!pad) {
+        self->setError("GStreamer get sink element source pad failed");
+        return;
+    }
+
+    TRACE();
+    bool resUnlink = gst_pad_unlink(gst_pad_get_peer (pad), pad);
+    if (!resUnlink) {
+        self->setError("GStreamer could not unlink output bin pad");
+        return;
+    }
+
+    TRACE();
+    GstStateChangeReturn resState = gst_element_set_state(bin, GST_STATE_NULL);
+    if (resState == GST_STATE_CHANGE_FAILURE) {
+        self->setError("GStreamer bin could not be set to null");
+        return;
+    }
+
+    if (!gst_element_remove_pad(GST_ELEMENT(bin), pad)) {
+        self->setError("GStreamer could not remove ghost pad");
+        return;
+    }
+
+    TRACE();
+    gboolean res = gst_bin_remove(GST_BIN(self->mGstPipeline), bin);
+    if (!res) {
+        self->setError("GStreamer could not remove bin from the pipeline");
+        return;
+    }
+    TRACE();
+}
+
+bool FarstreamChannel::onStartSending(TfContent *content, FarstreamChannel *self)
+{
+    LIFETIME_TRACER();
+
+    if (!self || !self->mGstPipeline) {
+        self->setError("GStreamer pipeline not setup");
+        return false;
+    }
+
+    if (!content) {
+        self->setError("Invalid content received");
+        return false;
+    }
+
+    guint media_type;
+    GstPad *sink;
+    g_object_get(content, "media-type", &media_type, "sink-pad", &sink, NULL);
+    if (!sink) {
+        self->setError("GStreamer cannot get sink pad from content");
+        return false;
+    }
+    qDebug() << "FarstreamChannel::onStartSending: content=" << content << " type=" << media_type << "(" << get_media_type_string(media_type) << ")";
+
+    GstElement *sourceElement = 0;
+    if (media_type == TP_MEDIA_STREAM_TYPE_AUDIO) {
+        qDebug() << "Got audio sink, initializing audio input";
+        if (!self->mGstAudioInput) {
+            self->initAudioInput();
+        }
+        sourceElement = self->mGstAudioInput;
+    } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
+        qDebug() << "Got video sink, initializing video intput";
+        if (!self->mGstVideoInput) {
+            self->initOutgoingVideoWidget();
+            self->initVideoInput();
+        }
+        sourceElement = self->mGstVideoInput;
+    } else {
+        Q_ASSERT(false);
+        return false;
+    }
+
+    if (!sourceElement) {
+        self->setError("GStreamer source element not found");
+        return false;
+    }
+
+    gboolean res = gst_bin_add(GST_BIN(self->mGstPipeline), sourceElement);
+    if (!res) {
+        self->setError("GStreamer could not add source to the pipeline");
+        return false;
+    }
+
+    GstPad *pad = gst_element_get_static_pad(sourceElement, "src");
+    if (!pad) {
+        self->setError("GStreamer get source element source pad failed");
+        return false;
+    }
+
+    GstPadLinkReturn resLink = gst_pad_link(pad, sink);
+    gst_object_unref(pad);
+    gst_object_unref(sink);
+    if (resLink != GST_PAD_LINK_OK && resLink != GST_PAD_LINK_WAS_LINKED) {
+        self->setError("GStreamer could not link input source pad to sink");
+        return false;
+    }
+
+    GstStateChangeReturn resState = gst_element_set_state(sourceElement, GST_STATE_PLAYING);
+    if (resState == GST_STATE_CHANGE_FAILURE) {
+        self->setError("GStreamer input could not be set to playing");
+        return false;
+    }
+
+    //GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(self->mGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "impipeline1");
+
+    return true;
+}
+
+void FarstreamChannel::onStopSending(TfContent *content, FarstreamChannel *self)
+{
+    LIFETIME_TRACER();
+
+    guint media_type;
     GstPad *sink;
     g_object_get(content, "media-type", &media_type, "sink-pad", &sink, NULL);
     if (!sink) {
         self->setError("GStreamer cannot get sink pad from content");
         return;
     }
-    qDebug() << "FarstreamChannel::onContentRemoved: content=" << content << " type=" << media_type;
+    qDebug() << "FarstreamChannel::onStopSending: content=" << content << " type=" << media_type << "(" << get_media_type_string(media_type) << ")";
 
     TRACE();
     GstElement *sourceElement = 0;
@@ -1540,12 +1648,16 @@ void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, Far
         qDebug() << "Got audio sink";
         if (!self->mGstAudioInput) {
             qDebug() << "Audio input is not initialized";
+            Q_ASSERT(false);
+            return;
         }
         sourceElement = self->mGstAudioInput;
     } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
         qDebug() << "Got video sink";
         if (!self->mGstVideoInput) {
             qDebug() << "Video input is not initialized";
+            Q_ASSERT(false);
+            return;
         }
         sourceElement = self->mGstVideoInput;
     } else {
@@ -1555,6 +1667,12 @@ void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, Far
     TRACE();
     if (!sourceElement) {
         self->setError("GStreamer source element not found");
+        return;
+    }
+
+    TRACE();
+    if (gst_element_set_state(sourceElement, GST_STATE_NULL) == GST_STATE_CHANGE_FAILURE) {
+        self->setError("Failed to stop bin");
         return;
     }
 
@@ -1586,26 +1704,6 @@ void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, Far
         return;
     }
     TRACE();
-
-}
-
-bool FarstreamChannel::onStartSending(TfContent *tfc, FarstreamChannel *self)
-{
-    Q_UNUSED(tfc);
-    Q_UNUSED(self);
-
-    qDebug() << "FarstreamChannel::onStartSending: ";
-
-    return true;
-}
-
-void FarstreamChannel::onStopSending(TfContent *tfc, FarstreamChannel *self)
-{
-    Q_UNUSED(tfc);
-    Q_UNUSED(self);
-
-    qDebug() << "FarstreamChannel::onStopSending: ";
-
 }
 
 void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsStream *stream, GstPad *src, FsCodec *codec, FarstreamChannel *self)
@@ -1620,7 +1718,7 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
     guint media_type;
     g_object_get(content, "media-type", &media_type, NULL);
 
-    qDebug() << "FarstreamChannel::onSrcPadAddedContent: stream=" << stream << " type=" << media_type << "pad = " << src;
+    qDebug() << "FarstreamChannel::onSrcPadAddedContent: stream=" << stream << " type=" << media_type << " (" << get_media_type_string(media_type) << ")" << "pad = " << src;
 
     GstElement *bin = 0;
     GstElement *sinkElement = 0;
@@ -1736,5 +1834,20 @@ link_only:
     // todo If no sink could be linked, try to add fakesink to prevent the whole call
 
     //GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(self->mGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "impipeline2");
+}
+
+void FarstreamChannel::onStopReceiving(guint media_type)
+{
+    LIFETIME_TRACER();
+
+    if (!mGstPipeline) {
+        setError("GStreamer pipeline not setup");
+        return;
+    }
+
+    if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
+        if (!mGstVideoOutput) {
+        }
+    }
 }
 

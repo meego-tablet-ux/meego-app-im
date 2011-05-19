@@ -7,6 +7,10 @@
  */
 
 function getCallStatusText (agent) {
+    if (agent == undefined) {
+        return "";
+    }
+
     switch(agent.callStatus) {
     case CallAgent.CallStatusNoCall:
         if (agent.error) {

@@ -21,7 +21,7 @@ AppPage {
     property int accountStatus: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
                                        || accountStatus == TelepathyTypes.ConnectionStatusConnecting)
-    property bool showAddFriends: !count && !showAccountOffline
+    property bool showAddFriends: !count && !showAccountOffline && !window.showToolBarSearch
     property int requestedStatusType: 0
     property string requestedStatus: ""
     property string requestedStatusMessage: ""
@@ -60,6 +60,10 @@ AppPage {
 
         onSearch: {
             contactsModel.filterByString(needle);
+        }
+
+        onSearchRetracted: {
+            contactsModel.filterByString("");
         }
     }
 

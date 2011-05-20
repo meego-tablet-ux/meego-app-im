@@ -104,8 +104,11 @@ AppPage {
     Connections {
         target: window
         onSearch: {
-            conversationView.model.searchByString(needle);
-            searchHeader.searchActive = (needle != "");
+            // only search if the message screen is active
+            if (notificationManager.chatActive) {
+                conversationView.model.searchByString(needle);
+                searchHeader.searchActive = (needle != "");
+            }
         }
     }
 

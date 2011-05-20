@@ -674,8 +674,26 @@ ChatAgent *IMAccountsModel::chatAgentByPtr(const Tp::AccountPtr &account, const 
     if (!mChatAgents.contains(key)) {
         if (createIfNotExists) {
             qDebug("group chat agent created");
-            agent = new ChatAgent(account, channel, this);
-            mChatAgents[key] = agent;
+            // verify there is no reference to it among existing channels
+            // this can happen if a contact chat agent has been upgraded to group chat agent
+            // remove the reference of the list before creating the new chat agent
+            bool found = false;
+            foreach (QString contactKey, mChatAgents.keys()) {
+                ChatAgent *agent = mChatAgents.value(contactKey);
+                if (agent && agent->textChannel()->objectPath() == channel->objectPath()) {
+                    // take the agent and move it to the new key
+                    found = true;
+                    agent = mChatAgents.take(contactKey);
+                    mChatAgents[key] = agent;
+                }
+            }
+
+            if (!found) {
+                // if it was not a converted channel
+                // create the new group chat agent
+                agent = new ChatAgent(account, channel, this);
+                mChatAgents[key] = agent;
+            }
        }
     } else {
       agent = mChatAgents[key];

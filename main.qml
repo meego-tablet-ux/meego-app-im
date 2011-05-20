@@ -98,8 +98,8 @@ Window {
     }
 
     onBookMenuTriggered: {
-        if(selectedItem != "") {
-            currentAccountId = selectedItem;
+        if(bookMenuPayload[index] != "") {
+            currentAccountId = bookMenuPayload[index];
             accountItem = accountsModel.accountItemForId(currentAccountId);
             window.switchBook(accountScreenContent);
             componentsLoaded();

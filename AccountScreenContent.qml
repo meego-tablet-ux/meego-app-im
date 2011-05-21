@@ -115,6 +115,15 @@ AppPage {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
+            // begin debug code
+            MouseArea {
+                anchors.fill: parent
+                onDoubleClicked: {
+                    telepathyManager.dumpLogs();
+                }
+            }
+            // end debug code
+
             IconButton {
                 id: settingsButton
                 icon: "image://themedimage/icons/actionbar/show-settings"

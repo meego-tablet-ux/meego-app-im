@@ -6,8 +6,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+// next include must be first
 #include <telepathy-farstream/telepathy-farstream.h>
 #include "telepathymanager.h"
+#include "debugmessagecollector.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/ChannelClassSpecList>
@@ -27,7 +29,8 @@
 TelepathyManager::TelepathyManager(QObject *parent)
     : QObject(parent),
       mChannelHandler(0),
-      mFinished(false)
+      mFinished(false),
+      mDebugMessageCollector(0)
 {
     qDebug() << "TelepathyManager::TelepathyManager: ";
 
@@ -142,6 +145,19 @@ void TelepathyManager::registerClients()
     char **argv = { 0 };
     g_type_init();
     gst_init(&argc, &argv);
+}
+
+void TelepathyManager::dumpLogs()
+{
+    qDebug() << "TelepathyManager::dumpLogs";
+
+    if (!mDebugMessageCollector) {
+        mDebugMessageCollector = new DebugMessageCollector(this);
+    }
+
+    if (mDebugMessageCollector) {
+        mDebugMessageCollector->dumpToFiles();
+    }
 }
 
 Tp::AccountManagerPtr TelepathyManager::accountManager(void)

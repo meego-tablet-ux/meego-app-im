@@ -17,6 +17,8 @@
 #include <TelepathyQt4/Types>
 #include "channelhandler.h"
 
+class DebugMessageCollector;
+
 class TelepathyManager : public QObject
 {
     Q_OBJECT
@@ -39,6 +41,7 @@ public:
 public Q_SLOTS:
     void initializeChannelHandler();
     void registerClients(void);
+    void dumpLogs();
 
 Q_SIGNALS:
     void accountManagerReady();
@@ -70,6 +73,7 @@ private:
     Tp::ClientRegistrarPtr mClientRegistrar;
     bool mFinished;
     QMap<QString,QString> mProtocols;
+    DebugMessageCollector *mDebugMessageCollector;
 };
 
 #endif // TELEPATHYMANAGER_H

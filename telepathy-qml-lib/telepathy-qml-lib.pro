@@ -20,7 +20,11 @@ SOURCES = telepathytypes.cpp \
     mergedmodel.cpp \
     addcontacthelper.cpp \
     improtocolsmodel.cpp \
-    serverauthagent.cpp
+    serverauthagent.cpp \
+    debugproxy.cpp \
+    debugmessage.cpp \
+    debugmessagecollector.cpp
+
 HEADERS = telepathytypes.h \
           telepathymanager.h \
     channelhandler.h \
@@ -37,7 +41,10 @@ HEADERS = telepathytypes.h \
     mergedmodel.h \
     addcontacthelper.h \
     improtocolsmodel.h \
-    serverauthagent.h
+    serverauthagent.h \
+    debugproxy.h \
+    debugmessage.h \
+    debugmessagecollector.h
 
 headers.files = telepathytypes.h \
                 telepathymanager.h \
@@ -47,6 +54,7 @@ headers.files = telepathytypes.h \
                 callagent.h \
                 panelschannelobserver.h \
                 notificationmanager.h \
+                debugproxy.h \
                 simplecontactslistmodel.h
 headers.path = $$INSTALL_ROOT/usr/include/telepathy-qml
 

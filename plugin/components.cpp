@@ -15,6 +15,7 @@
 #include "imavatarimageprovider.h"
 
 #include "../telepathy-qml-lib/chatagent.h"
+#include "../telepathy-qml-lib/debugmessage.h"
 #include "../telepathy-qml-lib/imchannelapprover.h"
 
 #include <TelepathyLoggerQt4/Init>
@@ -44,6 +45,7 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     // needed for tp-logger
     g_type_init();
 
+    DebugMessage::registerMetaType();
     Tp::registerTypes();
     //Tp::enableDebug(true);
     Tp::enableWarnings(true);

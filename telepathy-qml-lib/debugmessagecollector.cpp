@@ -14,10 +14,15 @@
 #include <QDBusPendingCallWatcher>
 #include <TelepathyQt4/ConnectionManager>
 #include <TelepathyQt4/PendingStringList>
+#include <sys/time.h>
 
 #define DEBUG_OBJECT_PATH "/org/freedesktop/Telepathy/debug"
 
 Q_DECLARE_METATYPE(DebugProxy*);
+
+bool DebugMessageCollector::mMessageHandlerInstalled = false;
+QtMsgHandler DebugMessageCollector::mPreviousMsgHandler = 0;
+DebugMessageList DebugMessageCollector::mAppMessages;
 
 DebugMessageCollector::DebugMessageCollector(TelepathyManager *tpManager) :
     mTpManager(tpManager),
@@ -237,21 +242,62 @@ void DebugMessageCollector::dumpToFiles()
 
     mPendingDumpToFiles = false;
 
+    dumpMessagesToFile("/tmp/log-im.app.txt", mAppMessages);
+
     foreach(DebugProxyInfo proxyInfo, mDebugProxies) {
         QString fileName = QString("/tmp/log-im.%2.txt").arg(proxyInfo.name);
-        qDebug() << "Writing file " << fileName;
-        QFile data(fileName);
-        if (data.open(QFile::WriteOnly | QFile::Truncate | QFile::Text)) {
-            QTextStream out(&data);
-            DebugMessageList messageList = mMessages[proxyInfo.debugProxy];
-            foreach(DebugMessage message, messageList) {
-                int ms = (int) ((message.time - (int) message.time)*1e6);
-                time_t sec = (long) message.time;
-                QDateTime dateTime = QDateTime::fromTime_t(sec);
-                QString dateTimeString = QString(dateTime.toString(Qt::ISODate) + ".%1").arg(ms,6,10,QChar('0'));
-                out << dateTimeString << " " << (message.domain + ":%1").arg(message.level) << " " << message.message << "\n";
-            }
+        DebugMessageList messageList = mMessages[proxyInfo.debugProxy];
+        dumpMessagesToFile(fileName, messageList);
+    }
+}
+
+void DebugMessageCollector::dumpMessagesToFile(const QString &fileName, const DebugMessageList &messageList)
+{
+    qDebug() << "DebugMessageCollector::dumpMessagesToFile: " << fileName;
+    QFile data(fileName);
+    if (data.open(QFile::WriteOnly | QFile::Truncate | QFile::Text)) {
+        QTextStream out(&data);
+        foreach(DebugMessage message, messageList) {
+            int ms = (int) ((message.time - (int) message.time)*1e6);
+            time_t sec = (long) message.time;
+            QDateTime dateTime = QDateTime::fromTime_t(sec);
+            QString dateTimeString = QString(dateTime.toString(Qt::ISODate) + ".%1").arg(ms,6,10,QChar('0'));
+            out << dateTimeString << " " << (message.domain + ":%1").arg(message.level) << " " << message.message << "\n";
         }
         data.close();
+    }
+}
+
+void DebugMessageCollector::setupMessagHandler()
+{
+    QDateTime x = QDateTime::currentDateTime();
+
+    if (!mMessageHandlerInstalled) {
+        mPreviousMsgHandler = qInstallMsgHandler(DebugMessageCollector::customMessageHandler);
+        mMessageHandlerInstalled = true;
+    }
+}
+
+void DebugMessageCollector::customMessageHandler(QtMsgType type, const char *msg)
+{
+    struct timeval gtod;
+    gettimeofday(&gtod, NULL);
+    double time = gtod.tv_sec + double(gtod.tv_usec) / 1e6;
+
+    DebugLevel level = DebugLevelDebug;
+    if (type == QtDebugMsg) {
+        level = DebugLevelDebug;
+    } else if (type == QtWarningMsg) {
+        level = DebugLevelWarning;
+    } else if (type == QtCriticalMsg) {
+        level = DebugLevelCritical;
+    } else if (type == QtFatalMsg) {
+        level = DebugLevelError;
+    }
+    DebugMessage message(time, "app", level, msg);
+    mAppMessages.append(message);
+
+    if (mPreviousMsgHandler) {
+        mPreviousMsgHandler(type, msg);
     }
 }

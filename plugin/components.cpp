@@ -16,6 +16,7 @@
 
 #include "../telepathy-qml-lib/chatagent.h"
 #include "../telepathy-qml-lib/debugmessage.h"
+#include "../telepathy-qml-lib/debugmessagecollector.h"
 #include "../telepathy-qml-lib/imchannelapprover.h"
 
 #include <TelepathyLoggerQt4/Init>
@@ -46,6 +47,9 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     g_type_init();
 
     DebugMessage::registerMetaType();
+    // next line install custom handler to log messages in memory
+    DebugMessageCollector::setupMessagHandler();
+
     Tp::registerTypes();
     //Tp::enableDebug(true);
     Tp::enableWarnings(true);

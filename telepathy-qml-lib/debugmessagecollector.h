@@ -26,6 +26,8 @@ public:
     DebugMessageCollector(TelepathyManager *tpManager);
     ~DebugMessageCollector();
 
+    static void setupMessagHandler();
+
     void dumpToFiles();
 
 private slots:
@@ -40,12 +42,19 @@ private:
     void getMessagesFromDebugProxy(DebugProxy *debugProxy);
     void dumpCheck();
     void dumpToConsole();
+    void dumpMessagesToFile(const QString &fileName, const DebugMessageList &messageList);
+
+    static void customMessageHandler(QtMsgType type, const char *msg);
 
     struct DebugProxyInfo {
         QString name;
         QString busName;
         DebugProxy *debugProxy;
     };
+
+    static bool mMessageHandlerInstalled;
+    static QtMsgHandler mPreviousMsgHandler;
+    static DebugMessageList mAppMessages;
 
     TelepathyManager *mTpManager;
     QList<DebugProxyInfo> mDebugProxies;

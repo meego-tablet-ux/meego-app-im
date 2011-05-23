@@ -43,6 +43,22 @@ AppPage {
         contactContentMenu.show();
     }
 
+    onShowAccountOfflineChanged: {
+        if (showAccountOffline) {
+            accountOfflineInfo.show();
+        } else {
+            accountOfflineInfo.hide();
+        }
+    }
+
+    onShowAddFriendsChanged: {
+        if(showAddFriends) {
+            noFriendsInfo.show();
+        } else {
+            noFriendsInfo.hide();
+        }
+    }
+
     Connections {
         target: window.accountItem
 

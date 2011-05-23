@@ -57,6 +57,17 @@ Column {
     signal finished()
     signal accountCreationAborted()
 
+    onDuplicatedChanged: {
+        if (((accountError.connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
+            ((accountError.connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
+             (accountError.connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse)))
+              || duplicated) {
+            accountError.show();
+        } else {
+            accountError.hide();
+        }
+    }
+
     AccountHelper {
         id: accountHelperItem
 
@@ -160,7 +171,7 @@ Column {
         return value;
     }
 
-    InfoPanel {
+    InfoBar {
         id: accountError
 
         property int connectionStatus: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusRole) : TelepathyTypes.ConnectionStatusDisconnected
@@ -177,24 +188,22 @@ Column {
         }
 
         enabled: accountItem !== null
-        visible: ((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
-                 ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
-                  (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse)))
-                   || duplicated
+
         // TODO: check for another reasons
-        Text {
-            id: errorLabel
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.margins: 10
-
-            font.pixelSize: theme_fontPixelSizeLarge
-            color: theme_fontColorHighlight
-
-            text: duplicated ?
-                      qsTr("There is already an account configured using this login. Please check your username.") :
-                      qsTr("Sorry, there was a problem logging in. Please check your username and password.")
+        onConnectionStatusChanged: {
+            if (((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
+                ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
+                 (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse)))
+                  || duplicated) {
+                accountError.show();
+            } else {
+                accountError.hide();
+            }
         }
+
+        text: duplicated ?
+                  qsTr("There is already an account configured using this login. Please check your username.") :
+                  qsTr("Sorry, there was a problem logging in. Please check your username and password.")
     }
 
     Grid {

@@ -169,7 +169,6 @@ AppPage {
 
         LoadingConversationHistory {
             id: loadingConversation
-            visible: historyFeeder.fetching
             z: 10
             anchors {
                 top: noNetworkItem.bottom
@@ -248,6 +247,14 @@ AppPage {
                         oldIndex = 0;
                         conversationView.model.fetchMoreBack();
                     }
+                }
+            }
+
+            onFetchingChanged: {
+                if (fetching) {
+                    loadingConversation.show();
+                } else {
+                    loadingConversation.hide();
                 }
             }
         }

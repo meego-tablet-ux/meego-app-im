@@ -17,13 +17,16 @@ AppPage {
 
     Component.onCompleted: {
         window.reloadFilterModel();
+        if(accountsModel == undefined) {
+            loadingAccounts.show();
+        }
     }
 
     Connections {
         target: window
         onComponentsLoaded: {
             accountsRepeater.model = accountsSortedModel;
-            loadingAccounts.visible = false;
+            loadingAccounts.hide();
         }
     }
 

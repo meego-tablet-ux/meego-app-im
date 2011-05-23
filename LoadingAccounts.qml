@@ -10,42 +10,8 @@ import Qt 4.7
 import MeeGo.App.IM 0.1
 import MeeGo.Components 0.1
 
-Item {
+InfoBar {
     id: container
 
-    height: (visible? panel.height : 0)
-
-    InfoPanel {
-        id: panel
-
-        Text {
-            id:loadingText
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            color: theme_fontColorHighlight
-            font.pixelSize: theme_fontPixelSizeLarge
-            text: qsTr("Loading accounts")
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        Item {
-            anchors.verticalCenter: loadingText.verticalCenter
-            anchors.left: loadingText.right
-            anchors.leftMargin: 15
-            Spinner {
-                id: loadingIcon
-
-                width: theme_fontPixelSizeLarge
-                height: theme_fontPixelSizeLarge
-                spinning: container.visible
-
-                onSpinningChanged: {
-                    if(container.visible && !spinning) {
-                        spinning = true;
-                    }
-                }
-            }
-        }
-    }
+    text: qsTr("Loading accounts...")
 }

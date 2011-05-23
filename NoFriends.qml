@@ -8,24 +8,10 @@
 
 import Qt 4.7
 import MeeGo.App.IM 0.1
+import MeeGo.Components 0.1
 
-Item {
+InfoBar {
     id: container
 
-    height: (visible? panel.height : 0)
-
-    InfoPanel {
-        id: panel
-
-        Text {
-            id:noFriendsText
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            color: theme_fontColorHighlight
-            font.pixelSize: theme_fontPixelSizeLarge
-            text: qsTr("You haven't added any friends yet")
-            verticalAlignment: Text.AlignVCenter
-        }
-    }
+    text: qsTr("You haven't added any friends yet")
 }

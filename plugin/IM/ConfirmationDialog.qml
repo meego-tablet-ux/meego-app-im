@@ -8,9 +8,12 @@ ModalMessageBox {
     property string instanceReason: ""
     property string accountId: ""
 
-    width: 420
-    height: 480
+    width: 400
+    height: 300
     fogMaskVisible: false
+
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
 
     acceptButtonText: qsTr("Yes")
     acceptButtonImage: "image://themedimage/images/btn_blue_up"

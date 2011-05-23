@@ -25,6 +25,9 @@ ModalDialog {
     height: 300
     width: 400
 
+    height: 300
+    width: 400
+
     property alias statusMessage: message.text
     property alias connectionTarget: callStatusConnection.target
 

@@ -23,6 +23,7 @@ class TelepathyTypes : public QObject
     Q_ENUMS(PresenceState)
     Q_ENUMS(FileTransferState)
     Q_ENUMS(FileTransferStateChangeReason)
+    Q_ENUMS(ContactListState)
 public:
 
     enum ConnectionPresenceType {
@@ -85,6 +86,13 @@ public:
         FileTransferStateChangeReasonRemoteStopped = Tp::FileTransferStateChangeReasonRemoteStopped,
         FileTransferStateChangeReasonLocalError = Tp::FileTransferStateChangeReasonLocalError,
         FileTransferStateChangeReasonRemoteError = Tp::FileTransferStateChangeReasonRemoteError
+    };
+
+    enum ContactListState {
+        ContactListStateNone = Tp::ContactListStateNone,
+        ContactListStateWaiting = Tp::ContactListStateWaiting,
+        ContactListStateFailure = Tp::ContactListStateFailure,
+        ContactListStateSuccess = Tp::ContactListStateSuccess
     };
 
     explicit TelepathyTypes(QObject *parent = 0);

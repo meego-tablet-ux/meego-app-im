@@ -1626,3 +1626,17 @@ bool IMAccountsModel::existingUnreadMessages() const
 
     return false;
 }
+
+int IMAccountsModel::actualContactsCount(const QString &accountId) const
+{
+    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    if (accountItem) {
+        Tp::AccountPtr account = accountItem->account();
+        if (!account->connection().isNull()
+                && account->connection()->isValid()
+                && !account->connection()->contactManager().isNull()) {
+            return account->connection()->contactManager()->allKnownContacts().count();
+        }
+    }
+    return 0;
+}

@@ -102,6 +102,8 @@ public:
     Q_INVOKABLE void clearContactHistory(const QString &accountId, const QString &contactId);
     Q_INVOKABLE void clearGroupChatHistory(const QString &accountId, const QString &channelPath);
 
+    Q_INVOKABLE int actualContactsCount(const QString &accountId) const;
+
 Q_SIGNALS:
     void chatReady(const QString &accountId, const QString &contactId);
     void groupChatReady(const QString &accountId, const QString &channelPath);

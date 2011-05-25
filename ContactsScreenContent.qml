@@ -19,9 +19,13 @@ AppPage {
     
     property int count: listView.count + contactRequestModel.rowCount
     property int accountStatus: 0
+    property int contactListState: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
                                        || accountStatus == TelepathyTypes.ConnectionStatusConnecting)
+    property bool showLoadingContacts: (!showAccountOffline && contactListState != TelepathyTypes.ContactListStateSuccess)
     property bool showAddFriends: !count && !showAccountOffline && !window.showToolBarSearch
+                                  && contactListState == TelepathyTypes.ContactListStateSuccess
+    property bool showAddFriendsItem: false
     property int requestedStatusType: 0
     property string requestedStatus: ""
     property string requestedStatusMessage: ""
@@ -29,7 +33,9 @@ AppPage {
     Component.onCompleted: {
         pageTitle = window.currentAccountName;
         accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
+        contactListState = window.accountItem.data(AccountsModel.ContactListStateRole);
         accountOfflineInfo.setInfoMessage(accountStatus);
+        showAddFriendsChanged();
     }
 
     onAccountStatusChanged: {
@@ -51,11 +57,33 @@ AppPage {
         }
     }
 
-    onShowAddFriendsChanged: {
-        if(showAddFriends) {
-            noFriendsInfo.show();
+    onShowLoadingContactsChanged: {
+        if (showLoadingContacts) {
+            contactsLoadingInfo.show();
         } else {
-            noFriendsInfo.hide();
+            contactsLoadingInfo.hide();
+            showAddFriendsChanged();
+        }
+    }
+
+    onShowAddFriendsChanged: {
+        if (showAddFriends && !showLoadingContacts) {
+            if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
+                if (noFriendsInfo.height == 0) {
+                    noFriendsInfo.show();
+                }
+                showAddFriendsItem = true;
+            } else {
+                if (noFriendsInfo.height > 0) {
+                    noFriendsInfo.hide();
+                }
+                showAddFriendsItem = false;
+            }
+        } else {
+            if (noFriendsInfo.height > 0) {
+                noFriendsInfo.hide();
+            }
+            showAddFriendsItem = false;
         }
     }
 
@@ -64,6 +92,7 @@ AppPage {
 
         onChanged: {
             accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
+            contactListState = window.accountItem.data(AccountsModel.ContactListStateRole);
         }
     }
 
@@ -115,15 +144,24 @@ AppPage {
             id: noNetworkItem
         }
 
-        AccountOffline {
-            id: accountOfflineInfo
+        LoadingContacts {
+            id: contactsLoadingInfo
 
             anchors {
                 top: noNetworkItem.bottom
                 left: parent.left
                 right: parent.right
             }
-            visible: showAccountOffline
+        }
+
+        AccountOffline {
+            id: accountOfflineInfo
+
+            anchors {
+                top: contactsLoadingInfo.bottom
+                left: parent.left
+                right: parent.right
+            }
         }
 
         NoFriends {
@@ -134,7 +172,6 @@ AppPage {
                 left: parent.left
                 right: parent.right
             }
-            visible: showAddFriends
         }
 
         Component {
@@ -183,13 +220,13 @@ AppPage {
             id: friendsTitle
             anchors.top: noFriendsInfo.bottom
             text: qsTr("Add a friend")
-            visible: showAddFriends
+            visible: showAddFriendsItem
         }
 
         AddAFriend {
             id: addAFriendItem
 
-            visible: showAddFriends
+            visible: showAddFriendsItem
             width: 200
             anchors.top: friendsTitle.bottom
             anchors.margins: 10

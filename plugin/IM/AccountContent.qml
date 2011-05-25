@@ -177,8 +177,6 @@ Column {
         property int connectionStatus: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusRole) : TelepathyTypes.ConnectionStatusDisconnected
         property int connectionStatusReason: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusReasonRole) : TelepathyTypes.ConnectionStatusReasonNoneSpecified
 
-        height: childrenRect.height + 20
-
         Connections {
             target: (accountItem != undefined) ? accountItem : null
             onConnectionStatusChanged: {

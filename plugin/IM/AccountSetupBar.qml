@@ -91,12 +91,20 @@ Column {
     ModalMessageBox {
         id: messageBox
         parent: window
+
+        height: 300
+        width: 400
+
         text: qsTr("Are you sure to delete this account?")
 
         title: qsTr("Delete account")
         showAcceptButton: true
         showCancelButton: true
         fogClickable: false
+        fogMaskVisible: false
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+
         onAccepted: {
             accountContent.removeAccount();
             hide();

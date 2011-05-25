@@ -22,6 +22,8 @@ ModalDialog {
     cancelButtonImage: "image://themedimage/images/btn_red_up"
     cancelButtonImagePressed: "image://themedimage/images/btn_red_dn"
     fogMaskVisible: false
+    height: 300
+    width: 400
 
     property alias statusMessage: message.text
     property alias connectionTarget: callStatusConnection.target

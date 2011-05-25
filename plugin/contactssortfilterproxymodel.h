@@ -24,7 +24,6 @@ public:
 
     Q_INVOKABLE bool  haveConnection() const;
     Q_INVOKABLE QString serviceName(void) const;
-    Q_INVOKABLE void setShowOffline(bool toggle);
     Q_INVOKABLE bool isShowOffline(void) const;
     Q_INVOKABLE void setContactsOnly(bool toggle);
     Q_INVOKABLE bool isContactsOnly() const;
@@ -54,6 +53,12 @@ protected:
     bool filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const;
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+
+    /**
+      * This should only use the setting provided by QSettings
+      * It is called by slotResetModel()
+      */
+    void setShowOffline();
 
 private Q_SLOTS:
     void slotSortByPresence(void);

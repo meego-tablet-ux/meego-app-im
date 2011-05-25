@@ -48,7 +48,7 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
             SIGNAL(rowsInserted(const QModelIndex&, int, int)),
             SLOT(slotResetModel()));
     connect(mModel,
-            SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+            SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
             SLOT(slotResetModel()));
     connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slotResetModel()));
     invalidate();
@@ -318,6 +318,7 @@ void ContactsSortFilterProxyModel::filterByString(const QString filter)
 void ContactsSortFilterProxyModel::slotResetModel()
 {
     beginResetModel();
+    setShowOffline();
     invalidate();
     emit rowCountChanged();
     slotSortByPresence();
@@ -328,15 +329,11 @@ void ContactsSortFilterProxyModel::filterByLastUsedAccount(const QString &accoun
 {
     filterByAccountId(accountId);
     emit openLastUsedAccount(accountId);
-    qDebug("last used account signal emitted");
 }
 
-void ContactsSortFilterProxyModel::setShowOffline(bool toggle)
+void ContactsSortFilterProxyModel::setShowOffline()
 {
-    mShowOffline = toggle;
-    invalidate();
-    emit rowCountChanged();
-    slotResetModel();
+    mShowOffline = SettingsHelper::self()->showOfflineContacts();
 }
 
 bool ContactsSortFilterProxyModel::isShowOffline() const

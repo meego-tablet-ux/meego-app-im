@@ -33,12 +33,12 @@ public:
 
     static SettingsHelper *self();
 
-    bool showOfflineContacts() const;
-    bool enableAudioAlerts() const;
-    bool enableNotifications() const;
-    bool enableVibrate() const;
+    bool showOfflineContacts();
+    bool enableAudioAlerts();
+    bool enableNotifications();
+    bool enableVibrate();
 
-    Q_INVOKABLE QVariant value(const QString &prop, const QVariant &defaultValue) const;
+    Q_INVOKABLE QVariant value(const QString &prop, const QVariant &defaultValue);
     Q_INVOKABLE void setValue(const QString &prop, const QVariant &value);
 
 public Q_SLOTS:

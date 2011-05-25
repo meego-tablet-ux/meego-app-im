@@ -19,7 +19,7 @@ Item {
 
     function isItemSelected(contactId)
     {
-        return true;
+        return false;
     }
 
     Column {

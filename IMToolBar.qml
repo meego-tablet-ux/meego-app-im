@@ -22,6 +22,7 @@ BottomToolBar {
     // Bottom row to initiate calls & chat
     content: BottomToolBarRow {
         id: bottomRow
+        contentVerticalMargins: 0
 
         leftContent: [
             IconButton {
@@ -49,7 +50,7 @@ BottomToolBar {
                         duration: 500
                     }
                 }
-                
+
                 Image
                 {
                     anchors.right: parent.right
@@ -58,7 +59,7 @@ BottomToolBar {
                 }
             },
 
-            
+
             IconButton {
                 id: videoCallButton
                 width: 60
@@ -200,7 +201,7 @@ BottomToolBar {
                     height: parent.height
                 }
             },
-            
+
             IconButton {
                 id: muteButton
                 width: 60
@@ -227,7 +228,7 @@ BottomToolBar {
                     height: parent.height
                 }
             },
-            
+
             IconButton {
                 id: fullscreenButton
                 width: 60

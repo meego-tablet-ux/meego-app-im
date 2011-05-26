@@ -1082,14 +1082,16 @@ void FarstreamChannel::stop()
 void FarstreamChannel::onIncomingVideo(bool incoming)
 {
     /* We don't get any notification from farstream about disconnection of streams,
-       so we'd just stay at hte latest sent frame, waiting for more. So we make sure
-       we tear the pipeline down when the call agent tells us about it, so we'll be
-       clearing out the frozen frame at the same time. */
-    if (incoming) {
-        /* We already get src-pad-added. Coolness. */
+       so we'd just stay at the latest sent frame, waiting for more. So we make sure
+       we clear the sink when we stop getting video. */
+    if (!mGstPipeline) {
+        setError("GStreamer pipeline not setup");
+        return;
     }
-    else {
-        onStopReceiving(TP_MEDIA_STREAM_TYPE_VIDEO);
+
+    if (mGstVideoOutput && mGstIncomingVideoSink) {
+        QmlVideoSurfaceGstSink *sink = (QmlVideoSurfaceGstSink*)mGstIncomingVideoSink;
+        sink->show(incoming);
     }
 }
 
@@ -1834,20 +1836,5 @@ link_only:
     // todo If no sink could be linked, try to add fakesink to prevent the whole call
 
     //GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(self->mGstPipeline), GST_DEBUG_GRAPH_SHOW_ALL, "impipeline2");
-}
-
-void FarstreamChannel::onStopReceiving(guint media_type)
-{
-    LIFETIME_TRACER();
-
-    if (!mGstPipeline) {
-        setError("GStreamer pipeline not setup");
-        return;
-    }
-
-    if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
-        if (!mGstVideoOutput) {
-        }
-    }
 }
 

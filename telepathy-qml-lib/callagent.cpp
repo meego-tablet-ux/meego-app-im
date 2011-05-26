@@ -1199,8 +1199,10 @@ void CallAgent::onRemoteSendingStateChanged(const QHash< Tp::ContactPtr, Tpy::Se
         ++i;
     }
 
-    if (mFarstreamChannel)
+    if (mFarstreamChannel) {
         mFarstreamChannel->onIncomingVideo(hasIncomingVideo);
+        onRemoteVideoRender(hasIncomingVideo);
+    }
 }
 
 void CallAgent::onRemoteMembersRemoved(const Tp::Contacts &remoteMembers)

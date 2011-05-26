@@ -20,6 +20,7 @@ Window {
     fullScreen: true
     customActionMenu: true
     automaticBookSwitching: false
+    disableToolBarSearch: false
 
     property int animationDuration: 250
 

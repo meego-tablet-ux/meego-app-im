@@ -21,6 +21,7 @@ AppPage {
 
     Component.onCompleted: {
         notificationManager.chatActive = true;
+        openingChatInfo.show()
         initPage();
     }
 
@@ -167,11 +168,22 @@ AppPage {
             anchors.top: searchHeader.bottom
         }
 
+        InfoBar {
+            id: openingChatInfo
+            text: qsTr("Opening chat...")
+
+            anchors {
+                top: noNetworkItem.top
+                left: parent.left
+                right: parent.right
+            }
+        }
+
         LoadingConversationHistory {
             id: loadingConversation
             z: 10
             anchors {
-                top: noNetworkItem.bottom
+                top: openingChatInfo.bottom
                 left: parent.left
                 right: parent.right
             }
@@ -517,6 +529,9 @@ AppPage {
                 conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
                 conversationModelConnections.target = conversationView.model;
                 textEdit.focus = true;
+                if(openingChatInfo.height > 0) {
+                    openingChatInfo.hide();
+                }
             }
             // FIXME: do this until the bug in pageTitle update is fixed
             window.toolBarTitle = pageTitle;
@@ -527,6 +542,10 @@ AppPage {
     {
         if (window.chatAgent != undefined) {
             setupDataFromChatAgent();
+        } else {
+            if(openingChatInfo.height == 0) {
+                openingChatInfo.show()
+            }
         }
 
         if(window.callAgent != undefined) {

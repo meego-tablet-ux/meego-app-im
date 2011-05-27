@@ -126,7 +126,10 @@ void IMPlugin::onConnectionAvailable(Tp::ConnectionPtr conn)
     // find the account related to the connection and connect
     // the contact manager to the publication request slot on the model
     foreach (IMFeedModel *model, mFeedModels) {
-        if (!model->account()->connection().isNull()
+        if (model
+                && !model->account().isNull()
+                && model->account()->isValid()
+                && !model->account()->connection().isNull()
                 && model->account()->connection()->isValid()) {
             if (model->account()->connection() == conn) {
                 Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();

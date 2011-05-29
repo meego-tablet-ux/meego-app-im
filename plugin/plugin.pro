@@ -23,7 +23,8 @@ SOURCES += components.cpp \
     imavatarimageprovider.cpp \
     accountssortfilterproxymodel.cpp \
     imgroupchatmodelitem.cpp \
-    imgroupchatmodel.cpp
+    imgroupchatmodel.cpp \
+    textfile.cpp
 
 HEADERS += components.h \
     accounthelper.h \
@@ -34,4 +35,5 @@ HEADERS += components.h \
     imavatarimageprovider.h \
     accountssortfilterproxymodel.h \
     imgroupchatmodelitem.h \
-    imgroupchatmodel.h
+    imgroupchatmodel.h \
+    textfile.h

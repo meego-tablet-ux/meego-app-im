@@ -42,8 +42,6 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
 
     connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
             m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
-    connect(m_tpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
-            this, SLOT(onConnectionAvailable(Tp::ConnectionPtr)));
 
     // install translation catalogs
     loadTranslator();
@@ -78,10 +76,6 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
             connect(model, SIGNAL(applicationRunningChanged(bool)),
                     mChannelApprover, SLOT(setApplicationRunning(bool)));
             mFeedModels[service] = model;
-            if (!account->connection().isNull()
-                    && account->connection()->isValid()) {
-                onConnectionAvailable(account->connection());
-            }
             return model;
         }
     }
@@ -119,91 +113,6 @@ void IMPlugin::initializeChannelApprover()
 
     // register the approver
     mClientRegistrar->registerClient(approver, "MeeGoIMPanelsApprover");
-}
-
-void IMPlugin::onConnectionAvailable(Tp::ConnectionPtr conn)
-{
-    // find the account related to the connection and connect
-    // the contact manager to the publication request slot on the model
-    foreach (IMFeedModel *model, mFeedModels) {
-        if (model
-                && !model->account().isNull()
-                && model->account()->isValid()
-                && !model->account()->connection().isNull()
-                && model->account()->connection()->isValid()) {
-            if (model->account()->connection() == conn) {
-                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
-                connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
-                        model, SLOT(onPresencePublicationRequested(Tp::Contacts)));
-                connect(manager.data(), SIGNAL(allKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
-                        model, SLOT(onAllKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)));
-                connect(model, SIGNAL(acceptContact(Tp::AccountPtr,QString)), SLOT(onAcceptContact(Tp::AccountPtr,QString)));
-                connect(model,SIGNAL(rejectContact(Tp::AccountPtr,QString)), SLOT(onRejectContact(Tp::AccountPtr,QString)));
-
-                // Look for friend requests and listen for publish changes
-                Tp::Contacts contacts = manager->allKnownContacts();
-                QList<Tp::ContactPtr> friendRequests;
-                foreach (Tp::ContactPtr contact, contacts) {
-                    // if a friend request
-                    if (contact->publishState() == Tp::Contact::PresenceStateAsk) {
-                        friendRequests.append(contact);
-                    }
-
-                    // connect to publish changes
-                    connect(contact.data(), SIGNAL(publishStateChanged(Tp::Contact::PresenceState,QString)),
-                            model, SLOT(onPublishStateChanged(Tp::Contact::PresenceState)));
-                }
-                // Add the friend requests to the model
-                if (friendRequests.count() > 0) {
-                    model->onPresencePublicationRequested(Tp::Contacts().fromList(friendRequests));
-                }
-            }
-        }
-    }
-}
-
-void IMPlugin::onAcceptContact(Tp::AccountPtr account, QString contactId)
-{
-    foreach (IMFeedModel *model, mFeedModels) {
-        if (model->account()->uniqueIdentifier() == account->uniqueIdentifier()) {
-            if (!model->account()->connection().isNull()) {
-                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
-
-                Tp::Contacts contacts = manager->allKnownContacts();
-                QList<Tp::ContactPtr> contactsToAppend;
-                QList<Tp::ContactPtr>  contactsList = contacts.toList();
-                foreach (Tp::ContactPtr contact, contactsList) {
-                    if (contact->id() == contactId) {
-                        contactsToAppend.append(contact);
-                        break;
-                    }
-                }
-                manager->authorizePresencePublication(contactsToAppend);
-            }
-        }
-    }
-}
-
-void IMPlugin::onRejectContact(Tp::AccountPtr account, QString contactId)
-{
-    foreach (IMFeedModel *model, mFeedModels) {
-        if (model->account()->uniqueIdentifier() == account->uniqueIdentifier()) {
-            if (!model->account()->connection().isNull()) {
-                Tp::ContactManagerPtr manager = model->account()->connection()->contactManager();
-
-                Tp::Contacts contacts = manager->allKnownContacts();
-                QList<Tp::ContactPtr> contactsToAppend;
-                QList<Tp::ContactPtr>  contactsList = contacts.toList();
-                foreach (Tp::ContactPtr contact, contactsList) {
-                    if (contact->id() == contactId) {
-                        contactsToAppend.append(contact);
-                        break;
-                    }
-                }
-                manager->removePresencePublication(contactsToAppend);
-            }
-        }
-    }
 }
 
 McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QString &searchText)

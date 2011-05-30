@@ -50,6 +50,13 @@ IMFeedModel::IMFeedModel(PanelsChannelObserver *observer, Tp::AccountPtr account
     connect(observer,
             SIGNAL(newFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)),
             SLOT(onNewFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)));
+    connect(mAccount.data(),
+            SIGNAL(connectionChanged(Tp::ConnectionPtr)),
+            SLOT(onConnectionChanged(Tp::ConnectionPtr)));
+    if (!mAccount->connection().isNull()
+            && mAccount->connection()->isValid()) {
+        onConnectionChanged(mAccount->connection());
+    }
 
     // get existing channels
     mObserver->emitExistingChannels();
@@ -160,11 +167,11 @@ void IMFeedModel::performAction(QString action, QString uniqueid)
     foreach (IMFeedModelItem *item, mItems) {
         if (item->uniqueId() == uniqueid) {
             if (action == "accept") {
-                emit acceptContact(mAccount, item->contactId());
+                acceptContact(item->contactId());
                 removeItem(item);
                 break;
             } else if (action == "reject") {
-                emit rejectContact(mAccount, item->contactId());
+                rejectContact(item->contactId());
                 removeItem(item);
                 break;
             } else if (action == "default") {
@@ -540,5 +547,87 @@ void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
         connect(item->actions(), SIGNAL(standardAction(QString,QString)),
                 this, SLOT(performAction(QString,QString)));
         insertItem(item);
+    }
+}
+
+void IMFeedModel::onConnectionChanged(const Tp::ConnectionPtr &conn)
+{
+    if (conn->status() == Tp::ConnectionStatusConnected) {
+        onConnectionAvailable();
+    } else {
+        connect(conn.data(), SIGNAL(statusChanged(Tp::ConnectionStatus)),
+                SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+    }
+}
+
+void IMFeedModel::onConnectionStatusChanged(const Tp::ConnectionStatus status)
+{
+    if (status == Tp::ConnectionStatusConnected) {
+        onConnectionAvailable();
+    }
+}
+
+void IMFeedModel::onConnectionAvailable()
+{
+    qDebug() << "IMFeedModel::onConnectionAvailable: " << mAccount->uniqueIdentifier();
+    Tp::ContactManagerPtr manager = mAccount->connection()->contactManager();
+    connect(manager.data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
+            SLOT(onPresencePublicationRequested(Tp::Contacts)));
+    connect(manager.data(), SIGNAL(allKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)),
+            SLOT(onAllKnownContactsChanged(Tp::Contacts,Tp::Contacts,Tp::Channel::GroupMemberChangeDetails)));
+
+    // Look for friend requests and listen for publish changes
+    Tp::Contacts contacts = manager->allKnownContacts();
+    QList<Tp::ContactPtr> friendRequests;
+    foreach (Tp::ContactPtr contact, contacts) {
+        // if a friend request
+        if (contact->publishState() == Tp::Contact::PresenceStateAsk) {
+            friendRequests.append(contact);
+        }
+
+        // connect to publish changes
+        connect(contact.data(), SIGNAL(publishStateChanged(Tp::Contact::PresenceState,QString)),
+                SLOT(onPublishStateChanged(Tp::Contact::PresenceState)));
+    }
+    // Add the friend requests to the model
+    if (friendRequests.count() > 0) {
+        onPresencePublicationRequested(Tp::Contacts().fromList(friendRequests));
+    }
+}
+
+
+void IMFeedModel::acceptContact(QString contactId)
+{
+    if (mAccount->connection().isNull()) {
+        Tp::ContactManagerPtr manager = mAccount->connection()->contactManager();
+
+        Tp::Contacts contacts = manager->allKnownContacts();
+        QList<Tp::ContactPtr> contactsToAppend;
+        QList<Tp::ContactPtr>  contactsList = contacts.toList();
+        foreach (Tp::ContactPtr contact, contactsList) {
+            if (contact->id() == contactId) {
+                contactsToAppend.append(contact);
+                break;
+            }
+        }
+        manager->authorizePresencePublication(contactsToAppend);
+    }
+}
+
+void IMFeedModel::rejectContact(QString contactId)
+{
+    if (mAccount->connection().isNull()) {
+        Tp::ContactManagerPtr manager = mAccount->connection()->contactManager();
+
+        Tp::Contacts contacts = manager->allKnownContacts();
+        QList<Tp::ContactPtr> contactsToAppend;
+        QList<Tp::ContactPtr>  contactsList = contacts.toList();
+        foreach (Tp::ContactPtr contact, contactsList) {
+            if (contact->id() == contactId) {
+                contactsToAppend.append(contact);
+                break;
+            }
+        }
+        manager->removePresencePublication(contactsToAppend);
     }
 }

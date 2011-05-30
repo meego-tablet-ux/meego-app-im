@@ -58,8 +58,6 @@ public:
     };
 
 Q_SIGNALS:
-    void acceptContact(Tp::AccountPtr account, QString contactId);
-    void rejectContact(Tp::AccountPtr account, QString contactId);
     void applicationRunningChanged(bool running);
 
 public Q_SLOTS:
@@ -110,10 +108,16 @@ protected slots:
     void onServiceRegistered();
     void onServiceUnregistered();
 
+    void onConnectionChanged(const Tp::ConnectionPtr &conn);
+    void onConnectionStatusChanged(const Tp::ConnectionStatus status);
+    void onConnectionAvailable();
+
 protected:
     void insertItem(IMFeedModelItem *item);
     void removeItem(IMFeedModelItem *item);
     void createNewChannelItem(const Tp::ChannelPtr &channel, const FeedType &type);
+    void acceptContact(QString contactId);
+    void rejectContact(QString contactId);
 
 private:
     PanelsChannelObserver *mObserver;

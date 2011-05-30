@@ -65,11 +65,9 @@ private Q_SLOTS:
     void onAccountRemoved();
 
 private:
-    QStringList m_names;
-    QStringList m_categories;
-    QStringList m_icons;
+    const QString CATEGORY;
     McaActions *m_actions;
-    QList<Tp::Account *> m_accounts;
+    QList<Tp::AccountPtr> m_accounts;
     TelepathyManager *m_tpManager;
     IMProtocolsModel *m_protocolsModel;
 };

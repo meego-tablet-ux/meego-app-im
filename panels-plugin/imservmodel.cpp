@@ -12,6 +12,7 @@
 
 IMServiceModel::IMServiceModel(TelepathyManager *tpManager, IMProtocolsModel *protoModel, QObject *parent)
     : McaServiceModel(parent),
+      CATEGORY("im"),
       m_tpManager(tpManager),
       m_protocolsModel(protoModel)
 {
@@ -26,14 +27,15 @@ IMServiceModel::~IMServiceModel()
 int IMServiceModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_names.size();
+    return m_accounts.count();
 }
 
 QVariant IMServiceModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
-    if (row >= m_names.size())
+    if (row >= m_accounts.count()) {
         return QVariant();
+    }
 
     switch (role) {
     case CommonDisplayNameRole:
@@ -47,19 +49,19 @@ QVariant IMServiceModel::data(const QModelIndex &index, int role) const
         // Here you can provide a small icon that identifies the service.
         //   This icon would probably be the same for each account if you
         //   provide multiple accounts as separate "services".
-        return m_icons.at(row);
+        return m_accounts.at(row)->iconName();
 
     case RequiredCategoryRole:
         // Currently we define three categories: "social", "email", and "im"
         //   that will be pulled into the Friends panel. In the future we
         //   may extend the categories for other panels and purposes.
-        return m_categories.at(row);
+        return CATEGORY;
 
     case RequiredNameRole:
         // This field is a unique name for the service within this plugin
         //   If you provide multiple accounts each should have its own
         //   unique id. This is not user-visible.
-        return m_names.at(row);
+        return m_accounts.at(row)->uniqueIdentifier();
 
     case CommonActionsRole:
         // This is required if you will ever return true for
@@ -90,8 +92,9 @@ void IMServiceModel::performAction(QString action, QString uniqueid)
     //   configure signal properly. In the real application, we plan to only
     //   provide this option to the user if you report that there is a
     //   configuration error through CommonConfigErrorRole.
-    if (action == "configure")
+    if (action == "configure") {
         configure(uniqueid);
+    }
 }
 
 void IMServiceModel::configure(QString serviceName)
@@ -103,8 +106,8 @@ void IMServiceModel::configure(QString serviceName)
 void IMServiceModel::onAccountAvailable(Tp::AccountPtr account)
 {
     // check if it already exists
-    foreach(QString id, m_names) {
-        if(id == account->uniqueIdentifier()) {
+    foreach (Tp::AccountPtr accountPtr, m_accounts) {
+        if (accountPtr->uniqueIdentifier() == account->uniqueIdentifier()) {
             return;
         }
     }
@@ -113,16 +116,18 @@ void IMServiceModel::onAccountAvailable(Tp::AccountPtr account)
             SLOT(onAccountRemoved()));
 
     // add if new
-    beginInsertRows(QModelIndex(), m_names.size(), m_names.size());
-    //m_displayNames.append(tr("%1 - %2").arg(account->displayName(), accountServiceName(account->iconName()))); // account and service name
-
-    m_accounts.append(account.data());
-    m_icons.append(m_protocolsModel->iconForId(account->iconName()));
-    m_categories.append("im");
-    m_names.append(account->uniqueIdentifier());
-    onItemChanged(m_names.size() - 1);
+    beginInsertRows(QModelIndex(), m_accounts.count(), m_accounts.count());
+    m_accounts.append(account);
+    onItemChanged(m_accounts.count() - 1);
     endInsertRows();
 
+    // check existing accounts
+    // if there are accounts of the same service, the name has to be updated
+    foreach (Tp::AccountPtr accountPtr, m_accounts) {
+        if (accountPtr->iconName() == account->iconName()) {
+            onItemChanged(m_accounts.indexOf(accountPtr));
+        }
+    }
 }
 
 void IMServiceModel::onItemChanged(int row)
@@ -139,18 +144,21 @@ void IMServiceModel::onAccountRemoved()
     if (account) {
         QString id = account->uniqueIdentifier();
         if (!id.isEmpty()) {
-            foreach(QString name, m_names) {
-                if (name == id) {
-                    int i = m_names.indexOf(name);
-
-                    //remove the item in all lists
-                    beginRemoveRows(QModelIndex(), i, i);
-                    m_accounts.removeAt(i);
-                    m_icons.removeAt(i);
-                    m_categories.removeAt(i);
-                    m_names.removeAt(i);
+            foreach (Tp::AccountPtr accountPtr, m_accounts) {
+                int index = m_accounts.indexOf(accountPtr);
+                if (!accountPtr.isNull()) {
+                    if (id == accountPtr->uniqueIdentifier()) {
+                        //remove the item
+                        beginRemoveRows(QModelIndex(), index, index);
+                        m_accounts.removeAt(index);
+                        endRemoveRows();
+                        break;
+                    }
+                } else {
+                    // if null, remove the item
+                    beginRemoveRows(QModelIndex(), index, index);
+                    m_accounts.removeAt(index);
                     endRemoveRows();
-                    break;
                 }
             }
         }

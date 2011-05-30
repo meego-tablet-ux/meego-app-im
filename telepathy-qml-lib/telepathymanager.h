@@ -26,6 +26,9 @@ class TelepathyManager : public QObject
 public:
     explicit TelepathyManager(QObject *parent = NULL);
     ~TelepathyManager();
+
+    static TelepathyManager *instance();
+
     Tp::AccountManagerPtr accountManager(void);
     ChannelHandler *channelHandler() const;
     QList<Tp::AccountPtr> accounts(void);
@@ -63,6 +66,8 @@ private Q_SLOTS:
     void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
 
 private:
+    static TelepathyManager *mTelepathyManager;
+
     Tp::AccountManagerPtr mAccountManager;
     Tp::Features mAccountManagerFeatures;
     QList<Tp::AccountPtr> mAccounts;

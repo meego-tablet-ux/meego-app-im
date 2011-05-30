@@ -32,7 +32,7 @@ AccountHelper::AccountHelper(QObject *parent) :
     mConnectsAutomatically(true),
     mConnectAfterSetup(true)
 {
-    mAccountManager = Tp::AccountManager::create();
+    mAccountManager = TelepathyManager::instance()->accountManager();
     connect(mAccountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 }

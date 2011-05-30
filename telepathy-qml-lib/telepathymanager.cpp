@@ -26,6 +26,8 @@
 #include <gst/gst.h>
 #include <QSetIterator>
 
+TelepathyManager *TelepathyManager::mTelepathyManager = 0;
+
 TelepathyManager::TelepathyManager(QObject *parent)
     : QObject(parent),
       mChannelHandler(0),
@@ -33,6 +35,10 @@ TelepathyManager::TelepathyManager(QObject *parent)
       mDebugMessageCollector(0)
 {
     qDebug() << "TelepathyManager::TelepathyManager: ";
+
+    if (!mTelepathyManager) {
+        mTelepathyManager = this;
+    }
 
     mAccountFeatures << Tp::Account::FeatureCore
                      << Tp::Account::FeatureAvatar
@@ -71,6 +77,16 @@ TelepathyManager::TelepathyManager(QObject *parent)
 TelepathyManager::~TelepathyManager()
 {
     qDebug() << "TelepathyManager::~TelepathyManager: ";
+}
+
+TelepathyManager *TelepathyManager::instance()
+{
+    if (!mTelepathyManager) {
+        qDebug() << "Autocreating TelepathyManager instance";
+        mTelepathyManager = new TelepathyManager();
+    }
+
+    return mTelepathyManager;
 }
 
 void TelepathyManager::onAccountManagerReady(Tp::PendingOperation *op)

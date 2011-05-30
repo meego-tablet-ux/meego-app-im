@@ -571,6 +571,11 @@ void FarstreamChannel::initVideoInput()
         pushElement(mGstVideoInput, source, "fsvideoanyrate", true, NULL, false);
     pushElement(mGstVideoInput, source, "videoscale", false, NULL, false);
     pushElement(mGstVideoInput, source, COLORSPACE_CONVERT_ELEMENT, false, NULL, false);
+    pushElement(mGstVideoInput, source, "videoflip", true, &mGstVideoFlip, false);
+    if (mGstVideoFlip) {
+        // setup video flip element according to current orientation
+        onOrientationChanged(mCurrentOrientation);
+    }
 
     GstElement *capsfilter = pushElement(mGstVideoInput, source, "capsfilter", false, NULL, false);
     if (capsfilter) {
@@ -592,12 +597,6 @@ void FarstreamChannel::initVideoInput()
         if (caps) {
             g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
         }
-    }
-
-    pushElement(mGstVideoInput, source, "videoflip", true, &mGstVideoFlip, false);
-    if (mGstVideoFlip) {
-        // setup video flip element according to current orientation
-        onOrientationChanged(mCurrentOrientation);
     }
 
     pushElement(mGstVideoInput, source, "tee", false, &mGstVideoTee, false);

@@ -115,6 +115,7 @@ protected slots:
 protected:
     void insertItem(IMFeedModelItem *item);
     void removeItem(IMFeedModelItem *item);
+    void removeExistingRequest(const QString &contactId);
     void createNewChannelItem(const Tp::ChannelPtr &channel, const FeedType &type);
     void acceptContact(QString contactId);
     void rejectContact(QString contactId);

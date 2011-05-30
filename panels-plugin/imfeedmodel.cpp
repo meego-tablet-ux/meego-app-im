@@ -533,6 +533,10 @@ void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
                     SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(onContactUpgraded(Tp::PendingOperation*)));
         }
+
+        // remove the request if it is still there
+        removeExistingRequest(contact->id());
+
         // prepare the item to insert
         QString messageText =  qApp->translate("Message indicating the contact has been added",
                                                        "has been added as contact");
@@ -547,6 +551,17 @@ void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
         connect(item->actions(), SIGNAL(standardAction(QString,QString)),
                 this, SLOT(performAction(QString,QString)));
         insertItem(item);
+    }
+}
+
+void IMFeedModel::removeExistingRequest(const QString &contactId)
+{
+    foreach (IMFeedModelItem *item, mItems) {
+        // if it is a request belonging to the contact, remove it
+        if (item->contactId() == contactId
+                && item->itemType() == RequestType) {
+            removeItem(item);
+        }
     }
 }
 

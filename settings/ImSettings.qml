@@ -20,7 +20,7 @@ AppPage {
 
     property QtObject appModel : null
 
-    function creaateAppModel() {
+    function createAppModel() {
         if (appModel == null) {
             console.log("creating ApplicationsModel");
             var sourceCode = "import Qt 4.7;"

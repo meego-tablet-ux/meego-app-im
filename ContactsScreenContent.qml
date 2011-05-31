@@ -34,14 +34,13 @@ AppPage {
         pageTitle = window.currentAccountName;
         accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
         contactListState = window.accountItem.data(AccountsModel.ContactListStateRole);
-        accountOfflineInfo.setInfoMessage(accountStatus);
-        showAddFriendsChanged();
+        setInfoBarMessage();
     }
 
     onAccountStatusChanged: {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
-        accountOfflineInfo.setInfoMessage(accountStatus);
+        setInfoBarMessage();
     }
 
     onActionMenuIconClicked: {
@@ -50,41 +49,15 @@ AppPage {
     }
 
     onShowAccountOfflineChanged: {
-        if (showAccountOffline) {
-            accountOfflineInfo.show();
-        } else {
-            accountOfflineInfo.hide();
-        }
+        setInfoBarMessage();
     }
 
     onShowLoadingContactsChanged: {
-        if (showLoadingContacts) {
-            contactsLoadingInfo.show();
-        } else {
-            contactsLoadingInfo.hide();
-            showAddFriendsChanged();
-        }
+        setInfoBarMessage();
     }
 
     onShowAddFriendsChanged: {
-        if (showAddFriends && !showLoadingContacts) {
-            if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
-                if (noFriendsInfo.height == 0) {
-                    noFriendsInfo.show();
-                }
-                showAddFriendsItem = true;
-            } else {
-                if (noFriendsInfo.height > 0) {
-                    noFriendsInfo.hide();
-                }
-                showAddFriendsItem = false;
-            }
-        } else {
-            if (noFriendsInfo.height > 0) {
-                noFriendsInfo.hide();
-            }
-            showAddFriendsItem = false;
-        }
+        setInfoBarMessage();
     }
 
     Connections {
@@ -144,31 +117,11 @@ AppPage {
             id: noNetworkItem
         }
 
-        LoadingContacts {
-            id: contactsLoadingInfo
+        InfoBar {
+            id: infoBar
 
             anchors {
                 top: noNetworkItem.bottom
-                left: parent.left
-                right: parent.right
-            }
-        }
-
-        AccountOffline {
-            id: accountOfflineInfo
-
-            anchors {
-                top: contactsLoadingInfo.bottom
-                left: parent.left
-                right: parent.right
-            }
-        }
-
-        NoFriends {
-            id: noFriendsInfo
-
-            anchors {
-                top: accountOfflineInfo.bottom
                 left: parent.left
                 right: parent.right
             }
@@ -201,7 +154,7 @@ AppPage {
             id: listView
 
             anchors {
-                top: noFriendsInfo.bottom
+                top: infoBar.bottom
                 bottom: parent.bottom
                 left: parent.left
                 right: parent.right
@@ -218,7 +171,7 @@ AppPage {
 
         Title {
             id: friendsTitle
-            anchors.top: noFriendsInfo.bottom
+            anchors.top: infoBar.bottom
             text: qsTr("Add a friend")
             visible: showAddFriendsItem
         }
@@ -237,6 +190,52 @@ AppPage {
     function hideActionMenu()
     {
         contactContentMenu.hide();
+    }
+
+    function setInfoBarMessage()
+    {
+        var text;
+
+        // check first whether the account is offline or just connecting
+        text = accountStatusMessage(accountStatus);
+        // if not, check whether contacts are loading
+        if (text == "") {
+            if (showLoadingContacts) {
+                text = qsTr("Loading contacts...");
+                showAddFriendsItem = false;
+            } else if (showAddFriends && !showLoadingContacts) {
+                // check whether the contact list is really empty
+                if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
+                    text = qsTr("You haven't added any friends yet");
+                    showAddFriendsItem = true;
+                } else {
+                    showAddFriendsItem = false;
+                }
+            } else {
+                showAddFriendsItem = false;
+            }
+        } else {
+            showAddFriendsItem = false;
+        }
+
+        // assign and show/hide as necessary
+        infoBar.text = text;
+        if (text == "") {
+            infoBar.hide();
+        } else {
+            infoBar.show();
+        }
+    }
+
+    function accountStatusMessage(status)
+    {
+        if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
+            return qsTr("Account is offline");
+        } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
+            return qsTr("Account is connecting...");
+        } else {
+            return "";
+        }
     }
 
     ContextMenu {

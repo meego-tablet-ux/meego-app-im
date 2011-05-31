@@ -29,7 +29,7 @@ TextEntry {
 
     Image {
         id: upImage
-        source: "image://theme/popupbox_arrow_top"
+        source: "image://themedimage/images/popupbox_arrow_top"
 
         anchors.margins: 2
         anchors.top:  parent.top
@@ -46,7 +46,7 @@ TextEntry {
 
     Image {
         id: downImage
-        source: "image://theme/popupbox_arrow_bottom"
+        source: "image://themedimage/images/popupbox_arrow_bottom"
 
         anchors.margins: 2
         anchors.top:  parent.verticalCenter

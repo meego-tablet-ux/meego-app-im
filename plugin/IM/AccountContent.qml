@@ -274,7 +274,7 @@ Column {
 
         Image {
             id: arrowIcon
-            source: "image://theme/panels/pnl_icn_arrow" + (advancedHandler.expanded ? "right" : "down")
+            source: "image://themedimage/images/panels/pnl_icn_arrow" + (advancedHandler.expanded ? "right" : "down")
 
             anchors.topMargin: 5
             anchors.bottomMargin: 5

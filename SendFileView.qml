@@ -20,10 +20,18 @@ Item {
     signal cancelled
 
     function hidePickers() {
-        photoPicker.hide();
-        videoPicker.hide();
-        musicPicker.hide();
-        contactsPicker.visible = false;
+        if (photoPicker != null) {
+            photoPicker.hide();
+        }
+        if (videoPicker != null) {
+            videoPicker.hide();
+        }
+        if (musicPicker != null) {
+            musicPicker.hide();
+        }
+        if (contactsPicker != null) {
+            contactsPicker.visible = false;
+        }
     }
 
     onVisibleChanged: {
@@ -62,6 +70,7 @@ Item {
             text: qsTr("Photo")
 
             onClicked: {
+                createPhotoPicker();
                 photoPicker.parent = container;
                 photoPicker.show();
             }
@@ -74,6 +83,7 @@ Item {
             text: qsTr("Video")
 
             onClicked: {
+                createVideoPicker();
                 videoPicker.parent = container;
                 videoPicker.show()
             }
@@ -86,6 +96,7 @@ Item {
             text: qsTr("Music")
 
             onClicked: {
+                createMusicPicker();
                 musicPicker.parent = container;
                 musicPicker.show()
             }
@@ -98,6 +109,7 @@ Item {
             text: qsTr("Contact Details")
 
             onClicked: {
+                createContactsPicker();
                 contactsPicker.show();
             }
         }
@@ -130,6 +142,7 @@ Item {
             var filename = contact.name.firstName + "_" + contact.name.lastName;
             filename = filename.replace(" ", "_");
             filename = "/tmp/vcard_" +filename + ".vcf";
+            createPeopleModel();
             peopleModel.exportContact(contact.guid.guid, filename);
             container.fileSelected(filename);
         }

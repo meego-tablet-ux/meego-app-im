@@ -182,6 +182,7 @@ Item {
 
                     onClicked: {
                         var cmd = "xdg-open \"" + root.filePath + "\"";
+                        createAppModel();
                         appModel.launch(cmd);
                     }
 

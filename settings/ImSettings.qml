@@ -8,7 +8,6 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
 
@@ -19,8 +18,16 @@ AppPage {
 
     //property alias window: scene
 
-    Labs.ApplicationsModel {
-        id: appModel
+    property QtObject appModel : null
+
+    function creaateAppModel() {
+        if (appModel == null) {
+            console.log("creating ApplicationsModel");
+            var sourceCode = "import Qt 4.7;"
+                           + "import MeeGo.Labs.Components 0.1 as Labs;"
+                           + "Labs.ApplicationsModel {}";
+            appModel = Qt.createQmlObject(sourceCode, window);
+        }
     }
 
     Component.onCompleted: {

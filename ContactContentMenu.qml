@@ -91,6 +91,7 @@ Item {
                 anchors.fill: avatarImage
 
                 onClicked: {
+                    createPhotoPicker();
                     photoPicker.show();
                 }
             }
@@ -604,8 +605,8 @@ Item {
         id: accountHelper
     }
 
-    PhotoPicker {
-        id: photoPicker
+    Connections {
+        target: photoPicker
 
         onPhotoSelected: {
             accountHelper.setAccount(window.accountItem);

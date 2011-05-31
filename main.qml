@@ -10,8 +10,6 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
-import MeeGo.Labs.Components 0.1 as Labs
-import MeeGo.App.Contacts 0.1
 
 Window {
     id: window
@@ -588,37 +586,104 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
-    PhotoPicker {
-        id: photoPicker
-        parent: pageStack.currentPage
+    property alias photoPicker : photoPickerLoader.item
+
+    function createPhotoPicker() {
+        if (photoPickerLoader.item == null) {
+            console.log("creating PhotoPicker");
+            photoPickerLoader.sourceComponent = photoPickerComponent;
+        }
     }
 
-    VideoPicker {
-        id: videoPicker
-        parent: pageStack.currentPage
+    Component {
+        id: photoPickerComponent
+        PhotoPicker {
+            parent: pageStack.currentPage
+        }
     }
 
-    MusicPicker {
-        id: musicPicker
-        selectSongs: true
-        parent: pageStack.currentPage
+    Loader {
+        id: photoPickerLoader
     }
 
-    Labs.ContactsPicker {
-        id: contactsPicker
-        parent: pageStack.currentPage
-        promptString: qsTr("Select contact")
+    property alias videoPicker : videoPickerLoader.item
+
+    function createVideoPicker() {
+        if (videoPickerLoader.item == null) {
+            console.log("creating VideoPicker");
+            videoPickerLoader.sourceComponent = videoPickerComponent;
+        }
     }
 
-    PeopleModel {
-        id: peopleModel
+    Component {
+        id: videoPickerComponent
+        VideoPicker {
+            parent: pageStack.currentPage
+        }
     }
 
-    Labs.ApplicationsModel {
-        id: appModel
+    Loader {
+        id: videoPickerLoader
+    }
+
+    property alias musicPicker : musicPickerLoader.item
+
+    function createMusicPicker() {
+        if (musicPickerLoader.item == null) {
+            console.log("creating MusicPicker");
+            musicPickerLoader.sourceComponent = musicPickerComponent;
+        }
+    }
+
+    Component {
+        id: musicPickerComponent
+        MusicPicker {
+            selectSongs: true
+            parent: pageStack.currentPage
+        }
+    }
+
+    Loader {
+        id: musicPickerLoader
+    }
+
+    property QtObject contactsPicker : null
+
+    function createContactsPicker() {
+        if (contactsPicker == null) {
+            console.log("creating ContactsPicker");
+            var sourceCode = "import Qt 4.7;"
+                           + "import MeeGo.Labs.Components 0.1 as Labs;"
+                           + "Labs.ContactsPicker {"
+                           + "  parent: pageStack.currentPage;"
+                           + "  promptString: qsTr(\"Select contact\");"
+                           + "}";
+            contactsPicker = Qt.createQmlObject(sourceCode, pageStack.currentPage);
+        }
+    }
+
+    property QtObject peopleModel : null
+
+    function createPeopleModel() {
+        if (peopleModel == null) {
+            console.log("creating PeopleModel");
+            var sourceCode = "import Qt 4.7;"
+                           + "import MeeGo.App.Contacts 0.1;"
+                           + "PeopleModel {}";
+            peopleModel = Qt.createQmlObject(sourceCode, window);
+        }
+    }
+
+    property QtObject appModel : null
+
+    function createAppModel() {
+        if (appModel == null) {
+            console.log("creating ApplicationsModel");
+            var sourceCode = "import Qt 4.7;"
+                           + "import MeeGo.Labs.Components 0.1 as Labs;"
+                           + "Labs.ApplicationsModel {}";
+            appModel = Qt.createQmlObject(sourceCode, window);
+        }
     }
 
 }
-
-
-

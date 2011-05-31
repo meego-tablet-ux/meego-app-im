@@ -118,7 +118,6 @@ void IMServiceModel::onAccountAvailable(Tp::AccountPtr account)
     // add if new
     beginInsertRows(QModelIndex(), m_accounts.count(), m_accounts.count());
     m_accounts.append(account);
-    onItemChanged(m_accounts.count() - 1);
     endInsertRows();
 
     // check existing accounts

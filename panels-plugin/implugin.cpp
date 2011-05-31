@@ -29,7 +29,7 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
 
     qDebug() << "IMPlugin constructor";
 
-    m_tpManager = new TelepathyManager(this);
+    m_tpManager = TelepathyManager::instance();
     m_protocolsModel = new IMProtocolsModel(this);
     m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
 
@@ -54,7 +54,6 @@ IMPlugin::~IMPlugin()
     qDebug() << "IMPlugin::~IMPlugin() terminating";
     mClientRegistrar->unregisterClients();
     delete m_serviceModel;
-    delete m_tpManager;
     delete m_protocolsModel;
     mClientRegistrar->deleteLater();
     qDebug() << "IMPlugin::~IMPlugin() done terminating";

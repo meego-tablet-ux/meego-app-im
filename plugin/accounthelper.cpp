@@ -33,8 +33,6 @@ AccountHelper::AccountHelper(QObject *parent) :
     mConnectAfterSetup(true)
 {
     mAccountManager = TelepathyManager::instance()->accountManager();
-    connect(mAccountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 }
 
 QString AccountHelper::connectionManager() const
@@ -278,13 +276,6 @@ QString AccountHelper::accountId() const
         return QString();
     }
     return mAccount->uniqueIdentifier();
-}
-
-void AccountHelper::onAccountManagerReady(Tp::PendingOperation *op)
-{
-    Q_UNUSED(op);
-
-    // TODO: check what we need to do here
 }
 
 void AccountHelper::onAccountCreated(Tp::PendingOperation *op)

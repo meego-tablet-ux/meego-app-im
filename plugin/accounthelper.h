@@ -183,7 +183,6 @@ private:
     bool mConnectAfterSetup;
 
 private Q_SLOTS:
-    void onAccountManagerReady(Tp::PendingOperation *op);
     void onAccountCreated(Tp::PendingOperation *op);
     void onAccountEnabled(Tp::PendingOperation *op);
     void onPresenceChanged(Tp::PendingOperation *op);

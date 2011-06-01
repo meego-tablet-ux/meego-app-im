@@ -431,6 +431,20 @@ void IMAccountsModel::endChat(const QString &accountId, const QString &contactId
     }
 }
 
+void IMAccountsModel::endCall(const QString &accountId, const QString &contactId)
+{
+    const QString key = accountId + "&" + contactId;
+    if (mCallAgents.contains(key)) {
+        mCallAgents[key]->endCall();
+    }
+
+    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    if (contactItem && contactItem->parent()) {
+        onItemChanged(contactItem);
+        onItemChanged(contactItem->parent());
+    }
+}
+
 int IMAccountsModel::accountsOfType(const QString &type) const
 {
     int count = 0;

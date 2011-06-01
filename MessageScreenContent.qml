@@ -486,11 +486,16 @@ AppPage {
     function closeConversation()
     {
         // assuming we need to end the chat session when close is pressed
-        if(window.chatAgent.isConference) {
+        if (window.chatAgent.isConference) {
             accountsModel.endChat(window.currentAccountId, window.chatAgent.channelPath);
         } else {
             accountsModel.endChat(window.currentAccountId, contactId);
         }
+
+        if (window.callAgent != undefined) {
+            window.callAgent.endCall();
+        }
+
         window.popPage();
     }
 
@@ -549,7 +554,7 @@ AppPage {
             }
         }
 
-        if(window.callAgent != undefined) {
+        if (window.callAgent != undefined) {
             callAgentConnections.target = window.callAgent;
             var status = window.callAgent.callStatus;
             if (status != CallAgent.CallStatusNoCall) {

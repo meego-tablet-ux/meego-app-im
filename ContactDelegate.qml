@@ -140,6 +140,7 @@ Item {
                     visible: model.chatOpened
                     onClicked: {
                         accountsModel.endChat(window.currentAccountId, model.id);
+                        accountsModel.endCall(window.currentAccountId, model.id);
                         contextMenu.hide();
                     }
                 }

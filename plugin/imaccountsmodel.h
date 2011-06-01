@@ -68,6 +68,7 @@ public:
     Q_INVOKABLE QString startPrivateChat(const QString &accountId, const QString &channelPath, const QString &contactId);
     Q_INVOKABLE void startGroupChat(const QString &accountId, const QString &channelPath);
     Q_INVOKABLE void endChat(const QString &accountId, const QString &contactId);
+    Q_INVOKABLE void endCall(const QString &accountId, const QString &contactId);
     Q_INVOKABLE QObject *conversationModel(const QString &accountId, const QString &contactId);
     Q_INVOKABLE QObject *groupConversationModel(const QString &accountId, const QString &channelPath);
     Q_INVOKABLE void disconnectConversationModel(const QString &accountId, const QString &contactId);

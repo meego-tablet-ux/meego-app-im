@@ -5,13 +5,16 @@ CONFIG += ordered dbus
 qmlfiles.files += *.qml *.js settings
 qmlfiles.path += $$INSTALL_ROOT/usr/share/$$TARGET
 
+desktop.files += meego-app-im.desktop
+desktop.path += $$INSTALL_ROOT/usr/share/applications
+
 settingsdesktop.files += im-settings.desktop
 settingsdesktop.path += $$INSTALL_ROOT/usr/share/meego-ux-settings/apps/
 
 protocols.files += protocols
 protocols.path += $$INSTALL_ROOT/usr/share/$$TARGET
 
-INSTALLS += qmlfiles settingsdesktop protocols
+INSTALLS += qmlfiles desktop settingsdesktop protocols
 
 # dist stuff begins here
 # Only following three lines needed to be editied

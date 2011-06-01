@@ -179,8 +179,9 @@ AppPage {
             }
         }
 
-        LoadingConversationHistory {
+        InfoBar {
             id: loadingConversation
+            text: qsTr("Loading conversation history...")
             z: 10
             anchors {
                 top: openingChatInfo.bottom

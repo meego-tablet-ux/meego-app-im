@@ -54,9 +54,10 @@ AppPage {
                 width:  parent.width
                 height: childrenRect.height
 
-                LoadingAccounts {
+                InfoBar {
                     id: loadingAccounts
-                    visible: true
+                    text: qsTr("Loading accounts...")
+
                     anchors {
                         top: parent.top
                         left: parent.left

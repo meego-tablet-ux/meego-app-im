@@ -130,6 +130,31 @@ void NotificationManager::notifyIncomingFileTransfer(const QString &accountId,
                       tr("%1 is sending you the file %2").arg(contactAlias, fileName));
 }
 
+void NotificationManager::notifyIncomingCall(const QString &accountId,
+                                             const QString &contactId,
+                                             const QString &contactAlias)
+{
+
+    NotificationItem notification;
+    notification.type = NotificationItem::IncomingCall;
+    notification.accountId = accountId;
+    notification.contactId = contactId;
+    notification.message = tr("%1 is calling you").arg(contactAlias);
+    notification.item = QSharedPointer<MNotification>(new MNotification(MNotification::ImIncomingVideoChat,
+                                                                        contactAlias,
+                                                                        notification.message));
+
+    QList<QVariant> args;
+    args << accountId << contactId;
+    notification.item->setAction(MRemoteAction("com.meego.app.im",
+                                               "/com/meego/app/im",
+                                               "com.meego.app.im",
+                                               "com.meego.app.im.acceptCall",
+                                               args));
+    notification.item->publish();
+    mCallNotifications.append(notification);
+}
+
 
 void NotificationManager::processNotifications()
 {

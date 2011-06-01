@@ -14,6 +14,7 @@
 #include "imaccountsmodel.h"
 #include "imavatarimageprovider.h"
 #include "textfile.h"
+#include "imdbus.h"
 
 #include "../telepathy-qml-lib/chatagent.h"
 #include "../telepathy-qml-lib/debugmessage.h"
@@ -98,6 +99,7 @@ void Components::registerTypes(const char *uri)
     qmlRegisterType<AccountHelper>(uri, 0, 1, "AccountHelper");
     qmlRegisterType<QmlGstVideoItem>(uri, 0, 1, "VideoItem");
     qmlRegisterType<TextFile>(uri, 0, 1, "TextFile");
+    qmlRegisterType<IMDBus>(uri, 0, 1, "IMDBus");
     qmlRegisterUncreatableType<IMAccountsModel>(uri, 0, 1, "IMAccountsModel", "This is a read-only type");
     qmlRegisterUncreatableType<Tpy::ContactModelItem>(uri, 0, 1,"ContactModelItem", "This is a read-only type");
     qmlRegisterUncreatableType<TelepathyManager>(uri, 0, 1, "TelepathyManager", "This is a read-only type");

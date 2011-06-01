@@ -2,7 +2,8 @@ TEMPLATE = lib
 TARGET = IM
 QT += declarative dbus network
 CONFIG += qt plugin link_pkgconfig mobility
-PKGCONFIG += TelepathyQt4 TelepathyQt4Yell TelepathyQt4YellFarstream qt-gst-qml-sink QtGLib-2.0 glib-2.0 TelepathyLoggerQt4
+PKGCONFIG += TelepathyQt4 TelepathyQt4Yell TelepathyQt4YellFarstream qt-gst-qml-sink \
+             QtGLib-2.0 glib-2.0 TelepathyLoggerQt4 contextsubscriber-1.0
 LIBS += -ltelepathy-qt4-yell-models -L../telepathy-qml-lib -ltelepathy-qml -ltelepathy-qt4-yell-farstream -ltelepathy-logger-qt4
 TARGET = $$qtLibraryTarget($$TARGET)
 DESTDIR = $$TARGET
@@ -12,7 +13,11 @@ MOBILITY = multimedia
 
 plugin.files += $$TARGET
 plugin.path += $$[QT_INSTALL_IMPORTS]/MeeGo/App/
-INSTALLS += plugin
+
+service.path = /usr/share/dbus-1/services
+service.files += com.meego.app.im.service
+
+INSTALLS += plugin service
 
 SOURCES += components.cpp \
     accounthelper.cpp \
@@ -24,7 +29,9 @@ SOURCES += components.cpp \
     accountssortfilterproxymodel.cpp \
     imgroupchatmodelitem.cpp \
     imgroupchatmodel.cpp \
-    textfile.cpp
+    textfile.cpp \
+    imdbus.cpp \
+    imdbusadaptor.cpp
 
 HEADERS += components.h \
     accounthelper.h \
@@ -36,4 +43,6 @@ HEADERS += components.h \
     accountssortfilterproxymodel.h \
     imgroupchatmodelitem.h \
     imgroupchatmodel.h \
-    textfile.h
+    textfile.h \
+    imdbus.h \
+    imdbusadaptor_p.h

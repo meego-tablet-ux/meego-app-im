@@ -72,6 +72,18 @@ Window {
         running: true
     }
 
+    IMDBus {
+        id: dbus
+
+        onCallAccepted: {
+            console.log("Call accepted for account " + accountId + " and contact " + contactId);
+        }
+
+        onChatOpenRequested: {
+            console.log("Chat open requested for account " + accountId + " and contact " + contactId);
+        }
+    }
+
     onCurrentAccountIdChanged: {
         contactsModel.filterByAccountId(currentAccountId);
         contactRequestModel.filterByAccountId(currentAccountId);
@@ -228,6 +240,9 @@ Window {
                                             window.presenceStatusText(window.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
             incomingCallDialog.connectionTarget = window.incomingCallAgent;
             incomingCallDialog.start();
+
+            var contactItem = accountsModel.contactItemForId(accountId, contactId);
+            notificationManager.notifyIncomingCall(accountId, contactId, contactItem.data(AccountsModel.AliasRole));
         }
 
         onRequestedGroupChatCreated: {

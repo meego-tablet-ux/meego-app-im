@@ -234,16 +234,12 @@ bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
     int leftType = sourceModel()->data(left, Tpy::AccountsModel::PresenceTypeRole).toInt();
     int rightType = sourceModel()->data(right, Tpy::AccountsModel::PresenceTypeRole).toInt();
 
-    // offline values should be last
-    if (leftType == 1) {
-        leftType = 8;
-    }
-    if (rightType == 1) {
-        rightType = 8;
-    }
+    // order by presence type
+    int leftOrderedType = presenceOrder(leftType);
+    int rightOrderedType = presenceOrder(rightType);
 
-    if (leftType != rightType) {
-        return (leftType < rightType);
+    if (leftOrderedType != rightOrderedType) {
+        return (leftOrderedType < rightOrderedType);
     }
 
     // compare the alias
@@ -256,6 +252,22 @@ bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
     QString leftId = sourceModel()->data(left, Tpy::AccountsModel::IdRole).toString();
     QString rightId = sourceModel()->data(right, Tpy::AccountsModel::IdRole).toString();
     return (leftId < rightId);
+}
+
+int ContactsSortFilterProxyModel::presenceOrder(const int type) const
+{
+    switch(type) {
+    case Tp::ConnectionPresenceTypeAvailable:
+    case Tp::ConnectionPresenceTypeAway:
+    case Tp::ConnectionPresenceTypeExtendedAway:
+    case Tp::ConnectionPresenceTypeBusy:
+        return type; // return as-is
+    case Tp::ConnectionPresenceTypeOffline:
+        return (Tp::ConnectionPresenceTypeBusy + 1); // offline should be right after busy
+    default:
+        // anything else should be last in no particular order
+        return Tp::ConnectionPresenceTypeError;
+    }
 }
 
 void ContactsSortFilterProxyModel::filterByConnection(Tp::ConnectionPtr connection)

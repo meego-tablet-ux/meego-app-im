@@ -60,6 +60,11 @@ protected:
       */
     void setShowOffline();
 
+    /**
+      * This method returns an order according to the presence type
+      */
+    int presenceOrder(const int type) const;
+
 private Q_SLOTS:
     void slotSortByPresence(void);
 

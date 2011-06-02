@@ -19,7 +19,7 @@ class ContactsSortFilterProxyModel : public QSortFilterProxyModel
     Q_PROPERTY(QString accountId READ accountId NOTIFY accountIdChanged)
 
 public:
-    ContactsSortFilterProxyModel(TelepathyManager *manager, QAbstractItemModel *model, QObject *parent = 0);
+    ContactsSortFilterProxyModel(TelepathyManager *manager, QAbstractItemModel *model, const bool active = true, QObject *parent = 0);
     ~ContactsSortFilterProxyModel();
 
     Q_INVOKABLE bool  haveConnection() const;
@@ -82,6 +82,7 @@ private:
     bool mRequestsOnly;
     bool mBlockedOnly;
     QStringList mSkippedContacts;
+    bool mActive;
 };
 
 #endif

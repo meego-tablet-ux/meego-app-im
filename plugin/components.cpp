@@ -119,6 +119,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     Tpy::FlatModelProxy *flatModel = new Tpy::FlatModelProxy(model);
     mMergedModel = new MergedModel(this);
     mMergedModel->addModel(flatModel);
+    qDebug() << "Components::onAccountsModelReady: mMergedModel count: " << mMergedModel->rowCount(QModelIndex());
 
     mGroupChatModel = new IMGroupChatModel(this);
     mMergedModel->addModel(mGroupChatModel);
@@ -126,7 +127,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     // initialize the accounts sorted model
     AccountsSortFilterProxyModel *accountsSortedModel = new AccountsSortFilterProxyModel(model, this);
 
-    mContactsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, this);
+    mContactsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, false, this);
     mRequestsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, this);
     mRequestsModel->setRequestsOnly(true);
 

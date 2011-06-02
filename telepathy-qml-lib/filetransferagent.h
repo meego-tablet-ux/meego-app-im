@@ -79,7 +79,6 @@ protected:
 
 private Q_SLOTS:
     void onChannelRequestCreated(Tp::ChannelRequestPtr request);
-    void onChannelReady(Tp::PendingOperation *op);
     void onChannelInvalidated(Tp::DBusProxy *, const QString &errorName, const QString &errorMessage);
     void onChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
 

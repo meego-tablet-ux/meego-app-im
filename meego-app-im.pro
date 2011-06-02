@@ -1,5 +1,5 @@
 TEMPLATE = subdirs 
-SUBDIRS += telepathy-qml-lib telepathy-qml-plugin plugin panels-plugin
+SUBDIRS += telepathy-qml-lib telepathy-qml-plugin plugin panels-plugin approver
 CONFIG += ordered dbus
 
 qmlfiles.files += *.qml *.js settings

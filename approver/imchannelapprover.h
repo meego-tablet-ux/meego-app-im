@@ -14,7 +14,10 @@
 #include <TelepathyQt4/PendingOperation>
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/IncomingFileTransferChannel>
+#include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4Yell/CallChannel>
+#include "../telepathy-qml-lib/telepathymanager.h"
+#include "../telepathy-qml-lib/notificationmanager.h"
 
 class IMChannelApprover : public QObject, public Tp::AbstractClientApprover
 {
@@ -38,10 +41,10 @@ Q_SIGNALS:
 public Q_SLOTS:
     void onCloseOperation(QString operationObjectPath);
     void setApplicationRunning(bool running);
+    void registerApprover();
 
 private Q_SLOTS:
     void onCallChannelReady(Tp::PendingOperation *op);
-    void onStreamChannelReady(Tp::PendingOperation *op);
     void onTextChannelReady(Tp::PendingOperation *op);
     void onFileTransferChannelReady(Tp::PendingOperation *op);
     void onInvalidated(void);
@@ -49,6 +52,10 @@ private Q_SLOTS:
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
     bool mApplicationRunning;
+    Tp::ClientRegistrarPtr mClientRegistrar;
+    TelepathyManager *mTelepathyManager;
+    NotificationManager mNotificationManager;
+
 };
 
 #endif // IMCHANNELAPPROVER_H

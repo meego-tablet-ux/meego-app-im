@@ -19,7 +19,6 @@
 #include "../telepathy-qml-lib/chatagent.h"
 #include "../telepathy-qml-lib/debugmessage.h"
 #include "../telepathy-qml-lib/debugmessagecollector.h"
-#include "../telepathy-qml-lib/imchannelapprover.h"
 
 #include <TelepathyLoggerQt4/Init>
 #include <TelepathyQt4/Account>
@@ -103,7 +102,6 @@ void Components::registerTypes(const char *uri)
     qmlRegisterUncreatableType<IMAccountsModel>(uri, 0, 1, "IMAccountsModel", "This is a read-only type");
     qmlRegisterUncreatableType<Tpy::ContactModelItem>(uri, 0, 1,"ContactModelItem", "This is a read-only type");
     qmlRegisterUncreatableType<TelepathyManager>(uri, 0, 1, "TelepathyManager", "This is a read-only type");
-    qmlRegisterUncreatableType<IMChannelApprover>(uri, 0, 1, "IMChannelApprover", "This is a read-only type");
     qmlRegisterUncreatableType<ChatAgent>(uri, 0, 1, "ChatAgent", "This is a read-only type");
     qmlRegisterUncreatableType<SimpleContactsListModel>(uri, 0, 1, "SimpleContactsListModel", "This is a read-only type");
 }

@@ -45,9 +45,6 @@ Q_SIGNALS:
     void newCallChannel(const QString &accountId, const Tpy::CallChannelPtr &channel);
     void newFileTransferChannel(const QString &accountId, const Tp::IncomingFileTransferChannelPtr &channel);
 
-public slots:
-    void onTextChannelReady(Tp::PendingOperation *op);
-
 private:
     QList<Tp::TextChannelPtr> mTextChannels;
     QList<Tpy::CallChannelPtr> mCallChannels;

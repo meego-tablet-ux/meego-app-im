@@ -61,9 +61,7 @@ private Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
     void onNewAccount(const Tp::AccountPtr &account);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
-    void onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel);
     void onFinished();
-    void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
 
 private:
     static TelepathyManager *mTelepathyManager;

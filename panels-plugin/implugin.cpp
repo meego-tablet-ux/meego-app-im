@@ -38,7 +38,6 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
     mClientRegistrar = Tp::ClientRegistrar::create();
 
     initializeChannelObserver();
-    initializeChannelApprover();
 
     connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
             m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
@@ -72,8 +71,6 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
         if (account->uniqueIdentifier() == service) {
             IMFeedModel *model = new IMFeedModel(mObserver, account, this);
 
-            connect(model, SIGNAL(applicationRunningChanged(bool)),
-                    mChannelApprover, SLOT(setApplicationRunning(bool)));
             mFeedModels[service] = model;
             return model;
         }
@@ -102,16 +99,6 @@ void IMPlugin::initializeChannelObserver()
 
     // register the observer
     mClientRegistrar->registerClient(observer, "MeeGoIMPanelsObserver");
-}
-
-void IMPlugin::initializeChannelApprover()
-{
-    // create the channel approver
-    mChannelApprover = new IMChannelApprover();
-    Tp::AbstractClientPtr approver(mChannelApprover);
-
-    // register the approver
-    mClientRegistrar->registerClient(approver, "MeeGoIMPanelsApprover");
 }
 
 McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QString &searchText)

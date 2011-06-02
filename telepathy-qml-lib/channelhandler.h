@@ -52,7 +52,6 @@ signals:
 
 private slots:
     void onCallChannelReady(Tp::PendingOperation *op);
-    void onStreamChannelReady(Tp::PendingOperation *op);
     void onTextChannelReady(Tp::PendingOperation *op);
     void onIncomingFileTransferChannelReady(Tp::PendingOperation *op);
     void onOutgoingFileTransferChannelReady(Tp::PendingOperation *op);

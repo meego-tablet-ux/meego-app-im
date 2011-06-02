@@ -14,7 +14,6 @@
 #include "../telepathy-qml-lib/telepathymanager.h"
 #include "../telepathy-qml-lib/improtocolsmodel.h"
 #include "../telepathy-qml-lib/panelschannelobserver.h"
-#include "../telepathy-qml-lib/imchannelapprover.h"
 
 #include <feedplugin.h>
 #include <TelepathyQt4/ClientRegistrar>
@@ -58,7 +57,6 @@ public:
 
 protected:
     void initializeChannelObserver();
-    void initializeChannelApprover();
 
 private Q_SLOTS:
     void loadTranslator();
@@ -68,7 +66,6 @@ private:
     IMProtocolsModel *m_protocolsModel;
     IMServiceModel *m_serviceModel;
     PanelsChannelObserver *mObserver;
-    IMChannelApprover *mChannelApprover;
     Tp::ClientRegistrarPtr mClientRegistrar;
     QMap<QString, IMFeedModel *> mFeedModels;
     QTranslator appTranslator;

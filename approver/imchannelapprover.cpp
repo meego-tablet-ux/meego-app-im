@@ -12,8 +12,17 @@
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4Yell/ChannelClassSpec>
 
+#include <TelepathyQt4/AccountManager>
+#include <TelepathyQt4/AccountFactory>
+#include <TelepathyQt4/ConnectionFactory>
+#include <TelepathyQt4/ContactFactory>
+#include <TelepathyQt4/ClientRegistrar>
+#include <TelepathyQt4Yell/ChannelFactory>
+
 IMChannelApprover::IMChannelApprover()
-: Tp::AbstractClientApprover(channelFilters()), mApplicationRunning(false)
+: Tp::AbstractClientApprover(channelFilters()),
+  mApplicationRunning(false),
+  mNotificationManager(this)
 {
 }
 
@@ -58,16 +67,15 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
         Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
         if (!callChannel.isNull()) {
 
-            /*// todo fix hack: stick a property to have accountId handy when we get the stream
+            // todo fix hack: stick a property to have accountId handy when we get the stream
             callChannel->setProperty("accountId", QVariant(dispatchOperation->account()->uniqueIdentifier()));
-            qDebug() << "IMChannelApprover::handleChannels: handling call channel - becomeReady"
-                     << " immutableProperties=" << callChannel->immutableProperties();
             connect(callChannel->becomeReady(Tp::Features()
                                              << Tpy::CallChannel::FeatureCore
                                              << Tpy::CallChannel::FeatureContents),
                     SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(onCallChannelReady(Tp::PendingOperation*)));*/
-            // for now we will just approve the channel
+                    SLOT(onCallChannelReady(Tp::PendingOperation*)));
+
+            shouldApprove = false;
             continue;
         }
 
@@ -142,6 +150,18 @@ void IMChannelApprover::setApplicationRunning(bool running)
     mDispatchOps.clear();
 }
 
+void IMChannelApprover::registerApprover()
+{
+    mTelepathyManager = TelepathyManager::instance();
+    mClientRegistrar = Tp::ClientRegistrar::create(mTelepathyManager->accountManager());
+
+    qDebug() << "Registering the approver";
+    Tp::AbstractClientPtr approver(this);
+
+    // register the approver
+    mClientRegistrar->registerClient(approver, "MeeGoIMApprover");
+}
+
 void IMChannelApprover::onTextChannelReady(Tp::PendingOperation *op)
 {
     qDebug() << "IMChannelApprover::onTextChannelReady: channel ready";
@@ -184,8 +204,10 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
     QString accountId = callChannel->property("accountId").toString();
     QString operationPath = callChannel->property("channelDispatchOperation").toString();
 
-    emit callChannelAvailable(accountId, callChannel);
-    emit incomingCall(accountId, callChannel->initiatorContact()->id(), operationPath);
+    Tp::ContactPtr contact = callChannel->initiatorContact();
+    mNotificationManager.notifyIncomingCall(accountId,
+                                            contact->id(),
+                                            contact->alias());
 }
 
 void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)

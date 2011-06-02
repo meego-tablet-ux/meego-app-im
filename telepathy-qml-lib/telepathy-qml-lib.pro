@@ -13,7 +13,6 @@ SOURCES = telepathytypes.cpp \
     farstreamchannel.cpp \
     panelschannelobserver.cpp \
     imconversationmodel.cpp \
-    imchannelapprover.cpp \
     notificationmanager.cpp \
     filetransferitem.cpp \
     simplecontactslistmodel.cpp \
@@ -34,7 +33,6 @@ HEADERS = telepathytypes.h \
     farstreamchannel.h \
     panelschannelobserver.h \
     imconversationmodel.h \
-    imchannelapprover.h \
     notificationmanager.h \
     filetransferitem.h \
     simplecontactslistmodel.h \

@@ -293,6 +293,8 @@ Item {
                                     value: model.type
                                     group: statusRadioGroup
                                     anchors.verticalCenter: parent.verticalCenter
+                                    height: statusText.height
+                                    width: height
                                 }
 
                                 Text {

@@ -149,8 +149,10 @@ void NotificationManager::notifyIncomingCall(const QString &accountId,
     notification.item->setAction(MRemoteAction("com.meego.app.im",
                                                "/com/meego/app/im",
                                                "com.meego.app.im",
-                                               "com.meego.app.im.acceptCall",
+                                               "acceptCall",
                                                args));
+    QString icon("image://themedimage/widgets/apps/chat/");
+    notification.item->setImage(icon + "call-fullscreen-default");
     notification.item->publish();
     mCallNotifications.append(notification);
 }
@@ -255,22 +257,30 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
                                                                         contactAlias,
                                                                         message));
 
+    QList<QVariant> args;
+    args << accountId << contactId;
+    notification.item->setAction(MRemoteAction("com.meego.app.im",
+                                               "/com/meego/app/im",
+                                               "com.meego.app.im",
+                                               "showChat",
+                                               args));
+
     notification.item->setCount(eventCount);
 
     // NOTE: The current theme can be found in the /meego/ux/theme gconf key, where
     //       the full path to the theme is /usr/share/themes/NAME.  I am only 'fixing'
     //       this to at least fall back to a known theme directory 
-    QString icon("/usr/share/themes/meego-ux-theme/1024-600-10/images/im/");
+    QString icon("image://themedimage/widgets/apps/chat/");
     switch (type) {
     case NotificationItem::IncomingFileTransfer:
     case NotificationItem::PendingChatMessage:
-        notification.item->setImage(icon + "icn_previouschats.png");
+        notification.item->setImage(icon + "message-unread");
         break;
     case NotificationItem::MissedCall:
-        notification.item->setImage(icon + "icn_missedaudiocall.png");
+        notification.item->setImage(icon + "call-audio-missed");
         break;
     case NotificationItem::MissedVideoCall:
-        notification.item->setImage(icon + "icn_missedvideocall.pnh");
+        notification.item->setImage(icon + "call-video-missed");
         break;
     }
 

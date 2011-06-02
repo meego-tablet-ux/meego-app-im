@@ -146,8 +146,6 @@ private Q_SLOTS:
     void onGotAllProperties(QDBusPendingCallWatcher *watcher);
     void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
     void onAccountCountChanged();
-    void onAccountConnectionStatusChanged(const QString &accountId, const int status);
-    void onConnectionReady(Tp::ConnectionPtr connection);
     void onAcceptCallFinished(CallAgent *agent);
 
 private:

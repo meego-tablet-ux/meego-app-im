@@ -57,10 +57,6 @@ IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
     roles[ParentDisplayNameRole] = "parentDisplayName";
     roles[ParentIdRole] = "parentId";
     setRoleNames(roles);
-
-    // get privacy settings for all accounts
-    connect(this, SIGNAL(accountConnectionStatusChanged(QString,int)),
-            SLOT(onAccountConnectionStatusChanged(QString, int)));
 }
 
 IMAccountsModel::~IMAccountsModel()
@@ -1164,8 +1160,6 @@ void IMAccountsModel::setNotificationManager(NotificationManager *notificationMa
 void IMAccountsModel::setTelepathyManager(TelepathyManager *manager)
 {
     mTelepathyManager = manager;
-    connect(mTelepathyManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
-            SLOT(onConnectionReady(Tp::ConnectionPtr)));
 
     // trigger an update on the items
     if (rowCount()) {
@@ -1443,38 +1437,6 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
     }
 }
 
-void IMAccountsModel::onAccountConnectionStatusChanged(const QString &accountId, const int status)
-{
-    qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
-    if (accountItem) {
-        Tp::ConnectionPtr connection = accountItem->account()->connection();
-        if (!connection.isNull()
-                && connection->isValid()
-                && status == Tp::ConnectionStatusConnected) {
-            if (connection->actualFeatures().contains(Tp::Connection::FeatureRoster)) {
-                accountItem->addKnownContacts();
-            }
-        }
-    }
-}
-
-void IMAccountsModel::onConnectionReady(Tp::ConnectionPtr connection)
-{
-    qDebug() << "IMAccountsModel::onConnectionReady";
-    for (int i = 0; i < rowCount(); ++i) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                    accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
-
-        if(accountItem) {
-            Tp::AccountPtr account = accountItem->account();
-            if(account->connection() == connection) {
-                accountItem->addKnownContacts();
-            }
-        }
-    }
-}
-
 QStringList IMAccountsModel::channelContacts(const QString &accountId, const QString &channelPath) const
 {
     QStringList contactsList;
@@ -1612,7 +1574,6 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
 
 void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
 {
-    qDebug() << "IMAccountsModel::onAccountConnectionStatusChanged";
     Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);

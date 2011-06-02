@@ -131,7 +131,8 @@ Window {
             parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {
                 // only open last used account if there are no unread messages
-                if (!accountsModel.existingUnreadMessages()) {
+                if (!accountsModel.existingUnreadMessages()
+                        && accountId != "") {
                     currentAccountId = accountId;
                     accountItem = accountsModel.accountItemForId(window.currentAccountId);
                     currentAccountId = accountItem.data(AccountsModel.IdRole);

@@ -339,7 +339,9 @@ void ContactsSortFilterProxyModel::slotResetModel()
 
 void ContactsSortFilterProxyModel::filterByLastUsedAccount(const QString &accountId)
 {
-    filterByAccountId(accountId);
+    if(accountId.isEmpty()) {
+        filterByAccountId(accountId);
+    }
     emit openLastUsedAccount(accountId);
 }
 

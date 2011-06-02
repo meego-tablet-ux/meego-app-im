@@ -197,6 +197,8 @@ void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *m
                     && account->connection()->status() == Tp::ConnectionStatusConnected) {
                 mContactsModel->filterByLastUsedAccount(accountId);
                 break;
+            } else {
+                mContactsModel->filterByLastUsedAccount(QString());
             }
         }
     }

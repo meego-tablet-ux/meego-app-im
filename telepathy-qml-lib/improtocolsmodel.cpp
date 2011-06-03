@@ -34,6 +34,7 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
             delete desktopEntry;
             continue;
         }
+        qDebug() << "Protocol found " << desktopEntry->value("MTI", "Id");
         mProtocolList.append(desktopEntry);
         mProtocolMap[desktopEntry->value("MTI", "Id")] = desktopEntry;
     }

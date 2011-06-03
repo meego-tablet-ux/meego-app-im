@@ -72,6 +72,7 @@ class AccountHelper : public QObject
 
 public:
     explicit AccountHelper(QObject *parent = 0);
+    ~AccountHelper();
 
     Q_INVOKABLE void setAccountParameter(const QString &property, const QVariant &value);
     Q_INVOKABLE QVariant accountParameter(const QString &property) const;

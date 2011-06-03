@@ -32,70 +32,88 @@ AccountHelper::AccountHelper(QObject *parent) :
     mConnectsAutomatically(true),
     mConnectAfterSetup(true)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mAccountManager = TelepathyManager::instance()->accountManager();
+}
+
+AccountHelper::~AccountHelper()
+{
+    qDebug() << __PRETTY_FUNCTION__ << this;
 }
 
 QString AccountHelper::connectionManager() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mConnectionManager;
 }
 
 void AccountHelper::setConnectionManager(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << value;
     mConnectionManager = value;
     emit connectionManagerChanged();
 }
 
 QString AccountHelper::protocol() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << mProtocol;
     return mProtocol;
 }
 
 void AccountHelper::setProtocol(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << value;
     mProtocol = value;
     emit protocolChanged();
 }
 
 QString AccountHelper::displayName() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mDisplayName;
 }
 
 void AccountHelper::setDisplayName(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << value;
     mDisplayName = value;
     emit displayNameChanged();
 }
 
 QString AccountHelper::password() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mPassword;
 }
 
 void AccountHelper::setPassword(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mPassword = value;
     emit passwordChanged();
 }
 
 QString AccountHelper::icon() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mIcon;
 }
 
 void AccountHelper:: setIcon(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << value;
     mIcon = value;
 }
 
 QString AccountHelper::avatar() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mAvatar;
 }
 
 void AccountHelper::setAvatar(const QString &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (mAccount.isNull()) {
         return;
     }
@@ -122,33 +140,39 @@ void AccountHelper::setAvatar(const QString &value)
 
 bool AccountHelper::saslAuth() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mSaslAuth;
 }
 
 void AccountHelper::setSaslAuth(bool value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mSaslAuth = value;
     emit saslAuthChanged();
 }
 
 QObject *AccountHelper::accountsModel() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mAccountsModel;
 }
 
 void AccountHelper::setAccountsModel(QObject *value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this << value;
     mAccountsModel = qobject_cast<IMAccountsModel*>(value);
     emit accountsModelChanged();
 }
 
 void AccountHelper::setAccountParameter(const QString &property, const QVariant &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mParameters[property] = value;
 }
 
 QVariant AccountHelper::accountParameter(const QString &property) const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (!mParameters.contains(property))
         return QVariant();
     return mParameters[property];
@@ -156,6 +180,7 @@ QVariant AccountHelper::accountParameter(const QString &property) const
 
 void AccountHelper::unsetAccountParameter(const QString &property)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mUnsetParameters.append(property);
     if (mParameters.contains(property)) {
         mParameters.remove(property);
@@ -164,6 +189,7 @@ void AccountHelper::unsetAccountParameter(const QString &property)
 
 void AccountHelper::createAccount()
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mParameters["account"] = mDisplayName;
 
     if (!mSaslAuth) {
@@ -234,6 +260,7 @@ void AccountHelper::createAccount()
 
 void AccountHelper::setAccount(QObject *object)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(object);
     mAccount = accountItem->account();
     emit onlineChanged();
@@ -263,6 +290,7 @@ void AccountHelper::setAccount(QObject *object)
 
 void AccountHelper::removeAccount()
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (mAccount.isNull()) {
         return;
     }
@@ -272,6 +300,7 @@ void AccountHelper::removeAccount()
 
 QString AccountHelper::accountId() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (mAccount.isNull()) {
         return QString();
     }
@@ -280,6 +309,7 @@ QString AccountHelper::accountId() const
 
 void AccountHelper::onAccountCreated(Tp::PendingOperation *op)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (op->isError()) {
         // TODO: check how to notify errors
         return;
@@ -308,6 +338,7 @@ void AccountHelper::onAccountCreated(Tp::PendingOperation *op)
 
 void AccountHelper::onAccountEnabled(Tp::PendingOperation *op)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (op->isError()) {
         // TODO: notify errors and get back to the setup screen
         return;
@@ -325,6 +356,7 @@ void AccountHelper::onAccountEnabled(Tp::PendingOperation *op)
 
 void AccountHelper::onParametersUpdated(Tp::PendingOperation *op)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (op->isError()) {
         qDebug() << "Error:" << op->errorMessage();
         return;
@@ -341,72 +373,85 @@ void AccountHelper::onParametersUpdated(Tp::PendingOperation *op)
 
 uint AccountHelper::allowTextChatFrom() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mAllowTextChatFrom;
 }
 
 uint AccountHelper::allowCallFrom() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mAllowCallFrom;
 }
 
 uint AccountHelper::allowOutsideCallFrom() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mAllowOutsideCallFrom;
 }
 
 uint AccountHelper::showMyAvatarTo() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mShowMyAvatarTo;
 }
 
 uint AccountHelper::showMyWebStatus() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mShowMyWebStatus;
 }
 
 uint AccountHelper::showIHaveVideoTo() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mShowIHaveVideoTo;
 }
 
 void AccountHelper::setAllowTextChatFrom(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mAllowTextChatFrom = value;
     emit allowTextChatFromChanged();
 }
 
 void AccountHelper::setAllowCallFrom(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mAllowCallFrom = value;
     emit allowTextChatFromChanged();
 }
 
 void AccountHelper::setAllowOutsideCallFrom(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mAllowOutsideCallFrom = value;
     emit allowOutsideCallFromChanged();
 }
 
 void AccountHelper::setShowMyAvatarTo(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mShowMyAvatarTo = value;
     emit showMyAvatarToChanged();
 }
 
 void AccountHelper::setShowMyWebStatus(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mShowMyWebStatus = value;
     emit showMyWebStatusChanged();
 }
 
 void AccountHelper::setShowIHaveVideoTo(const uint &value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mShowIHaveVideoTo = value;
     emit showIHaveVideoToChanged();
 }
 
 bool AccountHelper::isOnline() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (mAccount) {
         Tp::ConnectionPtr connection = mAccount->connection();
         if (!connection.isNull() && connection->isValid()) {
@@ -420,17 +465,20 @@ bool AccountHelper::isOnline() const
 
 bool AccountHelper::connectsAutomatically() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mConnectsAutomatically;
 }
 
 void AccountHelper::setConnectsAutomatically(bool value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mConnectsAutomatically = value;
     emit connectsAutomaticallyChanged();
 }
 
 void AccountHelper::introspectAccountPrivacySettings(const QString &interfaceName)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (!mAccount.isNull() && mAccount->isValid()) {
         Tp::ConnectionPtr connection = mAccount->connection();
         if (!connection.isNull() && connection->isValid()) {
@@ -453,6 +501,7 @@ void AccountHelper::introspectAccountPrivacySettings(const QString &interfaceNam
 
 void AccountHelper::onGotAllProperties(QDBusPendingCallWatcher *watcher)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     QDBusPendingReply<QVariantMap> reply = *watcher;
 
     if (watcher->isError()) {
@@ -483,6 +532,7 @@ void AccountHelper::onGotAllProperties(QDBusPendingCallWatcher *watcher)
 
 void AccountHelper::setPrivacySettings(const QString &interfaceName)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if(!mAccount.isNull() && mAccount->isValid()) {
         Tp::ConnectionPtr connection = mAccount->connection();
         if(!connection.isNull()
@@ -548,6 +598,7 @@ void AccountHelper::setPrivacySettings(const QString &interfaceName)
 
 void AccountHelper::onSetPrivacyProperty(QDBusPendingCallWatcher *watcher)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     if (watcher->isError()) {
         qDebug() << "Failed setting privacy property";
         return;
@@ -565,11 +616,13 @@ void AccountHelper::onSetPrivacyProperty(QDBusPendingCallWatcher *watcher)
 
 bool AccountHelper::connectAfterSetup() const
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     return mConnectAfterSetup;
 }
 
 void AccountHelper::setConnectAfterSetup(bool value)
 {
+    qDebug() << __PRETTY_FUNCTION__ << this;
     mConnectAfterSetup = value;
     emit connectAfterSetupChanged();
 }

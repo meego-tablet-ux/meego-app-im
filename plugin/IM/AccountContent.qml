@@ -36,12 +36,12 @@ Column {
         }
     }
 
-    property alias accountHelper: accountHelperItem
-    property alias connectionManager: accountHelperItem.connectionManager
-    property alias protocol: accountHelperItem.protocol
-    property alias icon: accountHelperItem.icon
+    property QtObject accountHelper : null
+    property string connectionManager
+    property string protocol
+    property string icon
     property string accountId: ""
-    property variant accountItem: accountsModel !== null ? accountsModel.accountItemForId(accountId) : null
+    property variant accountItem: null
     property string serviceName: protocolsModel.titleForId(icon)
 
     property alias advancedOptionsComponent: advancedOptions.sourceComponent
@@ -68,15 +68,27 @@ Column {
         }
     }
 
-    AccountHelper {
-        id: accountHelperItem
+    Component.onCompleted: {
+        console.log("AccountContent completed " + parent);
+    }
 
-        displayName: loginBox.text
-        password: passwordBox.text
-        model: accountsModel
-
-        onAccountSetupFinished: {
-            mainArea.finished();
+    function createAccountHelper() {
+        if (accountHelper == null) {
+            console.log("Creating AccountHelper");
+            var sourceCode = "import Qt 4.7;"
+                           + "import TelepathyQML 0.1;"
+                           + "AccountHelper {"
+                           + "    onAccountSetupFinished: { mainArea.finished(); }"
+                           + "}";
+            accountHelper = Qt.createQmlObject(sourceCode, mainArea);
+            accountHelper.connectionManager = mainArea.connectionManager;
+            accountHelper.protocol = mainArea.protocol;
+            accountHelper.icon = mainArea.icon;
+            accountHelper.model = accountsModel;
+            console.log("connectionManager = " + connectionManager);
+            console.log("protocol = " + protocol);
+            console.log("icon = " + icon);
+            console.log("model = " + accountsModel);
         }
     }
 
@@ -113,6 +125,8 @@ Column {
 
     function createAccount() {
         // emit the aboutToCreate signal so that accounts that need proper setup
+        accountHelper.displayName = loginBox.text;
+        accountHelper.password = passwordBox.text;
         aboutToCreateAccount();
 
         if (accountsModel !== null && accountsModel.isAccountRegistered(connectionManager, protocol, loginBox.text)
@@ -140,6 +154,7 @@ Column {
 
         // and then creates the real account
         accountHelper.createAccount();
+        accountItem = accountsModel.accountItemForId(accountId);
     }
 
     function removeAccount() {
@@ -149,11 +164,12 @@ Column {
 
     function prepareAccountEdit()
     {
-        var item = accountsModel.accountItemForId(accountId);
-        loginBox.text = item.data(AccountsModel.DisplayNameRole);
+        accountItem = accountsModel.accountItemForId(accountId);
+        loginBox.text = accountItem.data(AccountsModel.DisplayNameRole);
         oldLogin = loginBox.text
-        accountHelperItem.setAccount(item);
-        passwordBox.text = accountHelperItem.password;
+        createAccountHelper();
+        accountHelper.setAccount(accountItem);
+        passwordBox.text = accountHelper.password;
 
         aboutToEditAccount();
     }

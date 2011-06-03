@@ -601,14 +601,24 @@ Item {
         }
     }
 
-    AccountHelper {
-        id: accountHelper
+    property QtObject accountHelper : null
+
+    function createAccountHelper() {
+        if (accountHelper == null) {
+            console.log("Creating AccountHelper");
+            var sourceCode = "import Qt 4.7;"
+                           + "import MeeGo.App.IM 0.1;"
+                           + "import TelepathyQML 0.1;"
+                           + "AccountHelper {}";
+            accountHelper = Qt.createQmlObject(sourceCode, meTabItem);
+        }
     }
 
     Connections {
         target: photoPicker
 
         onPhotoSelected: {
+            createAccountHelper();
             accountHelper.setAccount(window.accountItem);
             accountHelper.avatar = uri;
             accountFactory.avatarSerial++;

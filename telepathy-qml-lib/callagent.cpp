@@ -205,6 +205,23 @@ void CallAgent::acceptCall()
                 SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
 }
 
+void CallAgent::requestSendingAudio(Tpy::CallContentPtr content, bool send)
+{
+    foreach (Tpy::CallStreamPtr stream, content->streams()) {
+        qDebug() << "Requesting sending " << send << " on stream " << stream;
+        Tp::PendingOperation *op = stream->requestSending(send);
+        if (op) {
+            qDebug() << "Waiting for pending call to finish";
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                    SLOT(onRequestSendingAudioFinished(Tp::PendingOperation*)));
+            emit audioSentChanged();
+        }
+        else {
+            qDebug() << "Failed to requestSending audio";
+        }
+    }
+}
+
 void CallAgent::setAudioSend(bool send)
 {
     qDebug() << "CallAgent::setAudioSend: " << send;
@@ -217,19 +234,18 @@ void CallAgent::setAudioSend(bool send)
         return;
     }
 
-    foreach (Tpy::CallContentPtr content, mCallChannel->contentsForType(Tp::MediaStreamTypeAudio)) {
-        foreach (Tpy::CallStreamPtr stream, content->streams()) {
-            qDebug() << "Requesting sending " << send << " on stream " << stream;
-            Tp::PendingOperation *op = stream->requestSending(send);
-            if (op) {
-                qDebug() << "Waiting for pending call to finish";
-                connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                        SLOT(onRequestSendingAudioFinished(Tp::PendingOperation*)));
-                emit audioSentChanged();
-            }
-            else {
-                qDebug() << "Failed to requestSending audio";
-            }
+    /* if we want to switch video on, but do not have that content yet, we need to add it first */
+    Tpy::CallContents contents = mCallChannel->contentsForType(Tp::MediaStreamTypeAudio);
+    if (send && contents.isEmpty()) {
+        Tpy::PendingCallContent * pcc = mCallChannel->requestContent("audio", Tp::MediaStreamTypeAudio);
+        if (pcc) {
+            connect(pcc, SIGNAL(finished(Tp::PendingOperation*)),
+                    SLOT(onRequestContentFinishedSwitchOn(Tp::PendingOperation*)));
+        }
+    }
+    else {
+        foreach (Tpy::CallContentPtr content, contents) {
+            requestSendingAudio(content, send);
         }
     }
 }
@@ -1254,17 +1270,20 @@ void CallAgent::handleRequestContentFinished(Tp::PendingOperation *op, bool swit
         return;
     }
 
-    if (switchOn) {
-        requestSendingVideo(content, true);
-        return;
-    }
-
     if (content->type() == Tp::MediaStreamTypeAudio) {
         qDebug() << "Just got audio added";
+        if (switchOn) {
+            requestSendingAudio(content, true);
+            return;
+        }
         emit audioSentChanged();
         emit audioReceivedChanged();
     } else if (content->type() == Tp::MediaStreamTypeVideo) {
         qDebug() << "Just got video added";
+        if (switchOn) {
+            requestSendingVideo(content, true);
+            return;
+        }
         emit videoSentChanged();
         emit videoSentOrAboutToChanged();
         emit videoReceivedChanged();

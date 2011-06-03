@@ -234,6 +234,7 @@ protected:
     Tpy::SendingState getVideoSentState() const;
 
     void handleRequestContentFinished(Tp::PendingOperation *op, bool switchOn);
+    void requestSendingAudio(Tpy::CallContentPtr content, bool send);
     void requestSendingVideo(Tpy::CallContentPtr content, bool send);
 
     static const char *streamType(Tp::MediaStreamType streamType);

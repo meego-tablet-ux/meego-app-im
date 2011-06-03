@@ -255,6 +255,7 @@ void IMChannelApprover::onInvalidated()
 
 void IMChannelApprover::acceptCall(const QString &accountId, const QString &contactId)
 {
+    // look for the channel in the pending dispatch operations and approve it
     foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
         if (dispatchOperation->account()->uniqueIdentifier() != accountId) {
             continue;

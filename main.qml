@@ -231,18 +231,7 @@ Window {
         }
 
         onIncomingCallAvailable: {
-            window.incomingContactItem = accountsModel.contactItemForId(accountId, contactId);
-            window.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
-            incomingCallDialog.accountId = accountId;
-            incomingCallDialog.contactId = contactId;
-            incomingCallDialog.statusMessage = (window.incomingContactItem.data(AccountsModel.PresenceMessageRole) != "" ?
-                                            window.incomingContactItem.data(AccountsModel.PresenceMessageRole) :
-                                            window.presenceStatusText(window.incomingContactItem.data(AccountsModel.PresenceTypeRole)));
-            incomingCallDialog.connectionTarget = window.incomingCallAgent;
-            incomingCallDialog.start();
-
-            var contactItem = accountsModel.contactItemForId(accountId, contactId);
-            notificationManager.notifyIncomingCall(accountId, contactId, contactItem.data(AccountsModel.AliasRole));
+            window.acceptCall(accountId, contactId);
         }
 
         onRequestedGroupChatCreated: {
@@ -518,11 +507,6 @@ Window {
         playSound("/usr/share/sounds/meego/stereo/chat-fg.wav");
     }
 
-    function playIncomingCallSound()
-    {
-        playLoopedSound("/usr/share/sounds/meego/stereo/ring-1.wav");
-    }
-
     function playOutgoingCallSound()
     {
         playLoopedSound("/usr/share/sounds/meego/stereo/ring-4.wav");
@@ -588,12 +572,6 @@ Window {
 
     AccountContentFactory {
         id: accountFactory
-    }
-
-    IncomingCall {
-        id: incomingCallDialog
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     ConfirmationDialog {

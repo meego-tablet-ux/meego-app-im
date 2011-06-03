@@ -4,3 +4,6 @@ This file has the pending stasks for the standalone approver:
   and place an incoming call
 - Detect when the meego-app-im is running to decide whether to approve or not text channels
   and file transfers
+- Make the meego-app-im accept calls directly without showing the incoming dialog
+- Check whether there is another incoming call
+- Check whether there is an ongoing call

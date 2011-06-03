@@ -305,6 +305,8 @@ void IMChannelApprover::acceptCall(const QString &accountId, const QString &cont
             }
 
             // TODO: check what to do when the MeegoIM handler is not available
+
+            mDispatchOps.removeAll(dispatchOperation);
         }
     }
 }

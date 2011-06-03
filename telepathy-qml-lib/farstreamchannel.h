@@ -161,6 +161,10 @@ private:
 
     GstElement *pushElement(GstElement *bin, GstElement *&last, const char *factory, bool optional = false, GstElement **copy = NULL, bool checkLink = true);
     void writeAudioToFile(GstElement *bin, GstElement *tee);
+
+    void createGhostPad(GstElement *bin, GstPad *pad, const char *name);
+    void addBin(GstElement*);
+    void removeBin(GstElement*);
 };
 
 #endif // FARSIGHTCHANNEL_H

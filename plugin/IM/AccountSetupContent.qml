@@ -31,14 +31,19 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: theme_commonBoxHeight
+                    // do not assign to detailsComponent, due to BUG 18434
+                    //detailsComponent: accountFactory.embeddedNewAccountContent(model.id, contentRow)
 
-                    detailsComponent: accountFactory.embeddedNewAccountContent(model.id, contentRow)
+                    Component.onCompleted: {
+                        contentRow.detailsComponent = accountFactory.embeddedNewAccountContent(model.id, contentRow)
+                    }
+
 
                     Connections {
                         target: contentRow.detailsItem != null ? contentRow.detailsItem.accountContent : null
 
                         onFinished: {
-                            contentRow.expanded = false
+                            contentRow.expanded = false;
                             contentRow.detailsComponent = accountFactory.embeddedNewAccountContent(model.id, contentRow);
                         }
                     }

@@ -146,9 +146,9 @@ void NotificationManager::notifyIncomingCall(const QString &accountId,
 
     QList<QVariant> args;
     args << accountId << contactId;
-    notification.item->setAction(MRemoteAction("com.meego.app.im",
-                                               "/com/meego/app/im",
-                                               "com.meego.app.im",
+    notification.item->setAction(MRemoteAction("com.meego.app.imapprover",
+                                               "/com/meego/app/imapprover",
+                                               "com.meego.app.imapprover",
                                                "acceptCall",
                                                args));
     QString icon("image://themedimage/widgets/apps/chat/");

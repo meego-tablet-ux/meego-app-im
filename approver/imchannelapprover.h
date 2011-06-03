@@ -19,6 +19,8 @@
 #include "../telepathy-qml-lib/telepathymanager.h"
 #include "../telepathy-qml-lib/notificationmanager.h"
 
+class IMApproverAdaptor;
+
 class IMChannelApprover : public QObject, public Tp::AbstractClientApprover
 {
     Q_OBJECT
@@ -48,6 +50,7 @@ private Q_SLOTS:
     void onTextChannelReady(Tp::PendingOperation *op);
     void onFileTransferChannelReady(Tp::PendingOperation *op);
     void onInvalidated(void);
+    void acceptCall(const QString &accountId, const QString &contactId);
 
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
@@ -55,6 +58,7 @@ private:
     Tp::ClientRegistrarPtr mClientRegistrar;
     TelepathyManager *mTelepathyManager;
     NotificationManager mNotificationManager;
+    IMApproverAdaptor *mAdaptor;
 
 };
 

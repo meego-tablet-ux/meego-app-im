@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef IMDBUSADAPTOR_P_H_1306969728
-#define IMDBUSADAPTOR_P_H_1306969728
+#ifndef IMDBUSADAPTOR_P_H_1307061298
+#define IMDBUSADAPTOR_P_H_1307061298
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>

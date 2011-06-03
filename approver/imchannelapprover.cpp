@@ -7,6 +7,7 @@
  */
 
 #include "imchannelapprover.h"
+#include "imapproveradaptor_p.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingReady>
@@ -24,6 +25,9 @@ IMChannelApprover::IMChannelApprover()
   mApplicationRunning(false),
   mNotificationManager(this)
 {
+    mAdaptor = new IMApproverAdaptor(this);
+    QDBusConnection::sessionBus().registerObject("/com/meego/app/imapprover", this);
+    QDBusConnection::sessionBus().registerService("com.meego.app.imapprover");
 }
 
 IMChannelApprover::~IMChannelApprover()
@@ -247,4 +251,36 @@ void IMChannelApprover::onCloseOperation(QString operationObjectPath)
 void IMChannelApprover::onInvalidated()
 {
     emit invalidated();
+}
+
+void IMChannelApprover::acceptCall(const QString &accountId, const QString &contactId)
+{
+    foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
+        if (dispatchOperation->account()->uniqueIdentifier() != accountId) {
+            continue;
+        }
+
+        bool approve = false;
+        QList<Tp::ChannelPtr> channels = dispatchOperation->channels();
+        foreach (Tp::ChannelPtr channel, channels) {
+            Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
+            if (callChannel.isNull()) {
+                continue;
+            }
+
+            Tp::ContactPtr contact = channel->initiatorContact();
+            if (contact->id() == contactId) {
+                approve = true;
+                break;
+            }
+        }
+
+        if (approve) {
+            if (dispatchOperation->possibleHandlers().contains("org.freedesktop.Telepathy.Client.MeeGoIM")) {
+                dispatchOperation->handleWith("org.freedesktop.Telepathy.Client.MeeGoIM");
+            }
+
+            // TODO: check what to do when the MeegoIM handler is not available
+        }
+    }
 }

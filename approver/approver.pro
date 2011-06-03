@@ -12,8 +12,8 @@ QT += network dbus
 CONFIG += qt link_pkgconfig
 
 # Input
-HEADERS += imchannelapprover.h
-SOURCES += imchannelapprover.cpp main.cpp
+HEADERS += imchannelapprover.h imapproveradaptor_p.h
+SOURCES += imchannelapprover.cpp imapproveradaptor.cpp main.cpp
 
 LIBS += -L../telepathy-qml-lib -ltelepathy-qml
 PKGCONFIG += TelepathyQt4 TelepathyQt4Yell

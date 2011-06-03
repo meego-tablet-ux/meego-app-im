@@ -26,7 +26,7 @@ class IMChannelApprover : public QObject, public Tp::AbstractClientApprover
 {
     Q_OBJECT
 public:
-    IMChannelApprover();
+    IMChannelApprover(bool autoApproveCalls = false);
     ~IMChannelApprover();
 
     void addDispatchOperation(const Tp::MethodInvocationContextPtr<> &context,
@@ -63,6 +63,7 @@ private:
     NotificationManager mNotificationManager;
     IMApproverAdaptor *mAdaptor;
     QDBusServiceWatcher mIMServiceWatcher;
+    bool mAutoApproveCalls;
 };
 
 #endif // IMCHANNELAPPROVER_H

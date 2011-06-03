@@ -6,8 +6,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-#include <QApplication>
 #include "imchannelapprover.h"
+#include <QApplication>
 #include <QTimer>
 
 int main(int argc, char **argv)
@@ -17,7 +17,11 @@ int main(int argc, char **argv)
     Tp::registerTypes();
     Tpy::registerTypes();
 
-    IMChannelApprover approver;
+    bool autoApproveCalls = app.arguments().indexOf("--auto-approve-calls") > 0 ||
+                            app.arguments().indexOf("-a") > 0;
+
+    IMChannelApprover approver(autoApproveCalls);
+    qDebug() << "Auto approve:" << autoApproveCalls;
     QTimer::singleShot(0, &approver, SLOT(registerApprover()));
 
     return app.exec();

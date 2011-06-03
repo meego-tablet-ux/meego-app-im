@@ -132,7 +132,8 @@ void NotificationManager::notifyIncomingFileTransfer(const QString &accountId,
 
 void NotificationManager::notifyIncomingCall(const QString &accountId,
                                              const QString &contactId,
-                                             const QString &contactAlias)
+                                             const QString &contactAlias,
+                                             const QString &image)
 {
 
     NotificationItem notification;
@@ -152,7 +153,11 @@ void NotificationManager::notifyIncomingCall(const QString &accountId,
                                                "acceptCall",
                                                args));
     QString icon("image://themedimage/widgets/apps/chat/");
-    notification.item->setImage(icon + "call-fullscreen-default");
+    if (!image.isNull()) {
+        notification.item->setImage(image);
+    } else {
+        notification.item->setImage(icon + "call-fullscreen-default");
+    }
     notification.item->publish();
     mCallNotifications.append(notification);
 }

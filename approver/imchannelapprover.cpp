@@ -12,18 +12,19 @@
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4Yell/ChannelClassSpec>
-
 #include <TelepathyQt4/AccountManager>
 #include <TelepathyQt4/AccountFactory>
 #include <TelepathyQt4/ConnectionFactory>
 #include <TelepathyQt4/ContactFactory>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4Yell/ChannelFactory>
+#include <MGConfItem>
 
-IMChannelApprover::IMChannelApprover()
+IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 : Tp::AbstractClientApprover(channelFilters()),
   mApplicationRunning(false),
-  mNotificationManager(this)
+  mNotificationManager(this),
+  mAutoApproveCalls(autoApproveCalls)
 {
     mAdaptor = new IMApproverAdaptor(this);
     QDBusConnection::sessionBus().registerObject("/com/meego/app/imapprover", this);
@@ -90,7 +91,7 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
                     SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(onCallChannelReady(Tp::PendingOperation*)));
 
-            shouldApprove = false;
+            shouldApprove = false || mAutoApproveCalls;
             continue;
         }
 
@@ -175,6 +176,14 @@ void IMChannelApprover::registerApprover()
 
     // register the approver
     mClientRegistrar->registerClient(approver, "MeeGoIMApprover");
+
+    // TODO: this is a little hackish but it is the way to get it done for now
+    // set the notification sound for incoming calls
+    MGConfItem longVideoCallSound("/meego/chat/long-videocall-sound", this);
+    longVideoCallSound.set("/usr/share/sounds/meego/stereo/ring-1.wav");
+
+    MGConfItem shortVideoCallSound("/meego/chat/short-videocall-sound", this);
+    shortVideoCallSound.set("/usr/share/sounds/meego/stereo/ring-1.wav");
 }
 
 void IMChannelApprover::onTextChannelReady(Tp::PendingOperation *op)
@@ -220,9 +229,11 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
     QString operationPath = callChannel->property("channelDispatchOperation").toString();
 
     Tp::ContactPtr contact = callChannel->initiatorContact();
+    qDebug() << "Contact avatar:" << contact->avatarData().fileName;
     mNotificationManager.notifyIncomingCall(accountId,
                                             contact->id(),
-                                            contact->alias());
+                                            contact->alias(),
+                                            contact->avatarData().fileName);
 }
 
 void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)

@@ -76,7 +76,8 @@ public:
 
     Q_INVOKABLE void notifyIncomingCall(const QString &accountId,
                                         const QString &contactId,
-                                        const QString &contactAlias);
+                                        const QString &contactAlias,
+                                        const QString &image = QString::null);
 
     Q_INVOKABLE void clear();
 

@@ -1,0 +1,6 @@
+This file has the pending stasks for the standalone approver:
+
+- Detect when an incoming call has been canceled to remove the hard notification
+  and place an incoming call
+- Detect when the meego-app-im is running to decide whether to approve or not text channels
+  and file transfers

@@ -38,6 +38,12 @@ Item {
                         contentRow.detailsComponent = accountFactory.embeddedNewAccountContent(model.id, contentRow)
                     }
 
+                    onExpandingChanged: {
+                        if (expanded) {
+                            // a bit hacky, but the connection from inside the AccountContent didn't worked
+                            contentRow.detailsItem.accountContent.createAccountHelper();
+                        }
+                    }
 
                     Connections {
                         target: contentRow.detailsItem != null ? contentRow.detailsItem.accountContent : null

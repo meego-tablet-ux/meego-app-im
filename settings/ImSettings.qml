@@ -31,7 +31,7 @@ AppPage {
     }
 
     Component.onCompleted: {
-        if (contactsModel != undefined && contactsModel != null) {
+        if (typeof(contactsModel) != 'undefined') {
             contactsModel.setBlockedOnly(true);
         }
     }

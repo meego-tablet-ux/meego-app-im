@@ -15,6 +15,7 @@ Item {
 
     property int avatarSerial: 0
 
+
     function contentForType(type) {
         return protocolsModel.contentForId(type)
     }
@@ -55,6 +56,7 @@ Item {
         var item = accountsModel.accountItemForId(accountId);
         var type = item.data(AccountsModel.IconRole);
         var component = "import Qt 4.7; "; // i18n ok
+        component += "import MeeGo.Components 0.1;";
         component += "import \"" + protocolsModel.modulePath + "\";";
         component += "Component {";
         component += "    id: accountContentComponent;";
@@ -64,9 +66,10 @@ Item {
         component += "        anchors.left: parent.left;";
         component += "        anchors.right: parent.right;";
         component += "        height: childrenRect.height;";
+        component += "        property alias accountContent: accountContent;";
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
-        component += "            accountId: \"" + accountId + "\" ;";
+        //component += "            accountId: \"" + accountId + "\" ;";
         component += "        }";
         component += "        AccountSetupBar { id: accountSetupBar; }";
         component += "}    }";

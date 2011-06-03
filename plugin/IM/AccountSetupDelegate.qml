@@ -23,7 +23,7 @@ Item {
 
         property int itemWidth: parent.width
         property int accountStatus: model.connectionStatus
-        property variant accountContent: detailsItem.accountContent
+        property variant accountContent: detailsItem != null ? detailsItem.accountContent : null
         //property bool expanded: false
         property int detailsHeight: childrenRect.height
 
@@ -32,9 +32,15 @@ Item {
         height:  (serviceIcon != ""? serviceIcon.height : accountTypeName.height)
 
         Component.onCompleted: {
-            setupDelegate.detailsComponent = accountFactory.embeddedNewAccountContent(model.id, setupDelegate)
+            setupDelegate.detailsComponent = accountFactory.embeddedAccountContent(model.id, setupDelegate);
         }
 
+        onExpandingChanged: {
+            if (expanded) {
+                // a bit hacky, but the connection from inside the AccountContent didn't worked
+                setupDelegate.detailsItem.accountContent.accountId = model.id;
+            }
+        }
 
         Image {
             id: serviceIcon

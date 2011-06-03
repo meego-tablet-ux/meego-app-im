@@ -58,10 +58,14 @@ TelepathyManager::TelepathyManager(QObject *parent)
                         //<< Tp::Connection::FeatureAccountBalance;
 
     // TODO: replace the channel factory once tp-qt4-yell is merged into tp-qt4
+    qDebug() << "TelepathyManager::TelepathyManager: initialize tp-qt4-yell";
     tf_init();
 
+    qDebug() << "TelepathyManager::TelepathyManager: creating Tpy::ChannelFactory";
     Tpy::ChannelFactoryPtr channelFactory =
         Tpy::ChannelFactory::create(QDBusConnection::sessionBus());
+
+    qDebug() << "TelepathyManager::TelepathyManager: creating Tp::AccountManager";
     mAccountManager = Tp::AccountManager::create(
             Tp::AccountFactory::create(QDBusConnection::sessionBus(), mAccountFeatures),
             Tp::ConnectionFactory::create(QDBusConnection::sessionBus(), mConnectionFeatures),

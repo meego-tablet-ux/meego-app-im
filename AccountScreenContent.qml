@@ -16,6 +16,7 @@ AppPage {
     anchors.fill: parent
 
     Component.onCompleted: {
+        console.log("AccountScreenContent.onCompleted");
         window.reloadFilterModel();
         if(accountsModel == undefined) {
             loadingAccounts.show();

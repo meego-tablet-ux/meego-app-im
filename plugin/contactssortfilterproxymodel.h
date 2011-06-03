@@ -42,7 +42,6 @@ public Q_SLOTS:
     void filterByConnection(Tp::ConnectionPtr connection);
     void filterByAccountId(const QString id);
     void filterByString(const QString filter);
-    void slotResetModel(void);
 
 Q_SIGNALS:
     void rowCountChanged();
@@ -65,8 +64,8 @@ protected:
       */
     int presenceOrder(const int type) const;
 
-private Q_SLOTS:
-    void slotSortByPresence(void);
+protected Q_SLOTS:
+    void onDataChanged();
 
 private:
     TelepathyManager *mManager;

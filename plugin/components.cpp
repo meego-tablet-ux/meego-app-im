@@ -119,7 +119,6 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     Tpy::FlatModelProxy *flatModel = new Tpy::FlatModelProxy(model);
     mMergedModel = new MergedModel(this);
     mMergedModel->addModel(flatModel);
-    qDebug() << "Components::onAccountsModelReady: mMergedModel count: " << mMergedModel->rowCount(QModelIndex());
 
     mGroupChatModel = new IMGroupChatModel(this);
     mMergedModel->addModel(mGroupChatModel);
@@ -130,14 +129,6 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     mContactsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, false, this);
     mRequestsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, this);
     mRequestsModel->setRequestsOnly(true);
-
-    // this call will make sure that known contacts for each logged in account are loaded
-    // after all components are in place
-    onContactsUpgraded();
-
-    // get last used account
-    QSettings settings("MeeGo", "MeeGoIM");
-    QString lastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
 
     // the load order is inverted so that signals emitted by the accountsModel can guarantee that the
     // contactsModel is present
@@ -150,8 +141,6 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     emit accountsModelCreated();
 
     connect(mTpManager, SIGNAL(handlerRegistered()), SLOT(onHandlerRegistered()));
-    connect(mTpManager, SIGNAL(connectionAvailable(Tp::ConnectionPtr)),
-            this, SLOT(onContactsUpgraded()));
     connect(this, SIGNAL(networkStatusChanged(bool)),
             mAccountsModel, SLOT(onNetworkStatusChanged(bool)));
 
@@ -162,17 +151,10 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     // the handler and approver, if necessary
     mAccountsModel->onComponentsLoaded();
 
+    // get last used account
+    QSettings settings("MeeGo", "MeeGoIM");
+    QString lastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
     loadLastUsedAccount(lastUsedAccount, model);
-}
-
-void Components::onContactsUpgraded()
-{
-    for (int i = 0; i < mAccountsModel->rowCount(); ++i) {
-        QModelIndex index = mAccountsModel->index(i, 0, QModelIndex());
-        Tpy::AccountsModelItem *accountItem = static_cast<Tpy::AccountsModelItem *>(index.data(Tpy::AccountsModel::ItemRole).value<QObject *>());
-        accountItem->addKnownContacts();
-    }
-    mContactsModel->slotResetModel();
 }
 
 /**
@@ -183,10 +165,6 @@ void Components::onContactsUpgraded()
   */
 void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *model)
 {
-    // if not empty
-    if (accountId.isEmpty()) {
-        return;
-    }
     // locate the account object matching the id
     for (int i = 0; i < model->accountCount(); ++i) {
         QModelIndex index = model->index(i, 0, QModelIndex());
@@ -197,18 +175,18 @@ void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *m
                     && account->connection()->isValid()
                     && account->connection()->status() == Tp::ConnectionStatusConnected) {
                 mContactsModel->filterByLastUsedAccount(accountId);
-                break;
-            } else {
-                mContactsModel->filterByLastUsedAccount(QString());
+                return;
             }
         }
     }
+
+    // send a signal with an empty accountId otherwise
+    mContactsModel->filterByLastUsedAccount(QString());
 }
 
 void Components::onNetworkStatusChanged()
 {
     QString networkState = mNetworkStateProperty->value().toString();
-    qDebug() << "Components::onNetworkStatusChanged: Network state value: " << networkState;
     bool isOnline = true;
     if (!networkState.isEmpty() && networkState == "disconnected") {
         isOnline = false;

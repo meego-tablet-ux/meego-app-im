@@ -52,11 +52,7 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
     connect(mModel,
             SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
             SLOT(slotResetModel()));
-    connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slotResetModel()));
-
-    if (mActive) {
-        slotResetModel();
-    }
+    connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()
@@ -74,7 +70,6 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
     bool filtered = false;
     // when showing blocked contacts do not filter by connection
     if (mBlockedOnly) {
-
         // verify the index is valid before doing anything else
         QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
         if (index.isValid()) {
@@ -210,11 +205,6 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
     return filtered;
 }
 
-void ContactsSortFilterProxyModel::slotSortByPresence(void)
-{
-    sort(0, Qt::AscendingOrder);
-}
-
 bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
                                             const QModelIndex &right) const
 {
@@ -278,7 +268,7 @@ int ContactsSortFilterProxyModel::presenceOrder(const int type) const
 void ContactsSortFilterProxyModel::filterByConnection(Tp::ConnectionPtr connection)
 {
     mConnection = connection;
-    slotResetModel();
+    invalidate();
 }
 
 void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
@@ -298,7 +288,7 @@ void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
     }
     mConnection = Tp::ConnectionPtr();
     mHaveConnection = false;
-    slotResetModel();
+    invalidate();
 }
 
 QString ContactsSortFilterProxyModel::serviceName() const
@@ -315,34 +305,22 @@ void ContactsSortFilterProxyModel::filterByString(const QString filter)
 {
     // only set the filter if it's different to current filter
     if (filter != mStringFilter) {
-        // reset the model instead of invalidate
-        // this is a workaround due to a bug in how QML receives the signal
-        // a mere invalidate does not refresh the QML view
-
         mStringFilter = filter;
-        slotResetModel();
+        invalidate();
     }
 }
 
-void ContactsSortFilterProxyModel::slotResetModel()
+void ContactsSortFilterProxyModel::onDataChanged()
 {
     if(mActive) {
-        qDebug() << "ContactsSortFilterProxyModel::slotResetModel() - total count: " << sourceModel()->rowCount();
-        beginResetModel();
-        setShowOffline();
         invalidate();
         emit rowCountChanged();
-        slotSortByPresence();
-        endResetModel();
     }
 }
 
 void ContactsSortFilterProxyModel::filterByLastUsedAccount(const QString &accountId)
 {
     mActive = true;
-    if (!accountId.isEmpty()) {
-        filterByAccountId(accountId);
-    }
     emit openLastUsedAccount(accountId);
 }
 
@@ -359,7 +337,7 @@ bool ContactsSortFilterProxyModel::isShowOffline() const
 void ContactsSortFilterProxyModel::setContactsOnly(bool toggle)
 {
     mContactsOnly = toggle;
-    slotResetModel();
+    invalidate();
 }
 
 bool ContactsSortFilterProxyModel::isContactsOnly() const
@@ -370,7 +348,7 @@ bool ContactsSortFilterProxyModel::isContactsOnly() const
 void ContactsSortFilterProxyModel::setRequestsOnly(bool toggle)
 {
     mRequestsOnly = toggle;
-    slotResetModel();
+    invalidate();
 }
 
 bool ContactsSortFilterProxyModel::isRequestsOnly() const
@@ -381,7 +359,7 @@ bool ContactsSortFilterProxyModel::isRequestsOnly() const
 void ContactsSortFilterProxyModel::setBlockedOnly(bool toggle)
 {
     mBlockedOnly = toggle;
-    slotResetModel();
+    invalidate();
 }
 
 bool ContactsSortFilterProxyModel::isBlockedOnly() const
@@ -397,11 +375,11 @@ QString ContactsSortFilterProxyModel::accountId() const
 void ContactsSortFilterProxyModel::skipContacts(const QStringList &contactsList)
 {
     mSkippedContacts = contactsList;
-    slotResetModel();
+    invalidate();
 }
 
 void ContactsSortFilterProxyModel::clearSkippedContacts()
 {
     mSkippedContacts.clear();
-    slotResetModel();
+    invalidate();
 }

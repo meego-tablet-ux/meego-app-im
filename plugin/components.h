@@ -49,7 +49,6 @@ protected:
     void loadLastUsedAccount(const QString accountId, IMAccountsModel *model);
 
 private Q_SLOTS:
-    void onContactsUpgraded();
     void onNetworkStatusChanged();
     void onHandlerRegistered();
     void onApproverRegistered();

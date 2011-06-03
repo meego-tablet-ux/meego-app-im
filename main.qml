@@ -231,6 +231,7 @@ Window {
         }
 
         onIncomingCallAvailable: {
+            window.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
             window.acceptCall(accountId, contactId);
         }
 

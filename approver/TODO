@@ -7,3 +7,4 @@ This file has the pending stasks for the standalone approver:
 - Make the meego-app-im accept calls directly without showing the incoming dialog
 - Check whether there is another incoming call
 - Check whether there is an ongoing call
+- Save the path to the incoming call sound to gconf (/usr/share/sounds/meego/stereo/ring-1.wav)

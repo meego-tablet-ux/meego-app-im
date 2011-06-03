@@ -75,12 +75,14 @@ Window {
     IMDBus {
         id: dbus
 
-        onCallAccepted: {
-            console.log("Call accepted for account " + accountId + " and contact " + contactId);
-        }
-
         onChatOpenRequested: {
             console.log("Chat open requested for account " + accountId + " and contact " + contactId);
+            currentAccountId = accountId;
+            accountItem = accountsModel.accountItemForId(currentAccountId);
+            currentContactId = contactId;
+            contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
+            startConversation(currentContactId);
+            window.raise();
         }
     }
 

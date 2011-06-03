@@ -1,7 +1,9 @@
 This file has the pending stasks for the standalone approver:
 
 - Detect when an incoming call has been canceled to remove the hard notification
-  and place an incoming call
+  and place a missed call notification
 - Check whether there is another incoming call
 - Check whether there is an ongoing call
 - Save the path to the incoming call sound to gconf (/usr/share/sounds/meego/stereo/ring-1.wav)
+- Check the panels notifications, they don't seem to be working
+- Check notifications in main app while a chat is opened to another contact

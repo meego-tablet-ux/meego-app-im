@@ -18,7 +18,8 @@ Item {
     ExpandingBox {
         id: setupDelegate
 
-        detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
+        // do not assign to detailsComponent, due to BUG 18434
+        //detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
 
         property int itemWidth: parent.width
         property int accountStatus: model.connectionStatus
@@ -29,6 +30,11 @@ Item {
         //expandedHeight: detailsItem.height + expandButton.height
 
         height:  (serviceIcon != ""? serviceIcon.height : accountTypeName.height)
+
+        Component.onCompleted: {
+            setupDelegate.detailsComponent = accountFactory.embeddedNewAccountContent(model.id, setupDelegate)
+        }
+
 
         Image {
             id: serviceIcon

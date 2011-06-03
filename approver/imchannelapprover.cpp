@@ -28,6 +28,17 @@ IMChannelApprover::IMChannelApprover()
     mAdaptor = new IMApproverAdaptor(this);
     QDBusConnection::sessionBus().registerObject("/com/meego/app/imapprover", this);
     QDBusConnection::sessionBus().registerService("com.meego.app.imapprover");
+
+    // watch for the meego-app-im to be running
+    mIMServiceWatcher.setConnection(QDBusConnection::sessionBus());
+    mIMServiceWatcher.setWatchMode(QDBusServiceWatcher::WatchForRegistration | QDBusServiceWatcher::WatchForUnregistration);
+    mIMServiceWatcher.addWatchedService("org.freedesktop.Telepathy.Client.MeeGoIM");
+    connect(&mIMServiceWatcher,
+            SIGNAL(serviceRegistered(QString)),
+            SLOT(onServiceRegistered()));
+    connect(&mIMServiceWatcher,
+            SIGNAL(serviceUnregistered(QString)),
+            SLOT(onServiceUnregistered()));
 }
 
 IMChannelApprover::~IMChannelApprover()
@@ -278,10 +289,21 @@ void IMChannelApprover::acceptCall(const QString &accountId, const QString &cont
 
         if (approve) {
             if (dispatchOperation->possibleHandlers().contains("org.freedesktop.Telepathy.Client.MeeGoIM")) {
+                qDebug() << "Good! we can now approve the call";
                 dispatchOperation->handleWith("org.freedesktop.Telepathy.Client.MeeGoIM");
             }
 
             // TODO: check what to do when the MeegoIM handler is not available
         }
     }
+}
+
+void IMChannelApprover::onServiceRegistered()
+{
+    mNotificationManager.setApplicationActive(true);
+}
+
+void IMChannelApprover::onServiceUnregistered()
+{
+    mNotificationManager.setApplicationActive(false);
 }

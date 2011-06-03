@@ -9,6 +9,7 @@
 #ifndef IMCHANNELAPPROVER_H
 #define IMCHANNELAPPROVER_H
 
+#include <QDBusServiceWatcher>
 #include <TelepathyQt4/AbstractClientApprover>
 #include <TelepathyQt4/ChannelDispatchOperation>
 #include <TelepathyQt4/PendingOperation>
@@ -51,6 +52,8 @@ private Q_SLOTS:
     void onFileTransferChannelReady(Tp::PendingOperation *op);
     void onInvalidated(void);
     void acceptCall(const QString &accountId, const QString &contactId);
+    void onServiceRegistered();
+    void onServiceUnregistered();
 
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
@@ -59,7 +62,7 @@ private:
     TelepathyManager *mTelepathyManager;
     NotificationManager mNotificationManager;
     IMApproverAdaptor *mAdaptor;
-
+    QDBusServiceWatcher mIMServiceWatcher;
 };
 
 #endif // IMCHANNELAPPROVER_H

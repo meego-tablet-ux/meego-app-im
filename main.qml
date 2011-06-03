@@ -231,7 +231,8 @@ Window {
         }
 
         onIncomingCallAvailable: {
-            window.incomingCallAgent = accountsModel.callAgent(accountId, contactId)
+            window.incomingCallAgent = accountsModel.callAgent(accountId, contactId);
+            window.raise();
             window.acceptCall(accountId, contactId);
         }
 
@@ -559,6 +560,12 @@ Window {
             imLoopedSoundPlayer.stopSound();
             imLoopedSoundPlayer.soundSource = "";
         }
+    }
+
+    function raise()
+    {
+        var args = [];
+        qApp.raise(args);
     }
 
     IMSound {

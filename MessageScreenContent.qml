@@ -74,7 +74,6 @@ AppPage {
             // Several sounds might play at once here. Should be prioritize, make a queue, or let them all play ?
             if (window.callAgent.callStatus == CallAgent.CallStatusNoCall) {
                 window.fullScreen = false;
-                window.fullContent = false;
                 var videoWindow = messageScreenPage.getVideoWindow();
                 videoWindow.opacity = 0;
                 messageScreenPage.unloadVideoWindow();

@@ -122,7 +122,6 @@ Item {
             PropertyChanges {
                 target: window
                 showToolBarSearch: false
-                fullContent: true
             }
         }
     ]

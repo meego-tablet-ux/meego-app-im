@@ -46,13 +46,14 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
                      << Tp::Contact::FeatureAvatarData
                      << Tp::Contact::FeatureCapabilities;
 
+    /*
     connect(mModel,
             SIGNAL(rowsInserted(const QModelIndex&, int, int)),
-            SLOT(slotResetModel()));
+            SLOT(onDataChanged()));
     connect(mModel,
             SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            SLOT(slotResetModel()));
-    connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
+            SLOT(onDataChanged()));*/
+    //connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()

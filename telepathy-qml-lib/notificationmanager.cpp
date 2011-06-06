@@ -214,6 +214,8 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
                                             const QDateTime &time,
                                             const QString &message)
 {
+
+    qDebug() << "NOTIFICATION: Placing notification:" << accountId << contactId << contactAlias << time << message;
     int eventCount = 0;
     // TODO: check how we are supposed to use the time in the notifications
     Q_UNUSED(time)

@@ -34,12 +34,16 @@ IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
     mIMServiceWatcher.setConnection(QDBusConnection::sessionBus());
     mIMServiceWatcher.setWatchMode(QDBusServiceWatcher::WatchForRegistration | QDBusServiceWatcher::WatchForUnregistration);
     mIMServiceWatcher.addWatchedService("org.freedesktop.Telepathy.Client.MeeGoIM");
+
     connect(&mIMServiceWatcher,
             SIGNAL(serviceRegistered(QString)),
             SLOT(onServiceRegistered()));
     connect(&mIMServiceWatcher,
             SIGNAL(serviceUnregistered(QString)),
             SLOT(onServiceUnregistered()));
+
+    bool appRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.freedesktop.Telepathy.Client.MeeGoIM").value();
+    setApplicationRunning(appRunning);
 }
 
 IMChannelApprover::~IMChannelApprover()
@@ -97,6 +101,7 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
 
         Tp::IncomingFileTransferChannelPtr fileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);
         if (!fileTransferChannel.isNull()) {
+            // if the chat application is running, just approve the channel
             if (mApplicationRunning) {
                 continue;
             }
@@ -154,16 +159,27 @@ Tp::ChannelClassSpecList IMChannelApprover::channelFilters() const
 void IMChannelApprover::setApplicationRunning(bool running)
 {
     mApplicationRunning = running;
+    mNotificationManager.setApplicationActive(running);
 
     // FIXME: check how to properly handle that
     // for now just approve everything
     foreach(Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
-        if (dispatchOperation->possibleHandlers().contains("org.freedesktop.Telepathy.Client.MeeGoIM")) {
-            dispatchOperation->handleWith("org.freedesktop.Telepathy.Client.MeeGoIM");
+        // approve only filetransfers and text chats
+        // incoming calls will be approved when the notification is accepted
+        QList<Tp::ChannelPtr> channels = dispatchOperation->channels();
+        foreach (Tp::ChannelPtr channel, channels) {
+            Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
+            if (!callChannel.isNull()) {
+                break;
+            }
+
+            if (dispatchOperation->possibleHandlers().contains("org.freedesktop.Telepathy.Client.MeeGoIM")) {
+                dispatchOperation->handleWith("org.freedesktop.Telepathy.Client.MeeGoIM");
+                mDispatchOps.removeAll(dispatchOperation);
+            }
+            // TODO: check what to do when the MeegoIM handler is not available
         }
-        // TODO: check what to do when the MeegoIM handler is not available
     }
-    mDispatchOps.clear();
 }
 
 void IMChannelApprover::registerApprover()
@@ -313,10 +329,10 @@ void IMChannelApprover::acceptCall(const QString &accountId, const QString &cont
 
 void IMChannelApprover::onServiceRegistered()
 {
-    mNotificationManager.setApplicationActive(true);
+    setApplicationRunning(true);
 }
 
 void IMChannelApprover::onServiceUnregistered()
 {
-    mNotificationManager.setApplicationActive(false);
+    setApplicationRunning(false);
 }

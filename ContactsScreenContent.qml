@@ -16,6 +16,7 @@ AppPage {
 
     anchors.fill: parent
     enableCustomActionMenu: true
+    actionMenuOpen: contactContentMenu.visible
     
     property int count: listView.count + contactRequestModel.rowCount
     property int accountStatus: 0
@@ -243,10 +244,6 @@ AppPage {
 
         width: 200
         forceFingerMode: 2
-
-        onVisibleChanged: {
-            actionMenuOpen = visible
-        }
 
         content: ContactContentMenu {
             currentPage: contactsScreenPage;

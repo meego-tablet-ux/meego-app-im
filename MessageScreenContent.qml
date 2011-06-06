@@ -15,6 +15,7 @@ AppPage {
     id: messageScreenPage
     anchors.fill: parent
     enableCustomActionMenu: true
+    actionMenuOpen: messageContentMenu.visible
 
     property string contactId: window.currentContactId
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
@@ -382,10 +383,6 @@ AppPage {
 
         width: 200
         forceFingerMode: 2
-
-        onVisibleChanged: {
-            actionMenuOpen = visible
-        }
 
         content: MessageContentMenu {
             currentPage: messageScreenPage;

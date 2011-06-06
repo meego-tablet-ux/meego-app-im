@@ -11,7 +11,7 @@
 
 #include <QAbstractListModel>
 #include <QMap>
-#include <meegotouch/MDesktopEntry>
+#include <mdesktopentry.h>
 
 class IMProtocolsModel : public QAbstractListModel
 {

@@ -16,7 +16,7 @@ HEADERS += imchannelapprover.h imapproveradaptor_p.h
 SOURCES += imchannelapprover.cpp imapproveradaptor.cpp main.cpp
 
 LIBS += -L../telepathy-qml-lib -ltelepathy-qml
-PKGCONFIG += TelepathyQt4 TelepathyQt4Yell mlite
+PKGCONFIG += TelepathyQt4 TelepathyQt4Yell mlite glib-2.0
 
 target.path = $$INSTALL_ROOT/usr/bin
 target.files = $$TARGET

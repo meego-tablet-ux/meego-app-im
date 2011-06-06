@@ -9,10 +9,13 @@
 #include "imchannelapprover.h"
 #include <QApplication>
 #include <QTimer>
+#include <glib-object.h>
 
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+
+    g_type_init();
 
     Tp::registerTypes();
     Tpy::registerTypes();

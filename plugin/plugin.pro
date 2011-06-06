@@ -3,7 +3,7 @@ TARGET = IM
 QT += declarative dbus network
 CONFIG += qt plugin link_pkgconfig mobility
 PKGCONFIG += TelepathyQt4 TelepathyQt4Yell TelepathyQt4YellFarstream qt-gst-qml-sink \
-             QtGLib-2.0 glib-2.0 TelepathyLoggerQt4 contextsubscriber-1.0
+             QtGLib-2.0 glib-2.0 TelepathyLoggerQt4 contextsubscriber-1.0 mlite
 LIBS += -ltelepathy-qt4-yell-models -L../telepathy-qml-lib -ltelepathy-qml -ltelepathy-qt4-yell-farstream -ltelepathy-logger-qt4
 TARGET = $$qtLibraryTarget($$TARGET)
 DESTDIR = $$TARGET

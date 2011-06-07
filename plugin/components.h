@@ -12,7 +12,6 @@
 #include "contactssortfilterproxymodel.h"
 #include "imaccountsmodel.h"
 #include "imgroupchatmodel.h"
-#include "settingshelper.h"
 
 #include "../telepathy-qml-lib/telepathymanager.h"
 #include "../telepathy-qml-lib/channelhandler.h"
@@ -62,7 +61,6 @@ private:
     ContactsSortFilterProxyModel *mRequestsModel;
     MergedModel *mMergedModel;
     NotificationManager *mNotificationManager;
-    SettingsHelper *mSettingsHelper;
     IMGroupChatModel *mGroupChatModel;
     IMProtocolsModel *mProtocolsModel;
     ContextProperty *mNetworkStateProperty;

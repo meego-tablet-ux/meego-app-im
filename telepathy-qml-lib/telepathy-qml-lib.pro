@@ -20,6 +20,7 @@ SOURCES = telepathytypes.cpp \
     addcontacthelper.cpp \
     improtocolsmodel.cpp \
     serverauthagent.cpp \
+    settingshelper.cpp \
     debugproxy.cpp \
     debugmessage.cpp \
     debugmessagecollector.cpp
@@ -40,6 +41,7 @@ HEADERS = telepathytypes.h \
     addcontacthelper.h \
     improtocolsmodel.h \
     serverauthagent.h \
+    settingshelper.h \
     debugproxy.h \
     debugmessage.h \
     debugmessagecollector.h

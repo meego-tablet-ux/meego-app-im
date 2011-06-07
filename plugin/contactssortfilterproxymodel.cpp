@@ -10,7 +10,7 @@
 
 #include "imaccountsmodel.h"
 #include "imgroupchatmodel.h"
-#include "settingshelper.h"
+#include "../telepathy-qml-lib/settingshelper.h"
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Connection>

@@ -19,6 +19,7 @@
 #include "../telepathy-qml-lib/chatagent.h"
 #include "../telepathy-qml-lib/debugmessage.h"
 #include "../telepathy-qml-lib/debugmessagecollector.h"
+#include "../telepathy-qml-lib/settingshelper.h"
 
 #include <TelepathyLoggerQt4/Init>
 #include <TelepathyQt4/Account>

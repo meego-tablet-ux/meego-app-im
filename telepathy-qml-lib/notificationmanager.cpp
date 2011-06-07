@@ -7,6 +7,7 @@
  */
 
 #include "notificationmanager.h"
+#include "settingshelper.h"
 #include <QDebug>
 #include <QApplication>
 #include <MNotification>
@@ -215,10 +216,14 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
                                             const QString &message)
 {
 
-    qDebug() << "NOTIFICATION: Placing notification:" << accountId << contactId << contactAlias << time << message;
     int eventCount = 0;
     // TODO: check how we are supposed to use the time in the notifications
     Q_UNUSED(time)
+
+    // if the user configured the option not to receive notifications, we should respect that
+    if (!SettingsHelper::self()->enableNotifications()) {
+        return;
+    }
 
     // remove previous notifications from that contact
     QList<NotificationItem>::iterator it = mNotifications.begin();

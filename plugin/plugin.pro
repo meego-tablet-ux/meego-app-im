@@ -24,7 +24,6 @@ SOURCES += components.cpp \
     contactssortfilterproxymodel.cpp \
     accountsmodelfactory.cpp \
     imaccountsmodel.cpp \
-    settingshelper.cpp \
     imavatarimageprovider.cpp \
     accountssortfilterproxymodel.cpp \
     imgroupchatmodelitem.cpp \
@@ -38,7 +37,6 @@ HEADERS += components.h \
     contactssortfilterproxymodel.h \
     accountsmodelfactory.h \
     imaccountsmodel.h \
-    settingshelper.h \
     imavatarimageprovider.h \
     accountssortfilterproxymodel.h \
     imgroupchatmodelitem.h \

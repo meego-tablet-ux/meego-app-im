@@ -549,6 +549,22 @@ Item {
                     duration: 250
                 }
             }
+
+            onStateChanged: {
+                if (state = "sent") {
+                    sentTimer.running = true;
+                }
+            }
+
+            Timer {
+                id: sentTimer
+
+                interval: 3000
+                running: false
+                onTriggered: {
+                    currentPage.hideActionMenu();
+                }
+            }
         }
 
         MenuItemSeparator {

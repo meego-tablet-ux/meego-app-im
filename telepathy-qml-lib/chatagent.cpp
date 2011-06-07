@@ -134,6 +134,7 @@ void ChatAgent::onPendingChanelRequestFinished(Tp::PendingOperation *op)
     qDebug() << "ChatAgent::onPendingChanelRequestFinished:";
 
     if (op->isError()) {
+        //: %1 error name - %2 error message
         emit error(tr("Unable to create channel: %1 - %2")
                       .arg(op->errorName())
                       .arg(op->errorMessage()));
@@ -187,6 +188,7 @@ void ChatAgent::onTextChannelReady(Tp::PendingOperation *op)
 
     Tp::PendingReady *pr = qobject_cast<Tp::PendingReady*>(op);
     if (!pr || pr->isError()) {
+        //: %1 contact id - %2 error name - %3 error message
         emit error(tr("Unable to create text channel for contact %1 - %2 - %3")
                       .arg(!mContact.isNull() ? mContact->id() : "")
                       .arg(op ? op->errorName() : "")
@@ -260,11 +262,13 @@ void ChatAgent::onChannelInvalidated(Tp::DBusProxy *, const QString &errorName, 
         errorName << "-" << errorMessage;
 
     if(isConference()) {
+        //: %1 room id - %2 error name - %3 error message
         emit error(tr("Invalidated text channel  %1 - %2 - %3")
                    .arg(mTextChannel->objectPath())
                    .arg(errorName)
                    .arg(errorMessage));
     } else {
+        //: %1 contact id - %2 error name - %3 error message
         emit error(tr("Invalidated text channel for contact %1 - %2 - %3")
                    .arg(mContact->id())
                    .arg(errorName)

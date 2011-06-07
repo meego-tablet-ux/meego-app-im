@@ -144,10 +144,12 @@ Item {
         id: eventMessageComponent
         InlineMessageDelegate {
             id: eventMessage
+            //: %1 is event decsribing what happened - %2 is date and time
             text: qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime))
             Connections {
                 target: fuzzyDateTimeUpdater
                 onTriggered: {
+                    //: %1 is event of what happened - %2 is date and time
                     eventMessage.text = qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
@@ -171,10 +173,13 @@ Item {
 
             function getCallMessageText() {
                 if (model.missedCall) {
+                    //: %1 contact id who called - %2 date time of the call
                     return qsTr("%1 tried to call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 } else if (model.rejectedCall) {
+                    //: %1 contact id who rejected the call - %2 date time of the call
                     return qsTr("%1 rejected call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 } else {
+                    //: %1 contact id who called - %2 duration of the call - %3 date time of the call
                     return qsTr("%1 called - duration %2 - %3").arg(model.sender).arg("" + model.callDuration).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }

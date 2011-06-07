@@ -254,7 +254,7 @@ QString TelepathyManager::accountDisplayName(const QString &iconName, const QStr
 {
     QString accountService = accountServiceName(iconName);
     if(accountsOfType(iconName) > 1) {
-        // i18n: first arg is the display name, second is the service name
+        //: %1 is the display name for contact - %2 is the service name
         return tr("%1 - %2").arg(displayName, accountService);
     } else {
         return accountService;

@@ -149,6 +149,7 @@ void FileTransferAgent::onChannelInvalidated(Tp::DBusProxy *, const QString &err
     qDebug() << "FileTransferAgent::onChannelInvalidated: channel became invalid:" <<
         errorName << "-" << errorMessage;
 
+    //: %1 contact id - %2 error name - %3 error message
     emit error(tr("Invalidated file transfer channel for contact %1 - %2 - %3")
                .arg(mContact->id())
                .arg(errorName)

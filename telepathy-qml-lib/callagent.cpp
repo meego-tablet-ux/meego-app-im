@@ -370,7 +370,7 @@ void CallAgent::setHoldCall(bool hold)
 
     Tp::PendingOperation *op = mCallChannel->requestHold(hold);
     if (!op) {
-        setErrorString(tr("Could not set hold = %").arg(hold));
+        setErrorString(tr("Unable to set hold"));
         return;
     }
 
@@ -895,6 +895,7 @@ void CallAgent::onPendingChanelRequestFinished(Tp::PendingOperation *op)
     qDebug() << "CallAgent::onPendingChanelRequestFinished:";
 
     if (op->isError()) {
+        //: %1 error name - %2 error message
         setErrorString(tr("Unable to create channel: %1 - %2")
                        .arg(op->errorName())
                        .arg(op->errorMessage()));
@@ -924,6 +925,7 @@ void CallAgent::onCallChannelReady(Tp::PendingOperation *op)
 
     Tp::PendingReady *pr = qobject_cast<Tp::PendingReady*>(op);
     if (!pr || pr->isError()) {
+        //: %1 contact id - %2 error name - %3 error message
         setErrorString(tr("Unable to create call channel for contact %1 - %2 - %3")
                        .arg(mContact->id())
                        .arg(op->errorName())
@@ -980,6 +982,7 @@ void CallAgent::onChannelInvalidated(Tp::DBusProxy *, const QString &errorName, 
         setCallStatus(CallStatusNoCall);
         endCall();
     } else {
+        //: %1 contact id - %2 error name - %3 error message
         setErrorString(tr("Invalidated call channel for contact %1 - %2 - %3")
                        .arg(mContact->id())
                        .arg(errorName)
@@ -1252,6 +1255,7 @@ void CallAgent::onRequestCloseFinished(Tp::PendingOperation *op)
     qDebug() << "CallAgent::onRequestCloseFinished:";
 
     if (op && op->isError()) {
+        //: %1 error name - %2 error message
         setErrorString(tr("Error ending call: %1 - %2")
                        .arg(op->errorName())
                        .arg(op->errorMessage()));
@@ -1266,6 +1270,7 @@ void CallAgent::onAcceptCallFinished(Tp::PendingOperation *op)
     qDebug() << "CallAgent::onAcceptCallFinished:";
 
     if (op->isError()) {
+        //: %1 error name - %2 error message
         setErrorString(tr("Call could not be accepted %1 - %2")
                        .arg(op->errorName())
                        .arg(op->errorMessage()));
@@ -1281,6 +1286,7 @@ void CallAgent::onRequestHoldFinished(Tp::PendingOperation *op)
              << " localHoldStateReason=" << mCallChannel->localHoldStateReason();
 
     if (!op || op->isError()) {
+        //: %1 error name - %2 error message
         setErrorString(tr("Hold request could not be done %1 - %2")
                        .arg(op ? op->errorName() : "")
                        .arg(op ? op->errorMessage(): ""));

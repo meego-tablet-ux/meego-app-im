@@ -45,15 +45,6 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
                      << Tp::Contact::FeatureSimplePresence
                      << Tp::Contact::FeatureAvatarData
                      << Tp::Contact::FeatureCapabilities;
-
-    /*
-    connect(mModel,
-            SIGNAL(rowsInserted(const QModelIndex&, int, int)),
-            SLOT(onDataChanged()));
-    connect(mModel,
-            SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-            SLOT(onDataChanged()));*/
-    //connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()
@@ -239,10 +230,16 @@ bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
     }
 
     // compare the alias
-    QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toString();
-    QString rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toString();
+    QByteArray leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toByteArray();
+    QByteArray rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toByteArray();
+
     if (leftAlias != rightAlias) {
-        return (leftAlias.toUpper() < rightAlias.toUpper());
+        int aliasCompare = QString::localeAwareCompare(QString::fromUtf8(leftAlias), QString::fromUtf8(rightAlias));
+        if(aliasCompare < 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     QString leftId = sourceModel()->data(left, Tpy::AccountsModel::IdRole).toString();

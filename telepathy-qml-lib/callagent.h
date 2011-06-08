@@ -16,6 +16,7 @@
 #include <TelepathyQt4Yell/Farstream/Types>
 #include <TelepathyQt4Yell/CallChannel>
 #include <QtGstQmlSink/qmlgstvideoitem.h>
+#include <policy/resource-set.h>
 
 class FarstreamChannel;
 
@@ -59,6 +60,7 @@ class CallAgent : public QObject
 public:
     typedef enum {
         CallStatusNoCall,
+        CallStatusResourcing,
         CallStatusIncomingCall,
         CallStatusConnecting,
         CallStatusRinging,
@@ -81,9 +83,11 @@ public:
     Q_INVOKABLE QDateTime startTime() const;
     Q_INVOKABLE QDateTime elapsedTime() const;
 
-    Q_INVOKABLE void call(bool withVideo);
+    void call(bool withVideo);
     Q_INVOKABLE void audioCall();
+    void beginAudioCall();
     Q_INVOKABLE void videoCall();
+    void beginVideoCall();
     Q_INVOKABLE void endCall();
 
     Q_INVOKABLE bool existingCall() const;
@@ -199,6 +203,10 @@ protected Q_SLOTS:
     void onFarstreamChannelCreated(Tp::PendingOperation *op);
     void onRequestSendingVideoFinished(Tp::PendingOperation *op);
     void onRequestSendingAudioFinished(Tp::PendingOperation *op);
+    void onResourceSetCallGranted();
+    void onResourceSetCallLost();
+    void onResourceSetCallDenied();
+    void onResourceSetCallError(quint32,const char *);
 
 protected:
     Tp::AccountPtr mAccount;
@@ -224,6 +232,11 @@ protected:
     bool mIsRequested;
     QTime mCallDuration;
 
+    ResourcePolicy::ResourceSet *mResourceSetCall;
+    ResourcePolicy::ResourceSet *mResourceSetRingTone;
+    //static ResourcePolicy::ResourceSet *mResourceSetEvent;
+    QString mOnAcquireInvoke;
+
     explicit CallAgent(QObject *parent = 0);
 
     void setCallStatus(CallStatus callStatus);
@@ -238,6 +251,12 @@ protected:
     void requestSendingVideo(Tpy::CallContentPtr content, bool send);
 
     static const char *streamType(Tp::MediaStreamType streamType);
+
+    void setupResourceSets();
+    void freeResourceSets();
+    void connectResourceSets();
+    void disconnectResourceSets();
+
 };
 
 #endif // CALLAGENT_H

@@ -42,7 +42,9 @@ CallAgent::CallAgent(
       mOutgoingVideo(0),
       mCurrentOrientation(1), // TopUp
       mPendingChannelRequest(0),
-      mIsRequested(false)
+      mIsRequested(false),
+      mResourceSetCall(0),
+      mResourceSetRingTone(0)
 {
     qDebug() << "CallAgent::CallAgent: created for contact " << mContact->id();
 
@@ -75,6 +77,7 @@ CallAgent::~CallAgent()
     qDebug() << "CallAgent::~CallAgent: destroyed for contact " << mContact->id();
 
     endCall();
+    freeResourceSets();
 }
 
 void CallAgent::call(bool withVideo)
@@ -134,6 +137,10 @@ void CallAgent::call(bool withVideo)
 void CallAgent::endCall()
 {
     qDebug() << "CallAgent::endCall: ";
+
+    if (mResourceSetCall) {
+        mResourceSetCall->release();
+    }
 
     if (mPendingChannelRequest != 0) {
         // we assume it will be canceled ok, no need to track the pending operation
@@ -536,14 +543,46 @@ void CallAgent::onChannelAvailable(Tp::ChannelPtr channel)
             SLOT(onCallChannelReady(Tp::PendingOperation*)));
 }
 
-void CallAgent::audioCall()
+void CallAgent::beginAudioCall()
 {
     call(false);
 }
 
-void CallAgent::videoCall()
+void CallAgent::audioCall()
+{
+    if (!mResourceSetCall) {
+        setupResourceSets();
+        connectResourceSets();
+    }
+
+    if (mResourceSetCall) {
+        //mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
+        //mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
+        mResourceSetCall->acquire();
+        mOnAcquireInvoke = "beginAudioCall";
+        setCallStatus(CallStatusResourcing);
+    }
+}
+
+void CallAgent::beginVideoCall()
 {
     call(true);
+}
+
+void CallAgent::videoCall()
+{
+    if (!mResourceSetCall) {
+        setupResourceSets();
+        connectResourceSets();
+    }
+
+    if (mResourceSetCall) {
+        //mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+        //mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        mResourceSetCall->acquire();
+        mOnAcquireInvoke = "beginVideoCall";
+        setCallStatus(CallStatusResourcing);
+    }
 }
 
 bool CallAgent::existingCall() const
@@ -1429,4 +1468,140 @@ QTime CallAgent::updateCallDuration()
         mCallDuration.setHMS(hh, mm, ss, 0);
     }
     return mCallDuration;
+}
+
+void CallAgent::setupResourceSets()
+{
+    if (!mResourceSetCall) {
+        mResourceSetCall = new ResourcePolicy::ResourceSet("call", 0, true, true);
+        if (mResourceSetCall) {
+            //mResourceSetCall->setAutoRelease();
+            mResourceSetCall->setAlwaysReply();
+
+            ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("call");
+            if (audioResource) {
+                audioResource->setProcessID(QCoreApplication::applicationPid());
+                audioResource->setStreamTag("media.name", "*");
+                audioResource->setOptional(false);
+                mResourceSetCall->addResourceObject(audioResource);
+            }
+
+            mResourceSetCall->addResource(ResourcePolicy::AudioRecorderType);
+            //mResourceSetCall->initAndConnect();
+        }
+    }
+
+    /*
+    if (!mResourceSetRingTone) {
+        mResourceSetRingTone = new ResourcePolicy::ResourceSet("ringtone", this);
+        if (mResourceSetRingTone) {
+            //mResourceSetRingTone->setAutoRelease();
+            mResourceSetRingTone->setAlwaysReply();
+
+            ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("ringtone");
+            audioResource->setProcessID(QCoreApplication::applicationPid());
+            audioResource->setStreamTag("media.name", "*");
+            audioResource->setOptional(false);
+
+            mResourceSetRingTone->addResourceObject(audioResource);
+            //mResourceSetRingTone->initAndConnect();
+        }
+    }*/
+
+    /*
+    if (!mResourceSetEvent) {
+        mResourceSetEvent = new ResourcePolicy::ResourceSet("event", this);
+        if (mResourceSetEvent) {
+            //mResourceSetEvent->setAutoRelease();
+            mResourceSetEvent->setAlwaysReply();
+
+            ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("event");
+            audioResource->setProcessID(QCoreApplication::applicationPid());
+            audioResource->setStreamTag("media.name", "*");
+            audioResource->setOptional(false);
+            mResourceSetEvent->addResource(audioResource);
+
+            // TODO it might be need to get a vibra resource and add it to the event
+            mResourceSetEvent->initAndConnect();
+        }
+    }*/
+}
+
+void CallAgent::freeResourceSets()
+{
+    if (mResourceSetCall) {
+        mResourceSetCall->release();
+        delete mResourceSetCall;
+        mResourceSetCall = 0;
+    }
+
+    /*
+    if (mResourceSetRingTone) {
+        mResourceSetRingTone->release();
+        delete mResourceSetRingTone;
+        mResourceSetRingTone = 0;
+    }*/
+
+    /*
+    if (mResourceSetEvent) {
+        mResourceSetEvent->release();
+        delete mResourceSetEvent;
+        mResourceSetEvent = 0;
+    }*/
+}
+
+void CallAgent::connectResourceSets()
+{
+    if (mResourceSetCall) {
+        connect(mResourceSetCall,
+                SIGNAL(resourcesGranted(QList<ResourcePolicy::ResourceType>)),
+                SLOT(onResourceSetCallGranted()));
+        connect(mResourceSetCall,
+                SIGNAL(lostResources()),
+                SLOT(onResourceSetCallLost()));
+        connect(mResourceSetCall,
+                SIGNAL(resourcesDenied()),
+                SLOT(onResourceSetCallDenied()));
+        connect(mResourceSetCall,
+                SIGNAL(errorCallback(quint32,const char*)),
+                SLOT(onResourceSetCallError(quint32,const char *)));
+    }
+}
+
+void CallAgent::disconnectResourceSets()
+{
+}
+
+void CallAgent::onResourceSetCallGranted()
+{
+    qDebug() << "CallAgent::onResourceSetCallGranted: callStatus=" << callStatus();
+
+    if (callStatus() == CallStatusResourcing) {
+        if (!mOnAcquireInvoke.isEmpty()) {
+            QTimer::singleShot(0, this, qPrintable(mOnAcquireInvoke));
+        }
+    } else if (callStatus() == CallStatusTalking) {
+        // switch to video / no-video
+    }
+}
+
+void CallAgent::onResourceSetCallLost()
+{
+    qDebug() << "CallAgent::onResourceSetCallLost";
+
+    endCall();
+}
+
+void CallAgent::onResourceSetCallDenied()
+{
+    qDebug() << "CallAgent::onResourceSetCallDenied";
+
+    endCall();
+}
+
+void CallAgent::onResourceSetCallError(quint32 error,const char *message)
+{
+    qDebug() << "CallAgent::onResourceSetCallError: error=" << error << " msg=" << message;
+
+    endCall();
 }

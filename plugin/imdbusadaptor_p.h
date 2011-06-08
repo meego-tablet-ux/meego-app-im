@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef IMDBUSADAPTOR_P_H_1307061298
-#define IMDBUSADAPTOR_P_H_1307061298
+#ifndef IMDBUSADAPTOR_P_H_1307574087
+#define IMDBUSADAPTOR_P_H_1307574087
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -30,10 +30,6 @@ class IMDBusAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "com.meego.app.im")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"com.meego.app.im\">\n"
-"    <signal name=\"callAccepted\">\n"
-"      <arg direction=\"out\" type=\"s\" name=\"accountId\"/>\n"
-"      <arg direction=\"out\" type=\"s\" name=\"contactId\"/>\n"
-"    </signal>\n"
 "    <signal name=\"chatOpenRequested\">\n"
 "      <arg direction=\"out\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"out\" type=\"s\" name=\"contactId\"/>\n"
@@ -42,10 +38,7 @@ class IMDBusAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
 "    </method>\n"
-"    <method name=\"acceptCall\">\n"
-"      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
-"      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
-"    </method>\n"
+"    <method name=\"dumpLogs\"/>\n"
 "  </interface>\n"
         "")
 public:
@@ -54,10 +47,9 @@ public:
 
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
-    void acceptCall(const QString &accountId, const QString &contactId);
+    void dumpLogs();
     void showChat(const QString &accountId, const QString &contactId);
 Q_SIGNALS: // SIGNALS
-    void callAccepted(const QString &accountId, const QString &contactId);
     void chatOpenRequested(const QString &accountId, const QString &contactId);
 };
 

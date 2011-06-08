@@ -33,10 +33,10 @@ IMDBusAdaptor::~IMDBusAdaptor()
     // destructor
 }
 
-void IMDBusAdaptor::acceptCall(const QString &accountId, const QString &contactId)
+void IMDBusAdaptor::dumpLogs()
 {
-    // handle method call com.meego.app.im.acceptCall
-    QMetaObject::invokeMethod(parent(), "acceptCall", Q_ARG(QString, accountId), Q_ARG(QString, contactId));
+    // handle method call com.meego.app.im.dumpLogs
+    QMetaObject::invokeMethod(parent(), "dumpLogs");
 }
 
 void IMDBusAdaptor::showChat(const QString &accountId, const QString &contactId)

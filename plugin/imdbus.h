@@ -12,12 +12,11 @@ public:
     explicit IMDBus(QObject *parent = 0);
 
 signals:
-    void callAccepted(const QString &accountId, const QString &contactId);
     void chatOpenRequested(const QString &accountId, const QString &contactId);
 
 public slots:
     void showChat(const QString &accountId, const QString &contactId);
-    void acceptCall(const QString &accountId, const QString &contactId);
+    void dumpLogs();
 
 private:
     IMDBusAdaptor *mAdaptor;

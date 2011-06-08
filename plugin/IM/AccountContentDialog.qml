@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "imconstants.js" as IMConstants
 
 AppPage {
     id: accountEditPage
@@ -107,7 +108,7 @@ AppPage {
                                 verticalCenter: parent.verticalCenter
                             }
 
-                            text: qsTr("Done")
+                            text: IMConstants.accountDialogDone
                             textColor: theme_buttonFontColor
                             bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                             bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -126,7 +127,7 @@ AppPage {
                                 verticalCenter: parent.verticalCenter
                             }
 
-                            text: qsTr("Cancel")
+                            text: IMConstants.accountDialogCancel
                             textColor: theme_buttonFontColor
                             bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                             bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"

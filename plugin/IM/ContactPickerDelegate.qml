@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "imconstants.js" as IMConstants
 
 Item {
     id: contactDelegate
@@ -126,19 +127,19 @@ Item {
     function presenceStatusText(type)
     {
         if(type == TelepathyTypes.ConnectionPresenceTypeAvailable) {
-            return qsTr("Available");
+            return IMConstants.contactPickerAvailable;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeBusy) {
-            return qsTr("Busy");
+            return IMConstants.contactPickerBusy;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeAway) {
-            return qsTr("Away");
+            return IMConstants.contactPickerAway;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeExtendedAway) {
-            return qsTr("Extended away");
+            return IMConstants.contactPickerExtendedAway;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeOffline) {
-            return qsTr("Offline");
+            return IMConstants.contactPickerOffline;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeHidden) {
-            return qsTr("Invisible");
+            return IMConstants.contactPickerInvisible;
         } else {
-            return "";
+            return ""; // i18n ok
         }
     }
 }

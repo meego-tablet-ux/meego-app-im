@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "imconstants.js" as IMConstants
 
 Item {
     id: accountContentFactory
@@ -95,7 +96,7 @@ Item {
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
         component += "            Button {";
-        component += "                text: qsTr(\"Sign in\");";
+        component += "                text: \"" + IMConstants.accountFactorySignIn + "\";"
         component += "                textColor: theme_buttonFontColor;";
         component += "                bgSourceUp: \"image://themedimage/widgets/common/button/button-default\";";
         component += "                bgSourceDn: \"image://themedimage/widgets/common/button/button-default-pressed\";";

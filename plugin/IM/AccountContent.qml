@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "imconstants.js" as IMConstants
 
 Column {
     id: mainArea
@@ -144,8 +145,8 @@ Column {
             if (accountFactory.otherAccountsOnline(icon, currentAccount) > 0) {
                 // TODO: show the dialog asking if the other accounts should be signed off
                 confirmationDialogItem.instanceReason = "account-setup-single-instance"; // i18n ok
-                confirmationDialogItem.title = qsTr("Multiple accounts connected");
-                confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                confirmationDialogItem.title = IMConstants.accountDuplicatedTitle;
+                confirmationDialogItem.text = IMConstants.accountDuplicatedText.arg(serviceName);
                 confirmationDialogItem.accountId = currentAccount;
                 confirmationDialogItem.show();
                 return;
@@ -216,8 +217,8 @@ Column {
         }
 
         text: duplicated ?
-                  qsTr("There is already an account configured using this login. Please check your username.") :
-                  qsTr("Sorry, there was a problem logging in. Please check your username and password.")
+                  IMConstants.accountDuplicatedText :
+                  IMConstants.accountErrorText
     }
 
     Grid {
@@ -232,7 +233,7 @@ Column {
         Text {
             id: loginLabel
             anchors.margins: 10
-            text: qsTr("Username:")
+            text: IMConstants.accountUsername
             verticalAlignment: Text.AlignVCenter
             font.bold: true
             height: loginBox.height
@@ -243,7 +244,7 @@ Column {
             anchors.margins: 10
             width: parent.width / 2
             inputMethodHints: Qt.ImhNoAutoUppercase
-            defaultText: qsTr("Name / ID")
+            defaultText: IMConstants.accountDefaultUsername
 
             onTextChanged: duplicated = false
         }
@@ -251,7 +252,7 @@ Column {
         Text {
             id: passwordLabel
             anchors.margins: 10
-            text: qsTr("Password:")
+            text: IMConstants.accountPassword
             verticalAlignment: Text.AlignVCenter
             font.bold: true
             height: passwordBox.height
@@ -263,7 +264,7 @@ Column {
             width: parent.width / 2
             echoMode: TextInput.Password
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhHiddenText
-            defaultText: qsTr("Password")
+            defaultText: IMConstants.accountDefaultPassword
         }
     }
 
@@ -280,7 +281,7 @@ Column {
 
         Text {
             id: advancedOptionsLabel
-            text: qsTr("Advanced settings")
+            text: IMConstants.accountAdvancedSettings
             anchors.margins: 10
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter

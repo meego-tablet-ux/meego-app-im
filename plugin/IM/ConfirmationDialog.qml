@@ -1,6 +1,7 @@
 import QtQuick 1.0
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
+import "imconstants.js" as IMConstants
 
 ModalMessageBox {
     id: container
@@ -15,11 +16,10 @@ ModalMessageBox {
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
 
-    acceptButtonText: qsTr("Yes")
+    acceptButtonText: IMConstants.confirmationDialogYes
     acceptButtonImage: "image://themedimage/images/btn_blue_up"
     acceptButtonImagePressed: "image://themedimage/images/btn_blue_dn"
-    cancelButtonText: qsTr("No")
+    cancelButtonText: IMConstants.confirmationDialogNo
     cancelButtonImage: "image://themedimage/images/btn_red_up"
     cancelButtonImagePressed: "image://themedimage/images/btn_red_dn"
-
 }

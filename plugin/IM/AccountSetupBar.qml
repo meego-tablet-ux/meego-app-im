@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
+import "imconstants.js" as IMConstants
 
 Column {
     anchors.left: parent.left
@@ -36,7 +37,7 @@ Column {
                     top: parent.top
                 }
 
-                text: qsTr("Update")
+                text: IMConstants.accountSetupUpdate
                 textColor: theme_buttonFontColor
                 bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                 bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -52,7 +53,7 @@ Column {
                     top: parent.top
                 }
 
-                text: qsTr("Cancel")
+                text: IMConstants.accountSetupCancel
                 textColor: theme_buttonFontColor
                 bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                 bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
@@ -77,7 +78,7 @@ Column {
             id: deleteAccountButton
             anchors.horizontalCenter: parent.horizontalCenter
 
-            text: qsTr("Delete account")
+            text: IMConstants.accountSetupDelete
             textColor: theme_buttonFontColor
             bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
             bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
@@ -95,9 +96,9 @@ Column {
         height: 300
         width: 400
 
-        text: qsTr("Are you sure to delete this account?")
+        text: IMConstants.accountSetupDeleteText
 
-        title: qsTr("Delete account")
+        title: IMConstants.accountSetupDeleteTitle
         showAcceptButton: true
         showCancelButton: true
         fogClickable: false

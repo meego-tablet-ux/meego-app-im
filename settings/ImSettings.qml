@@ -78,6 +78,8 @@ AppPage {
 
     ConfirmationDialog {
         id: confirmationDialogItem
+        anchors.horizontalCenter: parent.left
+        anchors.verticalCenter: parent.top
     }
 
     Flickable {

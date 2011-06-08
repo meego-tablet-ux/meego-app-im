@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 AppPage {
     id: contactPickerPage
@@ -40,7 +41,7 @@ AppPage {
     }
 
     Component.onCompleted: {
-        pageTitle = qsTr("Add contacts to chat");
+        pageTitle = Constants.contactPickerAddToChat
         var contactsList;
         if(window.currentContactId == "") {
             contactsList = accountsModel.channelContacts(window.currentAccountId, window.chatAgent.channelPath);
@@ -123,7 +124,7 @@ AppPage {
                         verticalCenter: parent.verticalCenter
                     }
 
-                    text: qsTr("Add")
+                    text: Constants.contactPickerAdd
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-positive"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-positive-pressed"
@@ -154,7 +155,7 @@ AppPage {
                         verticalCenter: parent.verticalCenter
                     }
 
-                    text: qsTr("Cancel")
+                    text: Constants.contactPickerCancel
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"

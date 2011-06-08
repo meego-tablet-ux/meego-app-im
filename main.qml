@@ -10,11 +10,12 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Window {
     id: window
 
-    toolBarTitle: qsTr("Chat")
+    toolBarTitle: Constants.mainChat
     fullScreen: true
     customActionMenu: true
     automaticBookSwitching: false
@@ -456,24 +457,24 @@ Window {
         for (var i = 0; i < accountsSortedModel.length; ++i) {
             accountsList[i] = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
         }
-        accountsList[accountsList.length] = qsTr("Account switcher");
+        accountsList[accountsList.length] = Constants.mainAccountSwitcher;
         accountFilterModel = accountsList;
     }
 
     function presenceStatusText(type)
     {
         if(type == TelepathyTypes.ConnectionPresenceTypeAvailable) {
-            return qsTr("Available");
+            return Constants.mainStatusAvailable;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeBusy) {
-            return qsTr("Busy");
+            return Constants.mainStatusBusy;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeAway) {
-            return qsTr("Away");
+            return Constants.mainStatusAway;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeExtendedAway) {
-            return qsTr("Extended away");
+            return Constants.mainStatusExtendedAway;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeOffline) {
-            return qsTr("Offline");
+            return Constants.mainStatusOffline;
         } else if(type == TelepathyTypes.ConnectionPresenceTypeHidden) {
-            return qsTr("Invisible");
+            return Constants.mainStatusInvisible;
         } else {
             return "";
         }
@@ -660,7 +661,7 @@ Window {
                            + "import MeeGo.Labs.Components 0.1 as Labs;"
                            + "Labs.ContactsPicker {"
                            + "  parent: pageStack.currentPage;"
-                           + "  promptString: qsTr(\"Select contact\");"
+                           + "  promptString: \"" + Constants.mainSelectContact + "\";";
                            + "}";
             contactsPicker = Qt.createQmlObject(sourceCode, pageStack.currentPage);
         }

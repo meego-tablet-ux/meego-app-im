@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: contactDelegate
@@ -47,11 +48,11 @@ Item {
 
                 // Add items to menu according to contact capabilities
                 if(model.textChat && window.chatAgent.isConference) {
-                    menu.append({"modelData":qsTr("Private chat")});
+                    menu.append({"modelData":Constants.messageContactPrivateChat});
                 }
                 // check if contact is known
                 if(!accountsModel.isContactKnown(window.currentAccountId, window.chatAgent.channelPath, model.id)) {
-                    menu.append({"modelData":qsTr("Add to contacts")});
+                    menu.append({"modelData":Constants.messageContactAdd});
                 }
 
                 // set the global variable to make sure it is available for the menu

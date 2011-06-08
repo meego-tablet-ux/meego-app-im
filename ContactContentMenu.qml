@@ -11,6 +11,7 @@ import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 import MeeGo.Media 0.1
+import "constants.js" as Constants
 
 Item {
     id: meTabItem
@@ -151,7 +152,7 @@ Item {
 
         MenuItem {
             id: updateStatusItem
-            text: qsTr("Update status")
+            text: Constants.contactUpdateStatus
 
             onClicked: {
                 if(statusMenu.visible == false) {
@@ -201,35 +202,6 @@ Item {
                     }
                 }
 
-                ListModel {
-                    id: statusModel
-                    ListElement {
-                        status: "available"; // i18n ok
-                        type: TelepathyTypes.ConnectionPresenceTypeAvailable
-                        text: QT_TR_NOOP("Available")
-                    }
-                    ListElement {
-                        status: "away"; // i18n ok
-                        type: TelepathyTypes.ConnectionPresenceTypeAway
-                        text: QT_TR_NOOP("Away")
-                    }
-                    ListElement {
-                        status: "busy"; // i18n ok
-                        type: TelepathyTypes.ConnectionPresenceTypeBusy
-                        text: QT_TR_NOOP("Busy")
-                    }
-                    ListElement {
-                        status: "invisible"; // i18n ok
-                        type: TelepathyTypes.ConnectionPresenceTypeHidden
-                        text: QT_TR_NOOP("Invisible")
-                    }
-                    ListElement {
-                        status: "offline"; // i18n ok
-                        type: TelepathyTypes.ConnectionPresenceTypeOffline
-                        text: QT_TR_NOOP("Offline")
-                    }
-                }
-
                 RadioGroup {
                     id: statusRadioGroup
                 }
@@ -237,7 +209,7 @@ Item {
                 property string statusString: ""
 
                 Text {
-                    text: qsTr("Your Status:")
+                    text: Constants.contactYourStatus
                     color: theme_fontColorNormal
                     font.pixelSize: theme_fontPixelSizeNormal
                     elide: Text.ElideRight
@@ -246,7 +218,10 @@ Item {
 
                 Repeater {
                     id: statusView
-                    model: statusModel
+                    model: StatusModel {
+                               id: statusModel
+                           }
+
                     anchors.left: parent.left
                     anchors.right: parent.right
 
@@ -315,7 +290,7 @@ Item {
                     anchors.leftMargin: 10
                     anchors.right: parent.right
                     anchors.rightMargin: 15
-                    defaultText: qsTr("Custom status message");
+                    defaultText: Constants.contactCustomStatusMessage
                     text: window.accountItem.data(AccountsModel.CurrentPresenceStatusMessageRole)
                     onAccepted: {
                         customMessageBox.updateStatus();
@@ -340,7 +315,7 @@ Item {
                     id: updateStatusButton
                     anchors.left: parent.left
                     anchors.leftMargin: 10
-                    text: qsTr("Update")
+                    text: Constants.contactStatusUpdate
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -355,7 +330,7 @@ Item {
 
         MenuItem {
             id: updateNickItem
-            text: qsTr("Change display name")
+            text: Constants.contactChangeDisplayName
             visible: (showUpdateNick && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
 
             property bool showUpdateNick: true
@@ -449,7 +424,7 @@ Item {
                     anchors.leftMargin: 10
                     anchors.right: parent.right
                     anchors.rightMargin: 15
-                    defaultText: qsTr("Display name")
+                    defaultText: Constants.contactChangeDisplayNameText
                     text: window.accountItem.data(AccountsModel.NicknameRole)
 
                     onAccepted: {
@@ -468,7 +443,7 @@ Item {
                     id: updateNicknameButton
                     anchors.left: parent.left
                     anchors.leftMargin: 10
-                    text: qsTr("Update")
+                    text: Constants.contactDisplayNameUpdate
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -488,7 +463,7 @@ Item {
 
         MenuItem {
             id: addIMContactItem
-            text: qsTr("Add a friend")
+            text: Constants.contactAddFriend
             visible: (showAddFriend && window.currentAccountStatus == TelepathyTypes.ConnectionStatusConnected)
 
             property bool showAddFriend: true
@@ -576,7 +551,7 @@ Item {
 
         MenuItem {
             id: clearHistoryItem
-            text: qsTr("Clear chat history")
+            text: Constants.contactClearChatHistory
 
             onClicked: {
                 accountsModel.clearAccountHistory(window.currentAccountId);
@@ -588,8 +563,8 @@ Item {
 
         MenuItem {
             id: logOutItem
-            text: (window.currentAccountStatus == TelepathyTypes.ConnectionStatusDisconnected?
-                       qsTr("Log in") : qsTr("Log out"))
+            text: (window.currentAccountStatus == TelepathyTypes.ConnectionStatusDisconnected ?
+                       Constants.contactLogin : Constants.contactLogout)
 
             onClicked: {
                 if(window.currentAccountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
@@ -649,8 +624,8 @@ Item {
         var serviceName = protocolsModel.titleForId(window.accountItem.data(AccountsModel.IconRole));
 
         // show the dialog to ask for user confirmation
-        confirmationDialogItem.title = qsTr("Multiple accounts connected");
-        confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+        confirmationDialogItem.title = Constants.multipleAccountsTitle
+        confirmationDialogItem.text = Constants.multipleAccountsText.arg(serviceName);
         confirmationDialogItem.instanceReason = "contact-menu-single-instance"; // i18n ok
         confirmationDialogItem.accountId = window.currentAccountId;
         confirmationDialogItem.show();

@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import MeeGo.Components 0.1
+import "constants.js" as Constants
 
 Item {
     id: container
@@ -56,7 +57,7 @@ Item {
                 anchors.leftMargin: 10
                 anchors.left: parent.left
                 color: theme_fontColorNormal
-                text: qsTr("Send:")
+                text: Constants.sendFileTitle
                 font.pixelSize: theme_fontPixelSizeLarge
             }
         }
@@ -67,7 +68,7 @@ Item {
 
         MenuItem {
             id: photoItem
-            text: qsTr("Photo")
+            text: Constants.sendFilePhoto
 
             onClicked: {
                 createPhotoPicker();
@@ -80,7 +81,7 @@ Item {
 
         MenuItem {
             id: videoItem
-            text: qsTr("Video")
+            text: Constants.sendFileVideo
 
             onClicked: {
                 createVideoPicker();
@@ -93,7 +94,7 @@ Item {
 
         MenuItem {
             id: musicItem
-            text: qsTr("Music")
+            text: Constants.sendFileMusic
 
             onClicked: {
                 createMusicPicker();
@@ -106,7 +107,7 @@ Item {
 
         MenuItem {
             id: contactItem
-            text: qsTr("Contact Details")
+            text: Constants.sendFileContact
 
             onClicked: {
                 createContactsPicker();

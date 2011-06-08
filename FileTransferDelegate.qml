@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: root
@@ -175,7 +176,7 @@ Item {
                     anchors.top: fileName.bottom
                     anchors.left: fileName.left
                     anchors.topMargin: 10
-                    text: qsTr("Open")
+                    text: Constants.fileTransferOpen
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -199,12 +200,12 @@ Item {
                                 (root.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonRemoteError
                                  || root.transferStateReason == TelepathyTypes.FileTransferStateChangeReasonLocalError)) {
                             if (root.incomingTransfer) {
-                                qsTr("There was a problem downloading");
+                                Constants.fileTransferProblemDownloading;
                             } else {
-                                qsTr("There was a problem uploading");
+                                Constants.fileTransferProblemUploading;
                             }
                         } else {
-                            qsTr("Canceled") // TODO: report other errors
+                            Constants.fileTransferCanceled; // TODO: report other errors
                         }
                     }
                     color: theme_fontColorHighlight
@@ -228,7 +229,7 @@ Item {
                         anchors.top: parent.top
                         anchors.left: parent.left
 
-                        text: qsTr("Save")
+                        text: Constants.fileTransferSave
                         textColor: theme_buttonFontColor
                         bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                         bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -242,7 +243,7 @@ Item {
                         anchors.leftMargin: 10
                         anchors.left: saveButton.right
 
-                        text: qsTr("Decline")
+                        text: Constants.fileTransferDecline
                         textColor: theme_buttonFontColor
                         bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                         bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
@@ -266,7 +267,7 @@ Item {
                         id: cancelButton
                         anchors.top: parent.top
                         anchors.right: parent.right
-                        text: qsTr("Cancel")
+                        text: Constants.fileTransferCancel
                         textColor: theme_buttonFontColor
                         bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                         bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"

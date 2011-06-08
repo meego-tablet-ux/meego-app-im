@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 AppPage {
     id: messageScreenPage
@@ -170,7 +171,7 @@ AppPage {
 
         InfoBar {
             id: openingChatInfo
-            text: qsTr("Opening chat...")
+            text: Constants.messageOpeningChat
 
             anchors {
                 top: noNetworkItem.top
@@ -181,7 +182,7 @@ AppPage {
 
         InfoBar {
             id: loadingConversation
-            text: qsTr("Loading conversation history...")
+            text: Constants.messageLoadingHistory
             z: 10
             anchors {
                 top: openingChatInfo.bottom
@@ -329,7 +330,7 @@ AppPage {
                     topMargin: 0
                 }
                 height: 40
-                text: qsTr("Send")
+                text: Constants.messageSend
                 textColor: theme_buttonFontColor
 
                 onClicked: {
@@ -515,11 +516,11 @@ AppPage {
     {
         if(window.chatAgent != undefined && window.chatAgent.existsChat) {
             if (window.chatAgent.isConference) {
-                pageTitle = qsTr("Group conversation");
+                pageTitle = Constants.messageGroupConversation;
                 conversationView.model = accountsModel.groupConversationModel(window.currentAccountId,
                                                                               window.chatAgent.channelPath);
             } else {
-                pageTitle = qsTr("Chat with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
+                pageTitle = Constants.messageChatWith.arg(window.contactItem.data(AccountsModel.AliasRole));
                 conversationView.model = accountsModel.conversationModel(window.currentAccountId,
                                                                          window.currentContactId);
                 if (conversationView.model != undefined) {

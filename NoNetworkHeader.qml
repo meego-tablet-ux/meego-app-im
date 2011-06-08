@@ -8,6 +8,7 @@
 
 import Qt 4.7
 import MeeGo.App.IM 0.1
+import "constants.js" as Constants
 
 Item {
     visible: (!networkOnline)
@@ -35,7 +36,7 @@ Item {
 
         Text {
             id: noNetworkText
-            text: qsTr("Your device is not connected to a network. To chat with your contacts, you need to connect to a network.")
+            text: Constants.noNetworkText
             wrapMode: Text.WordWrap
             anchors.fill: parent
             anchors.margins: 5

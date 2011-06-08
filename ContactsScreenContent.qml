@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 AppPage {
     id: contactsScreenPage
@@ -173,7 +174,7 @@ AppPage {
         Title {
             id: friendsTitle
             anchors.top: infoBar.bottom
-            text: qsTr("Add a friend")
+            text: Constants.contactScreenAddFriend
             visible: showAddFriendsItem
         }
 
@@ -202,12 +203,12 @@ AppPage {
         // if not, check whether contacts are loading
         if (text == "") {
             if (showLoadingContacts) {
-                text = qsTr("Loading contacts...");
+                text = Constants.contactScreenLoading;
                 showAddFriendsItem = false;
             } else if (showAddFriends && !showLoadingContacts) {
                 // check whether the contact list is really empty
                 if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
-                    text = qsTr("You haven't added any friends yet");
+                    text = Constants.contactScreenNoFriends;
                     showAddFriendsItem = true;
                 } else {
                     showAddFriendsItem = false;
@@ -231,9 +232,9 @@ AppPage {
     function accountStatusMessage(status)
     {
         if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
-            return qsTr("Account is offline");
+            return Constants.contactScreenAccountOffline;
         } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
-            return qsTr("Account is connecting...");
+            return Constants.contactScreenAccountConnecting;
         } else {
             return "";
         }

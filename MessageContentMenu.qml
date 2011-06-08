@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: container
@@ -52,7 +53,7 @@ Item {
             id: addContactItem
             visible: window.chatAgent != undefined ? window.chatAgent.isGroupChatCapable : false
 
-            text: qsTr("Add contacts to chat")
+            text: Constants.messageAddContacts
             onClicked: {
                 // deactivate the notification manager before switching to the add contacts screen
                 notificationManager.chatActive = false;
@@ -69,7 +70,7 @@ Item {
 
         MenuItem {
             id: meClearHistory
-            text: qsTr("Clear chat history")
+            text: Constants.messageClearChatHistory
             onClicked: {
                 if(window.chatAgent.isConference) {
                     accountsModel.clearRoomHistory(window.currentAccountId, window.chatAgent.channelPath);
@@ -88,7 +89,7 @@ Item {
 
         MenuItem {
             id: meEndChat
-            text: qsTr("End chat")
+            text: Constants.messageEndChat
             onClicked: {
                 currentPage.closeConversation();
                 currentPage.hideActionMenu();

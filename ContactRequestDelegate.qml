@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: mainArea
@@ -42,7 +43,7 @@ Item {
         anchors.right: acceptButton.left
 
         Text {
-            text: qsTr("Friend request from")
+            text: Constants.contactRequestFrom
             elide: Text.ElideRight
             color: theme_fontColorInactive
             width: parent.width
@@ -70,7 +71,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        text: qsTr("Accept")
+        text: Constants.contactRequestAccept
         textColor: theme_buttonFontColor
         bgSourceUp: "image://themedimage/widgets/common/button/button-default"
         bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -87,7 +88,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
 
-        text: qsTr("Cancel")
+        text: Constants.contactRequestCancel
         textColor: theme_buttonFontColor
         bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
         bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"

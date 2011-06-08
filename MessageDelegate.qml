@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.App.IM 0.1
 import MeeGo.Components 0.1
+import "constants.js" as Constants
 
 Item {
     id: mainArea
@@ -106,7 +107,7 @@ Item {
             transferState: model.transferState
             item: model.item
             fileName: model.fileName
-            fileSize: qsTr("(%1)").arg(model.fileSize)
+            fileSize: Constants.messageFileSize.arg(model.fileSize)
             filePath: model.filePath
             incomingTransfer: model.incomingTransfer
             transferStateReason: model.transferStateReason
@@ -122,17 +123,17 @@ Item {
             function senderMessage() {
                 if (messageSent) {
                     if (canceled) {
-                        return qsTr("Upload canceled:");
+                        return Constants.messageUploadCanceled;
                     } else if (finished) {
-                        return qsTr("Sent:");
+                        return Constants.messageFileSent;
                     } else {
-                        return qsTr("Uploading:");
+                        return Constants.messageFileUploading;
                     }
                 } else {
                     if (finished) {
-                        return qsTr("%1 has sent you:").arg(model.sender);
+                        return Constants.messageFileSentToYou.arg(model.sender);
                     } else {
-                        return qsTr("%1 is sending you:").arg(model.sender);
+                        return Constants.messageFileSendingToYou.arg(model.sender);
                     }
                 }
                 return "";
@@ -144,13 +145,11 @@ Item {
         id: eventMessageComponent
         InlineMessageDelegate {
             id: eventMessage
-            //: %1 is event decsribing what happened - %2 is date and time
-            text: qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime))
+            text: Constants.messageCustomEvent.arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime))
             Connections {
                 target: fuzzyDateTimeUpdater
                 onTriggered: {
-                    //: %1 is event of what happened - %2 is date and time
-                    eventMessage.text = qsTr("%1 - %2").arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                    eventMessage.text = Constants.messageCustomEvent.arg(model.customEventText).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
         }
@@ -173,14 +172,11 @@ Item {
 
             function getCallMessageText() {
                 if (model.missedCall) {
-                    //: %1 contact id who called - %2 date time of the call
-                    return qsTr("%1 tried to call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                    return Constants.messageTriedCall.arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 } else if (model.rejectedCall) {
-                    //: %1 contact id who rejected the call - %2 date time of the call
-                    return qsTr("%1 rejected call - %2").arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                    return Constants.messageRejectedCall.arg(model.sender).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 } else {
-                    //: %1 contact id who called - %2 duration of the call - %3 date time of the call
-                    return qsTr("%1 called - duration %2 - %3").arg(model.sender).arg("" + model.callDuration).arg(fuzzyDateTime.getFuzzy(model.dateTime));
+                    return Constants.messageCalled.arg(model.sender).arg("" + model.callDuration).arg(fuzzyDateTime.getFuzzy(model.dateTime));
                 }
             }
         }

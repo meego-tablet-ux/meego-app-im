@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
+import "constants.js" as Constants
 
 Item {
     id: searchHader
@@ -45,7 +46,7 @@ Item {
 
         Text {
             id: searchText
-            text: qsTr("%1 matches found").arg(numMatchesFound)
+            text: Constants.searchMatches.arg(numMatchesFound)
             wrapMode: Text.WordWrap
             anchors.margins: 10
             anchors.verticalCenter: parent.verticalCenter
@@ -70,7 +71,7 @@ Item {
 
         Button {
             id: olderButton
-            text: qsTr("Older")
+            text: Constants.searchOlder
             width: 180
             height: 40
             anchors.verticalCenter: parent.verticalCenter
@@ -83,7 +84,7 @@ Item {
         }
         Button {
             id: newerButton
-            text: qsTr("Newer")
+            text: Constants.searchNewer
             width: 180
             height: 40
             anchors.verticalCenter: parent.verticalCenter

@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: videoWindow
@@ -162,7 +163,7 @@ Item {
             anchors.topMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
             visible: window.fullScreen
-            text: qsTr("Call with %1").arg(window.contactItem.data(AccountsModel.AliasRole));
+            text: Constants.videoWindowCallWith.arg(window.contactItem.data(AccountsModel.AliasRole));
             color: theme_buttonFontColor
             font.pixelSize: theme_fontPixelSizeLarge
         }
@@ -415,9 +416,9 @@ Item {
         onClicked: {
             var map = mapToItem(window, height/2, width/2);
             var menu;
-            var op1 = videoWindow.showCameraVideo ? qsTr("Minimize me") : qsTr("Maximize me");
-            var op2 = window.callAgent.videoSentOrAboutTo ? qsTr("Disable camera") : qsTr("Enable camera");
-            var op3 = window.callAgent.cameraSwappable() ? qsTr("Swap camera") : null;
+            var op1 = videoWindow.showCameraVideo ? Constants.videoWindowMinimize : Constants.videoWindowMaximize;
+            var op2 = window.callAgent.videoSentOrAboutTo ? Constants.videoWindowDisableCamera : Constants.videoWindowEnableCamera;
+            var op3 = window.callAgent.cameraSwappable() ? Constants.videoWindowSwapCamera : null;
             if (op3 == null) {
                 menu = [op1, op2];
             } else {

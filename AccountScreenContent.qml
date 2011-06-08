@@ -9,10 +9,11 @@
 import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
+import "constants.js" as Constants
 
 AppPage {
     id: accountScreenPage
-    pageTitle: qsTr("Account list")
+    pageTitle: Constants.accountList
     anchors.fill: parent
 
     Component.onCompleted: {
@@ -57,7 +58,7 @@ AppPage {
 
                 InfoBar {
                     id: loadingAccounts
-                    text: qsTr("Loading accounts...")
+                    text: Constants.accountsLoading
 
                     anchors {
                         top: parent.top
@@ -69,7 +70,7 @@ AppPage {
                 Title {
                     id: accountsHeader
                     anchors.top: loadingAccounts.bottom
-                    text: qsTr("Choose an account")
+                    text: Constants.accountChoose
                     visible: accountsRepeater.count
                 }
 
@@ -99,7 +100,7 @@ AppPage {
                 Title {
                     id: setupSeparator
                     anchors.top: accountsListView.bottom
-                    text: qsTr("Add an account")
+                    text: Constants.accountAdd
                 }
 
                 AccountSetupContent {

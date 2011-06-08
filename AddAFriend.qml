@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 import Qt 4.7
 
@@ -49,7 +50,7 @@ Column {
         id: addAFriendInput
         width: parent.width
         text: ""
-        defaultText: qsTr("Friend's username")
+        defaultText: Constants.friendUsername
         visible: addContactHelper.state == AddContactHelper.StateIdle ||
                  addContactHelper.state == AddContactHelper.StateError
 
@@ -70,7 +71,7 @@ Column {
     Button {
         id: addAFriendSend
         height: 40
-        text: qsTr("Send")
+        text: Constants.friendSend
         textColor: theme_buttonFontColor
         bgSourceUp: "image://themedimage/widgets/common/button/button-default"
         bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
@@ -88,7 +89,7 @@ Column {
             PropertyChanges {
                 target: addAFriendMessage
                 visible: true
-                text: qsTr("Sending request")
+                text: Constants.friendSendingRequest
             }
         },
         State {
@@ -97,7 +98,7 @@ Column {
             PropertyChanges {
                 target: addAFriendMessage
                 visible: true
-                text: qsTr("Request sent")
+                text: Constants.friendRequestSent
             }
         },
         State {
@@ -115,7 +116,7 @@ Column {
             PropertyChanges {
                 target: addAFriendMessage
                 visible: true
-                text: qsTr("Your device is not connected to a network. Please connect and try again.")
+                text: Constants.friendNoNetwork
             }
         }
     ]

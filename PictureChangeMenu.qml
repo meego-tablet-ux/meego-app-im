@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: container
@@ -105,21 +106,21 @@ Item {
                 spacing: 10
                 Text {
                     id: statusLabel
-                    text: qsTr("Change your picture:")
+                    text: Constants.pictureChangeTitle
                     font.bold: true
                 }
 
                 Button {
                     id: takePictureButton
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("Take picture")
+                    text: Constants.pictureTake
                     width: 180
                     height: 40
                 }
                 Button {
                     id: choosePictureButton
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("Choose picture")
+                    text: Constants.pictureChoose
                     width: 180
                     height: 40
                 }

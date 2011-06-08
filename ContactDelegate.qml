@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 Item {
     id: contactDelegate
@@ -82,8 +83,8 @@ Item {
 
                 MenuItem {
                     id: textChatItem
-                    text: (model.chatOpened ? qsTr("Return to chat") :
-                                              qsTr("Open chat"))
+                    text: (model.chatOpened ? Constants.contactReturnToChat :
+                                              Constants.contactOpenChat)
                     visible: model.textChat
                     onClicked: {
                         window.startConversation(model.id, window);
@@ -95,7 +96,7 @@ Item {
 
                 MenuItem {
                     id: callItem
-                    text: qsTr("Call")
+                    text: Constants.contactCall
                     visible: model.audioCall
                     onClicked: {
                         window.startAudioCall(model.id, window);
@@ -107,7 +108,7 @@ Item {
 
                 MenuItem {
                     id: videoCallItem
-                    text: qsTr("Video call")
+                    text: Constants.contactVideoCall
                     visible: model.videoCall
                     onClicked: {
                         window.startVideoCall(model.id, window);
@@ -119,8 +120,8 @@ Item {
 
                 MenuItem {
                     id: blockItem
-                    text: (model.blocked ? qsTr("Unblock") :
-                                           qsTr("Block"))
+                    text: (model.blocked ? Constants.contactUnblock :
+                                           Constants.contactBlock)
                     visible: model.canBlockContacts
                     onClicked: {
                         if (model.blocked) {
@@ -136,7 +137,7 @@ Item {
 
                 MenuItem {
                     id: endChatItem
-                    text: qsTr("End chat")
+                    text: Constants.contactEndChat
                     visible: model.chatOpened
                     onClicked: {
                         accountsModel.endChat(window.currentAccountId, model.id);
@@ -148,7 +149,7 @@ Item {
                 MenuItemSeparator { visible: endChatItem.visible }
 
                 MenuItem {
-                    text: qsTr("Delete contact")
+                    text: Constants.contactDeleteContact
                     onClicked: {
                         accountsModel.removeContact(window.currentAccountId, model.id);
                         contextMenu.hide();

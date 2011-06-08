@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
+import "constants.js" as Constants
 
 
 Item {
@@ -117,8 +118,8 @@ Item {
                                 accountFactory.otherAccountsOnline(icon, id)) {
                                 // show the dialog asking the user if he really wants to connect the account
 
-                                confirmationDialogItem.title = qsTr("Multiple accounts connected");
-                                confirmationDialogItem.text = qsTr("Do you really want to connect this account? By doing this all other %1 accounts will be disconnected.").arg(serviceName);
+                                confirmationDialogItem.title = Constants.multipleAccountsTitle;
+                                confirmationDialogItem.text = Constants.multipleAccountsText.arg(serviceName);
                                 confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
                                 confirmationDialogItem.accountId = id;
                                 confirmationDialogItem.show();
@@ -181,11 +182,11 @@ Item {
                 menu.clear();
 
                 if(model.connectionStatus == TelepathyTypes.ConnectionStatusConnected) {
-                    menu.append({"modelData":qsTr("Log out")});
+                    menu.append({"modelData":Constants.accountLogout});
                 } else {
-                    menu.append({"modelData":qsTr("Log in to %1").arg(telepathyManager.accountServiceName(model.icon))})
+                    menu.append({"modelData":Constants.accountLogin.arg(telepathyManager.accountServiceName(model.icon))})
                 }
-                menu.append({"modelData":qsTr("Settings")});
+                menu.append({"modelData":Constants.accountSettings});
 
                 var map = mapToItem(window, mouseX, mouseY);
                 contextMenu.setPosition( map.x, map.y);

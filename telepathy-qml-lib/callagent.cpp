@@ -44,7 +44,8 @@ CallAgent::CallAgent(
       mPendingChannelRequest(0),
       mIsRequested(false),
       mResourceSetCall(0),
-      mResourceSetRingTone(0)
+      mResourceSetRingTone(0),
+      mUseResourcePolicy(true)
 {
     qDebug() << "CallAgent::CallAgent: created for contact " << mContact->id();
 
@@ -80,18 +81,18 @@ CallAgent::~CallAgent()
     freeResourceSets();
 }
 
-void CallAgent::call(bool withVideo)
+void CallAgent::beginCall(bool withVideo)
 {
-    qDebug() << "CallAgent::call: contact=" << mContact->id() << " status=" << callStatus();
+    qDebug() << "CallAgent::beginCall: contact=" << mContact->id() << " status=" << callStatus();
 
     if (callStatus() == CallStatusIncomingCall) {
-        qDebug() << "CallAgent::call: accepting incoming call instead";
+        qDebug() << "CallAgent::beginCall: accepting incoming call instead";
         acceptCall();
         return;
     }
 
-    if (callStatus() != CallStatusNoCall) {
-        qDebug() << "CallAgent::call: returning, already in call";
+    if (callStatus() != CallStatusNoCall && callStatus() != CallStatusResourcing) {
+        qDebug() << "CallAgent::beginCall: returning, already in call";
         return;
     }
 
@@ -187,17 +188,17 @@ void CallAgent::endCall()
                SLOT(onChannelInvalidated(Tp::DBusProxy *, const QString &, const QString &)));
 }
 
-void CallAgent::acceptCall()
+void CallAgent::beginAcceptCall()
 {
-    qDebug() << "CallAgent::acceptCall:";
+    qDebug() << "CallAgent::beginAcceptCall:";
 
     if (!incomingVideoCall() && !incomingAudioCall()) {
-        qDebug() << "CallAgent::acceptCall: no incoming call";
+        qDebug() << "CallAgent::beginAcceptCall: no incoming call";
         return;
     }
 
     if (mCallChannel.isNull()) {
-        qDebug() << "CallAgent::acceptCall: no call channel available";
+        qDebug() << "CallAgent::beginAcceptCall: no call channel available";
         return;
     }
 
@@ -210,6 +211,47 @@ void CallAgent::acceptCall()
     clearError();
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
                 SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
+}
+
+void CallAgent::acceptCall()
+{
+    qDebug() << "CallAgent::acceptCall: useResourcePolicy=" << mUseResourcePolicy;
+
+    if (!mUseResourcePolicy) {
+        beginAcceptCall();
+        return;
+    }
+
+    if (!incomingVideoCall() && !incomingAudioCall()) {
+        qDebug() << "CallAgent::acceptCall: no incoming call";
+        return;
+    }
+
+    if (mCallChannel.isNull()) {
+        qDebug() << "CallAgent::acceptCall: no call channel available";
+        return;
+    }
+
+    int initialVideo = mCallChannel->immutableProperties().value("InitialVideo",0).toInt();
+
+    if (!mResourceSetCall) {
+        setupResourceSets();
+        connectResourceSets();
+    }
+
+    if (mResourceSetCall) {
+        if (initialVideo) {
+            mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+            mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        } else {
+            mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
+            mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
+        }
+        mResourceSetCall->update();
+        mResourceSetCall->acquire();
+        mOnAcquireInvoke = SLOT(beginAcceptCall());
+        mWaitingForResources = true;
+    }
 }
 
 void CallAgent::requestSendingAudio(Tpy::CallContentPtr content, bool send)
@@ -364,9 +406,9 @@ void CallAgent::requestSendingVideo(Tpy::CallContentPtr content, bool send)
     }
 }
 
-void CallAgent::setVideoSend(bool send)
+void CallAgent::beginSetVideoSend(bool send)
 {
-    qDebug() << "CallAgent::setVideoSend: " << send;
+    qDebug() << "CallAgent::beginSetVideoSend: " << send;
 
     if (mCallChannel.isNull()) {
         return;
@@ -390,6 +432,47 @@ void CallAgent::setVideoSend(bool send)
             requestSendingVideo(content, send);
         }
     }
+}
+
+void CallAgent::beginSetVideoSendTrue()
+{
+    beginSetVideoSend(true);
+}
+
+void CallAgent::beginSetVideoSendFalse()
+{
+    beginSetVideoSend(false);
+}
+
+void CallAgent::setVideoSend(bool send)
+{
+    qDebug() << "CallAgent::setVideoSend: " << send;
+
+    if (!mUseResourcePolicy) {
+        beginSetVideoSend(send);
+        return;
+    }
+
+    if (mCallChannel.isNull()) {
+        return;
+    }
+
+    if (!mCallChannel->hasMutableContents()) {
+        return;
+    }
+
+    if (send) {
+        mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+        mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        mOnAcquireInvoke = SLOT(beginSetVideoSendTrue());
+    } else {
+        mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
+        mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
+        mOnAcquireInvoke = SLOT(beginSetVideoSendFalse());
+    }
+    mResourceSetCall->update();
+    mResourceSetCall->acquire();
+    mWaitingForResources = true;
 }
 
 void CallAgent::setHoldCall(bool hold)
@@ -545,11 +628,16 @@ void CallAgent::onChannelAvailable(Tp::ChannelPtr channel)
 
 void CallAgent::beginAudioCall()
 {
-    call(false);
+    beginCall(false);
 }
 
 void CallAgent::audioCall()
 {
+    if (!mUseResourcePolicy) {
+        beginAudioCall();
+        return;
+    }
+
     if (!mResourceSetCall) {
         setupResourceSets();
         connectResourceSets();
@@ -559,28 +647,35 @@ void CallAgent::audioCall()
         //mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
         //mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
         mResourceSetCall->acquire();
-        mOnAcquireInvoke = "beginAudioCall";
+        mOnAcquireInvoke = SLOT(beginAudioCall());
+        mWaitingForResources = true;
         setCallStatus(CallStatusResourcing);
     }
 }
 
 void CallAgent::beginVideoCall()
 {
-    call(true);
+    beginCall(true);
 }
 
 void CallAgent::videoCall()
 {
+    if (!mUseResourcePolicy) {
+        beginVideoCall();
+        return;
+    }
+
     if (!mResourceSetCall) {
         setupResourceSets();
         connectResourceSets();
     }
 
     if (mResourceSetCall) {
-        //mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
-        //mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+        mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        mResourceSetCall->update();
         mResourceSetCall->acquire();
-        mOnAcquireInvoke = "beginVideoCall";
+        mOnAcquireInvoke = SLOT(beginVideoCall());
         setCallStatus(CallStatusResourcing);
     }
 }
@@ -1475,7 +1570,7 @@ void CallAgent::setupResourceSets()
     if (!mResourceSetCall) {
         mResourceSetCall = new ResourcePolicy::ResourceSet("call", 0, true, true);
         if (mResourceSetCall) {
-            //mResourceSetCall->setAutoRelease();
+            mResourceSetCall->setAutoRelease();
             mResourceSetCall->setAlwaysReply();
 
             ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("call");
@@ -1487,7 +1582,7 @@ void CallAgent::setupResourceSets()
             }
 
             mResourceSetCall->addResource(ResourcePolicy::AudioRecorderType);
-            //mResourceSetCall->initAndConnect();
+            mResourceSetCall->initAndConnect();
         }
     }
 
@@ -1570,18 +1665,25 @@ void CallAgent::connectResourceSets()
 
 void CallAgent::disconnectResourceSets()
 {
+    if (mResourceSetCall) {
+        disconnect(mResourceSetCall, SIGNAL(resourcesGranted(QList<ResourcePolicy::ResourceType>)),
+                   this, SLOT(onResourceSetCallGranted()));
+        connect(mResourceSetCall, SIGNAL(lostResources()),
+                this, SLOT(onResourceSetCallLost()));
+        connect(mResourceSetCall, SIGNAL(resourcesDenied()),
+                this, SLOT(onResourceSetCallDenied()));
+        connect(mResourceSetCall, SIGNAL(errorCallback(quint32,const char*)),
+                this, SLOT(onResourceSetCallError(quint32,const char *)));
+    }
 }
 
 void CallAgent::onResourceSetCallGranted()
 {
     qDebug() << "CallAgent::onResourceSetCallGranted: callStatus=" << callStatus();
 
-    if (callStatus() == CallStatusResourcing) {
-        if (!mOnAcquireInvoke.isEmpty()) {
-            QTimer::singleShot(0, this, qPrintable(mOnAcquireInvoke));
-        }
-    } else if (callStatus() == CallStatusTalking) {
-        // switch to video / no-video
+    mWaitingForResources = false;
+    if (!mOnAcquireInvoke.isEmpty()) {
+        QTimer::singleShot(0, this, qPrintable(mOnAcquireInvoke));
     }
 }
 
@@ -1589,6 +1691,8 @@ void CallAgent::onResourceSetCallLost()
 {
     qDebug() << "CallAgent::onResourceSetCallLost";
 
+    mWaitingForResources = false;
+    setErrorString(tr("Call resources were lost"));
     endCall();
 }
 
@@ -1596,6 +1700,8 @@ void CallAgent::onResourceSetCallDenied()
 {
     qDebug() << "CallAgent::onResourceSetCallDenied";
 
+    mWaitingForResources = false;
+    setErrorString(tr("Call resources not granted"));
     endCall();
 }
 
@@ -1603,5 +1709,18 @@ void CallAgent::onResourceSetCallError(quint32 error,const char *message)
 {
     qDebug() << "CallAgent::onResourceSetCallError: error=" << error << " msg=" << message;
 
+    mWaitingForResources = false;
+    setErrorString(tr("Error acquiring call resources"));
     endCall();
+}
+
+bool CallAgent::useResourcePolicy() const
+{
+    return mUseResourcePolicy;
+}
+
+void CallAgent::setUseResourcePolicy(bool urp)
+{
+    mUseResourcePolicy = urp;
+    emit useResourcePolicyChanged();
 }

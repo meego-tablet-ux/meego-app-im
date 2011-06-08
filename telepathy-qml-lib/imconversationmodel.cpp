@@ -380,6 +380,7 @@ void IMConversationModel::notifyCallStatusChanged(CallAgent *callAgent, CallAgen
     case CallAgent::CallStatusIncomingCall:
         message = tr("%1 is calling you").arg(callAgent->contact()->alias());
         break;
+    case CallAgent::CallStatusResourcing:
     case CallAgent::CallStatusConnecting:
         message = tr("Setting up call to %1").arg(callAgent->contact()->alias());
         break;

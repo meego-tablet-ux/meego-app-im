@@ -55,11 +55,14 @@ class CallAgent : public QObject
 
     Q_PROPERTY(bool isRequested READ isRequested)
 
+    Q_PROPERTY(bool useResourcePolicy READ useResourcePolicy WRITE setUseResourcePolicy NOTIFY useResourcePolicyChanged)
+
     Q_ENUMS(CallStatus);
 
 public:
     typedef enum {
         CallStatusNoCall,
+        // Resourcing status is only used on setup of resources for a requested call
         CallStatusResourcing,
         CallStatusIncomingCall,
         CallStatusConnecting,
@@ -67,7 +70,6 @@ public:
         CallStatusTalking,
         CallStatusHeld,
         CallStatusHangingUp
-        //CallStatusRejectedCall
     } CallStatus;
 
     explicit CallAgent(const Tp::AccountPtr &account, const Tp::ContactPtr &contact, QObject *parent = 0);
@@ -83,11 +85,8 @@ public:
     Q_INVOKABLE QDateTime startTime() const;
     Q_INVOKABLE QDateTime elapsedTime() const;
 
-    void call(bool withVideo);
     Q_INVOKABLE void audioCall();
-    void beginAudioCall();
     Q_INVOKABLE void videoCall();
-    void beginVideoCall();
     Q_INVOKABLE void endCall();
 
     Q_INVOKABLE bool existingCall() const;
@@ -141,6 +140,9 @@ public:
 
     Tpy::CallStateReason stateReason() const;
 
+    Q_INVOKABLE bool useResourcePolicy() const;
+    Q_INVOKABLE void setUseResourcePolicy(bool);
+
 Q_SIGNALS:
     // property notification signals
     void callStatusChanged(CallAgent::CallStatus oldStatus, CallAgent::CallStatus newStatus);
@@ -163,6 +165,7 @@ Q_SIGNALS:
     void remoteVideoRenderChanged();
     void error(const QString &errorMessage);
     void acceptCallFinished(CallAgent *agent);
+    void useResourcePolicyChanged();
 
 public Q_SLOTS:
     // to be called for new channels from channel handler
@@ -207,6 +210,11 @@ protected Q_SLOTS:
     void onResourceSetCallLost();
     void onResourceSetCallDenied();
     void onResourceSetCallError(quint32,const char *);
+    void beginAcceptCall();
+    void beginSetVideoSendTrue();
+    void beginSetVideoSendFalse();
+    void beginAudioCall();
+    void beginVideoCall();
 
 protected:
     Tp::AccountPtr mAccount;
@@ -236,8 +244,13 @@ protected:
     ResourcePolicy::ResourceSet *mResourceSetRingTone;
     //static ResourcePolicy::ResourceSet *mResourceSetEvent;
     QString mOnAcquireInvoke;
+    bool mWaitingForResources;
+    bool mUseResourcePolicy;
 
     explicit CallAgent(QObject *parent = 0);
+
+    void beginCall(bool withVideo);
+    void beginSetVideoSend(bool send);
 
     void setCallStatus(CallStatus callStatus);
     void setErrorString(const QString &errorString);

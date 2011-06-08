@@ -103,7 +103,7 @@ Item {
                 onTriggered: {
                     if (index == 0)
                     {
-                        if(payload.data(AccountsModel.ConnectionStatusRole) == TelepathyTypes.ConnectionStatusConnected) {
+                        if(payload.data(AccountsModel.ConnectionStatusRole) != TelepathyTypes.ConnectionStatusDisconnected) {
                             payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
                                                 "offline", // i18n ok
                                                 payload.data(AccountsModel.RequestedPresenceStatusMessageRole));
@@ -181,7 +181,7 @@ Item {
             onPressAndHold: {
                 menu.clear();
 
-                if(model.connectionStatus == TelepathyTypes.ConnectionStatusConnected) {
+                if(model.connectionStatus != TelepathyTypes.ConnectionStatusDisconnected) {
                     menu.append({"modelData":Constants.accountLogout});
                 } else {
                     menu.append({"modelData":Constants.accountLogin.arg(telepathyManager.accountServiceName(model.icon))})

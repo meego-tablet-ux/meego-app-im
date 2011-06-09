@@ -30,14 +30,14 @@ Item {
             var icon
             switch (type) {
             case TelepathyTypes.ConnectionPresenceTypeAvailable:
-                icon = "image://themedimage/widgets/apps/contacts/contact-available";
+                icon = "image://themedimage/icons/status/status-available";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeBusy:
-                icon = "image://themedimage/widgets/apps/contacts/contact-busy";
+                icon = "image://themedimage/icons/status/status-busy";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeAway:
             case TelepathyTypes.ConnectionPresenceTypeExtendedAway:
-                icon = "image://themedimage/widgets/apps/contacts/contact-idle";
+                icon = "image://themedimage/icons/status/status-idle";
                 break;
             case TelepathyTypes.ConnectionPresenceTypeHidden:
             case TelepathyTypes.ConnectionPresenceTypeUnknown:

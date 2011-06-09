@@ -20,6 +20,7 @@
 #include "../telepathy-qml-lib/debugmessage.h"
 #include "../telepathy-qml-lib/debugmessagecollector.h"
 #include "../telepathy-qml-lib/settingshelper.h"
+#include "../telepathy-qml-lib/resourcesetmanager.h"
 
 #include <TelepathyLoggerQt4/Init>
 #include <TelepathyQt4/Account>
@@ -101,6 +102,7 @@ void Components::registerTypes(const char *uri)
     qmlRegisterType<QmlGstVideoItem>(uri, 0, 1, "VideoItem");
     qmlRegisterType<TextFile>(uri, 0, 1, "TextFile");
     qmlRegisterType<IMDBus>(uri, 0, 1, "IMDBus");
+    qmlRegisterType<ResourceSetManager>(uri, 0, 1, "ResourceSetManager");
     qmlRegisterUncreatableType<IMAccountsModel>(uri, 0, 1, "IMAccountsModel", "This is a read-only type");
     qmlRegisterUncreatableType<Tpy::ContactModelItem>(uri, 0, 1,"ContactModelItem", "This is a read-only type");
     qmlRegisterUncreatableType<TelepathyManager>(uri, 0, 1, "TelepathyManager", "This is a read-only type");

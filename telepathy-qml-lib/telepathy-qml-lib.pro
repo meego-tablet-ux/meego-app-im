@@ -24,7 +24,7 @@ SOURCES = telepathytypes.cpp \
     debugproxy.cpp \
     debugmessage.cpp \
     debugmessagecollector.cpp \
-    resourcemanager.cpp
+    resourcesetmanager.cpp
 
 HEADERS = telepathytypes.h \
           telepathymanager.h \
@@ -46,7 +46,7 @@ HEADERS = telepathytypes.h \
     debugproxy.h \
     debugmessage.h \
     debugmessagecollector.h \
-    resourcemanager.h
+    resourcesetmanager.h
 
 headers.files = telepathytypes.h \
                 telepathymanager.h \

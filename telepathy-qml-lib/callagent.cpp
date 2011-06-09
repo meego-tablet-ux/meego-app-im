@@ -44,7 +44,6 @@ CallAgent::CallAgent(
       mPendingChannelRequest(0),
       mIsRequested(false),
       mResourceSetCall(0),
-      mResourceSetRingTone(0),
       mUseResourcePolicy(true)
 {
     qDebug() << "CallAgent::CallAgent: created for contact " << mContact->id();
@@ -1585,41 +1584,6 @@ void CallAgent::setupResourceSets()
             mResourceSetCall->initAndConnect();
         }
     }
-
-    /*
-    if (!mResourceSetRingTone) {
-        mResourceSetRingTone = new ResourcePolicy::ResourceSet("ringtone", this);
-        if (mResourceSetRingTone) {
-            //mResourceSetRingTone->setAutoRelease();
-            mResourceSetRingTone->setAlwaysReply();
-
-            ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("ringtone");
-            audioResource->setProcessID(QCoreApplication::applicationPid());
-            audioResource->setStreamTag("media.name", "*");
-            audioResource->setOptional(false);
-
-            mResourceSetRingTone->addResourceObject(audioResource);
-            //mResourceSetRingTone->initAndConnect();
-        }
-    }*/
-
-    /*
-    if (!mResourceSetEvent) {
-        mResourceSetEvent = new ResourcePolicy::ResourceSet("event", this);
-        if (mResourceSetEvent) {
-            //mResourceSetEvent->setAutoRelease();
-            mResourceSetEvent->setAlwaysReply();
-
-            ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("event");
-            audioResource->setProcessID(QCoreApplication::applicationPid());
-            audioResource->setStreamTag("media.name", "*");
-            audioResource->setOptional(false);
-            mResourceSetEvent->addResource(audioResource);
-
-            // TODO it might be need to get a vibra resource and add it to the event
-            mResourceSetEvent->initAndConnect();
-        }
-    }*/
 }
 
 void CallAgent::freeResourceSets()
@@ -1629,20 +1593,6 @@ void CallAgent::freeResourceSets()
         delete mResourceSetCall;
         mResourceSetCall = 0;
     }
-
-    /*
-    if (mResourceSetRingTone) {
-        mResourceSetRingTone->release();
-        delete mResourceSetRingTone;
-        mResourceSetRingTone = 0;
-    }*/
-
-    /*
-    if (mResourceSetEvent) {
-        mResourceSetEvent->release();
-        delete mResourceSetEvent;
-        mResourceSetEvent = 0;
-    }*/
 }
 
 void CallAgent::connectResourceSets()

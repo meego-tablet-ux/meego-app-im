@@ -241,8 +241,6 @@ protected:
     QTime mCallDuration;
 
     ResourcePolicy::ResourceSet *mResourceSetCall;
-    ResourcePolicy::ResourceSet *mResourceSetRingTone;
-    //static ResourcePolicy::ResourceSet *mResourceSetEvent;
     QString mOnAcquireInvoke;
     bool mWaitingForResources;
     bool mUseResourcePolicy;

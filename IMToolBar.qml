@@ -81,6 +81,7 @@ BottomToolBar {
                     window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);
                     window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
+                    //window.callAgent.useResourcePolicy = false;
                     window.callAgent.videoCall();
                 }
                 Behavior on opacity {
@@ -148,6 +149,7 @@ BottomToolBar {
                     window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);
                     window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
+                    //window.callAgent.useResourcePolicy = false;
                     window.callAgent.audioCall();
                 }
                 Behavior on opacity {

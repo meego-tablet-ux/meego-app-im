@@ -17,6 +17,8 @@ Item {
         audio.play();
     }
 
+    signal endOfMedia
+
     Audio {
         id: audio
         source: container.soundSource
@@ -27,6 +29,12 @@ Item {
         onStopped: {
             if(container.repeat && status == Audio.EndOfMedia) {
                 audio.play();
+            }
+        }
+
+        onStatusChanged: {
+            if (status == EndOfMedia) {
+                container.endOfMedia();
             }
         }
     }

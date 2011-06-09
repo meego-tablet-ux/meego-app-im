@@ -522,66 +522,121 @@ Window {
 
     function playIncomingMessageSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/chat-fg.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/chat-fg.wav");
     }
 
     function playOutgoingCallSound()
     {
-        playLoopedSound("/usr/share/sounds/meego/stereo/ring-4.wav");
+        ringToneResource.play("/usr/share/sounds/meego/stereo/ring-4.wav")
     }
 
     function playConnectedCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/connect.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/connect.wav");
     }
 
     function playHangUpCallSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/disconnect.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/disconnect.wav");
     }
 
     function playRecordingStartSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/rec-start.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/rec-start.wav");
     }
 
     function playRecordingStopSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/rec-stop.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/rec-stop.wav");
     }
 
     function playErrorSound()
     {
-        playSound("/usr/share/sounds/meego/stereo/error.wav");
+        eventResource.play("/usr/share/sounds/meego/stereo/error.wav");
     }
 
-    function playSound(soundSource)
-    {
-        console.log("playSound " + soundSource);
-        imSoundPlayer.soundSource = soundSource;
-        imSoundPlayer.playSound();
-    }
+    ResourceSetManager {
+        id: ringToneResource
+        applicationClass: "ringtone"
+        //applicationClass: "nopolicy"
 
-    function playLoopedSound(soundSource)
-    {
-        console.log("playLoopedSound " + soundSource);
-        imLoopedSoundPlayer.soundSource = soundSource;
-        imLoopedSoundPlayer.playSound();
-    }
+        property string soundSource : ""
 
-    function stopLoopedSound()
-    {
-        if (imLoopedSoundPlayer.soundSource != "") {
-            console.log("stopLoopedSound " + imLoopedSoundPlayer.soundSource);
-            imLoopedSoundPlayer.stopSound();
-            imLoopedSoundPlayer.soundSource = "";
+        Component.onCompleted: {
+            console.log("ringToneResource completed")
+            addAudioResource("ringtone");
+        }
+
+        onBeginUsage: {
+            console.log("ringToneResource.onBeginUsage " + soundSource);
+            imLoopedSoundPlayer.soundSource = soundSource;
+            imLoopedSoundPlayer.playSound();
+            soundSource = "";
+        }
+
+        onEndUsage: {
+            console.log("ringToneResource.onEndUsage")
+            stop();
+        }
+
+        function play(source) {
+            console.log("ringToneResource.play(source)")
+            soundSource = source;
+            acquire();
+        }
+
+        function stop() {
+            console.log("ringToneResource.stop")
+            release();
+            if (imLoopedSoundPlayer.soundSource != "") {
+                imLoopedSoundPlayer.stopSound();
+                imLoopedSoundPlayer.soundSource = "";
+            }
         }
     }
 
-    function raise()
-    {
-        var args = [];
-        qApp.raise(args);
+    IMSound {
+        id: imLoopedSoundPlayer
+        repeat: true
+    }
+
+    ResourceSetManager {
+        id: eventResource
+        applicationClass: "event"
+        //applicationClass: "nopolicy"
+
+        property string soundSource : ""
+
+        Component.onCompleted: {
+            console.log("eventResource completed")
+            addAudioResource("event");
+        }
+
+        onBeginUsage: {
+            console.log("eventResource.onBeginUsage" + soundSource);
+            imSoundPlayer.soundSource = soundSource;
+            imSoundPlayer.playSound();
+        }
+
+        onEndUsage: {
+            console.log("eventResource.onEndUsage");
+            stop();
+        }
+
+        function play(source) {
+            console.log("eventResource.play " + source);
+            soundSource = source;
+            acquire();
+        }
+
+        function stop() {
+            console.log("eventResource.stop");
+            release();
+            if (imSoundPlayer.soundSource != "") {
+                imSoundPlayer.stopSound();
+                imSoundPlayer.soundSource = "";
+            }
+        }
     }
 
     SaveRestoreState {
@@ -598,11 +653,16 @@ Window {
     IMSound {
         id: imSoundPlayer
         repeat: false
+        onEndOfMedia: {
+            console.log("eventResource: end of media");
+            eventResource.stop();
+        }
     }
 
-    IMSound {
-        id: imLoopedSoundPlayer
-        repeat: true
+    function raise()
+    {
+        var args = [];
+        qApp.raise(args);
     }
 
     AccountContentFactory {

@@ -146,11 +146,12 @@ Item {
     VideoItem {
         id: videoIncomingItem
         size: Qt.size(parent.width, parent.height)
+        visible: (window.callAgent != undefined && !videoIncomingItem.idle)
     }
 
     Image {
         id: audioCallImage
-        visible: (window.callAgent != undefined && !window.callAgent.remoteVideoRender)
+        visible: (window.callAgent != undefined && videoIncomingItem.idle)
         source: "image://themedimage/widgets/apps/chat/call-fullscreen-default"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter

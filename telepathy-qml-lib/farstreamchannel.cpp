@@ -1079,9 +1079,8 @@ void FarstreamChannel::onIncomingVideo(bool incoming)
         return;
     }
 
-    if (mGstVideoOutput && mGstIncomingVideoSink) {
-        QmlVideoSurfaceGstSink *sink = (QmlVideoSurfaceGstSink*)mGstIncomingVideoSink;
-        sink->show(incoming);
+    if (!incoming && mGstVideoOutput && mGstIncomingVideoSink && mIncomingVideoItem) {
+        mIncomingVideoItem->forceIdle();
     }
 }
 

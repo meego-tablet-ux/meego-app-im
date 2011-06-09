@@ -398,6 +398,7 @@ Window {
 
         // set the current contact property
         window.callAgent = window.incomingCallAgent
+        //window.callAgent.useResourcePolicy = false;
         window.callAgent.acceptCall();
 
         window.currentContactId = contactId;
@@ -417,6 +418,7 @@ Window {
         fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
         accountsModel.startChat(window.currentAccountId, contactId);
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
+        //callAgent.useResourcePolicy = false;
         callAgent.audioCall();
 
         // and start the conversation
@@ -439,6 +441,7 @@ Window {
         fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
         accountsModel.startChat(window.currentAccountId, contactId);
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
+        //callAgent.useResourcePolicy = false;
         callAgent.videoCall();
 
         // and start the conversation

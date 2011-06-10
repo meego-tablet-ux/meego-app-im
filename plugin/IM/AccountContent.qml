@@ -196,6 +196,7 @@ Column {
 
     InfoBar {
         id: accountError
+        width: parent.width
 
         property int connectionStatus: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusRole) : TelepathyTypes.ConnectionStatusDisconnected
         property int connectionStatusReason: (accountItem != undefined) ? accountItem.data(AccountsModel.ConnectionStatusReasonRole) : TelepathyTypes.ConnectionStatusReasonNoneSpecified

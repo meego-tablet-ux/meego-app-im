@@ -274,7 +274,7 @@ Item {
                         onClicked: item.cancelTransfer();
                     }
 
-                    Item {
+                    ProgressBar {
                         id: progressBar
                         anchors.left: parent.left
                         anchors.right: cancelButton.left
@@ -282,40 +282,7 @@ Item {
                         anchors.bottom: cancelButton.bottom
                         anchors.margins: 10
 
-                        BorderImage {
-                            id: backgroundBar
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            border {
-                                top: 2
-                                bottom: 2
-                                left: 2
-                                right: 2
-                            }
-                            source: "image://themedimage/widgets/common/progress-bar/progress-bar-backgound"
-                        }
-
-                        BorderImage {
-                            id: foregroundBar
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            border {
-                                top: 2
-                                bottom: 2
-                                left: 2
-                                right: 2
-                            }
-                            width: backgroundBar.width * (root.percentTransferred / 100.)
-                            source: "image://themedimage/widgets/common/progress-bar/progress-bar-fill"
-                            visible: root.percentTransferred > 0
-
-                            Behavior on width {
-                                NumberAnimation {
-                                    duration: 500
-                                }
-                            }
-                        }
+                        percentage: root.percentTransferred
                     }
                 }
             }

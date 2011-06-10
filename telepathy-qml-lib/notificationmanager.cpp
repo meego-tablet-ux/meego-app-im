@@ -279,9 +279,6 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
 
     notification.item->setCount(eventCount);
 
-    // NOTE: The current theme can be found in the /meego/ux/theme gconf key, where
-    //       the full path to the theme is /usr/share/themes/NAME.  I am only 'fixing'
-    //       this to at least fall back to a known theme directory 
     QString icon("image://themedimage/widgets/apps/chat/");
     switch (type) {
     case NotificationItem::IncomingFileTransfer:

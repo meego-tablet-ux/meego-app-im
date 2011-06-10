@@ -291,6 +291,8 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
     case NotificationItem::MissedVideoCall:
         notification.item->setImage(icon + "call-video-missed");
         break;
+    default:
+        break;
     }
 
     notification.item->publish();

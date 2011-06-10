@@ -15,7 +15,7 @@ AccountsModelFactory::AccountsModelFactory(TelepathyManager *tm)
     if (mTpManager->isFinished()) {
         onAccountManagerReady();
     } else {
-       connect(mTpManager,SIGNAL(finished()),SLOT(onAccountManagerReady()));
+       connect(mTpManager, SIGNAL(accountManagerReady()), SLOT(onAccountManagerReady()));
     }
 }
 

@@ -36,6 +36,7 @@ public:
 public Q_SLOTS:
     void onAccountManagerReady();
     void onAccountsModelReady(IMAccountsModel *model);
+    void onTelepathyManagerFinished();
 
 Q_SIGNALS:
     void accountsModelCreated();

@@ -68,6 +68,7 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     AccountsModelFactory *accountFactory = new AccountsModelFactory(mTpManager);
     connect(accountFactory, SIGNAL(modelCreated(IMAccountsModel*)),SLOT(onAccountsModelReady(IMAccountsModel*)));
+    connect(mTpManager, SIGNAL(finished()), SLOT(onTelepathyManagerFinished()));
 
     mRootContext = engine->rootContext();
     Q_ASSERT(mRootContext);
@@ -152,10 +153,14 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     // the handler and approver, if necessary
     mAccountsModel->onComponentsLoaded();
 
+}
+
+void Components::onTelepathyManagerFinished()
+{
     // get last used account
     QSettings settings("MeeGo", "MeeGoIM");
     QString lastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
-    loadLastUsedAccount(lastUsedAccount, model);
+    loadLastUsedAccount(lastUsedAccount, mAccountsModel);
 }
 
 /**

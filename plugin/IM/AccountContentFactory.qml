@@ -101,7 +101,7 @@ Item {
         component += "                bgSourceUp: \"image://themedimage/widgets/common/button/button-default\";";
         component += "                bgSourceDn: \"image://themedimage/widgets/common/button/button-default-pressed\";";
         component += "                onClicked: {";
-        component += "                    visible = false;";
+        component += "                    enabled = false;";
         component += "                    accountContent.createAccount();";
         component += "                }";
         component += "            }";

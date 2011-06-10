@@ -567,11 +567,13 @@ void IMFeedModel::removeExistingRequest(const QString &contactId)
 
 void IMFeedModel::onConnectionChanged(const Tp::ConnectionPtr &conn)
 {
-    if (conn->status() == Tp::ConnectionStatusConnected) {
-        onConnectionAvailable();
-    } else {
-        connect(conn.data(), SIGNAL(statusChanged(Tp::ConnectionStatus)),
-                SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+    if (!conn.isNull() && conn->isValid()) {
+        if (conn->status() == Tp::ConnectionStatusConnected) {
+            onConnectionAvailable();
+        } else {
+            connect(conn.data(), SIGNAL(statusChanged(Tp::ConnectionStatus)),
+                    SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+        }
     }
 }
 

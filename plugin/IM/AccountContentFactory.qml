@@ -66,7 +66,9 @@ Item {
         component += "        anchors.top: parent.top;";
         component += "        anchors.left: parent.left;";
         component += "        anchors.right: parent.right;";
-        component += "        height: childrenRect.height;";
+        component += "        anchors.topMargin: 10;";
+        component += "        anchors.bottomMargin: 10;";
+        component += "        height: childrenRect.height + 20;";
         component += "        property alias accountContent: accountContent;";
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
@@ -91,11 +93,15 @@ Item {
         component += "        anchors.top: parent.top;";
         component += "        anchors.left: parent.left;";
         component += "        anchors.right: parent.right;";
-        component += "        height: childrenRect.height;";
+        component += "        anchors.topMargin: 10;";
+        component += "        anchors.bottomMargin: 10;";
+        component += "        height: childrenRect.height + 20;";
         component += "        property alias accountContent: accountContent;";
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
+        component += "            onAccountCreationAborted: { signInButton.enabled = true; }";
         component += "            Button {";
+        component += "                id: signInButton;";
         component += "                text: \"" + IMConstants.accountFactorySignIn + "\";"
         component += "                textColor: theme_buttonFontColor;";
         component += "                bgSourceUp: \"image://themedimage/widgets/common/button/button-default\";";

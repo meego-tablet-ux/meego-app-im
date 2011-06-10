@@ -73,6 +73,12 @@ Column {
         console.log("AccountContent completed " + parent);
     }
 
+    onVisibleChanged: {
+        if (visible) {
+            loginBox.textFocus = true;
+        }
+    }
+
     function createAccountHelper() {
         if (accountHelper == null) {
             console.log("Creating AccountHelper");
@@ -134,7 +140,7 @@ Column {
             && oldLogin != loginBox.text) {
             duplicated = true;
             accountCreationAborted();
-            loginBox.focus = true;
+            loginBox.textFocus = true;
             return;
         }
 

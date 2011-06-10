@@ -24,6 +24,10 @@ AppPage {
         }
     }
 
+    onActivated: {
+        window.currentScreen = "accounts"; // i18n ok
+    }
+
     Connections {
         target: window
         onComponentsLoaded: {

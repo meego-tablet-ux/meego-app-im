@@ -62,6 +62,10 @@ AppPage {
         setInfoBarMessage();
     }
 
+    onActivated: {
+        window.currentScreen = "contacts"; // i18n ok
+    }
+
     Connections {
         target: window.accountItem
 

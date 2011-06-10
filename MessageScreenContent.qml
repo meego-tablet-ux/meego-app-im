@@ -48,6 +48,10 @@ AppPage {
         messageContentMenu.show();
     }
 
+    onActivated: {
+        window.currentScreen = "chat"; // i18n ok
+    }
+
     // small trick to reload the data() role values when the item changes
     Connections {
         target: window.contactItem

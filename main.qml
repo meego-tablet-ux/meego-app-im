@@ -52,6 +52,8 @@ Window {
     // TODO: check how can we do that on group chat
     property string currentContactId: ""
 
+    property string currentScreen: ""
+
     signal componentsLoaded
 
     Component {
@@ -95,10 +97,16 @@ Window {
         currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
         notificationManager.currentAccount = currentAccountId;
         accountItemConnections.target = accountItem;
+        appState.invalidate();
     }
 
     onCurrentContactIdChanged: {
         notificationManager.currentContact = currentContactId;
+        appState.invalidate();
+    }
+
+    onCurrentScreenChanged: {
+        appState.invalidate();
     }
 
     onIsActiveWindowChanged: {
@@ -142,16 +150,21 @@ Window {
         id: contactsModelConnections;
         onOpenLastUsedAccount: {
             // If there command line parameters,those take precedence over opening the last
-            // used account
+            // used account or save/restore
             parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {
-                // only open last used account if there are no unread messages
-                if (!accountsModel.existingUnreadMessages()
-                        && accountId != "") {
-                    currentAccountId = accountId;
-                    accountItem = accountsModel.accountItemForId(window.currentAccountId);
-                    currentAccountId = accountItem.data(AccountsModel.IdRole);
-                    showContactsScreen();
+                // restore the state takes precedence over opening the last used account
+                if (appState.restoreRequired) {
+                    restoreState();
+                } else {
+                    // only open last used account if there are no unread messages
+                    if (!accountsModel.existingUnreadMessages()
+                            && accountId != "") {
+                        currentAccountId = accountId;
+                        accountItem = accountsModel.accountItemForId(window.currentAccountId);
+                        currentAccountId = accountItem.data(AccountsModel.IdRole);
+                        showContactsScreen();
+                    }
                 }
             } else {
                 if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
@@ -571,6 +584,17 @@ Window {
         qApp.raise(args);
     }
 
+    SaveRestoreState {
+        id: appState
+
+        onSaveRequired: {
+            setValue("currentAccountId", currentAccountId);
+            setValue("currentContactId", currentContactId);
+            setValue("currentScreen", currentScreen);
+            sync();
+        }
+    }
+
     IMSound {
         id: imSoundPlayer
         repeat: false
@@ -689,6 +713,22 @@ Window {
                            + "Labs.ApplicationsModel {}";
             appModel = Qt.createQmlObject(sourceCode, window);
         }
+    }
+
+    function restoreState()
+    {
+        currentAccountId = appState.value("currentAccountId");
+        currentContactId = appState.value("currentContactId");
+        currentScreen = appState.value("currentScreen");
+
+        if(currentScreen == "chat" && currentContactId != "") {
+            contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
+            startConversation(currentContactId);
+        } else if (currentScreen = "contacts") {
+            addPage(contactsScreenContent);
+        }
+        // by default the application opens in the accounts list, so nothing has to be done
+        // if currentScreen == "accounts"
     }
 
 }

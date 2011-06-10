@@ -215,7 +215,7 @@ AppPage {
                 Image {
                     anchors.top: dateText.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "image://themedimage/images/dialog-separator"
+                    source: "image://themedimage/widgets/common/dividers/divider-horizontal-single"
                 }
             }
         }

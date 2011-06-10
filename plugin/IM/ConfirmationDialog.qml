@@ -17,9 +17,9 @@ ModalMessageBox {
     anchors.verticalCenter: parent.verticalCenter
 
     acceptButtonText: IMConstants.confirmationDialogYes
-    acceptButtonImage: "image://themedimage/images/btn_blue_up"
-    acceptButtonImagePressed: "image://themedimage/images/btn_blue_dn"
+    acceptButtonImage: "image://themedimage/widgets/common/button/button-positive"
+    acceptButtonImagePressed: "image://themedimage/widgets/common/button/button-positive-pressed"
     cancelButtonText: IMConstants.confirmationDialogNo
-    cancelButtonImage: "image://themedimage/images/btn_red_up"
-    cancelButtonImagePressed: "image://themedimage/images/btn_red_dn"
+    cancelButtonImage: "image://themedimage/widgets/common/button/button-negative"
+    cancelButtonImagePressed: "image://themedimage/widgets/common/button/button-negative-pressed"
 }

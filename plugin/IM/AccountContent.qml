@@ -297,7 +297,7 @@ Column {
 
         Image {
             id: arrowIcon
-            source: "image://themedimage/images/panels/pnl_icn_arrow" + (advancedHandler.expanded ? "right" : "down")
+            source: "image://themedimage/widgets/common/combobox/combobox-item-open-" + (advancedHandler.expanded ? "selected" : "active")
 
             anchors.topMargin: 5
             anchors.bottomMargin: 5

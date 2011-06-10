@@ -48,7 +48,7 @@ Item {
             section.criteria: ViewSection.FullString
             section.delegate: Image {
                 width: blockedContactsList.width
-                source: "image://themedimage/images/settings/subheader"
+                source: "image://themedimage/widgets/common/header/header-small"
                 height: childrenRect.height + 10
 
                 Text{

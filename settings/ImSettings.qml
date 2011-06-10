@@ -99,7 +99,7 @@ AppPage {
             Image {
                 id: accountSettingsLabel
                 width: parent.width
-                source: "image://themedimage/images/settings/subheader"
+                source: "image://themedimage/widgets/common/header/header-small"
 
                 Text{
                     anchors.left: parent.left
@@ -145,7 +145,7 @@ AppPage {
             Image {
                 id: generalSettingsLabel
                 width: parent.width
-                source: "image://themedimage/images/settings/subheader"
+                source: "image://themedimage/widgets/common/header/header-small"
 
                 Text{
                     anchors.left: parent.left
@@ -264,7 +264,7 @@ AppPage {
             Image {
                 id: blockedContactsLabel
                 width: parent.width
-                source: "image://themedimage/images/settings/subheader"
+                source: "image://themedimage/widgets/common/header/header-small"
 
                 visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
 

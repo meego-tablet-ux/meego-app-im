@@ -38,8 +38,8 @@ BottomToolBar {
                 icon: "image://themedimage/icons/actionbar/call-audio-stop"
                 iconDown: icon + "-active"
                 hasBackground: true
-                bgSourceUp: "image://themedimage/images/btn_red_up"
-                bgSourceDn: "image://themedimage/images/btn_red_dn"
+                bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
                 onClicked: {
                     window.callAgent.endCall();

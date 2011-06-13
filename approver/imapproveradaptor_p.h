@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef IMAPPROVERADAPTOR_P_H_1307061345
-#define IMAPPROVERADAPTOR_P_H_1307061345
+#ifndef IMAPPROVERADAPTOR_P_H_1307984283
+#define IMAPPROVERADAPTOR_P_H_1307984283
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -34,6 +34,10 @@ class IMApproverAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
 "    </method>\n"
+"    <method name=\"rejectCall\">\n"
+"      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
+"      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
+"    </method>\n"
 "  </interface>\n"
         "")
 public:
@@ -43,6 +47,7 @@ public:
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void acceptCall(const QString &accountId, const QString &contactId);
+    void rejectCall(const QString &accountId, const QString &contactId);
 Q_SIGNALS: // SIGNALS
 };
 

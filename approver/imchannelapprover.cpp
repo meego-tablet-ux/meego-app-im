@@ -327,6 +327,32 @@ void IMChannelApprover::acceptCall(const QString &accountId, const QString &cont
     }
 }
 
+void IMChannelApprover::rejectCall(const QString &accountId, const QString &contactId)
+{
+    // look for the channel in the pending dispatch operations and approve it
+    foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
+        if (dispatchOperation->account()->uniqueIdentifier() != accountId) {
+            continue;
+        }
+
+        QList<Tp::ChannelPtr> channels = dispatchOperation->channels();
+        foreach (Tp::ChannelPtr channel, channels) {
+            Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
+            if (callChannel.isNull()) {
+                continue;
+            }
+
+            Tp::ContactPtr contact = channel->initiatorContact();
+            if (contact->id() == contactId) {
+                callChannel->hangup(Tpy::CallStateChangeReasonUserRequested, QString(), QString());
+                callChannel->requestClose();
+                mDispatchOps.removeAll(dispatchOperation);
+                break;
+            }
+        }
+    }
+}
+
 void IMChannelApprover::onServiceRegistered()
 {
     setApplicationRunning(true);

@@ -148,10 +148,16 @@ void NotificationManager::notifyIncomingCall(const QString &accountId,
 
     QList<QVariant> args;
     args << accountId << contactId;
+    notification.item->setIdentifier(MNotification::HardNotification);
     notification.item->setAction(MRemoteAction("com.meego.app.imapprover",
                                                "/com/meego/app/imapprover",
                                                "com.meego.app.imapprover",
                                                "acceptCall",
+                                               args));
+    notification.item->setDeclineAction(MRemoteAction("com.meego.app.imapprover",
+                                               "/com/meego/app/imapprover",
+                                               "com.meego.app.imapprover",
+                                               "rejectCall",
                                                args));
     QString icon("image://themedimage/widgets/apps/chat/");
     if (!image.isNull()) {

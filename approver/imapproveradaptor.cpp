@@ -39,3 +39,9 @@ void IMApproverAdaptor::acceptCall(const QString &accountId, const QString &cont
     QMetaObject::invokeMethod(parent(), "acceptCall", Q_ARG(QString, accountId), Q_ARG(QString, contactId));
 }
 
+void IMApproverAdaptor::rejectCall(const QString &accountId, const QString &contactId)
+{
+    // handle method call com.meego.app.imapprover.rejectCall
+    QMetaObject::invokeMethod(parent(), "rejectCall", Q_ARG(QString, accountId), Q_ARG(QString, contactId));
+}
+

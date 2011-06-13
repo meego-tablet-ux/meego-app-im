@@ -6,5 +6,9 @@
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contactId" type="s" direction="in"/>
     </method>
+   <method name="rejectCall">
+      <arg name="accountId" type="s" direction="in"/>
+      <arg name="contactId" type="s" direction="in"/>
+    </method>
   </interface>
 </node>

@@ -247,11 +247,13 @@ AppPage {
     ContextMenu {
         id: contactContentMenu
 
-        width: 200
+        width: 300
         forceFingerMode: 2
 
         content: ContactContentMenu {
             currentPage: contactsScreenPage;
         }
     }
+
+    TopItem { id: topItem }
 }

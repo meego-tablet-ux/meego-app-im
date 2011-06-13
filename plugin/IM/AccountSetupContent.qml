@@ -31,6 +31,7 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: theme_commonBoxHeight
+                    lazyCreation: true
                     // do not assign to detailsComponent, due to BUG 18434
                     //detailsComponent: accountFactory.embeddedNewAccountContent(model.id, contentRow)
 

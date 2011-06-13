@@ -13,9 +13,8 @@ import TelepathyQML 0.1
 
 ExpandingBox {
     id: setupDelegate
-
     width: parent.width
-
+    lazyCreation: true
     // do not assign to detailsComponent, due to BUG 18434
     //detailsComponent: accountFactory.embeddedAccountContent(model.id, setupDelegate)
 

@@ -74,11 +74,6 @@ public:
                                                 const QDateTime &time,
                                                 const QString &fileName);
 
-    Q_INVOKABLE void notifyIncomingCall(const QString &accountId,
-                                        const QString &contactId,
-                                        const QString &contactAlias,
-                                        const QString &image = QString::null);
-
     Q_INVOKABLE void clear();
 
 public slots:
@@ -102,7 +97,6 @@ private:
     int mChatActive;
     bool mApplicationActive;
     QList<NotificationItem> mNotifications;
-    QList<NotificationItem> mCallNotifications;
     QWidget *mAppWindow;
 };
 

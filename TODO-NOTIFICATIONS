@@ -4,6 +4,3 @@ This file has the pending stasks for the standalone approver:
   and place a missed call notification
 - Check whether there is another incoming call
 - Check whether there is an ongoing call
-- Check the panels notifications, they don't seem to be working (notifications are
-  placed, but the toobar doesn't show it)
-- Check notifications in main app while a chat is opened to another contact

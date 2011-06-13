@@ -19,6 +19,7 @@
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4Yell/ChannelFactory>
 #include <MGConfItem>
+#include <mremoteaction.h>
 
 IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 : Tp::AbstractClientApprover(channelFilters()),
@@ -242,14 +243,38 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
         return;
     }
     QString accountId = callChannel->property("accountId").toString();
-    QString operationPath = callChannel->property("channelDispatchOperation").toString();
-
     Tp::ContactPtr contact = callChannel->initiatorContact();
-    qDebug() << "Contact avatar:" << contact->avatarData().fileName;
-    mNotificationManager.notifyIncomingCall(accountId,
-                                            contact->id(),
-                                            contact->alias(),
-                                            contact->avatarData().fileName);
+
+    // Call the meego-ux-alarm daemon to show the incoming call dialog
+    QList<QVariant> args;
+    args << accountId << contact->id();
+    MRemoteAction acceptAction("com.meego.app.imapprover",
+                               "/com/meego/app/imapprover",
+                               "com.meego.app.imapprover",
+                               "acceptCall",
+                               args);
+    MRemoteAction rejectAction("com.meego.app.imapprover",
+                               "/com/meego/app/imapprover",
+                               "com.meego.app.imapprover",
+                               "rejectCall",
+                               args);
+    QString icon = contact->avatarData().fileName;
+    if (icon.isNull()) {
+        // set a default image
+        icon = "image://themedimage/widgets/apps/chat/call-fullscreen-default";
+    }
+
+    QDBusInterface meegoAlarm("org.meego.alarms",
+                              "/incomingCall",
+                              "org.meego.alarms");
+
+    meegoAlarm.call("incomingCall",
+                    tr("Incoming Call"),
+                    tr("%1 is calling you").arg(contact->alias()),
+                    acceptAction.toString(),
+                    rejectAction.toString(),
+                    "/usr/share/sounds/meego/stereo/ring-1.wav",
+                    icon);
 }
 
 void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)

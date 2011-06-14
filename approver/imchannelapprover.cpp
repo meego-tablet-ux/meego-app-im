@@ -90,8 +90,7 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
         if (!callChannel.isNull()) {
             // if there is already an incoming call, the second one should just be rejected.
             if (mPendingCall) {
-                // TODO: use the busy reason to hangup
-                callChannel->hangup(Tpy::CallStateChangeReasonNoAnswer, QString(), QString());
+                callChannel->hangup(Tpy::CallStateChangeReasonNoAnswer, TELEPATHY_ERROR_BUSY, QString());
                 callChannel->requestClose();
                 context->setFinished();
                 return;

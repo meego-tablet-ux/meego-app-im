@@ -1,6 +1,2 @@
 This file has the pending stasks for the standalone approver:
-
-- Detect when an incoming call has been canceled to remove the hard notification
-  and place a missed call notification
-- Check whether there is another incoming call
 - Check whether there is an ongoing call

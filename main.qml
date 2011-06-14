@@ -565,7 +565,8 @@ Window {
 
     ResourceSetManager {
         id: ringToneResource
-        applicationClass: "ringtone"
+        // outgoing ring tone is just from event application class, not ringtone
+        applicationClass: "event"
         //applicationClass: "nopolicy"
 
         property string soundSource : ""

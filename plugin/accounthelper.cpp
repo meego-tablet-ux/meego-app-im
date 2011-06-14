@@ -134,8 +134,8 @@ void AccountHelper::setAvatar(const QString &value)
     Tp::Avatar accountAvatar;
     accountAvatar.avatarData = ba;
     accountAvatar.MIMEType = "image/png";
-    mAccount->setAvatar(accountAvatar);
-    emit avatarChanged();
+    connect(mAccount->setAvatar(accountAvatar), SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(onAvatarChangeFinished(Tp::PendingOperation*)));
 }
 
 bool AccountHelper::saslAuth() const
@@ -285,6 +285,8 @@ void AccountHelper::setAccount(QObject *object)
     }
     connect(mAccount.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             SIGNAL(onlineChanged()));
+    connect(mAccount.data(), SIGNAL(avatarChanged(Tp::Avatar)),
+            SLOT(onAvatarChanged()));
     emit accountChanged();
 }
 
@@ -625,4 +627,19 @@ void AccountHelper::setConnectAfterSetup(bool value)
     qDebug() << __PRETTY_FUNCTION__ << this;
     mConnectAfterSetup = value;
     emit connectAfterSetupChanged();
+}
+
+void AccountHelper::onAvatarChangeFinished(Tp::PendingOperation *op)
+{
+    qDebug() << __PRETTY_FUNCTION__ << this;
+    if (op->isError()) {
+        qWarning() << "Cannot change avatar: " << op->errorMessage();
+        return;
+    }
+}
+
+void AccountHelper::onAvatarChanged()
+{
+    qDebug() << __PRETTY_FUNCTION__ << this;
+    emit avatarChanged();
 }

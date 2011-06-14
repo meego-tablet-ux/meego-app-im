@@ -20,6 +20,7 @@ Column {
 
     property variant currentPage
     property QtObject accountHelper : null
+    property string avatarSerial : ""
 
     signal accountChanged
 
@@ -30,12 +31,18 @@ Column {
             statusMessage.text = window.presenceStatusText(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         }
         statusRadioGroup.select(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
+        avatarSerial = accountFactory.avatarSerial;
     }
 
     onVisibleChanged: {
         if(!visible) {
             resetMenu();
         }
+    }
+
+    onAvatarSerialChanged: {
+        avatarImage.source = "image://avatars/" + window.accountItem.data(AccountsModel.IdRole) + // i18n ok
+                        "?" + avatarSerial;
     }
 
     Connections {
@@ -50,6 +57,7 @@ Column {
             }
             displayName.text = window.accountItem.data(AccountsModel.NicknameRole);
             presenceIcon.status = window.accountItem.data(AccountsModel.CurrentPresenceTypeRole);
+            avatarSerial = accountFactory.avatarSerial;
         }
     }
 
@@ -67,8 +75,16 @@ Column {
             createAccountHelper();
             accountHelper.setAccount(window.accountItem);
             accountHelper.avatar = uri;
+        }
+    }
+
+    Connections {
+        target: accountHelper
+
+        onAvatarChanged: {
             accountFactory.avatarSerial++;
             avatarImage.source = accountHelper.avatar;
+            avatarSerial = accountFactory.avatarSerial;
         }
     }
 
@@ -80,7 +96,7 @@ Column {
         height: width
         anchors.bottomMargin: 2
         source: "image://avatars/" + window.accountItem.data(AccountsModel.IdRole) + // i18n ok
-                "?" + accountFactory.avatarSerial
+                "?" + avatarSerial
         noAvatarImage: "image://themedimage/widgets/common/avatar/avatar-default"
 
         Component {
@@ -607,7 +623,7 @@ Column {
                            + "import MeeGo.App.IM 0.1;"
                            + "import TelepathyQML 0.1;"
                            + "AccountHelper {}";
-            accountHelper = Qt.createQmlObject(sourceCode, meTabItem);
+            accountHelper = Qt.createQmlObject(sourceCode, optionColumn);
         }
     }
 

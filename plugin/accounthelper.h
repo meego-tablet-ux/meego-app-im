@@ -161,6 +161,10 @@ Q_SIGNALS:
 protected:
     void updatePrivacySettings();
 
+protected Q_SLOTS:
+    void onAvatarChangeFinished(Tp::PendingOperation *op);
+    void onAvatarChanged();
+
 private:
     QString mConnectionManager;
     QString mProtocol;

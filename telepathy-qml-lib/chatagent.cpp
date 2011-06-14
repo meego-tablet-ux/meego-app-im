@@ -217,9 +217,9 @@ void ChatAgent::handleReadyChannel()
             SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
             SLOT(onChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
+    createModelForChat();
     mExistsChat = true;
 
-    createModelForChat();
     emit chatCreated();
     emit existsChatChanged();
     emit pendingConversationsChanged();

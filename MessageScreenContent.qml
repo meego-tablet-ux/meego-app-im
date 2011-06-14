@@ -541,8 +541,6 @@ AppPage {
                 textEdit.focus = true;
                 openingChatInfo.hide();
             }
-            // FIXME: do this until the bug in pageTitle update is fixed
-            window.toolBarTitle = pageTitle;
         }
     }
 

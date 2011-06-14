@@ -33,7 +33,7 @@ Item {
         }
 
         onStatusChanged: {
-            if (status == EndOfMedia) {
+            if (status == Audio.EndOfMedia) {
                 container.endOfMedia();
             }
         }

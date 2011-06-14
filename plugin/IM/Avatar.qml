@@ -27,8 +27,10 @@ Item {
 
         visible: (source != ""? true : false)
         onStatusChanged: {
-            if(status == Image.Error) {
+            if (status == Image.Error) {
                 avatarImage.visible = false;
+            } else if (status == Image.Ready) {
+                avatarImage.visible = true;
             }
         }
     }

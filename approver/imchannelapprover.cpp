@@ -25,7 +25,8 @@ IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 : Tp::AbstractClientApprover(channelFilters()),
   mApplicationRunning(false),
   mNotificationManager(this),
-  mAutoApproveCalls(autoApproveCalls)
+  mAutoApproveCalls(autoApproveCalls),
+  mPendingCall(false)
 {
     mAdaptor = new IMApproverAdaptor(this);
     QDBusConnection::sessionBus().registerObject("/com/meego/app/imapprover", this);
@@ -87,6 +88,16 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
 
         Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
         if (!callChannel.isNull()) {
+            // if there is already an incoming call, the second one should just be rejected.
+            if (mPendingCall) {
+                // TODO: use the busy reason to hangup
+                callChannel->hangup(Tpy::CallStateChangeReasonNoAnswer, QString(), QString());
+                callChannel->requestClose();
+                context->setFinished();
+                return;
+            }
+
+            mPendingCall = true && !mAutoApproveCalls;
 
             // todo fix hack: stick a property to have accountId handy when we get the stream
             callChannel->setProperty("accountId", QVariant(dispatchOperation->account()->uniqueIdentifier()));
@@ -95,6 +106,7 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
                                              << Tpy::CallChannel::FeatureContents),
                     SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(onCallChannelReady(Tp::PendingOperation*)));
+
 
             shouldApprove = false || mAutoApproveCalls;
             continue;
@@ -242,6 +254,11 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
         qDebug() << "IMChannelApprover::onCallChannelReady: channel invalid";
         return;
     }
+
+    connect(callChannel.data(),
+            SIGNAL(stateChanged(Tpy::CallState)),
+            SLOT(onCallChannelStateChanged(Tpy::CallState)));
+
     QString accountId = callChannel->property("accountId").toString();
     Tp::ContactPtr contact = callChannel->initiatorContact();
 
@@ -275,6 +292,39 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
                     rejectAction.toString(),
                     "/usr/share/sounds/meego/stereo/ring-1.wav",
                     icon);
+}
+
+void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
+{
+    if (state != Tpy::CallStateEnded &&
+        state != Tpy::CallStateUnknown) {
+        return;
+    }
+
+    // if there is no pending call, we dont have anything to do here
+    if (!mPendingCall) {
+        return;
+    }
+
+    mPendingCall = false;
+
+    // dismiss the alarm
+    QDBusInterface meegoAlarm("org.meego.alarms",
+                              "/incomingCall",
+                              "org.meego.alarms");
+
+    meegoAlarm.call("dropCall");
+
+    // and remove the dispatch operation
+    Tpy::CallChannel *callChannel = qobject_cast<Tpy::CallChannel*>(sender());
+    Tpy::CallChannelPtr callChannelPtr(callChannel);
+
+    foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
+        if (dispatchOperation->channels().indexOf(callChannelPtr) >= 0) {
+            mDispatchOps.removeAll(dispatchOperation);
+            break;
+        }
+    }
 }
 
 void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)
@@ -318,6 +368,8 @@ void IMChannelApprover::onInvalidated()
 
 void IMChannelApprover::acceptCall(const QString &accountId, const QString &contactId)
 {
+    mPendingCall = false;
+
     // look for the channel in the pending dispatch operations and approve it
     foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
         if (dispatchOperation->account()->uniqueIdentifier() != accountId) {
@@ -354,6 +406,8 @@ void IMChannelApprover::acceptCall(const QString &accountId, const QString &cont
 
 void IMChannelApprover::rejectCall(const QString &accountId, const QString &contactId)
 {
+    mPendingCall = false;
+
     // look for the channel in the pending dispatch operations and approve it
     foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
         if (dispatchOperation->account()->uniqueIdentifier() != accountId) {

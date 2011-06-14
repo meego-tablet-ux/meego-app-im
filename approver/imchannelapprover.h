@@ -48,6 +48,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onCallChannelReady(Tp::PendingOperation *op);
+    void onCallChannelStateChanged(Tpy::CallState state);
     void onTextChannelReady(Tp::PendingOperation *op);
     void onFileTransferChannelReady(Tp::PendingOperation *op);
     void onInvalidated(void);
@@ -65,6 +66,7 @@ private:
     IMApproverAdaptor *mAdaptor;
     QDBusServiceWatcher mIMServiceWatcher;
     bool mAutoApproveCalls;
+    bool mPendingCall;
 };
 
 #endif // IMCHANNELAPPROVER_H

@@ -55,8 +55,6 @@ Item {
 
             text: Constants.messageAddContacts
             onClicked: {
-                // deactivate the notification manager before switching to the add contacts screen
-                notificationManager.chatActive = false;
                 currentPage.hideActionMenu();
                 window.pickContacts();
             }

@@ -49,7 +49,12 @@ AppPage {
     }
 
     onActivated: {
+        notificationManager.chatActive = true;
         window.currentScreen = "chat"; // i18n ok
+    }
+
+    onDeactivated: {
+        notificationManager.chatActive = false;
     }
 
     // small trick to reload the data() role values when the item changes

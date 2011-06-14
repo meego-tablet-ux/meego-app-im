@@ -141,9 +141,6 @@ AppPage {
                             accountsModel.addContactsToChat(window.currentAccountId, window.currentContactId, contactsList);
                         }
 
-                        // set chatActive before going back to the message screen
-                        // if in the future, this screen could be called from another screen, this should be fixed
-                        notificationManager.chatActive = true;
                         window.popPage();
                     }
                 }

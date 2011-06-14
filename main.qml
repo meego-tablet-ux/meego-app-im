@@ -353,7 +353,6 @@ Window {
 
     function startConversation(contactId)
     {
-        console.log("window.startConversation: contactId=" + contactId);
         // set the current contact property
         currentContactId = contactId;
         contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
@@ -365,9 +364,9 @@ Window {
             fastPageSwitch = true;
             window.popPage();
         }
-        window.showMessageScreen();
         accountsModel.startChat(window.currentAccountId, contactId);
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
+        window.showMessageScreen();
     }
 
     function startGroupConversation(channelPath)

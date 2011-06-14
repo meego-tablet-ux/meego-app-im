@@ -558,6 +558,11 @@ Window {
         eventResource.play("/usr/share/sounds/meego/stereo/error.wav");
     }
 
+    function stopLoopedSound()
+    {
+        ringToneResource.stop();
+    }
+
     ResourceSetManager {
         id: ringToneResource
         applicationClass: "ringtone"

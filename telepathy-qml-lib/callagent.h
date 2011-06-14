@@ -210,6 +210,9 @@ protected Q_SLOTS:
     void onResourceSetCallLost();
     void onResourceSetCallDenied();
     void onResourceSetCallError(quint32,const char *);
+    void onResourcesBecameAvailable(QList<ResourcePolicy::ResourceType> resources);
+    void onResourcesReleased();
+    void onResourcesReleasedByManager();
     void beginAcceptCall();
     void beginSetVideoSendTrue();
     void beginSetVideoSendFalse();

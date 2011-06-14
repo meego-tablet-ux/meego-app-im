@@ -247,9 +247,9 @@ void CallAgent::acceptCall()
             mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
         }
         mResourceSetCall->update();
-        mResourceSetCall->acquire();
         mOnAcquireInvoke = SLOT(beginAcceptCall());
         mWaitingForResources = true;
+        mResourceSetCall->acquire();
     }
 }
 
@@ -470,8 +470,8 @@ void CallAgent::setVideoSend(bool send)
         mOnAcquireInvoke = SLOT(beginSetVideoSendFalse());
     }
     mResourceSetCall->update();
-    mResourceSetCall->acquire();
     mWaitingForResources = true;
+    mResourceSetCall->acquire();
 }
 
 void CallAgent::setHoldCall(bool hold)
@@ -632,6 +632,8 @@ void CallAgent::beginAudioCall()
 
 void CallAgent::audioCall()
 {
+    qDebug() << "CallAgent::audioCall";
+
     if (!mUseResourcePolicy) {
         beginAudioCall();
         return;
@@ -643,22 +645,28 @@ void CallAgent::audioCall()
     }
 
     if (mResourceSetCall) {
-        //mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
-        //mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
-        mResourceSetCall->acquire();
+        mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
+        mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
+        bool ret = mResourceSetCall->update();
+        qDebug() << "mResourceSetCall update " << ret;
         mOnAcquireInvoke = SLOT(beginAudioCall());
         mWaitingForResources = true;
         setCallStatus(CallStatusResourcing);
+        ret = mResourceSetCall->acquire();
+        qDebug() << "mResourceSetCall acquire " << ret;
     }
 }
 
 void CallAgent::beginVideoCall()
 {
+    qDebug() << "CallAgent::beginAudioCall";
     beginCall(true);
 }
 
 void CallAgent::videoCall()
 {
+    qDebug() << "CallAgent::videoCall";
+
     if (!mUseResourcePolicy) {
         beginVideoCall();
         return;
@@ -670,12 +678,17 @@ void CallAgent::videoCall()
     }
 
     if (mResourceSetCall) {
-        mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+        bool ret = mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+        qDebug() << "mResourceSetCall addResource VideoPlaybackType " << ret;
         mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
-        mResourceSetCall->update();
-        mResourceSetCall->acquire();
+        qDebug() << "mResourceSetCall addResource VideoRecorderType " << ret;
+        ret = mResourceSetCall->update();
+        qDebug() << "mResourceSetCall update " << ret;
         mOnAcquireInvoke = SLOT(beginVideoCall());
+        mWaitingForResources = true;
         setCallStatus(CallStatusResourcing);
+        ret = mResourceSetCall->acquire();
+        qDebug() << "mResourceSetCall acquire " << ret;
     }
 }
 
@@ -1566,11 +1579,15 @@ QTime CallAgent::updateCallDuration()
 
 void CallAgent::setupResourceSets()
 {
+    qDebug() << "CallAgent::setupResourceSets";
+
     if (!mResourceSetCall) {
         mResourceSetCall = new ResourcePolicy::ResourceSet("call", 0, true, true);
         if (mResourceSetCall) {
-            mResourceSetCall->setAutoRelease();
-            mResourceSetCall->setAlwaysReply();
+            bool ret = mResourceSetCall->setAutoRelease();
+            qDebug() << "setAutoRelease returned " << ret;
+            ret = mResourceSetCall->setAlwaysReply();
+            qDebug() << "setAlwaysReply returned " << ret;
 
             ResourcePolicy::AudioResource *audioResource = new ResourcePolicy::AudioResource("call");
             if (audioResource) {
@@ -1580,14 +1597,19 @@ void CallAgent::setupResourceSets()
                 mResourceSetCall->addResourceObject(audioResource);
             }
 
-            mResourceSetCall->addResource(ResourcePolicy::AudioRecorderType);
-            mResourceSetCall->initAndConnect();
+            ret = mResourceSetCall->addResource(ResourcePolicy::AudioRecorderType);
+            qDebug() << "addResource returned " << ret;
+
+            ret = mResourceSetCall->initAndConnect();
+            qDebug() << "initAndConnect returned " << ret;
         }
     }
 }
 
 void CallAgent::freeResourceSets()
 {
+    qDebug() << "CallAgent::freeResourceSets";
+
     if (mResourceSetCall) {
         mResourceSetCall->release();
         delete mResourceSetCall;
@@ -1610,6 +1632,16 @@ void CallAgent::connectResourceSets()
         connect(mResourceSetCall,
                 SIGNAL(errorCallback(quint32,const char*)),
                 SLOT(onResourceSetCallError(quint32,const char *)));
+        // next signals used for debugging resource life cycle
+        connect(mResourceSetCall,
+                SIGNAL(resourcesBecameAvailable(QList<ResourcePolicy::ResourceType>)),
+                SLOT(onResourcesBecameAvailable(QList<ResourcePolicy::ResourceType>)));
+        connect(mResourceSetCall,
+                SIGNAL(resourcesReleased()),
+                SLOT(onResourcesReleased()));
+        connect(mResourceSetCall,
+                SIGNAL(resourcesReleasedByManager()),
+                SLOT(onResourcesReleasedByManager()));
     }
 }
 
@@ -1618,12 +1650,21 @@ void CallAgent::disconnectResourceSets()
     if (mResourceSetCall) {
         disconnect(mResourceSetCall, SIGNAL(resourcesGranted(QList<ResourcePolicy::ResourceType>)),
                    this, SLOT(onResourceSetCallGranted()));
-        connect(mResourceSetCall, SIGNAL(lostResources()),
+        disconnect(mResourceSetCall, SIGNAL(lostResources()),
                 this, SLOT(onResourceSetCallLost()));
-        connect(mResourceSetCall, SIGNAL(resourcesDenied()),
+        disconnect(mResourceSetCall, SIGNAL(resourcesDenied()),
                 this, SLOT(onResourceSetCallDenied()));
-        connect(mResourceSetCall, SIGNAL(errorCallback(quint32,const char*)),
+        disconnect(mResourceSetCall, SIGNAL(errorCallback(quint32,const char*)),
                 this, SLOT(onResourceSetCallError(quint32,const char *)));
+        disconnect(mResourceSetCall,
+                SIGNAL(resourcesBecameAvailable(QList<ResourcePolicy::ResourceType>)),
+                this, SLOT(onResourcesBecameAvailable(QList<ResourcePolicy::ResourceType>)));
+        disconnect(mResourceSetCall,
+                SIGNAL(resourcesReleased()),
+                this, SLOT(onResourcesReleased()));
+        disconnect(mResourceSetCall,
+                SIGNAL(resourcesReleasedByManager()),
+                this, SLOT(onResourcesReleasedByManager()));
     }
 }
 
@@ -1662,6 +1703,21 @@ void CallAgent::onResourceSetCallError(quint32 error,const char *message)
     mWaitingForResources = false;
     setErrorString(tr("Error acquiring call resources"));
     endCall();
+}
+
+void CallAgent::onResourcesBecameAvailable(QList<ResourcePolicy::ResourceType> resources)
+{
+    qDebug() << "CallAgent::onResourcesBecameAvailable" << resources;
+}
+
+void CallAgent::onResourcesReleased()
+{
+    qDebug() << "CallAgent::onResourcesReleased";
+}
+
+void CallAgent::onResourcesReleasedByManager()
+{
+    qDebug() << "CallAgent::onResourcesReleasedByManager";
 }
 
 bool CallAgent::useResourcePolicy() const

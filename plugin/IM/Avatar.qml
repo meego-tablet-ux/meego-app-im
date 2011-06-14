@@ -25,14 +25,7 @@ Item {
 
         fillMode: Image.PreserveAspectFit
 
-        visible: (source != ""? true : false)
-        onStatusChanged: {
-            if (status == Image.Error) {
-                avatarImage.visible = false;
-            } else if (status == Image.Ready) {
-                avatarImage.visible = true;
-            }
-        }
+        visible: (source != "" && status == Image.Ready? true : false)
     }
 
     Item {

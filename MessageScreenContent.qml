@@ -22,7 +22,6 @@ AppPage {
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
 
     Component.onCompleted: {
-        notificationManager.chatActive = true;
         openingChatInfo.show()
         initPage();
     }
@@ -40,7 +39,6 @@ AppPage {
             window.callAgent.setOutgoingVideo(null);
             window.callAgent.setIncomingVideo(null);
         }
-        notificationManager.chatActive = false;
     }
 
     onActionMenuIconClicked: {
@@ -541,9 +539,7 @@ AppPage {
                 conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
                 conversationModelConnections.target = conversationView.model;
                 textEdit.focus = true;
-                if(openingChatInfo.height > 0) {
-                    openingChatInfo.hide();
-                }
+                openingChatInfo.hide();
             }
             // FIXME: do this until the bug in pageTitle update is fixed
             window.toolBarTitle = pageTitle;

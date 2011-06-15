@@ -1615,3 +1615,16 @@ int IMAccountsModel::actualContactsCount(const QString &accountId) const
     }
     return 0;
 }
+
+bool IMAccountsModel::userBusyCalling() const
+{
+    CallAgentHash::const_iterator it2;
+    for (it2 = mCallAgents.constBegin(); it2 != mCallAgents.constEnd(); ++it2) {
+        CallAgent *agent = it2.value();
+        if (agent && agent->callStatus() != CallAgent::CallStatusNoCall) {
+            return true;
+        }
+    }
+
+    return false;
+}

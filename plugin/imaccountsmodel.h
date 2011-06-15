@@ -86,6 +86,7 @@ public:
     Q_INVOKABLE void unblockContact(const QString &accountId, const QString &contactId);
     Q_INVOKABLE void removeContact(const QString &accountId, const QString &contactId);
     Q_INVOKABLE bool isAccountRegistered(const QString &cm, const QString &protocol, const QString &displayName) const;
+    Q_INVOKABLE bool userBusyCalling() const;
 
     Q_INVOKABLE QString accountDisplayName(const QString &iconName, const QString &displayName) const;
 

@@ -46,7 +46,8 @@ Item {
 
         Text {
             id: searchText
-            text: Constants.searchMatches.arg(numMatchesFound)
+            //: %n is the number of items matching the search criteria
+            text:  qsTr("%n matches found", "", numMatchesFound)
             wrapMode: Text.WordWrap
             anchors.margins: 10
             anchors.verticalCenter: parent.verticalCenter

@@ -114,8 +114,6 @@ var pictureTake = qsTr("Take picture")
 var pictureChoose = qsTr("Choose picture")
 
 // SearchHeader.qml
-//: %1 is the number of items matching the search criteria
-var searchMatches = qsTr("%1 matches found");
 var searchOlder = qsTr("Older");
 var searchNewer = qsTr("Newer");
 

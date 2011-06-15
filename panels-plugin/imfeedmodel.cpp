@@ -538,8 +538,8 @@ void IMFeedModel::onPublishStateChanged(Tp::Contact::PresenceState state)
         removeExistingRequest(contact->id());
 
         // prepare the item to insert
-        QString messageText =  qApp->translate("Message indicating the contact has been added",
-                                                       "has been added as contact");
+        //: Message indicating the contact has been added
+        QString messageText = tr("has been added as contact");
         QString token = QString(InformationType + "&" + mAccountId + "&" + contact->id() + QDateTime::currentDateTime().toString(Qt::ISODate));
         IMFeedModelItem *item = new IMFeedModelItem(mAccount,
                                                     contactPtr,

@@ -19,7 +19,7 @@ INSTALLS += qmlfiles desktop settingsdesktop protocols
 # dist stuff begins here
 # Only following three lines needed to be editied
 TRANSLATIONS += *.qml *.js *.desktop panels-plugin/*.h panels-plugin/*.cpp settings/*.qml
-TRANSLATIONS += plugin/IM/*.qml plugin/*.h plugin/*.cpp
+TRANSLATIONS += plugin/IM/*.qml plugin/*.h plugin/*.cpp plugin/IM/*.js
 TRANSLATIONS += protocols/*qml protocols/*.desktop
 TRANSLATIONS += panels-plugin/*.cpp panels-plugin/*.h
 TRANSLATIONS += telepathy-qml-lib/*.h telepathy-qml-lib/*.cpp

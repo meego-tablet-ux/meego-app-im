@@ -527,11 +527,6 @@ Window {
         eventResource.play("/usr/share/sounds/meego/stereo/chat-fg.wav");
     }
 
-    function playOutgoingCallSound()
-    {
-        ringToneResource.play("/usr/share/sounds/meego/stereo/ring-4.wav")
-    }
-
     function playConnectedCallSound()
     {
         eventResource.play("/usr/share/sounds/meego/stereo/connect.wav");
@@ -557,49 +552,18 @@ Window {
         eventResource.play("/usr/share/sounds/meego/stereo/error.wav");
     }
 
-    function stopLoopedSound()
+    function playOutgoingCallSound()
     {
-        ringToneResource.stop();
+        // this is not using resource policy since used only when we have the resources (setting up a call)
+        imLoopedSoundPlayer.soundSource = "/usr/share/sounds/meego/stereo/ring-4.wav";
+        imLoopedSoundPlayer.playSound();
     }
 
-    ResourceSetManager {
-        id: ringToneResource
-        // outgoing ring tone is just from event application class, not ringtone
-        applicationClass: "event"
-        //applicationClass: "nopolicy"
-
-        property string soundSource : ""
-
-        Component.onCompleted: {
-            console.log("ringToneResource completed")
-            addAudioResource("ringtone");
-        }
-
-        onBeginUsage: {
-            console.log("ringToneResource.onBeginUsage " + soundSource);
-            imLoopedSoundPlayer.soundSource = soundSource;
-            imLoopedSoundPlayer.playSound();
-            soundSource = "";
-        }
-
-        onEndUsage: {
-            console.log("ringToneResource.onEndUsage")
-            stop();
-        }
-
-        function play(source) {
-            console.log("ringToneResource.play(source)")
-            soundSource = source;
-            acquire();
-        }
-
-        function stop() {
-            console.log("ringToneResource.stop")
-            release();
-            if (imLoopedSoundPlayer.soundSource != "") {
-                imLoopedSoundPlayer.stopSound();
-                imLoopedSoundPlayer.soundSource = "";
-            }
+    function stopLoopedSound()
+    {
+        if (imLoopedSoundPlayer.soundSource != "") {
+            imLoopedSoundPlayer.stopSound();
+            imLoopedSoundPlayer.soundSource = "";
         }
     }
 

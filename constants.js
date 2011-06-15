@@ -58,7 +58,7 @@ var contactScreenAddFriend = qsTr("Add a friend");
 var contactScreenLoading = qsTr("Loading contacts...");
 var contactScreenNoFriends = qsTr("You haven't added any friends yet");
 var contactScreenAccountOffline = qsTr("Account is offline");
-var contactScreenAccountConnecting = qsTr("Account is connecting...");
+var contactScreenAccountConnecting = qsTr("Logging in...");
 
 // FileTransferDelegate.qml
 var fileTransferOpen = qsTr("Open");
@@ -106,7 +106,7 @@ var messageGroupConversation = qsTr("Group conversation");
 var messageChatWith = qsTr("Chat with %1");
 
 // NoNetworkHeader.qml
-var noNetworkText = qsTr("Your device is not connected to a network. To chat with your contacts, you need to connect to a network.");
+var noNetworkText = qsTr("Sorry, we can't login because it is not connected to a network. Go to Wireless & Network settings and connect to an available network");
 
 // PictureChangeMenu.qml
 var pictureChangeTitle = qsTr("Change your picture:");
@@ -146,8 +146,15 @@ var mainStatusOffline = qsTr("Offline");
 var mainStatusInvisible = qsTr("Invisible");
 var mainSelectContact
 
-
-
-
-
-
+// Error messages
+var errorRetypeUserPassword = qsTr("Sorry, there was a problem logging in. Please retype your username and password.");
+var errorLoginAccount = qsTr("Sorry, there was a problem logging in to %1. Please go to Settings and retype your username and password.");
+var errorLogin = qsTr("Sorry, there was a problem logging in. Please go to Settings and retype your username and password.");
+var errorLoginAccountTryLater = qsTr("Sorry, there was a problem logging in to %1. Please try again later.");
+var errorLoginTryLater = qsTr("Sorry, there was a problem logging in. Please try again later.");
+var errorLogoutAccountConnectedElse = qsTr("It looks like you have logged in to %1 from somewhere else, so we have logged you out from this tablet. Try logging in again");
+var errorLogoutConnectedElse = qsTr("It looks like you have logged in to this account from somewhere else, so we have logged you out from this tablet. Try logging in again");
+var errorEncryptionDeselect = qsTr("Sorry, there was a problem logging in. Deselecting the 'Encryption required' option in Advanced settings should solve this problem.");
+var errorEncryptionAccountDeselect = qsTr("Sorry, there was a problem logging in to %1. Deselecting the 'Encryption required' option in Advanced settings should solve this problem.");
+var errorSslError = qsTr("Sorry, there was a problem logging in. Selecting the 'Ignore SSL certificate errors' option in the account Advanced settings should solve this problem.");
+var errorSslAccountError = qsTr("Sorry, there was a problem logging in to %1. Selecting the 'Ignore SSL certificate errors' option in the account Advanced settings should solve this problem.");

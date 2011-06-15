@@ -128,12 +128,19 @@ void TelepathyManager::initializeChannelHandler()
 
 void TelepathyManager::onNewAccount(const Tp::AccountPtr &account)
 {
+    if (account.isNull() || !account->isValid()) {
+        return;
+    }
+
     qDebug() << "TelepathyManager::onNewAccount: "
                 << " account=" << account->uniqueIdentifier();
 
     connect(account.data(),
             SIGNAL(connectionChanged(const Tp::ConnectionPtr&)),
             SLOT(onConnectionChanged(const Tp::ConnectionPtr&)));
+    connect(account.data(),
+            SIGNAL(removed()),
+            SLOT(onAccountRemoved()));
 
     // no need to check if the connection is null, as it is checked inside the function
     Tp::ConnectionPtr connection = account->connection();
@@ -269,4 +276,10 @@ bool TelepathyManager::isFinished() const
 void TelepathyManager::onFinished()
 {
     mFinished = true;
+}
+
+void TelepathyManager::onAccountRemoved()
+{
+    Tp::AccountPtr account(qobject_cast<Tp::Account*> (sender()));
+    mAccounts.removeOne(account);
 }

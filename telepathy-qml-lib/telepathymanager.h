@@ -62,6 +62,7 @@ private Q_SLOTS:
     void onNewAccount(const Tp::AccountPtr &account);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onFinished();
+    void onAccountRemoved();
 
 private:
     static TelepathyManager *mTelepathyManager;

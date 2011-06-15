@@ -68,7 +68,7 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
     qDebug() << "IMPlugin::createFeedModel: " << service;
 
     foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
-        if (account->uniqueIdentifier() == service) {
+        if (!account.isNull() && account->isValid() && account->uniqueIdentifier() == service) {
             IMFeedModel *model = new IMFeedModel(mObserver, account, this);
 
             mFeedModels[service] = model;

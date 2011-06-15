@@ -10,6 +10,9 @@
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contactId" type="s" direction="in"/>
     </method>
+    <method name="userBusyCalling">
+      <arg name="busy" type="b" direction="out"/>
+    </method>
     <method name="dumpLogs"/>
   </interface>
  </node>

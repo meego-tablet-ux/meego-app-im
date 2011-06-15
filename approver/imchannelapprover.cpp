@@ -88,8 +88,24 @@ void IMChannelApprover::addDispatchOperation(const Tp::MethodInvocationContextPt
 
         Tpy::CallChannelPtr callChannel = Tpy::CallChannelPtr::dynamicCast(channel);
         if (!callChannel.isNull()) {
+
+            bool appBusy = false;
+
+            // if the application is not running, there is no ongoing call
+            // but if the app is running, check if the user is not in a call already
+            if (mApplicationRunning) {
+                QDBusInterface meegoAppIM("com.meego.app.im",
+                                          "/com/meego/app/im",
+                                          "com.meego.app.im");
+
+                QDBusReply<bool> reply = meegoAppIM.call("userBusyCalling");
+                if (reply.isValid()) {
+                    appBusy = reply.value();
+                }
+            }
+
             // if there is already an incoming call, the second one should just be rejected.
-            if (mPendingCall) {
+            if (mPendingCall || appBusy) {
                 callChannel->hangup(Tpy::CallStateChangeReasonNoAnswer, TELEPATHY_ERROR_BUSY, QString());
                 callChannel->requestClose();
                 context->setFinished();

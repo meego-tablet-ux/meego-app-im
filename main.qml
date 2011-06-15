@@ -78,6 +78,8 @@ Window {
     IMDBus {
         id: dbus
 
+        model: accountsModel
+
         onChatOpenRequested: {
             console.log("Chat open requested for account " + accountId + " and contact " + contactId);
             currentAccountId = accountId;

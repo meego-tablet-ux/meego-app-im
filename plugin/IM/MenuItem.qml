@@ -3,7 +3,7 @@ import Qt 4.7
 Item {
     id: mainArea
     width: parent.width
-    height: label.height + 20
+    height: label.height + 30
 
     property alias text: label.text
 
@@ -32,10 +32,10 @@ Item {
     Text {
         id: label
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 10
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.rightMargin: 10
+        anchors.leftMargin: 15
+        anchors.rightMargin: 15
         color: mouseArea.pressed ? theme_fontColorSelected :
                                    theme_contextMenuFontColor
         font.pixelSize: theme_contextMenuFontPixelSize

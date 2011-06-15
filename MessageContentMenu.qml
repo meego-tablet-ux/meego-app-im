@@ -44,6 +44,8 @@ Item {
                 parent: meColumn
                 anchors.left: parent.left
                 anchors.right: parent.right
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
                 currentPage: container.currentPage
             }
             clip: true

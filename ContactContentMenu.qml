@@ -91,7 +91,7 @@ Column {
     Avatar {
         id: avatarImage
         anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.leftMargin: 15
         width: 180
         height: width
         anchors.bottomMargin: 2
@@ -132,11 +132,11 @@ Column {
         spacing: 5
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: 10
+        anchors.margins: 15
 
         Text {
             id: displayName
-            width: parent.width - presenceIcon.width - 5
+            width: parent.width - presenceIcon.width - 10
             text: window.accountItem.data(AccountsModel.NicknameRole)
             color: theme_fontColorNormal
             font.weight: Font.Bold
@@ -160,7 +160,7 @@ Column {
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: 10
+        anchors.margins: 15
     }
 
     Item {

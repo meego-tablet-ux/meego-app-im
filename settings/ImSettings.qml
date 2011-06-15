@@ -133,7 +133,8 @@ AppPage {
                     y: 10
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    text: qsTr("Add another account")
+                    text: (accountsView.count > 0 ? qsTr("Add another account") :
+                                                    qsTr("Add an account"))
                     textColor: theme_buttonFontColor
                     bgSourceUp: "image://themedimage/widgets/common/button/button-default"
                     bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"

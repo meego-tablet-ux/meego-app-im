@@ -62,7 +62,6 @@ private:
     bool mApplicationRunning;
     Tp::ClientRegistrarPtr mClientRegistrar;
     TelepathyManager *mTelepathyManager;
-    NotificationManager mNotificationManager;
     IMApproverAdaptor *mAdaptor;
     QDBusServiceWatcher mIMServiceWatcher;
     bool mAutoApproveCalls;

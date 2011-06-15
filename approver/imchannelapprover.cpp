@@ -24,7 +24,6 @@
 IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 : Tp::AbstractClientApprover(channelFilters()),
   mApplicationRunning(false),
-  mNotificationManager(this),
   mAutoApproveCalls(autoApproveCalls),
   mPendingCall(false)
 {
@@ -187,10 +186,7 @@ Tp::ChannelClassSpecList IMChannelApprover::channelFilters() const
 void IMChannelApprover::setApplicationRunning(bool running)
 {
     mApplicationRunning = running;
-    mNotificationManager.setApplicationActive(running);
 
-    // FIXME: check how to properly handle that
-    // for now just approve everything
     foreach(Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
         // approve only filetransfers and text chats
         // incoming calls will be approved when the notification is accepted

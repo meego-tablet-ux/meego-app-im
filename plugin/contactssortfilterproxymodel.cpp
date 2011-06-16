@@ -304,7 +304,7 @@ void ContactsSortFilterProxyModel::filterByString(const QString filter)
     // only set the filter if it's different to current filter
     if (filter != mStringFilter) {
         mStringFilter = filter;
-        invalidate();
+        invalidateFilter();
     }
 }
 

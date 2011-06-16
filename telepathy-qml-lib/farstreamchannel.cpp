@@ -1473,7 +1473,6 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
         self->initAudioInput();
         self->initAudioOutput();
         self->addBin(self->mGstAudioInput);
-        self->addBin(self->mGstAudioOutput);
     } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
         qDebug() << "Got video content, adding video bins";
         self->initOutgoingVideoWidget();
@@ -1481,7 +1480,6 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
         self->initIncomingVideoWidget();
         self->initVideoOutput();
         self->addBin(self->mGstVideoInput);
-        self->addBin(self->mGstVideoOutput);
     } else {
         Q_ASSERT(false);
         return;
@@ -1724,6 +1722,11 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
         break;
     default:
         Q_ASSERT(false);
+    }
+
+    // Add sink bin the first time we get incoming data
+    if (!gst_object_has_ancestor(GST_OBJECT(bin), GST_OBJECT(self->mGstPipeline))) {
+        self->addBin(bin);
     }
 
     pad = gst_element_get_static_pad(bin, SINK_GHOST_PAD_NAME);

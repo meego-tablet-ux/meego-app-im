@@ -155,7 +155,7 @@ Column {
         id: statusMessage
         text: ""
         color: theme_fontColorInactive
-        font.pixelSize: theme_fontPixelSizeSmall
+        font.pixelSize: theme_fontPixelSizeNormal
         width: parent.width - presenceIcon.width
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         anchors.left: parent.left
@@ -233,7 +233,7 @@ Column {
             Text {
                 text: Constants.contactYourStatus
                 color: theme_fontColorNormal
-                font.pixelSize: theme_fontPixelSizeNormal
+                font.pixelSize: theme_contextMenuFontPixelSize
                 elide: Text.ElideRight
 
             }

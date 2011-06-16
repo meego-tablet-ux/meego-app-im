@@ -17,7 +17,7 @@ var accountDialogDone = qsTr("Done");
 var accountDialogCancel = qsTr("Cancel");
 
 // AccountContentFactory.qml
-var accountFactorySignIn = qsTr("Sign in");
+var accountFactoryAddAccount = qsTr("Add account");
 
 // AccountSetupBar.qml
 var accountSetupUpdate = qsTr("Update");

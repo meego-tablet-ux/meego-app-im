@@ -103,7 +103,7 @@ Item {
         component += "            onFinished: window.popPage();";
         component += "            Button {";
         component += "                id: signInButton;";
-        component += "                text: \"" + IMConstants.accountFactorySignIn + "\";"
+        component += "                text: \"" + IMConstants.accountFactoryAddAccount + "\";"
         component += "                textColor: theme_buttonFontColor;";
         component += "                bgSourceUp: \"image://themedimage/widgets/common/button/button-default\";";
         component += "                bgSourceDn: \"image://themedimage/widgets/common/button/button-default-pressed\";";

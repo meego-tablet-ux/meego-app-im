@@ -12,6 +12,7 @@ var accountList = qsTr("Account list");
 var accountsLoading = qsTr("Loading accounts...");
 var accountChoose = qsTr("Choose an account");
 var accountAdd = qsTr("Add an account");
+var accountAdded = qsTr("Your account has been added");
 
 // AddAFriend.qml
 var friendUsername = qsTr("Friend's username");

@@ -34,7 +34,7 @@ AccountContent {
 
             ContentRow {
                 active: false
-                height: childrenRect.height
+                height: childrenRect.height + 20
 
                 Column {
                     anchors.left: parent.left

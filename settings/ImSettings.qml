@@ -57,6 +57,7 @@ AppPage {
         AppPage {
             id: accountSetupPage
             anchors.fill: parent
+            pageTitle: addAccountButton.text
 
             Flickable {
                 id: accountSetupArea

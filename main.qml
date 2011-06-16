@@ -134,6 +134,15 @@ Window {
         }
     }
 
+    onSearch: {
+        console.log("searching contacts: " + needle);
+        contactsModel.filterByString(needle);
+    }
+
+    onSearchRetracted: {
+        contactsModel.filterByString("");
+    }
+
     Connections {
         target:  null;
         id: accountItemConnections

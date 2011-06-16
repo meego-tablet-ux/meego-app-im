@@ -81,14 +81,6 @@ AppPage {
         onCurrentAccountNameChanged: {
             pageTitle = window.currentAccountName;
         }
-
-        onSearch: {
-            contactsModel.filterByString(needle);
-        }
-
-        onSearchRetracted: {
-            contactsModel.filterByString("");
-        }
     }
 
     // this connection is to handle

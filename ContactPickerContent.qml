@@ -57,13 +57,6 @@ AppPage {
         contactsModel.clearSkippedContacts();
     }
 
-    Connections {
-        target: window
-        onSearch: {
-            contactsModel.filterByString(needle);
-        }
-    }
-
     ListModel {
         id: selectedItems
     }

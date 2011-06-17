@@ -17,8 +17,8 @@ Item {
     height: (searchActive ? 101 : 0)
     width:  parent.width
 
-    signal olderClicked(variant mouse)
-    signal newerClicked(variant mouse)
+    signal olderClicked()
+    signal newerClicked()
 
     property bool searchActive : true
     property int numMatchesFound : 0
@@ -80,7 +80,7 @@ Item {
             anchors.margins: 10
             active: olderActive
             onClicked: {
-                searchHader.olderClicked(mouse);
+                searchHader.olderClicked();
             }
         }
         Button {
@@ -93,7 +93,7 @@ Item {
             anchors.margins: 10
             active: newerActive
             onClicked: {
-                searchHader.newerClicked(mouse);
+                searchHader.newerClicked();
             }
         }
     }

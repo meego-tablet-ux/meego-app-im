@@ -123,6 +123,16 @@ AppPage {
                 left: parent.left
                 right: parent.right
             }
+
+            Timer {
+                id: infoBarTimer
+
+                interval: 10000
+                running: false
+                onTriggered: {
+                    infoBar.hide();
+                }
+            }
         }
 
         Component {
@@ -220,20 +230,48 @@ AppPage {
         infoBar.text = text;
         if (text == "") {
             infoBar.hide();
+            infoBarTimer.stop();
         } else {
             infoBar.show();
+            infoBarTimer.restart();
         }
     }
 
     function accountStatusMessage(status)
     {
+        var connectionStatusReason = window.accountItem.data(AccountsModel.ConnectionStatusReasonRole)
         if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
-            return Constants.contactScreenAccountOffline;
+            switch(connectionStatusReason) {
+                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
+                case TelepathyTypes.ConnectionStatusReasonRequested:
+                    return Constants.contactScreenAccountOffline;
+                case TelepathyTypes.ConnectionStatusReasonNetworkError:
+                    return Constants.noNetworkText;
+                case TelepathyTypes.ConnectionStatusReasonAuthenticationFailed:
+                    return Constants.errorLogin;
+                case TelepathyTypes.ConnectionStatusReasonEncryptionError:
+                    return Constants.errorEncryptionDeselect;
+                case TelepathyTypes.ConnectionStatusReasonNameInUse:
+                    return Constants.errorLogoutConnectedElse;
+                case TelepathyTypes.ConnectionStatusReasonCertUntrusted:
+                case TelepathyTypes.ConnectionStatusReasonCertExpired:
+                case TelepathyTypes.ConnectionStatusReasonCertNotActivated:
+                case TelepathyTypes.ConnectionStatusReasonCertHostnameMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertFingerprintMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertSelfSigned:
+                case TelepathyTypes.ConnectionStatusReasonCertOtherError:
+                case TelepathyTypes.ConnectionStatusReasonCertRevoked:
+                case TelepathyTypes.ConnectionStatusReasonCertInsecure:
+                case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
+                    return Constants.errorSslError;
+                default:
+                    return Constants.errorLoginTryLater;
+            }
         } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
             return Constants.contactScreenAccountConnecting;
         } else {
             return "";
-        }
+            }
     }
 
     ContextMenu {

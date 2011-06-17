@@ -206,32 +206,27 @@ AppPage {
 
     function setInfoBarMessage()
     {
-        var text;
+        var text = "";
 
         if (!networkOnline) {
             text = Constants.noNetworkText;
-        } else {
+        } else  if (accountStatus != TelepathyTypes.ConnectionStatusConnected) {
             // check first whether the account is offline or just connecting
             text = accountStatusMessage(accountStatus);
-            // if not, check whether contacts are loading
-            if (text == "") {
-                if (showLoadingContacts) {
-                    text = Constants.contactScreenLoading;
-                    showAddFriendsItem = false;
-                } else if (showAddFriends && !showLoadingContacts) {
-                    // check whether the contact list is really empty
-                    if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
-                        text = Constants.contactScreenNoFriends;
-                        showAddFriendsItem = true;
-                    } else {
-                        showAddFriendsItem = false;
-                    }
-                } else {
-                    showAddFriendsItem = false;
-                }
+            showAddFriendsItem = false;
+        } else if (showLoadingContacts) { // if not, check whether contacts are loading
+            text = Constants.contactScreenLoading;
+            showAddFriendsItem = false;
+        } else if (showAddFriends && !showLoadingContacts) {
+            // check whether the contact list is really empty
+            if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
+                text = Constants.contactScreenNoFriends;
+                showAddFriendsItem = true;
             } else {
                 showAddFriendsItem = false;
             }
+        } else {
+            showAddFriendsItem = false;
         }
 
         // assign and show/hide as necessary
@@ -279,7 +274,7 @@ AppPage {
             return Constants.contactScreenAccountConnecting;
         } else {
             return "";
-            }
+        }
     }
 
     ContextMenu {

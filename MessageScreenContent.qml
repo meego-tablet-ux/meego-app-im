@@ -74,6 +74,10 @@ AppPage {
                 setupDataFromChatAgent();
             }
         }
+
+        onNetworkStatusChanged: {
+            showInfoBar();
+        }
     }
 
     Connections {
@@ -171,16 +175,11 @@ AppPage {
             }
         }
 
-        NoNetworkHeader {
-            id: noNetworkItem
-            anchors.top: searchHeader.bottom
-        }
-
         InfoBar {
             id: infoBar
 
             anchors {
-                top: noNetworkItem.top
+                top: searchHeader.bottom
                 left: parent.left
                 right: parent.right
             }
@@ -383,8 +382,10 @@ AppPage {
 
     function showInfoBar()
     {
-        var text;
-        if (!modelLoaded) {
+        var text = "";
+        if (!networkOnline) {
+            text = Constants.noNetworkText;
+        } else if (!modelLoaded) {
             text = Constants.messageOpeningChat;
         } else if (historyFeeder.fetching) {
             text = Constants.messageLoadingHistory;

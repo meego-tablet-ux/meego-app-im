@@ -116,6 +116,7 @@ Q_SIGNALS:
     void requestedGroupChatCreated(QObject *agent);
     void passwordRequestRequired(const QString &accountId);
     void acceptCallFinished(QObject *agent);
+    void networkStatusChanged(bool isOnline);
 
 public Q_SLOTS:
     void onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel);

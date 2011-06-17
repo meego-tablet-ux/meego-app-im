@@ -1464,6 +1464,7 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
             }
         }
     }
+    emit networkStatusChanged(isOnline);
 }
 
 QStringList IMAccountsModel::channelContacts(const QString &accountId, const QString &channelPath) const

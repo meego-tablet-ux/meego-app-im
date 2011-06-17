@@ -279,7 +279,7 @@ void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
             filterByConnection(accountPtr->connection());
             emit accountIdChanged(mAccountId);
             // saved the account id in the settings
-            QSettings settings("MeeGo", "MeeGoIM");
+            QSettings settings("MeeGo", "meego-app-im");
             settings.setValue("LastUsed/Account", id);
             return;
         }

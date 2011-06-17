@@ -160,7 +160,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
 void Components::onTelepathyManagerFinished()
 {
     // get last used account
-    QSettings settings("MeeGo", "MeeGoIM");
+    QSettings settings("MeeGo", "meego-app-im");
     QString lastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
     loadLastUsedAccount(lastUsedAccount, mAccountsModel);
 }

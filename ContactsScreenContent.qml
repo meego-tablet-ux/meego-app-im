@@ -83,6 +83,14 @@ AppPage {
         }
     }
 
+    Connections {
+        target: accountsModel
+
+        onNetworkStatusChanged: {
+            setInfoBarMessage();
+        }
+    }
+
     // this connection is to handle
     Connections {
         target: confirmationDialogItem
@@ -111,15 +119,11 @@ AppPage {
         id: pageContent
         anchors.fill: parent
 
-        NoNetworkHeader {
-            id: noNetworkItem
-        }
-
         InfoBar {
             id: infoBar
 
             anchors {
-                top: noNetworkItem.bottom
+                top: parent.top
                 left: parent.left
                 right: parent.right
             }
@@ -204,26 +208,30 @@ AppPage {
     {
         var text;
 
-        // check first whether the account is offline or just connecting
-        text = accountStatusMessage(accountStatus);
-        // if not, check whether contacts are loading
-        if (text == "") {
-            if (showLoadingContacts) {
-                text = Constants.contactScreenLoading;
-                showAddFriendsItem = false;
-            } else if (showAddFriends && !showLoadingContacts) {
-                // check whether the contact list is really empty
-                if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
-                    text = Constants.contactScreenNoFriends;
-                    showAddFriendsItem = true;
+        if (!networkOnline) {
+            text = Constants.noNetworkText;
+        } else {
+            // check first whether the account is offline or just connecting
+            text = accountStatusMessage(accountStatus);
+            // if not, check whether contacts are loading
+            if (text == "") {
+                if (showLoadingContacts) {
+                    text = Constants.contactScreenLoading;
+                    showAddFriendsItem = false;
+                } else if (showAddFriends && !showLoadingContacts) {
+                    // check whether the contact list is really empty
+                    if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
+                        text = Constants.contactScreenNoFriends;
+                        showAddFriendsItem = true;
+                    } else {
+                        showAddFriendsItem = false;
+                    }
                 } else {
                     showAddFriendsItem = false;
                 }
             } else {
                 showAddFriendsItem = false;
             }
-        } else {
-            showAddFriendsItem = false;
         }
 
         // assign and show/hide as necessary

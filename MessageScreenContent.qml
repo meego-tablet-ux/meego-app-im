@@ -20,9 +20,9 @@ AppPage {
 
     property string contactId: window.currentContactId
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
+    property bool modelLoaded: (conversationView.model != undefined)
 
     Component.onCompleted: {
-        openingChatInfo.show()
         initPage();
     }
 
@@ -177,22 +177,10 @@ AppPage {
         }
 
         InfoBar {
-            id: openingChatInfo
-            text: Constants.messageOpeningChat
+            id: infoBar
 
             anchors {
                 top: noNetworkItem.top
-                left: parent.left
-                right: parent.right
-            }
-        }
-
-        InfoBar {
-            id: loadingConversation
-            text: Constants.messageLoadingHistory
-            z: 10
-            anchors {
-                top: openingChatInfo.bottom
                 left: parent.left
                 right: parent.right
             }
@@ -226,7 +214,7 @@ AppPage {
         ListView {
             id: conversationView
             anchors {
-                top: loadingConversation.bottom
+                top: infoBar.bottom
                 left: parent.left
                 right: parent.right
                 bottom: window.fullScreen ? imToolBar.top : textBar.top
@@ -272,11 +260,7 @@ AppPage {
             }
 
             onFetchingChanged: {
-                if (fetching) {
-                    loadingConversation.show();
-                } else {
-                    loadingConversation.hide();
-                }
+                showInfoBar();
             }
         }
 
@@ -394,6 +378,24 @@ AppPage {
 
         content: MessageContentMenu {
             currentPage: messageScreenPage;
+        }
+    }
+
+    function showInfoBar()
+    {
+        var text;
+        if (!modelLoaded) {
+            text = Constants.messageOpeningChat;
+        } else if (historyFeeder.fetching) {
+            text = Constants.messageLoadingHistory;
+        }
+
+        // assign and show/hide as necessary
+        infoBar.text = text;
+        if (text == "") {
+            infoBar.hide();
+        } else {
+            infoBar.show();
         }
     }
 
@@ -539,19 +541,17 @@ AppPage {
                 conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
                 conversationModelConnections.target = conversationView.model;
                 textEdit.focus = true;
-                openingChatInfo.hide();
+                showInfoBar();
             }
         }
     }
 
     function initPage()
     {
+        showInfoBar();
+
         if (window.chatAgent != undefined) {
             setupDataFromChatAgent();
-        } else {
-            if(openingChatInfo.height == 0) {
-                openingChatInfo.show()
-            }
         }
 
         if (window.callAgent != undefined) {

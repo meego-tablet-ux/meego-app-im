@@ -21,6 +21,7 @@ AppPage {
     property string contactId: window.currentContactId
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
     property bool modelLoaded: (conversationView.model != undefined)
+    property int accountStatus: 0
 
     Component.onCompleted: {
         initPage();
@@ -59,6 +60,14 @@ AppPage {
     Connections {
         target: window.contactItem
         onChanged: window.contactItem = window.contactItem
+    }
+
+    Connections {
+        target: window.accountItem
+
+        onChanged: {
+            accountStatus = window.accountItem.data(AccountsModel.ConnectionStatusRole);
+        }
     }
 
     Connections {
@@ -385,6 +394,9 @@ AppPage {
         var text = "";
         if (!networkOnline) {
             text = Constants.noNetworkText;
+        } else  if (accountStatus != TelepathyTypes.ConnectionStatusConnected) {
+            // check first whether the account is offline or just connecting
+            text = window.accountStatusMessage(accountStatus);
         } else if (!modelLoaded) {
             text = Constants.messageOpeningChat;
         } else if (historyFeeder.fetching) {

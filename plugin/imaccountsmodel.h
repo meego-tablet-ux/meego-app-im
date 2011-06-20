@@ -107,6 +107,11 @@ public:
 
     Q_INVOKABLE int actualContactsCount(const QString &accountId) const;
 
+    /**
+      * This allows to access account data by row number
+      */
+    Q_INVOKABLE QVariant dataByRow(const int row, const int role);
+
 Q_SIGNALS:
     void chatReady(const QString &accountId, const QString &contactId);
     void groupChatReady(const QString &accountId, const QString &channelPath);

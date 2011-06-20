@@ -1658,3 +1658,9 @@ bool IMAccountsModel::userBusyCalling() const
 
     return false;
 }
+
+QVariant IMAccountsModel::dataByRow(const int row, const int role)
+{
+    QModelIndex modelIndex = index(row, 0, QModelIndex());
+    return data(modelIndex, role);
+}

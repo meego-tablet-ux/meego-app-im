@@ -16,12 +16,12 @@ AppPage {
     pageTitle: Constants.accountList
     anchors.fill: parent
 
+    property bool modelsLoaded: false
+
     Component.onCompleted: {
         console.log("AccountScreenContent.onCompleted");
         window.reloadFilterModel();
-        if(accountsModel == undefined) {
-            loadingAccounts.show();
-        }
+        showInfoBar();
     }
 
     onActivated: {
@@ -31,8 +31,9 @@ AppPage {
     Connections {
         target: window
         onComponentsLoaded: {
+            modelsLoaded = true;
             accountsRepeater.model = accountsSortedModel;
-            loadingAccounts.hide();
+            showInfoBar();
         }
     }
 
@@ -40,18 +41,11 @@ AppPage {
         id: mainArea
         anchors.fill: parent
 
-        NoNetworkHeader {
-            id: noNetworkItem
-        }
-
         Flickable {
             id: flickable
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
-            anchors.top: noNetworkItem.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: toolBar.top
+            anchors.fill: parent
             clip: true
             contentHeight: flickableContent.height
 
@@ -61,7 +55,7 @@ AppPage {
                 height: childrenRect.height
 
                 InfoBar {
-                    id: loadingAccounts
+                    id: infoBar
                     text: Constants.accountsLoading
 
                     anchors {
@@ -69,11 +63,21 @@ AppPage {
                         left: parent.left
                         right: parent.right
                     }
+
+                    Timer {
+                        id: infoBarTimer
+
+                        interval: 10000
+                        running: false
+                        onTriggered: {
+                            infoBar.hide();
+                        }
+                    }
                 }
 
                 Title {
                     id: accountsHeader
-                    anchors.top: loadingAccounts.bottom
+                    anchors.top: infoBar.bottom
                     text: Constants.accountChoose
                     visible: accountsRepeater.count
                 }
@@ -82,7 +86,7 @@ AppPage {
                     id: accountsListView
 
                     anchors.top: accountsHeader.visible ? accountsHeader.bottom :
-                    loadingAccounts.bottom
+                    infoBar.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
 
@@ -148,6 +152,63 @@ AppPage {
                 anchors.leftMargin: 10
                 source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
             }
+        }
+    }
+
+    function showInfoBar()
+    {
+        var text = "";
+
+        if (!networkOnline) {
+            text = Constants.noNetworkText;
+        } else if (!modelsLoaded) {
+            text = Constants.accountsLoading;
+        }
+
+        // assign and show/hide as necessary
+        infoBar.text = text;
+        if (text == "") {
+            infoBar.hide();
+            infoBarTimer.stop();
+        } else {
+            infoBar.show();
+            infoBarTimer.restart();
+        }
+    }
+
+    function accountStatusMessage(status, accountName)
+    {
+        var connectionStatusReason = window.accountItem.data(AccountsModel.ConnectionStatusReasonRole)
+        if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
+            switch(connectionStatusReason) {
+                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
+                case TelepathyTypes.ConnectionStatusReasonRequested:
+                case TelepathyTypes.ConnectionStatusReasonNetworkError:
+                    return "";
+                case TelepathyTypes.ConnectionStatusReasonAuthenticationFailed:
+                    return Constants.errorLoginAccount.arg(accountName)
+                case TelepathyTypes.ConnectionStatusReasonEncryptionError:
+                    return Constants.errorEncryptionAccountDeselect.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonNameInUse:
+                    return Constants.errorLogoutAccountConnectedElse.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonCertUntrusted:
+                case TelepathyTypes.ConnectionStatusReasonCertExpired:
+                case TelepathyTypes.ConnectionStatusReasonCertNotActivated:
+                case TelepathyTypes.ConnectionStatusReasonCertHostnameMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertFingerprintMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertSelfSigned:
+                case TelepathyTypes.ConnectionStatusReasonCertOtherError:
+                case TelepathyTypes.ConnectionStatusReasonCertRevoked:
+                case TelepathyTypes.ConnectionStatusReasonCertInsecure:
+                case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
+                    return Constants.errorSslAccountError.arg(accountName);
+                default:
+                    return Constants.errorLoginTryLater;
+            }
+        } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
+            return Constants.contactScreenAccountConnecting;
+        } else {
+            return "";
         }
     }
 }

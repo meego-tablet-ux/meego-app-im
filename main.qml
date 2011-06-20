@@ -218,27 +218,6 @@ Window {
         target: null
         id: accountsModelConnections
 
-        onAccountConnectionStatusChanged: {
-            var item = accountsModel.accountItemForId(accountId);
-            if(accountId == currentAccountId) {
-                contactsModel.filterByAccountId(currentAccountId);
-                contactRequestModel.filterByAccountId(currentAccountId);
-                accountItem = item;
-                currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
-            }
-
-            // check if there is a connection error and show the config dialog
-            var connectionStatus = item.data(AccountsModel.ConnectionStatusRole)
-            var connectionStatusReason = item.data(AccountsModel.ConnectionStatusReasonRole)
-
-            if ((connectionStatus == TelepathyTypes.ConnectionStatusDisconnected) &&
-                ((connectionStatusReason == TelepathyTypes.ConnectionStatusReasonAuthenticationFailed) ||
-                 (connectionStatusReason == TelepathyTypes.ConnectionStatusReasonNameInUse))) {
-                window.addPage(accountFactory.componentForAccount(accountId, window));
-            }
-
-        }
-
         onIncomingFileTransferAvailable: {
             if (!notificationManager.chatActive) {
                 var oldContactId = currentContactId;
@@ -777,9 +756,8 @@ Window {
     function accountStatusMessage(status)
     {
         var connectionStatusReason = window.accountItem.data(AccountsModel.ConnectionStatusReasonRole)
-        if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
+        if (status == TelepathyTypes.ConnectionStatusDisconnected) {
             switch(connectionStatusReason) {
-                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
                 case TelepathyTypes.ConnectionStatusReasonRequested:
                     return Constants.contactScreenAccountOffline;
                 case TelepathyTypes.ConnectionStatusReasonNetworkError:
@@ -801,10 +779,11 @@ Window {
                 case TelepathyTypes.ConnectionStatusReasonCertInsecure:
                 case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
                     return Constants.errorSslError;
+                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
                 default:
                     return Constants.errorLoginTryLater;
             }
-        } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
+        } else if (status == TelepathyTypes.ConnectionStatusConnecting) {
             return Constants.contactScreenAccountConnecting;
         } else {
             return "";

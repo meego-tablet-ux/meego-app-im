@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.App.IM 0.1
+import TelepathyQML 0.1
 import "constants.js" as Constants
 
 AppPage {
@@ -19,9 +20,8 @@ AppPage {
     property bool modelsLoaded: false
 
     Component.onCompleted: {
-        console.log("AccountScreenContent.onCompleted");
         window.reloadFilterModel();
-        showInfoBar();
+        showInfoBar("");
     }
 
     onActivated: {
@@ -33,7 +33,19 @@ AppPage {
         onComponentsLoaded: {
             modelsLoaded = true;
             accountsRepeater.model = accountsSortedModel;
-            showInfoBar();
+            accountsModelConnections.target = accountsModel;
+            showInfoBar("");
+        }
+    }
+
+    Connections {
+        // those signals are not created yet, so wait till they are, then the target will be set
+        // and the connections will be made then.
+        target: null
+        id: accountsModelConnections
+
+        onAccountConnectionStatusChanged: {
+            showInfoBar(accountId);
         }
     }
 
@@ -155,7 +167,7 @@ AppPage {
         }
     }
 
-    function showInfoBar()
+    function showInfoBar(accountId)
     {
         var text = "";
 
@@ -163,6 +175,45 @@ AppPage {
             text = Constants.noNetworkText;
         } else if (!modelsLoaded) {
             text = Constants.accountsLoading;
+        } else if (accountId == "") {
+            // check account status
+            for (var i = 0; i < accountsModel.accountCount; ++i) {
+                var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
+                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
+                if (status == TelepathyTypes.ConnectionStatusDisconnected) {
+                    var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
+                    var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
+                    var accountText = accountStatusMessage(status, reason, accountName);
+                    if (accountText != "") {
+                        if (text != "") {
+                            text += "<br\>";
+                        }
+                        text += accountText;
+                    }
+                }
+            }
+        } else if (accountId != "") {
+            // we access it by row because we need to display the service name
+            // having the id, we could just get the id, but then the display name would not be the service name we need
+            for (var i = 0; i < accountsModel.accountCount; ++i) {
+                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
+                if (accountId == id) {
+                    var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
+                    var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
+                    var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
+
+                    var accountText = accountStatusMessage(status, reason, accountName);
+
+                    // calculate the error message and add it to the current one
+                    var accountText = accountStatusMessage(status, reason, accountName);
+                    if (accountText != "") {
+                        if (text != "") {
+                            text += "<br\>";
+                        }
+                        text += accountText;
+                    }
+                }
+            }
         }
 
         // assign and show/hide as necessary
@@ -176,15 +227,14 @@ AppPage {
         }
     }
 
-    function accountStatusMessage(status, accountName)
+    function accountStatusMessage(status, reason, accountName)
     {
-        var connectionStatusReason = window.accountItem.data(AccountsModel.ConnectionStatusReasonRole)
-        if (accountStatus == TelepathyTypes.ConnectionStatusDisconnected) {
-            switch(connectionStatusReason) {
-                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
+        if (status == TelepathyTypes.ConnectionStatusDisconnected) {
+            switch(reason) {
                 case TelepathyTypes.ConnectionStatusReasonRequested:
-                case TelepathyTypes.ConnectionStatusReasonNetworkError:
                     return "";
+                case TelepathyTypes.ConnectionStatusReasonNetworkError:
+                    return Constants.noNetworkText;
                 case TelepathyTypes.ConnectionStatusReasonAuthenticationFailed:
                     return Constants.errorLoginAccount.arg(accountName)
                 case TelepathyTypes.ConnectionStatusReasonEncryptionError:
@@ -202,10 +252,11 @@ AppPage {
                 case TelepathyTypes.ConnectionStatusReasonCertInsecure:
                 case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
                     return Constants.errorSslAccountError.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
                 default:
-                    return Constants.errorLoginTryLater;
+                    return Constants.errorLoginAccountTryLater.arg(accountName);
             }
-        } else if (accountStatus == TelepathyTypes.ConnectionStatusConnecting) {
+        } else if (status == TelepathyTypes.ConnectionStatusConnecting) {
             return Constants.contactScreenAccountConnecting;
         } else {
             return "";

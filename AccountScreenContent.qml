@@ -53,11 +53,35 @@ AppPage {
         id: mainArea
         anchors.fill: parent
 
+        InfoBar {
+            id: infoBar
+            text: Constants.accountsLoading
+
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+
+            Timer {
+                id: infoBarTimer
+
+                interval: 10000
+                running: false
+                onTriggered: {
+                    infoBar.hide();
+                }
+            }
+        }
+
         Flickable {
             id: flickable
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
-            anchors.fill: parent
+            anchors.top: infoBar.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             clip: true
             contentHeight: flickableContent.height
 
@@ -66,30 +90,9 @@ AppPage {
                 width:  parent.width
                 height: childrenRect.height
 
-                InfoBar {
-                    id: infoBar
-                    text: Constants.accountsLoading
-
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                    }
-
-                    Timer {
-                        id: infoBarTimer
-
-                        interval: 10000
-                        running: false
-                        onTriggered: {
-                            infoBar.hide();
-                        }
-                    }
-                }
-
                 Title {
                     id: accountsHeader
-                    anchors.top: infoBar.bottom
+                    anchors.top: parent.top
                     text: Constants.accountChoose
                     visible: accountsRepeater.count
                 }
@@ -98,7 +101,7 @@ AppPage {
                     id: accountsListView
 
                     anchors.top: accountsHeader.visible ? accountsHeader.bottom :
-                    infoBar.bottom
+                    parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
 

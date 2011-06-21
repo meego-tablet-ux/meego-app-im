@@ -205,8 +205,6 @@ AppPage {
                     var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
                     var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
 
-                    var accountText = accountStatusMessage(status, reason, accountName);
-
                     // calculate the error message and add it to the current one
                     var accountText = accountStatusMessage(status, reason, accountName);
                     if (accountText != "") {

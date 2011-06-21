@@ -138,9 +138,9 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
                 fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
                 if (fromIndex != -1) {
                     QString middle = text.mid(fromIndex, mSearchString.length());
-                    QString suffix = text.mid(fromIndex + mSearchString.size(), lastIndex - fromIndex);
+                    QString suffix = text.mid(fromIndex + mSearchString.size(), lastIndex - fromIndex - 1);
                     if (currentRowMatch() == index.row() && currentMatchInRow == numMatchInRow) {
-                        newText = "<font color=\"#ff0000\"><b>" + middle + "</b></font>" + suffix + newText;
+                        newText = "<font color=\"#ff0000\"><u>" + middle + "</u></font>" + suffix + newText;
                     } else {
                         newText = "<font color=\"#ff0000\">" + middle + "</font>" + suffix + newText;
                     }
@@ -632,6 +632,15 @@ void IMConversationModel::olderMatch(void)
 
 void IMConversationModel::calculateMatches(void)
 {
+    // clear current matches (otherwise they keep selected)
+    int lastIndex = -1;
+    foreach(QModelIndex index, mMatchesFound) {
+        if (lastIndex != index.row()) {
+            emit dataChanged(index, index);
+        }
+        lastIndex = index.row();
+    }
+
     mMatchesFound.clear();
     for(int i = rowCount(QModelIndex()) - 1;i >= 0;i--) {
         QModelIndex rowIndex = index(i,0,QModelIndex());

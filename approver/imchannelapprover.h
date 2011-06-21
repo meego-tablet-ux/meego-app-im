@@ -21,6 +21,7 @@
 #include "../telepathy-qml-lib/notificationmanager.h"
 
 class IMApproverAdaptor;
+class IMProtocolsModel;
 
 class IMChannelApprover : public QObject, public Tp::AbstractClientApprover
 {
@@ -66,6 +67,7 @@ private:
     QDBusServiceWatcher mIMServiceWatcher;
     bool mAutoApproveCalls;
     bool mPendingCall;
+    IMProtocolsModel *mProtocolsModel;
 };
 
 #endif // IMCHANNELAPPROVER_H

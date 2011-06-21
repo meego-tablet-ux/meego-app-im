@@ -20,13 +20,20 @@
 #include <TelepathyQt4Yell/ChannelFactory>
 #include <MGConfItem>
 #include <mremoteaction.h>
+#include "../telepathy-qml-lib/improtocolsmodel.h"
 
 IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 : Tp::AbstractClientApprover(channelFilters()),
   mApplicationRunning(false),
   mAutoApproveCalls(autoApproveCalls),
-  mPendingCall(false)
+  mPendingCall(false),
+  mProtocolsModel(0)
 {
+    mProtocolsModel = new IMProtocolsModel(this);
+    if (!mProtocolsModel) {
+        qDebug() << "Error creating protocols model";
+    }
+
     mAdaptor = new IMApproverAdaptor(this);
     QDBusConnection::sessionBus().registerObject("/com/meego/app/imapprover", this);
     QDBusConnection::sessionBus().registerService("com.meego.app.imapprover");
@@ -217,13 +224,18 @@ void IMChannelApprover::registerApprover()
     // register the approver
     mClientRegistrar->registerClient(approver, "MeeGoIMApprover");
 
+    // this is will get just the default incoming sound
+    // at this point the protocol is unknown yet
+    // TODO: maybe it could be fixed by moving this code to onCallChannelReady
+    QString incomingCallSound = mProtocolsModel->customizerForId("")->property("incomingCallSound").toString();
+
     // TODO: this is a little hackish but it is the way to get it done for now
     // set the notification sound for incoming calls
     MGConfItem longVideoCallSound("/meego/chat/long-videocall-sound", this);
-    longVideoCallSound.set("/usr/share/sounds/meego/stereo/ring-1.wav");
+    longVideoCallSound.set(incomingCallSound);
 
     MGConfItem shortVideoCallSound("/meego/chat/short-videocall-sound", this);
-    shortVideoCallSound.set("/usr/share/sounds/meego/stereo/ring-1.wav");
+    shortVideoCallSound.set(incomingCallSound);
 }
 
 void IMChannelApprover::onTextChannelReady(Tp::PendingOperation *op)
@@ -296,12 +308,26 @@ void IMChannelApprover::onCallChannelReady(Tp::PendingOperation *op)
                               "/incomingCall",
                               "org.meego.alarms");
 
+    // get the icon Id for the protocol of the channel
+    QString iconId;
+    QList<Tp::AccountPtr> accounts = mTelepathyManager->accounts();
+    foreach(Tp::AccountPtr account, accounts) {
+        if (!account.isNull() &&
+            !callChannel.isNull() &&
+            account->connection() == callChannel->connection() &&
+            account->connection() != callChannel->connection() ) {
+            iconId = account->iconName();
+            break;
+        }
+    }
+    QString incomingCallSound = mProtocolsModel->customizerForId(iconId)->property("incomingCallSound").toString();
+
     meegoAlarm.call("incomingCall",
                     tr("Incoming Call"),
                     tr("%1 is calling you").arg(contact->alias()),
                     acceptAction.toString(),
                     rejectAction.toString(),
-                    "/usr/share/sounds/meego/stereo/ring-1.wav",
+                    incomingCallSound,
                     icon);
 }
 

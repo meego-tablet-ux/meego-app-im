@@ -8,6 +8,10 @@
 
 import Qt 4.7
 import MeeGo.Components 0.1
+//import MeeGo.Ux.Components.Common 0.1
+//import MeeGo.Ux.Components.DateTime 0.1
+//import MeeGo.Ux.Components.Media 0.1
+//import MeeGo.Ux.Kernel 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
 import "constants.js" as Constants
@@ -287,7 +291,7 @@ Window {
     {
         // clean it before cosntructing the string
         var contactsComponent = "import Qt 4.7;";
-        contactsComponent += "import MeeGo.Components 0.1;";
+        contactsComponent += "import MeeGo.Ux.Components.Common 0.1;";
         contactsComponent += "Component {";
         contactsComponent += "    ContactsScreenContent {";
         contactsComponent += "        id: contactsScreenItem;";

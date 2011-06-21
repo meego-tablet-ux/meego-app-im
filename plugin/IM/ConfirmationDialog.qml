@@ -1,5 +1,5 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import MeeGo.Ux.Components.Common 0.1
 import MeeGo.App.IM 0.1
 import "imconstants.js" as IMConstants
 

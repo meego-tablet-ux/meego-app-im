@@ -57,7 +57,7 @@ Item {
         var item = accountsModel.accountItemForId(accountId);
         var type = item.data(AccountsModel.IconRole);
         var component = "import Qt 4.7; "; // i18n ok
-        component += "import MeeGo.Components 0.1;";
+        component += "import MeeGo.Ux.Components.Common 0.1;";
         component += "import \"" + protocolsModel.modulePath + "\";";
         component += "Component {";
         component += "    id: accountContentComponent;";
@@ -84,7 +84,7 @@ Item {
     {
         // do not i18n any string in this function
         var component = "import Qt 4.7; "; // i18n ok
-        component += "import MeeGo.Components 0.1;";
+        component += "import MeeGo.Ux.Components.Common 0.1;";
         component += "import \"" + protocolsModel.modulePath + "\";";
         component += "Component {";
         component += "    id: accountContentComponent;";

@@ -129,7 +129,10 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
             QString newText;
             int fromIndex = -1;
             int lastIndex = -1;
-            int currentMatchInRow = mMatchesFound.at(mCurrentMatch).column();
+            int currentMatchInRow = -1;
+            if (mMatchesFound.count()) {
+                currentMatchInRow = mMatchesFound.at(mCurrentMatch).column();
+            }
             int numMatchInRow = 0;
             do {
                 fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
@@ -649,7 +652,7 @@ void IMConversationModel::calculateMatches(void)
     mCurrentMatch = 0;
     int oldRowMatch = mCurrentMatch;
     if (mMatchesFound.count()) {
-        mCurrentRowMatch = mMatchesFound.at(mCurrentMatch).row();
+        mCurrentRowMatch = mMatchesFound.at(0).row();
     } else {
         mCurrentRowMatch = rowCount(QModelIndex()) - 1;
     }

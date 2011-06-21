@@ -81,7 +81,7 @@ AppPage {
             anchors.top: infoBar.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.bottom: toolBar.top
             clip: true
             contentHeight: flickableContent.height
 

@@ -10,6 +10,8 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
+import TelepathyQML 0.1
+import "../constants.js" as Constants
 
 AppPage {
     id: container
@@ -19,6 +21,7 @@ AppPage {
     //property alias window: scene
 
     property QtObject appModel : null
+    property bool modelsLoaded: false
 
     function createAppModel() {
         if (appModel == null) {
@@ -34,12 +37,19 @@ AppPage {
         if (typeof(contactsModel) != 'undefined') {
             contactsModel.setBlockedOnly(true);
         }
+        showInfoBar();
     }
 
     Connections {
         target: accountsModel
         onComponentsLoaded: {
+            modelsLoaded = true;
             contactsModel.setBlockedOnly(true);
+            showInfoBar("");
+        }
+
+        onAccountConnectionStatusChanged: {
+            showInfoBar(accountId);
         }
     }
 
@@ -54,27 +64,7 @@ AppPage {
     // the account setup page
     Component {
         id: accountSetupComponent
-        AppPage {
-            id: accountSetupPage
-            anchors.fill: parent
-            pageTitle: addAccountButton.text
-
-            Flickable {
-                id: accountSetupArea
-                parent: accountSetupPage.content
-                anchors.fill: parent
-                clip: true
-
-                flickableDirection: "VerticalFlick"
-                contentHeight: accountSetupItem.height
-
-                AccountSetupContent {
-                    id: accountSetupItem
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                }
-            }
-        }
+        AccountSetupPage {}
     }
 
     ConfirmationDialog {
@@ -83,8 +73,30 @@ AppPage {
         anchors.verticalCenter: parent.top
     }
 
+    InfoBar {
+        id: infoBar
+        text: Constants.accountsLoading
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        Timer {
+            id: infoBarTimer
+
+            interval: 10000
+            running: false
+            onTriggered: {
+                infoBar.hide();
+            }
+        }
+    }
+
     Flickable {
-        anchors.fill: parent
+        anchors.top: infoBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
         flickableDirection: Flickable.VerticalFlick
         contentHeight: contentColumn.height
         clip: true
@@ -300,6 +312,100 @@ AppPage {
                 height: 10
                 visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
             }
+        }
+    }
+
+    function showInfoBar(accountId)
+    {
+        var text = "";
+
+        if (!networkOnline) {
+            text = Constants.noNetworkText;
+        } else if (!modelsLoaded) {
+            text = Constants.accountsLoading;
+        } else if (accountId == "") {
+            // check account status
+            for (var i = 0; i < accountsModel.accountCount; ++i) {
+                var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
+                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
+                if (status == TelepathyTypes.ConnectionStatusDisconnected) {
+                    var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
+                    var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
+                    var accountText = accountStatusMessage(status, reason, accountName);
+                    if (accountText != "") {
+                        if (text != "") {
+                            text += "<br\>";
+                        }
+                        text += accountText;
+                    }
+                }
+            }
+        } else if (accountId != "") {
+            // we access it by row because we need to display the service name
+            // having the id, we could just get the id, but then the display name would not be the service name we need
+            for (var i = 0; i < accountsModel.accountCount; ++i) {
+                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
+                if (accountId == id) {
+                    var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
+                    var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
+                    var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
+
+                    // calculate the error message and add it to the current one
+                    var accountText = accountStatusMessage(status, reason, accountName);
+                    if (accountText != "") {
+                        if (text != "") {
+                            text += "<br\>";
+                        }
+                        text += accountText;
+                    }
+                }
+            }
+        }
+
+        // assign and show/hide as necessary
+        infoBar.text = text;
+        if (text == "") {
+            infoBar.hide();
+            infoBarTimer.stop();
+        } else {
+            infoBar.show();
+            infoBarTimer.restart();
+        }
+    }
+
+    function accountStatusMessage(status, reason, accountName)
+    {
+        if (status == TelepathyTypes.ConnectionStatusDisconnected) {
+            switch(reason) {
+                case TelepathyTypes.ConnectionStatusReasonRequested:
+                    return "";
+                case TelepathyTypes.ConnectionStatusReasonNetworkError:
+                    return Constants.noNetworkText;
+                case TelepathyTypes.ConnectionStatusReasonAuthenticationFailed:
+                    return Constants.errorLoginAccount.arg(accountName)
+                case TelepathyTypes.ConnectionStatusReasonEncryptionError:
+                    return Constants.errorEncryptionAccountDeselect.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonNameInUse:
+                    return Constants.errorLogoutAccountConnectedElse.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonCertUntrusted:
+                case TelepathyTypes.ConnectionStatusReasonCertExpired:
+                case TelepathyTypes.ConnectionStatusReasonCertNotActivated:
+                case TelepathyTypes.ConnectionStatusReasonCertHostnameMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertFingerprintMismatch:
+                case TelepathyTypes.ConnectionStatusReasonCertSelfSigned:
+                case TelepathyTypes.ConnectionStatusReasonCertOtherError:
+                case TelepathyTypes.ConnectionStatusReasonCertRevoked:
+                case TelepathyTypes.ConnectionStatusReasonCertInsecure:
+                case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
+                    return Constants.errorSslAccountError.arg(accountName);
+                case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
+                default:
+                    return Constants.errorLoginAccountTryLater.arg(accountName);
+            }
+        } else if (status == TelepathyTypes.ConnectionStatusConnecting) {
+            return Constants.contactScreenAccountConnecting;
+        } else {
+            return "";
         }
     }
 }

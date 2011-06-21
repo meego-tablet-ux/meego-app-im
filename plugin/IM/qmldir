@@ -3,6 +3,7 @@ AccountContent 0.1 AccountContent.qml
 AccountContentFactory 0.1 AccountContentFactory.qml
 AccountSetupContent 0.1 AccountSetupContent.qml
 AccountSetupDelegate 0.1 AccountSetupDelegate.qml
+AccountSetupPage 0.1 AccountSetupPage.qml
 Avatar 0.1 Avatar.qml
 ConfirmationDialog 0.1 ConfirmationDialog.qml
 ContactPickerDelegate 0.1 ContactPickerDelegate.qml

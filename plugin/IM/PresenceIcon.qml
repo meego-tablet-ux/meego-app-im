@@ -27,23 +27,34 @@ Item {
         smooth: true
 
         function statusIcon(type) {
-            var icon
+            var icon;
+            var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+
             switch (type) {
             case TelepathyTypes.ConnectionPresenceTypeAvailable:
-                icon = "image://themedimage/icons/status/status-available";
+                icon = customizer.availablePresenceIcon;
                 break;
             case TelepathyTypes.ConnectionPresenceTypeBusy:
-                icon = "image://themedimage/icons/status/status-busy";
+                icon = customizer.busyPresenceIcon;
                 break;
             case TelepathyTypes.ConnectionPresenceTypeAway:
+                icon = customizer.awayPresenceIcon;
+                break;
             case TelepathyTypes.ConnectionPresenceTypeExtendedAway:
-                icon = "image://themedimage/icons/status/status-idle";
+                icon = customizer.extendedAwayPresenceIcon;
                 break;
             case TelepathyTypes.ConnectionPresenceTypeHidden:
+                icon = customizer.hiddenPresenceIcon;
+                break;
+            case TelepathyTypes.ConnectionPresenceTypeOffline:
+                icon = customizer.offlinePresenceIcon;
+                break;
             case TelepathyTypes.ConnectionPresenceTypeUnknown:
+                icon = customizer.unknownPresenceIcon;
+                break;
             case TelepathyTypes.ConnectionPresenceTypeError:
             default:
-                icon = "";
+                icon = customizer.errorPresenceIcon;
                 break;
             }
             return icon;

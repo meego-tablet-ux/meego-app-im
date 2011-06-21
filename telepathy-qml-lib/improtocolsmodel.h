@@ -13,6 +13,8 @@
 #include <QMap>
 #include <mdesktopentry.h>
 
+class QDeclarativeEngine;
+
 class IMProtocolsModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -28,6 +30,8 @@ public:
     };
 
     explicit IMProtocolsModel(QObject *parent = 0);
+    ~IMProtocolsModel();
+
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
 
@@ -35,6 +39,7 @@ public:
     Q_INVOKABLE QString contentForId(const QString &id) const;
     Q_INVOKABLE QString titleForId(const QString &id) const;
     Q_INVOKABLE bool isSingleInstance(const QString &id) const;
+    Q_INVOKABLE QObject *customizerForId(const QString &id) const;
 
     QMap<QString, QString> protocolNames() const;
 
@@ -46,6 +51,9 @@ Q_SIGNALS:
 private:
     QList<MDesktopEntry*> mProtocolList;
     QMap<QString, MDesktopEntry*> mProtocolMap;
+    QMap<QString, QObject*> mCustomizerMap;
+    QDeclarativeEngine *mEngine;
+    QObject *mDefaultCustomizer;
 };
 
 #endif // IMPROTOCOLSMODEL_H

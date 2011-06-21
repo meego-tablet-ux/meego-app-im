@@ -9,9 +9,12 @@
 #include "improtocolsmodel.h"
 #include <QDir>
 #include <QDebug>
+#include <QDeclarativeComponent>
+#include <QDeclarativeEngine>
 
 IMProtocolsModel::IMProtocolsModel(QObject *parent) :
-    QAbstractListModel(parent)
+    QAbstractListModel(parent),
+    mDefaultCustomizer(0)
 {
     QHash<int, QByteArray> roles;
 
@@ -28,18 +31,62 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
         return;
     }
 
+    QDeclarativeEngine *mEngine = new QDeclarativeEngine(parent);
+    if (!mEngine) {
+        qWarning() << "Error, declarative engine could not be created";
+    }
+
+    if (mEngine) {
+        qDebug() << "adding path " << modulePath();
+        //mEngine->setBaseUrl(modulePath());
+        mEngine->importPlugin("/usr/share/meego-app-im/Customizer.qml");
+        QDeclarativeComponent component(mEngine, QUrl::fromLocalFile("Customizer.qml"));
+        if (component.isReady()) {
+            mDefaultCustomizer = component.create();
+            mDefaultCustomizer->setParent(this);
+        }
+    }
+
     foreach (const QString &entry, dir.entryList(QStringList() << "*.desktop")) {
         MDesktopEntry *desktopEntry = new MDesktopEntry(dir.absoluteFilePath(entry));
         if (desktopEntry->value("Desktop Entry", "Type") != "IMProtocol") {
             delete desktopEntry;
             continue;
         }
-        qDebug() << "Protocol found " << desktopEntry->value("MTI", "Id");
+
+        QString protocolId = desktopEntry->value("MTI", "Id");
+        qDebug() << "Protocol found " << protocolId;
         mProtocolList.append(desktopEntry);
-        mProtocolMap[desktopEntry->value("MTI", "Id")] = desktopEntry;
+        mProtocolMap[protocolId] = desktopEntry;
+
+        if (mEngine) {
+            QString customizer = desktopEntry->value("MTI", "Customizer");
+            if (!customizer.isEmpty()) {
+                QDeclarativeComponent component(mEngine, QUrl::fromLocalFile(customizer));
+                qDebug() << "errorString=" << component.errorString();
+                if (component.isReady()) {
+                    qDebug() << "Customizer found " << customizer;
+                    QObject *customizer = component.create();
+                    customizer->setParent(this);
+                    mCustomizerMap[protocolId] = customizer;
+                }
+            }
+        }
     }
+
 }
 
+IMProtocolsModel::~IMProtocolsModel()
+{
+    foreach (QObject *customizer, mCustomizerMap) {
+        delete customizer;
+    }
+
+    if (mEngine) {
+        delete mEngine;
+        mEngine = 0;
+    }
+}
 
 int IMProtocolsModel::rowCount(const QModelIndex &parent) const
 {
@@ -127,4 +174,13 @@ QMap<QString, QString> IMProtocolsModel::protocolNames() const
 QString IMProtocolsModel::modulePath() const
 {
     return QString::fromLatin1("/usr/share/meego-app-im/protocols/");
+}
+
+QObject *IMProtocolsModel::customizerForId(const QString &id) const
+{
+    if (!mCustomizerMap.contains(id)) {
+        return mDefaultCustomizer;
+    }
+
+    return mCustomizerMap[id];
 }

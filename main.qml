@@ -518,38 +518,45 @@ Window {
 
     function playIncomingMessageSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/chat-fg.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.incomingMessageSound);
     }
 
     function playConnectedCallSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/connect.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.connectedCallSound);
     }
 
     function playHangUpCallSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/disconnect.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.hangUpCallSound);
     }
 
     function playRecordingStartSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/rec-start.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.recordingStartSound);
     }
 
     function playRecordingStopSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/rec-stop.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.recordingStopSound);
     }
 
     function playErrorSound()
     {
-        eventResource.play("/usr/share/sounds/meego/stereo/error.wav");
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+        eventResource.play(customizer.errorSound);
     }
 
     function playOutgoingCallSound()
     {
+        var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
         // this is not using resource policy since used only when we have the resources (setting up a call)
-        imLoopedSoundPlayer.soundSource = "/usr/share/sounds/meego/stereo/ring-4.wav";
+        imLoopedSoundPlayer.soundSource = customizer.outgoingCallSound;
         imLoopedSoundPlayer.playSound();
     }
 

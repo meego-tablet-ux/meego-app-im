@@ -91,7 +91,7 @@ Column {
 
     ModalMessageBox {
         id: messageBox
-        parent: window
+        parent: container
 
         height: 300
         width: 400

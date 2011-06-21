@@ -209,8 +209,7 @@ void AccountHelper::createAccount()
                                                                  props);
         connect(pa, SIGNAL(finished(Tp::PendingOperation*)),
                 this, SLOT(onAccountCreated(Tp::PendingOperation*)));
-    }
-    else {
+    } else {
         if (mSaslAuth && mAccountsModel) {
             mAccountsModel->setAccountPassword(mAccount->uniqueIdentifier(),
                                                mPassword);
@@ -249,7 +248,7 @@ void AccountHelper::createAccount()
         QVariantMap::iterator it = mParameters.begin();
 
         // set account to connect automatically
-        mAccount->setConnectsAutomatically(mConnectsAutomatically);
+        mAccount->setConnectsAutomatically(connectsAutomatically());
         mAccount->setDisplayName(mDisplayName);
 
         Tp::PendingStringList *psl = mAccount->updateParameters(mParameters, mUnsetParameters);
@@ -268,7 +267,8 @@ void AccountHelper::setAccount(QObject *object)
     mParameters = mAccount->parameters();
     mPassword = mParameters["password"].toString();
 
-    mConnectsAutomatically = mAccount->connectsAutomatically();
+    setConnectsAutomatically(mAccount->connectsAutomatically());
+    emit connectsAutomaticallyChanged();
 
     // load the default parameter values
     Tp::ProtocolInfo info = mAccount->protocolInfo();
@@ -331,7 +331,7 @@ void AccountHelper::onAccountCreated(Tp::PendingOperation *op)
     }
 
     // set account to connect automatically
-    mAccount->setConnectsAutomatically(mConnectsAutomatically);
+    mAccount->setConnectsAutomatically(connectsAutomatically());
 
     // get the account online
     connect(mAccount->setEnabled(true), SIGNAL(finished(Tp::PendingOperation*)),

@@ -103,8 +103,8 @@ Column {
         showCancelButton: true
         fogClickable: false
         fogMaskVisible: false
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.left
+        anchors.verticalCenter: parent.top
 
         onAccepted: {
             accountContent.removeAccount();

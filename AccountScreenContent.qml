@@ -135,37 +135,38 @@ AppPage {
             }
         }
 
-        BorderImage {
+        BottomToolBar {
             id: toolBar
-            verticalTileMode: BorderImage.Stretch
-            source: "image://themedimage/widgets/common/action-bar/action-bar-background"
 
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-
-            IconButton {
-                id: settingsButton
-                icon: "image://themedimage/icons/actionbar/show-settings"
-                iconDown: icon + "-active"
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: 10
-                hasBackground: false
-
-                onClicked: {
-                    var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
-                    createAppModel();
-                    appModel.launch(cmd);
-                }
+            Component.onCompleted: {
+                show()
             }
 
-            Image {
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.left: settingsButton.right
-                anchors.leftMargin: 10
-                source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
+            content: BottomToolBarRow {
+                id: bottomRow
+                contentVerticalMargins: 0
+
+                leftContent: [
+                    IconButton {
+                        id: settingsButton
+                        icon: "image://themedimage/icons/actionbar/show-settings"
+                        iconDown: icon + "-active"
+                        hasBackground: false
+
+                        onClicked: {
+                            var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
+                            createAppModel();
+                            appModel.launch(cmd);
+                        }
+
+                        Image
+                        {
+                            anchors.right: parent.right
+                            source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
+                            height: parent.height
+                        }
+                    }
+                ]
             }
         }
     }

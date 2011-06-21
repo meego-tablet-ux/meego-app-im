@@ -12,6 +12,8 @@
 #include <QDeclarativeComponent>
 #include <QDeclarativeEngine>
 
+#define MEEGO_APP_IM_INSTALL_PATH       "/usr/share/meego-app-im/"
+
 IMProtocolsModel::IMProtocolsModel(QObject *parent) :
     QAbstractListModel(parent),
     mDefaultCustomizer(0)
@@ -37,13 +39,14 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
     }
 
     if (mEngine) {
-        qDebug() << "adding path " << modulePath();
-        //mEngine->setBaseUrl(modulePath());
-        mEngine->importPlugin("/usr/share/meego-app-im/Customizer.qml");
-        QDeclarativeComponent component(mEngine, QUrl::fromLocalFile("Customizer.qml"));
+        mEngine->setBaseUrl(QUrl::fromLocalFile(MEEGO_APP_IM_INSTALL_PATH));
+        QDeclarativeComponent component(mEngine, QUrl::fromLocalFile(MEEGO_APP_IM_INSTALL_PATH "Customizer.qml"), this);
         if (component.isReady()) {
+            qDebug() << "Default customizer loaded";
             mDefaultCustomizer = component.create();
             mDefaultCustomizer->setParent(this);
+        } else {
+            qDebug() << "Error loading Customizer.qml: " << component.errorString();
         }
     }
 
@@ -62,13 +65,14 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
         if (mEngine) {
             QString customizer = desktopEntry->value("MTI", "Customizer");
             if (!customizer.isEmpty()) {
-                QDeclarativeComponent component(mEngine, QUrl::fromLocalFile(customizer));
-                qDebug() << "errorString=" << component.errorString();
+                QDeclarativeComponent component(mEngine, QUrl::fromLocalFile(QString ::fromLatin1(MEEGO_APP_IM_INSTALL_PATH "protocols/") + customizer), this);
                 if (component.isReady()) {
                     qDebug() << "Customizer found " << customizer;
                     QObject *customizer = component.create();
                     customizer->setParent(this);
                     mCustomizerMap[protocolId] = customizer;
+                } else {
+                    qDebug() << "errorString=" << component.errorString();
                 }
             }
         }
@@ -173,7 +177,7 @@ QMap<QString, QString> IMProtocolsModel::protocolNames() const
 
 QString IMProtocolsModel::modulePath() const
 {
-    return QString::fromLatin1("/usr/share/meego-app-im/protocols/");
+    return QString::fromLatin1(MEEGO_APP_IM_INSTALL_PATH "/protocols/");
 }
 
 QObject *IMProtocolsModel::customizerForId(const QString &id) const

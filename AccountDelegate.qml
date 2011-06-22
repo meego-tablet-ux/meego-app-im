@@ -20,6 +20,16 @@ Item {
 
     height: childrenRect.height
 
+    Connections {
+        target: accountsModel
+
+        onNewAccountItem: {
+            if (model.id == accountId) {
+                contentRow.forceActiveFocus();
+            }
+        }
+    }
+
     ContentRow {
         id: contentRow
         anchors.top: parent.top

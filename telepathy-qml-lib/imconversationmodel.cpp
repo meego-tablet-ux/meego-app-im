@@ -125,34 +125,17 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         text = text.replace(QString(">"), QString("&gt;"));
         text = text.replace(QChar('\n'), QString("<br>"));
 
-        if (!mSearchString.isEmpty()) {
-            QString newText;
-            int fromIndex = -1;
-            int lastIndex = -1;
-            int currentMatchInRow = -1;
-            if (mMatchesFound.count()) {
-                currentMatchInRow = mMatchesFound.at(mCurrentMatch).column();
+        if (!mSearchString.isEmpty() && mMatchesFound.count()) {
+            // add underscore if current
+            if (currentRowMatch() == index.row()) {
+                int index = mMatchesFound.at(mCurrentMatch).column();
+                text = text.insert(index + mSearchString.size(), "</u>");
+                text = text.insert(index, "<u>");
             }
-            int numMatchInRow = 0;
-            do {
-                fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
-                if (fromIndex != -1) {
-                    QString middle = text.mid(fromIndex, mSearchString.length());
-                    QString suffix = text.mid(fromIndex + mSearchString.size(), lastIndex - fromIndex - 1);
-                    if (currentRowMatch() == index.row() && currentMatchInRow == numMatchInRow) {
-                        newText = "<font color=\"#ff0000\"><u>" + middle + "</u></font>" + suffix + newText;
-                    } else {
-                        newText = "<font color=\"#ff0000\">" + middle + "</font>" + suffix + newText;
-                    }
-                    lastIndex = fromIndex;
-                    fromIndex--;
-                    numMatchInRow++;
-                }
-            } while(fromIndex != -1);
 
-            QString prefix = text.left(lastIndex);
-            newText = prefix + newText;
-            return QVariant(newText);
+            // change color to all matches in the line
+            QRegExp regExp("(" + QRegExp::escape(mSearchString) + ")", Qt::CaseInsensitive);
+            text = text.replace(regExp, "<font color=\"#ff0000\">\\1</font>");
         }
         return text;
     }
@@ -646,27 +629,29 @@ void IMConversationModel::calculateMatches(void)
         QModelIndex rowIndex = index(i,0,QModelIndex());
         QString text = MergedModel::data(rowIndex, Tpy::AbstractConversationModel::MessageTextRole).toString();
         int fromIndex = -1;
-        // NOTE matched are counted backwards in the string (0 starts at end of string, latest one)
-        int numMatchInRow = 0;
+        // NOTE matched are counted backwards in the string
         do {
             fromIndex = text.lastIndexOf(mSearchString, fromIndex, Qt::CaseInsensitive);
             if (fromIndex != -1) {
-                mMatchesFound.append(this->index(i, numMatchInRow++));
+                mMatchesFound.append(this->index(i, fromIndex));
                 fromIndex--;
             }
         } while(fromIndex != -1);
     }
 
-    // TODO logic to know if reset current match or not
-    mCurrentMatch = 0;
-    int oldRowMatch = mCurrentMatch;
     if (mMatchesFound.count()) {
         mCurrentRowMatch = mMatchesFound.at(0).row();
     } else {
         mCurrentRowMatch = rowCount(QModelIndex()) - 1;
     }
-    emit dataChanged(this->index(oldRowMatch), this->index(oldRowMatch));
-    emit dataChanged(this->index(mCurrentRowMatch), this->index(mCurrentRowMatch));
+
+    // clear new matches (otherwise they will not get selected)
+    foreach(QModelIndex index, mMatchesFound) {
+        if (lastIndex != index.row()) {
+            emit dataChanged(index, index);
+        }
+        lastIndex = index.row();
+    }
 
     emit numMatchesFoundChanged();
     emit currentRowMatchChanged();

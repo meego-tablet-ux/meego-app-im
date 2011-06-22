@@ -113,6 +113,11 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                         return false;
                     }
 
+                    // filter rejected subscription requests
+                    if (contact->isSubscriptionRejected() || contact->subscriptionState() == Tp::Contact::PresenceStateNo) {
+                        return false;
+                    }
+
                     // filter requests
                     if (!mRequestsOnly && contact->publishState() == Tp::Contact::PresenceStateAsk) {
                         return false;

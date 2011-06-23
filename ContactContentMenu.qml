@@ -69,7 +69,7 @@ Column {
     }
 
     Connections {
-        target: photoPicker
+        target: (visible? photoPicker : null )
 
         onPhotoSelected: {
             createAccountHelper();

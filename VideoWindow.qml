@@ -17,7 +17,7 @@ Item {
     anchors.right: parent != undefined ? parent.right : window.right
     anchors.rightMargin: window.fullScreen ? 0 : 20
     anchors.top: parent ? parent.top : window.top
-    anchors.topMargin: window.fullScreen ? 0 : 20
+    anchors.topMargin: window.fullScreen ? 0 : 20 - window.contentVerticalShift
     width: getVideoWidth(window, pageContentItem)
     height: getVideoHeight(window, pageContentItem)
     opacity: 0

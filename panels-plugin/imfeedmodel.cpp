@@ -41,15 +41,19 @@ IMFeedModel::IMFeedModel(PanelsChannelObserver *observer, Tp::AccountPtr account
     connect(&mIMServiceWatcher,
             SIGNAL(serviceUnregistered(QString)),
             SLOT(onServiceUnregistered()));
-    connect(observer,
-            SIGNAL(newTextChannel(QString,Tp::TextChannelPtr)),
-            SLOT(onNewTextChannel(QString,Tp::TextChannelPtr)));
-    connect(observer,
-            SIGNAL(newCallChannel(QString,Tpy::CallChannelPtr)),
-            SLOT(onNewCallChannel(QString,Tpy::CallChannelPtr)));
-    connect(observer,
-            SIGNAL(newFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)),
-            SLOT(onNewFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)));
+    if(observer) {
+        connect(observer,
+                SIGNAL(newTextChannel(QString,Tp::TextChannelPtr)),
+                SLOT(onNewTextChannel(QString,Tp::TextChannelPtr)));
+        connect(observer,
+                SIGNAL(newCallChannel(QString,Tpy::CallChannelPtr)),
+                SLOT(onNewCallChannel(QString,Tpy::CallChannelPtr)));
+        connect(observer,
+                SIGNAL(newFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)),
+                SLOT(onNewFileTransferChannel(QString,Tp::IncomingFileTransferChannelPtr)));
+    } else {
+        qDebug() << "IMFeedModel::IMFeedModel(): The PanelsChannelObserver is not valid. Signals for new channels will not be received.";
+    }
     connect(mAccount.data(),
             SIGNAL(connectionChanged(Tp::ConnectionPtr)),
             SLOT(onConnectionChanged(Tp::ConnectionPtr)));

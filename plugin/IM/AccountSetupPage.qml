@@ -8,12 +8,8 @@ AppPage {
 
     Flickable {
         id: accountSetupArea
-        parent: accountSetupPage.content
 
-        anchors.top: infoBar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.fill: parent
         clip: true
 
         flickableDirection: "VerticalFlick"

@@ -11,7 +11,7 @@
 SettingsHelper *SettingsHelper::mSelf = 0;
 
 SettingsHelper::SettingsHelper(QObject *parent) :
-    QObject(parent), mSettings("MeeGo", "MeeGoIM")
+    QObject(parent), mSettings("MeeGo", "meego-app-im")
 {
 }
 

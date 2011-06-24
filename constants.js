@@ -143,7 +143,6 @@ var mainStatusAway = qsTr("Away");
 var mainStatusExtendedAway = qsTr("Extended away");
 var mainStatusOffline = qsTr("Offline");
 var mainStatusInvisible = qsTr("Invisible");
-var mainSelectContact
 
 // Error messages
 var errorRetypeUserPassword = qsTr("Sorry, there was a problem logging in. Please retype your username and password.");

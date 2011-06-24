@@ -718,7 +718,6 @@ Window {
                            + "import MeeGo.Labs.Components 0.1 as Labs;"
                            + "Labs.ContactsPicker {"
                            + "  parent: pageStack.currentPage;"
-                           + "  promptString: \"" + Constants.mainSelectContact + "\";";
                            + "}";
             contactsPicker = Qt.createQmlObject(sourceCode, pageStack.currentPage);
         }

@@ -1640,7 +1640,22 @@ int IMAccountsModel::actualContactsCount(const QString &accountId) const
         if (!account->connection().isNull()
                 && account->connection()->isValid()
                 && !account->connection()->contactManager().isNull()) {
-            return account->connection()->contactManager()->allKnownContacts().count();
+            // we need to make sure this follows the same criteria as the filter in ContactsSortFilterProxy
+            // and assure we don't report a count > 0 when these contacts will be filtered
+            // if there is at least one contact that will be displayed for sure, then report the actual count
+            // otherwise keep checking every contact and report 0 if they will be filtered out
+            foreach (Tp::ContactPtr contact, account->connection()->contactManager()->allKnownContacts().toList()) {
+                // it's important to keep these criteria in sync with the ones in the filter
+                // otherwise you'll end up with an empty contacts list and the Add Friend items will not be shown
+                if (!contact->isBlocked()
+                        && !contact->isSubscriptionRejected()
+                        && contact->subscriptionState() != Tp::Contact::PresenceStateNo) {
+                    // if at least one contact complies, just return the count
+                    // it's only important to know there is at least one contact that is going to be displayed
+                    return account->connection()->contactManager()->allKnownContacts().count();
+                }
+                // if no contact will be displayed, return 0
+            }
         }
     }
     return 0;

@@ -18,6 +18,8 @@
 #include <TelepathyQt4Yell/Models/AccountsModel>
 #include <TelepathyQt4Yell/Models/ContactModelItem>
 
+#include <meegolocale.h>
+
 #include <QtGui>
 
 ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *manager,
@@ -235,16 +237,12 @@ bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
     }
 
     // compare the alias
-    QByteArray leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toByteArray();
-    QByteArray rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toByteArray();
+    QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toString();
+    QString rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toString();
 
     if (leftAlias != rightAlias) {
-        int aliasCompare = QString::localeAwareCompare(QString::fromUtf8(leftAlias), QString::fromUtf8(rightAlias));
-        if(aliasCompare < 0) {
-            return true;
-        } else {
-            return false;
-        }
+        meego::Locale locale;
+        return locale.lessThan(leftAlias, rightAlias);
     }
 
     QString leftId = sourceModel()->data(left, Tpy::AccountsModel::IdRole).toString();

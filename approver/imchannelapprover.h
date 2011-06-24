@@ -9,6 +9,7 @@
 #ifndef IMCHANNELAPPROVER_H
 #define IMCHANNELAPPROVER_H
 
+#include <QMap>
 #include <QDBusServiceWatcher>
 #include <TelepathyQt4/AbstractClientApprover>
 #include <TelepathyQt4/ChannelDispatchOperation>
@@ -58,6 +59,9 @@ private Q_SLOTS:
     void onServiceRegistered();
     void onServiceUnregistered();
 
+protected:
+    void reportMissedCalls(const QString &accountId, const QStringList &contacts);
+
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
     bool mApplicationRunning;
@@ -68,6 +72,7 @@ private:
     bool mAutoApproveCalls;
     bool mPendingCall;
     IMProtocolsModel *mProtocolsModel;
+    QMap<QString, QStringList> mMissedCalls;
 };
 
 #endif // IMCHANNELAPPROVER_H

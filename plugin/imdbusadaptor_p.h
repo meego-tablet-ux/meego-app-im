@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef IMDBUSADAPTOR_P_H_1308174187
-#define IMDBUSADAPTOR_P_H_1308174187
+#ifndef IMDBUSADAPTOR_P_H_1308930746
+#define IMDBUSADAPTOR_P_H_1308930746
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -38,6 +38,10 @@ class IMDBusAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
 "    </method>\n"
+"    <method name=\"reportMissedCalls\">\n"
+"      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
+"      <arg direction=\"in\" type=\"as\" name=\"contacts\"/>\n"
+"    </method>\n"
 "    <method name=\"userBusyCalling\">\n"
 "      <arg direction=\"out\" type=\"b\" name=\"busy\"/>\n"
 "    </method>\n"
@@ -51,6 +55,7 @@ public:
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void dumpLogs();
+    void reportMissedCalls(const QString &accountId, const QStringList &contacts);
     void showChat(const QString &accountId, const QString &contactId);
     bool userBusyCalling();
 Q_SIGNALS: // SIGNALS

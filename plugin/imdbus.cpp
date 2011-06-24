@@ -38,6 +38,11 @@ void IMDBus::showChat(const QString &accountId, const QString &contactId)
     emit chatOpenRequested(accountId, contactId);
 }
 
+void IMDBus::reportMissedCalls(const QString &accountId, const QStringList &contacts)
+{
+    // TODO: implement
+}
+
 void IMDBus::dumpLogs()
 {
     TelepathyManager::instance()->dumpLogs();

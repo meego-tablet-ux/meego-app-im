@@ -362,6 +362,18 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
             break;
         }
     }
+
+    QString accountId = callChannel->property("accountId").toString();
+    Tp::ContactPtr contact = callChannel->initiatorContact();
+
+    // report the missing call if the application is running
+    if (mApplicationRunning) {
+        reportMissedCalls(accountId, QStringList() << contact->id());
+    } else {
+        // if the application is not running, store the missed call event
+        // to report it when the application is run
+        mMissedCalls[accountId].append(contact->id());
+    }
 }
 
 void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)
@@ -467,14 +479,40 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
             }
         }
     }
+
+    // report the missed call
+    if (mApplicationRunning) {
+        reportMissedCalls(accountId, QStringList() << contactId);
+    } else {
+        mMissedCalls[accountId].append(contactId);
+    }
 }
 
 void IMChannelApprover::onServiceRegistered()
 {
     setApplicationRunning(true);
+
+    // report the missed calls
+    QMap<QString, QStringList>::const_iterator it = mMissedCalls.constBegin();
+    while (it != mMissedCalls.constEnd()) {
+        reportMissedCalls(it.key(), it.value());
+        ++it;
+    }
+
+    // and clear the already reported missed calls
+    mMissedCalls.clear();
 }
 
 void IMChannelApprover::onServiceUnregistered()
 {
     setApplicationRunning(false);
+}
+
+void IMChannelApprover::reportMissedCalls(const QString &accountId, const QStringList &contacts)
+{
+    QDBusInterface meegoAppIM("com.meego.app.im",
+                              "/com/meego/app/im",
+                              "com.meego.app.im");
+
+    meegoAppIM.call("reportMissedCalls", accountId, contacts);
 }

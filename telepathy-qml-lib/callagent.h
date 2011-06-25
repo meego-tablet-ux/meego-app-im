@@ -124,6 +124,8 @@ public:
     Q_INVOKABLE void resetMissedCalls();
     Q_INVOKABLE QDateTime lastMissedVideoCall() const;
     Q_INVOKABLE QDateTime lastMissedAudioCall() const;
+    Q_INVOKABLE void reportMissedAudioCall(const QDateTime &time);
+    Q_INVOKABLE void reportMissedVideoCall(const QDateTime &time);
 
     Q_INVOKABLE QObject *incomingVideo() const;
     Q_INVOKABLE void setIncomingVideo(QObject *item);

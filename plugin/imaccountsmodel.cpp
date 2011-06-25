@@ -948,7 +948,7 @@ CallAgent *IMAccountsModel::callAgentByIndex(const QModelIndex &index) const
     if (index.isValid() && index.parent().isValid()) {
         QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "&";
         key += Tpy::AccountsModel::data(index, IdRole).toString();
-        if (mChatAgents.contains(key)) {
+        if (mCallAgents.contains(key)) {
             return mCallAgents[key];
         }
     }
@@ -1678,4 +1678,12 @@ QVariant IMAccountsModel::dataByRow(const int row, const int role)
 {
     QModelIndex modelIndex = index(row, 0, QModelIndex());
     return data(modelIndex, role);
+}
+
+void IMAccountsModel::reportMissedCall(const QString &accountId, const QString &contactId, const QDateTime &time)
+{
+    // TODO: implement
+    qDebug() << "IMAccountsModel::reportMissedCall" << accountId << contactId << time;
+    CallAgent *agent = callAgent(accountId, contactId, true);
+    agent->reportMissedAudioCall(time);
 }

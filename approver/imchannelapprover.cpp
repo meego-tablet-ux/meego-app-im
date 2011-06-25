@@ -368,11 +368,14 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
 
     // report the missing call if the application is running
     if (mApplicationRunning) {
-        reportMissedCalls(accountId, QStringList() << contact->id());
+        reportMissedCalls(accountId,
+                          QStringList() << contact->id(),
+                          QStringList() << QDateTime::currentDateTime().toString());
     } else {
         // if the application is not running, store the missed call event
         // to report it when the application is run
-        mMissedCalls[accountId].append(contact->id());
+        mMissedCalls[accountId].contacts.append(contact->id());
+        mMissedCalls[accountId].times.append(QDateTime::currentDateTime().toString());
     }
 }
 
@@ -482,9 +485,12 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
 
     // report the missed call
     if (mApplicationRunning) {
-        reportMissedCalls(accountId, QStringList() << contactId);
+        reportMissedCalls(accountId,
+                          QStringList() << contactId,
+                          QStringList() << QDateTime::currentDateTime().toString());
     } else {
-        mMissedCalls[accountId].append(contactId);
+        mMissedCalls[accountId].contacts.append(contactId);
+        mMissedCalls[accountId].times.append(QDateTime::currentDateTime().toString());
     }
 }
 
@@ -493,9 +499,9 @@ void IMChannelApprover::onServiceRegistered()
     setApplicationRunning(true);
 
     // report the missed calls
-    QMap<QString, QStringList>::const_iterator it = mMissedCalls.constBegin();
+    QMap<QString, MissedCalls>::const_iterator it = mMissedCalls.constBegin();
     while (it != mMissedCalls.constEnd()) {
-        reportMissedCalls(it.key(), it.value());
+        reportMissedCalls(it.key(), it.value().contacts, it.value().times);
         ++it;
     }
 
@@ -508,11 +514,11 @@ void IMChannelApprover::onServiceUnregistered()
     setApplicationRunning(false);
 }
 
-void IMChannelApprover::reportMissedCalls(const QString &accountId, const QStringList &contacts)
+void IMChannelApprover::reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
 {
     QDBusInterface meegoAppIM("com.meego.app.im",
                               "/com/meego/app/im",
                               "com.meego.app.im");
 
-    meegoAppIM.call("reportMissedCalls", accountId, contacts);
+    meegoAppIM.call("reportMissedCalls", accountId, contacts, times);
 }

@@ -13,6 +13,7 @@
     <method name="reportMissedCalls">
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contacts" type="as" direction="in"/>
+      <arg name="times" type="as" direction="in"/>
     </method>
     <method name="userBusyCalling">
       <arg name="busy" type="b" direction="out"/>

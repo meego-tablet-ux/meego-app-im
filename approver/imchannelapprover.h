@@ -24,6 +24,11 @@
 class IMApproverAdaptor;
 class IMProtocolsModel;
 
+typedef struct {
+    QStringList contacts;
+    QStringList times;
+} MissedCalls;
+
 class IMChannelApprover : public QObject, public Tp::AbstractClientApprover
 {
     Q_OBJECT
@@ -60,7 +65,7 @@ private Q_SLOTS:
     void onServiceUnregistered();
 
 protected:
-    void reportMissedCalls(const QString &accountId, const QStringList &contacts);
+    void reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
 
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
@@ -72,7 +77,7 @@ private:
     bool mAutoApproveCalls;
     bool mPendingCall;
     IMProtocolsModel *mProtocolsModel;
-    QMap<QString, QStringList> mMissedCalls;
+    QMap<QString, MissedCalls> mMissedCalls;
 };
 
 #endif // IMCHANNELAPPROVER_H

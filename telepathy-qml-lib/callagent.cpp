@@ -935,6 +935,20 @@ QDateTime CallAgent::lastMissedVideoCall() const
     return mLastMissedVideoCall;
 }
 
+void CallAgent::reportMissedAudioCall(const QDateTime &time)
+{
+    mLastMissedAudioCall = time;
+    mMissedAudioCalls++;
+    emit missedAudioCallsChanged();
+}
+
+void CallAgent::reportMissedVideoCall(const QDateTime &time)
+{
+    mLastMissedVideoCall = time;
+    mMissedVideoCalls++;
+    emit missedVideoCallsChanged();
+}
+
 Tp::AccountPtr CallAgent::account()
 {
     return mAccount;

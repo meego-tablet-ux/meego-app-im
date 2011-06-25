@@ -2,6 +2,7 @@
 #define IMDBUS_H
 
 #include <QObject>
+#include <QVariantList>
 
 class IMDBusAdaptor;
 class IMAccountsModel;
@@ -21,7 +22,7 @@ signals:
 
 public slots:
     void showChat(const QString &accountId, const QString &contactId);
-    void reportMissedCalls(const QString &accountId, const QStringList &contacts);
+    void reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
     void dumpLogs();
     bool userBusyCalling();
 

@@ -65,7 +65,8 @@ private Q_SLOTS:
     void onServiceUnregistered();
 
 protected:
-    void reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
+    void reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
+    void reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
 
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
@@ -77,7 +78,8 @@ private:
     bool mAutoApproveCalls;
     bool mPendingCall;
     IMProtocolsModel *mProtocolsModel;
-    QMap<QString, MissedCalls> mMissedCalls;
+    QMap<QString, MissedCalls> mMissedAudioCalls;
+    QMap<QString, MissedCalls> mMissedVideoCalls;
 };
 
 #endif // IMCHANNELAPPROVER_H

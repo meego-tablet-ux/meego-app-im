@@ -364,18 +364,30 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
     }
 
     QString accountId = callChannel->property("accountId").toString();
-    Tp::ContactPtr contact = callChannel->initiatorContact();
+    QString contactId = callChannel->initiatorContact()->id();
 
-    // report the missing call if the application is running
+    // check if it was a video call
+    int initialVideo = callChannel->immutableProperties().value("InitialVideo",0).toInt();
+
+    // report the missed call
     if (mApplicationRunning) {
-        reportMissedCalls(accountId,
-                          QStringList() << contact->id(),
-                          QStringList() << QDateTime::currentDateTime().toString());
+        if (initialVideo) {
+            reportMissedVideoCalls(accountId,
+                                   QStringList() << contactId,
+                                   QStringList() << QDateTime::currentDateTime().toString());
+        } else {
+            reportMissedAudioCalls(accountId,
+                                   QStringList() << contactId,
+                                   QStringList() << QDateTime::currentDateTime().toString());
+        }
     } else {
-        // if the application is not running, store the missed call event
-        // to report it when the application is run
-        mMissedCalls[accountId].contacts.append(contact->id());
-        mMissedCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        if (initialVideo) {
+            mMissedVideoCalls[accountId].contacts.append(contactId);
+            mMissedVideoCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        } else {
+            mMissedAudioCalls[accountId].contacts.append(contactId);
+            mMissedAudioCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        }
     }
 }
 
@@ -460,6 +472,8 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
 {
     mPendingCall = false;
 
+    int initialVideo = 0;
+
     // look for the channel in the pending dispatch operations and approve it
     foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
         if (dispatchOperation->account()->uniqueIdentifier() != accountId) {
@@ -478,6 +492,9 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
                 callChannel->hangup(Tpy::CallStateChangeReasonUserRequested, QString(), QString());
                 callChannel->requestClose();
                 mDispatchOps.removeAll(dispatchOperation);
+
+                // check if it was a video call
+                initialVideo = callChannel->immutableProperties().value("InitialVideo",0).toInt();
                 break;
             }
         }
@@ -485,12 +502,23 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
 
     // report the missed call
     if (mApplicationRunning) {
-        reportMissedCalls(accountId,
-                          QStringList() << contactId,
-                          QStringList() << QDateTime::currentDateTime().toString());
+        if (initialVideo) {
+            reportMissedVideoCalls(accountId,
+                                   QStringList() << contactId,
+                                   QStringList() << QDateTime::currentDateTime().toString());
+        } else {
+            reportMissedAudioCalls(accountId,
+                                   QStringList() << contactId,
+                                   QStringList() << QDateTime::currentDateTime().toString());
+        }
     } else {
-        mMissedCalls[accountId].contacts.append(contactId);
-        mMissedCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        if (initialVideo) {
+            mMissedVideoCalls[accountId].contacts.append(contactId);
+            mMissedVideoCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        } else {
+            mMissedAudioCalls[accountId].contacts.append(contactId);
+            mMissedAudioCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+        }
     }
 }
 
@@ -499,14 +527,21 @@ void IMChannelApprover::onServiceRegistered()
     setApplicationRunning(true);
 
     // report the missed calls
-    QMap<QString, MissedCalls>::const_iterator it = mMissedCalls.constBegin();
-    while (it != mMissedCalls.constEnd()) {
-        reportMissedCalls(it.key(), it.value().contacts, it.value().times);
+    QMap<QString, MissedCalls>::const_iterator it = mMissedAudioCalls.constBegin();
+    while (it != mMissedAudioCalls.constEnd()) {
+        reportMissedAudioCalls(it.key(), it.value().contacts, it.value().times);
+        ++it;
+    }
+
+    it = mMissedVideoCalls.constBegin();
+    while (it != mMissedVideoCalls.constEnd()) {
+        reportMissedVideoCalls(it.key(), it.value().contacts, it.value().times);
         ++it;
     }
 
     // and clear the already reported missed calls
-    mMissedCalls.clear();
+    mMissedAudioCalls.clear();
+    mMissedVideoCalls.clear();
 }
 
 void IMChannelApprover::onServiceUnregistered()
@@ -514,11 +549,21 @@ void IMChannelApprover::onServiceUnregistered()
     setApplicationRunning(false);
 }
 
-void IMChannelApprover::reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+void IMChannelApprover::reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
 {
     QDBusInterface meegoAppIM("com.meego.app.im",
                               "/com/meego/app/im",
                               "com.meego.app.im");
 
-    meegoAppIM.call("reportMissedCalls", accountId, contacts, times);
+    meegoAppIM.call("reportMissedAudioCalls", accountId, contacts, times);
 }
+
+void IMChannelApprover::reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+{
+    QDBusInterface meegoAppIM("com.meego.app.im",
+                              "/com/meego/app/im",
+                              "com.meego.app.im");
+
+    meegoAppIM.call("reportMissedVideoCalls", accountId, contacts, times);
+}
+

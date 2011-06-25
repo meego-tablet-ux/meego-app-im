@@ -39,10 +39,16 @@ void IMDBusAdaptor::dumpLogs()
     QMetaObject::invokeMethod(parent(), "dumpLogs");
 }
 
-void IMDBusAdaptor::reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+void IMDBusAdaptor::reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
 {
-    // handle method call com.meego.app.im.reportMissedCalls
-    QMetaObject::invokeMethod(parent(), "reportMissedCalls", Q_ARG(QString, accountId), Q_ARG(QStringList, contacts), Q_ARG(QStringList, times));
+    // handle method call com.meego.app.im.reportMissedAudioCalls
+    QMetaObject::invokeMethod(parent(), "reportMissedAudioCalls", Q_ARG(QString, accountId), Q_ARG(QStringList, contacts), Q_ARG(QStringList, times));
+}
+
+void IMDBusAdaptor::reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+{
+    // handle method call com.meego.app.im.reportMissedVideoCalls
+    QMetaObject::invokeMethod(parent(), "reportMissedVideoCalls", Q_ARG(QString, accountId), Q_ARG(QStringList, contacts), Q_ARG(QStringList, times));
 }
 
 void IMDBusAdaptor::showChat(const QString &accountId, const QString &contactId)

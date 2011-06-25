@@ -112,7 +112,8 @@ public:
       */
     Q_INVOKABLE QVariant dataByRow(const int row, const int role);
 
-    void reportMissedCall(const QString &accountId, const QString &contactId, const QDateTime &time);
+    void reportMissedAudioCall(const QString &accountId, const QString &contactId, const QDateTime &time);
+    void reportMissedVideoCall(const QString &accountId, const QString &contactId, const QDateTime &time);
 
 Q_SIGNALS:
     void chatReady(const QString &accountId, const QString &contactId);

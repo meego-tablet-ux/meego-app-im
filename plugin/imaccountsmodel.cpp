@@ -1680,10 +1680,15 @@ QVariant IMAccountsModel::dataByRow(const int row, const int role)
     return data(modelIndex, role);
 }
 
-void IMAccountsModel::reportMissedCall(const QString &accountId, const QString &contactId, const QDateTime &time)
+void IMAccountsModel::reportMissedAudioCall(const QString &accountId, const QString &contactId, const QDateTime &time)
 {
-    // TODO: implement
-    qDebug() << "IMAccountsModel::reportMissedCall" << accountId << contactId << time;
     CallAgent *agent = callAgent(accountId, contactId, true);
     agent->reportMissedAudioCall(time);
 }
+
+void IMAccountsModel::reportMissedVideoCall(const QString &accountId, const QString &contactId, const QDateTime &time)
+{
+    CallAgent *agent = callAgent(accountId, contactId, true);
+    agent->reportMissedVideoCall(time);
+}
+

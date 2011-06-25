@@ -22,7 +22,8 @@ signals:
 
 public slots:
     void showChat(const QString &accountId, const QString &contactId);
-    void reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
+    void reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
+    void reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
     void dumpLogs();
     bool userBusyCalling();
 

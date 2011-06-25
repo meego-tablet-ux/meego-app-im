@@ -38,7 +38,7 @@ void IMDBus::showChat(const QString &accountId, const QString &contactId)
     emit chatOpenRequested(accountId, contactId);
 }
 
-void IMDBus::reportMissedCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+void IMDBus::reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
 {
     // if we dont have an instance of Accounts Model we cant report missed calls
     if (!mAccountsModel) {
@@ -46,7 +46,19 @@ void IMDBus::reportMissedCalls(const QString &accountId, const QStringList &cont
     }
 
     for (int i = 0; i < contacts.count(); ++ i) {
-        mAccountsModel->reportMissedCall(accountId, contacts[i], QDateTime::fromString(times[i]));
+        mAccountsModel->reportMissedAudioCall(accountId, contacts[i], QDateTime::fromString(times[i]));
+    }
+}
+
+void IMDBus::reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
+{
+    // if we dont have an instance of Accounts Model we cant report missed calls
+    if (!mAccountsModel) {
+        return;
+    }
+
+    for (int i = 0; i < contacts.count(); ++ i) {
+        mAccountsModel->reportMissedVideoCall(accountId, contacts[i], QDateTime::fromString(times[i]));
     }
 }
 

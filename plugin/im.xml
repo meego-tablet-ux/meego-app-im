@@ -10,7 +10,12 @@
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contactId" type="s" direction="in"/>
     </method>
-    <method name="reportMissedCalls">
+    <method name="reportMissedAudioCalls">
+      <arg name="accountId" type="s" direction="in"/>
+      <arg name="contacts" type="as" direction="in"/>
+      <arg name="times" type="as" direction="in"/>
+    </method>
+    <method name="reportMissedVideoCalls">
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contacts" type="as" direction="in"/>
       <arg name="times" type="as" direction="in"/>

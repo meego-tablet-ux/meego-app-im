@@ -151,8 +151,8 @@ Column {
             if (accountFactory.otherAccountsOnline(icon, currentAccount) > 0) {
                 // TODO: show the dialog asking if the other accounts should be signed off
                 confirmationDialogItem.instanceReason = "account-setup-single-instance"; // i18n ok
-                confirmationDialogItem.title = IMConstants.accountDuplicatedTitle;
-                confirmationDialogItem.text = IMConstants.accountDuplicatedText.arg(serviceName);
+                confirmationDialogItem.title = IMConstants.accountMultipleTitle;
+                confirmationDialogItem.text = IMConstants.accountMultipleText.arg(serviceName);
                 confirmationDialogItem.accountId = currentAccount;
                 confirmationDialogItem.show();
                 return;

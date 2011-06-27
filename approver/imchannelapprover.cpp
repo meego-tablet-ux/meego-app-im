@@ -367,7 +367,7 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
     QString contactId = callChannel->initiatorContact()->id();
 
     // check if it was a video call
-    int initialVideo = callChannel->immutableProperties().value("InitialVideo",0).toInt();
+    int initialVideo = callChannel->immutableProperties().value("org.freedesktop.Telepathy.Channel.Type.Call.DRAFT.InitialVideo",0).toInt();
 
     // report the missed call
     if (mApplicationRunning) {
@@ -494,7 +494,7 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
                 mDispatchOps.removeAll(dispatchOperation);
 
                 // check if it was a video call
-                initialVideo = callChannel->immutableProperties().value("InitialVideo",0).toInt();
+                initialVideo = callChannel->immutableProperties().value("org.freedesktop.Telepathy.Channel.Type.Call.DRAFT.InitialVideo",0).toInt();
                 break;
             }
         }

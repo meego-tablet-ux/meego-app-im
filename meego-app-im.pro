@@ -24,7 +24,7 @@ TRANSLATIONS += protocols/*qml protocols/*.desktop
 TRANSLATIONS += panels-plugin/*.cpp panels-plugin/*.h
 TRANSLATIONS += telepathy-qml-lib/*.h telepathy-qml-lib/*.cpp
 TRANSLATIONS += telepathy-qml-plugin/*.h telepathy-qml-plugin/*.cpp
-VERSION = 0.2.14.1
+VERSION = 0.2.14.2
 PROJECT_NAME = meego-app-im
 
 dist.commands += rm -fR $${PROJECT_NAME}-$${VERSION} &&

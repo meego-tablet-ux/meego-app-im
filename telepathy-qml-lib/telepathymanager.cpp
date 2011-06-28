@@ -59,8 +59,6 @@ TelepathyManager::TelepathyManager(QObject *parent)
 
     // TODO: replace the channel factory once tp-qt4-yell is merged into tp-qt4
     qDebug() << "TelepathyManager::TelepathyManager: initialize tp-qt4-yell";
-    tf_init();
-
     qDebug() << "TelepathyManager::TelepathyManager: creating Tpy::ChannelFactory";
     Tpy::ChannelFactoryPtr channelFactory =
         Tpy::ChannelFactory::create(QDBusConnection::sessionBus());
@@ -162,6 +160,8 @@ void TelepathyManager::onConnectionChanged(const Tp::ConnectionPtr &connection)
 
 void TelepathyManager::registerClients()
 {
+    tf_init();
+
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactoryPtr::constCast(mAccountManager->channelFactory());
     channelFactory->addCommonFeatures(Tp::Channel::FeatureCore);
     mClientRegistrar = Tp::ClientRegistrar::create(mAccountManager);

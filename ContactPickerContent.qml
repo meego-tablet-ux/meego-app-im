@@ -75,6 +75,11 @@ AppPage {
         id: pageContent
         anchors.fill: parent
 
+        Image {
+            anchors.fill: parent
+            source: "image://themedimage/widgets/common/backgrounds/global-background-texture"
+        }
+
         ListView {
             id: listView
 

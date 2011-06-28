@@ -169,6 +169,11 @@ AppPage {
         // force clipping
         //clip: true
 
+        Image {
+            anchors.fill: parent
+            source: "image://themedimage/widgets/common/backgrounds/global-background-texture"
+        }
+
         SearchHeader {
             id: searchHeader
             searchActive: window.showToolBarSearch

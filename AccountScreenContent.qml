@@ -53,6 +53,11 @@ AppPage {
         id: mainArea
         anchors.fill: parent
 
+        Image {
+            anchors.fill: parent
+            source: "image://themedimage/widgets/common/backgrounds/global-background-texture"
+        }
+
         InfoBar {
             id: infoBar
             text: Constants.accountsLoading

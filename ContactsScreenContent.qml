@@ -243,7 +243,7 @@ AppPage {
     ContextMenu {
         id: contactContentMenu
 
-        width: 300
+        width: 350
         forceFingerMode: 2
 
         content: ContactContentMenu {

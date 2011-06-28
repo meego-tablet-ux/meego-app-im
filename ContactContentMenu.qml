@@ -16,7 +16,7 @@ import "constants.js" as Constants
 Column {
     id: optionColumn
 
-    width: 300
+    width: 350
 
     property variant currentPage
     property QtObject accountHelper : null

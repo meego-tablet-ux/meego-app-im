@@ -22,22 +22,24 @@
 #include <TelepathyQt4Yell/CallChannel>
 #include <TelepathyQt4Yell/ChannelClassSpec>
 
-IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
+IMPlugin::IMPlugin(QObject *parent)
+    : QObject(parent),
+      McaFeedPlugin(),
+      m_tpManager(0),
+      m_protocolsModel(0),
+      m_serviceModel(0)
 {
     Tp::registerTypes();
     Tpy::registerTypes();
 
     qDebug() << "IMPlugin constructor";
 
-    m_tpManager = TelepathyManager::instance();
+    initializeChannelObserver();
     m_protocolsModel = new IMProtocolsModel(this);
-    m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
-
+    m_tpManager = TelepathyManager::instance();
     m_tpManager->setProtocolNames(m_protocolsModel->protocolNames());
 
-    mClientRegistrar = Tp::ClientRegistrar::create();
-
-    initializeChannelObserver();
+    m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
 
     connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
             m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
@@ -45,7 +47,6 @@ IMPlugin::IMPlugin(QObject *parent): QObject(parent), McaFeedPlugin()
     // install translation catalogs
     loadTranslator();
     qApp->installTranslator(&appTranslator);
-
 }
 
 IMPlugin::~IMPlugin()
@@ -66,6 +67,9 @@ QAbstractItemModel *IMPlugin::serviceModel()
 QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
 {
     qDebug() << "IMPlugin::createFeedModel: " << service;
+    if(!mObserver) {
+        initializeChannelObserver();
+    }
 
     foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
         if (!account.isNull() && account->isValid() && account->uniqueIdentifier() == service) {
@@ -75,11 +79,14 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
             return model;
         }
     }
+    qDebug() << "IMPlugin::createFeedModel: Invalid service requested: " << service;
     return 0;
 }
 
 void IMPlugin::initializeChannelObserver()
 {
+    mClientRegistrar = Tp::ClientRegistrar::create();
+
     // setup the channel filters
     Tp::ChannelClassSpecList channelSpecList;
 
@@ -98,7 +105,10 @@ void IMPlugin::initializeChannelObserver()
     Tp::AbstractClientPtr observer(mObserver);
 
     // register the observer
-    mClientRegistrar->registerClient(observer, "MeeGoIMPanelsObserver");
+    // add the date and time to make sure it is unique
+    QString observerName = QString("MeeGoIMPanelsObserver") +  QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch());
+    qDebug() << "IMPlugin::initizalizeChannelObserver: observer name is " << observerName;
+    mClientRegistrar->registerClient(observer, observerName);
 }
 
 McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QString &searchText)

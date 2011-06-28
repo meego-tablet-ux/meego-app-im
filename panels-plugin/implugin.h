@@ -64,8 +64,8 @@ private Q_SLOTS:
 private:
     TelepathyManager *m_tpManager;
     IMProtocolsModel *m_protocolsModel;
-    IMServiceModel *m_serviceModel;
     PanelsChannelObserver *mObserver;
+    IMServiceModel* m_serviceModel;
     Tp::ClientRegistrarPtr mClientRegistrar;
     QMap<QString, IMFeedModel *> mFeedModels;
     QTranslator appTranslator;

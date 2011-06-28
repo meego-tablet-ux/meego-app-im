@@ -108,7 +108,13 @@ void IMPlugin::initializeChannelObserver()
     // add the date and time to make sure it is unique
     QString observerName = QString("MeeGoIMPanelsObserver") +  QString::number(QDateTime::currentDateTime().toMSecsSinceEpoch());
     qDebug() << "IMPlugin::initizalizeChannelObserver: observer name is " << observerName;
-    mClientRegistrar->registerClient(observer, observerName);
+    if(!mClientRegistrar->registerClient(observer, observerName)) {
+        qDebug() << "IMPlugin::initizalizeChannelObserver: reattempting to register observer after error. Changing name in case there was a conflict";
+        observerName += "B";
+        if(!mClientRegistrar->registerClient(observer, observerName)) {
+            qDebug() << "IMPlugin::initizalizeChannelObserver: error after second attempt to register observer " << observerName;
+        }
+    }
 }
 
 McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QString &searchText)

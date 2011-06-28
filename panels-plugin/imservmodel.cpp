@@ -17,6 +17,12 @@ IMServiceModel::IMServiceModel(TelepathyManager *tpManager, IMProtocolsModel *pr
       m_protocolsModel(protoModel)
 {
     m_actions = new McaActions;
+
+    // add existing accounts
+    // this should generally be empty, as TelepathyManager is still starting
+    foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
+        onAccountAvailable(account);
+    }
 }
 
 IMServiceModel::~IMServiceModel()
@@ -116,6 +122,7 @@ void IMServiceModel::onAccountAvailable(Tp::AccountPtr account)
             SLOT(onAccountRemoved()));
 
     // add if new
+    qDebug() << "IMServiceModel::onAccountAvailable: " << account->uniqueIdentifier();
     beginInsertRows(QModelIndex(), m_accounts.count(), m_accounts.count());
     m_accounts.append(account);
     endInsertRows();

@@ -148,13 +148,17 @@ void DebugMessageCollector::onGetMessagesFinished(QDBusPendingCallWatcher *watch
 
     QDBusPendingReply<DebugMessageList> reply = *watcher;
     if (reply.isError()) {
-        qDebug() << "DebugMessageCollector::onGetMessagesFinished: error in reply";
+        qDebug() << "DebugMessageCollector::onGetMessagesFinished: error in reply" << reply.error();
+        mPendingGetMessageCalls--;
+        dumpCheck();
         return;
     }
 
     DebugProxy *debugProxy = watcher->property("debugProxy").value<DebugProxy*>();
     if (!debugProxy) {
         qDebug() << "DebugMessageCollector::onGetMessagesFinished: debugProxy not found";
+        mPendingGetMessageCalls--;
+        dumpCheck();
         return;
     }
 
@@ -242,13 +246,14 @@ void DebugMessageCollector::dumpToFiles()
 
     mPendingDumpToFiles = false;
 
-    dumpMessagesToFile("/tmp/log-im.app.txt", mAppMessages);
-
     foreach(DebugProxyInfo proxyInfo, mDebugProxies) {
         QString fileName = QString("/tmp/log-im.%2.txt").arg(proxyInfo.name);
         DebugMessageList messageList = mMessages[proxyInfo.debugProxy];
         dumpMessagesToFile(fileName, messageList);
     }
+
+    // we want this to be the last file recorded
+    dumpMessagesToFile("/tmp/log-im.app.txt", mAppMessages);
 }
 
 void DebugMessageCollector::dumpMessagesToFile(const QString &fileName, const DebugMessageList &messageList)

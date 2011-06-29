@@ -82,10 +82,6 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
 
 IMProtocolsModel::~IMProtocolsModel()
 {
-    foreach (QObject *customizer, mCustomizerMap) {
-        delete customizer;
-    }
-
     if (mEngine) {
         delete mEngine;
         mEngine = 0;

@@ -53,8 +53,6 @@ IMPlugin::~IMPlugin()
 {
     qDebug() << "IMPlugin::~IMPlugin() terminating";
     mClientRegistrar->unregisterClients();
-    delete m_serviceModel;
-    delete m_protocolsModel;
     mClientRegistrar->deleteLater();
     qDebug() << "IMPlugin::~IMPlugin() done terminating";
 }

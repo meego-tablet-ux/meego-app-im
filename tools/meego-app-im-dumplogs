@@ -13,6 +13,8 @@ if [ $? -ne 0 ]; then
         echo Get DBUS session "$DBUS_SESSION"
     else
         echo DBUS session not found
+        ps aux | grep -E dbus\|meego-qml-launcher\|meego-ux-daemon
+        qdbus
     fi 
 fi
 

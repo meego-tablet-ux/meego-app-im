@@ -82,7 +82,7 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
 
 IMProtocolsModel::~IMProtocolsModel()
 {
-    if (mEngine) {
+    if (mEngine && 0 != mEngine->parent()) {
         delete mEngine;
         mEngine = 0;
     }

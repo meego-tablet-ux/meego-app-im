@@ -64,9 +64,6 @@ protected:
       */
     int presenceOrder(const int type) const;
 
-protected Q_SLOTS:
-    void onDataChanged();
-
 private:
     TelepathyManager *mManager;
     QAbstractItemModel *mModel;

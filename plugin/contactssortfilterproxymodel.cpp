@@ -311,14 +311,6 @@ void ContactsSortFilterProxyModel::filterByString(const QString filter)
     }
 }
 
-void ContactsSortFilterProxyModel::onDataChanged()
-{
-    if(mActive) {
-        invalidate();
-        emit rowCountChanged();
-    }
-}
-
 void ContactsSortFilterProxyModel::filterByLastUsedAccount(const QString &accountId)
 {
     mActive = true;

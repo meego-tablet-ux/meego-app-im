@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "`whoami`" != "meego" ]; then
+    echo Please, run this script as meego user
+    exit
+fi
+
 qdbus | grep -v com.meego.app.imapprover | grep com.meego.app.im > /dev/null
 if [ $? -ne 0 ]; then
     THEPID=`pidof meego-ux-daemon meego-qml-launcher | cut -d " " -f 1`
@@ -23,7 +28,7 @@ if [ $? -eq 0 ]; then
     ls -l log-im.*
 else
     echo ""
-    echo "ERROR: MeeGo App IM is not running."
+    echo "ERROR: MeeGo App IM is not running. (script runned as `whoami`)"
     echo "   Please make sure you start the application before running this script."
     echo ""
 fi

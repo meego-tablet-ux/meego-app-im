@@ -1,11 +1,24 @@
 #!/bin/sh
 
-THEPID=`pidof meego-ux-daemon meego-qml-launcher | cut -d " " -f 1`
-export `xargs --null --max-args=1 echo < /proc/$THEPID/environ | grep DBUS_SESSION`
+qdbus | grep -v com.meego.app.imapprover | grep com.meego.app.im > /dev/null
+if [ $? -ne 0 ]; then
+    THEPID=`pidof meego-ux-daemon meego-qml-launcher | cut -d " " -f 1`
+    if test -f /proc/$THEPID/environ; then
+        export `xargs --null --max-args=1 echo < /proc/$THEPID/environ | grep DBUS_SESSION`
+        echo Get DBUS session "$DBUS_SESSION"
+    else
+        echo DBUS session not found
+    fi 
+fi
 
-qdbus | grep com.meego.app.im > /dev/null
+qdbus | grep -v com.meego.app.imapprover | grep com.meego.app.im > /dev/null
 if [ $? -eq 0 ]; then
+    echo Requesting log files
+    rm -f /tmp/log-im.* 
     qdbus com.meego.app.im /com/meego/app/im com.meego.app.im.dumpLogs
+    echo Waiting for files to be written
+    while ! test -f /tmp/log-im.app.txt; do sleep 1; done
+    echo `ls /tmp/log-im.* | wc -l` log files written 
     mv /tmp/log-im.* .
     ls -l log-im.*
 else
@@ -14,3 +27,4 @@ else
     echo "   Please make sure you start the application before running this script."
     echo ""
 fi
+

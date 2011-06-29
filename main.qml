@@ -216,7 +216,6 @@ Window {
             telepathyManager.registerClients();
             reloadFilterModel();
             componentsLoaded();
-            buildBookMenuPayloadModel();
         }
     }
 
@@ -280,12 +279,8 @@ Window {
             window.addPage(accountFactory.componentForAccount(accountId, window));
         }
 
-        onDataChanged: {
-            reloadFilterModel();
-        }
-
         onAccountCountChanged: {
-            buildBookMenuPayloadModel();
+            reloadFilterModel();
         }
     }
 
@@ -337,16 +332,6 @@ Window {
 
         addPage(messageScreenContent);
         fastPageSwitch = false;
-    }
-
-    function buildBookMenuPayloadModel()
-    {
-        var payload = new Array();
-        for (var i = 0; i < accountsSortedModel.length; ++i) {
-            payload[i] = accountsSortedModel.dataByRow(i, AccountsModel.IdRole );
-        }
-        payload[accountsSortedModel.length] = "";
-        bookMenuPayload = payload;
     }
 
     function startConversation(contactId)
@@ -461,17 +446,25 @@ Window {
     function reloadFilterModel()
     {
         // do not do anything if accountsSortedModel is not created yet
-        if (typeof(accountsSortedModel) == "undefined")
+        if (typeof(accountsSortedModel) == "undefined") {
             return;
+        }
 
         accountFilterModel = [];
-
         var accountsList = new Array();
+        var payload = new Array();
         for (var i = 0; i < accountsSortedModel.length; ++i) {
-            accountsList[i] = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
+            var accName = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
+            if (accName != "") {
+                accountsList[accountsList.length] = accName;
+                payload[payload.length] = accountsSortedModel.dataByRow(i, AccountsModel.IdRole );
+            }
         }
         accountsList[accountsList.length] = Constants.mainAccountSwitcher;
+        payload[payload.length] = "";
+
         accountFilterModel = accountsList;
+        bookMenuPayload = payload;
     }
 
     function presenceStatusText(type)

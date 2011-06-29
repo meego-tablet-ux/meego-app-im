@@ -222,7 +222,6 @@ void ChatAgent::handleReadyChannel()
 
     emit chatCreated();
     emit existsChatChanged();
-    emit pendingConversationsChanged();
 
     if(mTextChannel->isRequested()) {
         if(mTextChannel->isConference()) {

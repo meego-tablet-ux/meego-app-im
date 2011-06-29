@@ -148,6 +148,21 @@ Window {
     }
 
     Connections {
+        target: mainWindow
+        onCall: {
+            parseWindowParameters(parameters);
+
+            // only actually do something if the models are loaded
+            if (accountsModel != undefined) {
+                // first return to the main account list then execute the command line parameters
+                window.switchBook(accountScreenContent);
+                componentsLoaded();
+                openPageByCommand();
+            }
+        }
+    }
+
+    Connections {
         target:  null;
         id: accountItemConnections
 
@@ -182,18 +197,7 @@ Window {
                     }
                 }
             } else {
-                if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
-                    currentAccountId = cmdAccountId;
-                    accountItem = accountsModel.accountItemForId(currentAccountId);
-
-                    if(cmdCommand == "show-chat") {
-                        currentContactId = cmdContactId;
-                        contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
-                        startConversation(currentContactId);
-                    } else if(cmdCommand == "show-contacts") {
-                        addPage(contactsScreenContent);
-                    }
-                }
+                openPageByCommand();
             }
         }
     }
@@ -512,6 +516,22 @@ Window {
             if (cmd == "show-chat") {
                 //also get the contact id to open a chat with
                 cmdContactId = parsedParameter.substr(parsedParameter.indexOf("&") + 1, parsedParameter.length - 1);
+            }
+        }
+    }
+
+    function openPageByCommand()
+    {
+        if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
+            currentAccountId = cmdAccountId;
+            accountItem = accountsModel.accountItemForId(currentAccountId);
+
+            if(cmdCommand == "show-chat") {
+                currentContactId = cmdContactId;
+                contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
+                startConversation(currentContactId);
+            } else if(cmdCommand == "show-contacts") {
+                addPage(contactsScreenContent);
             }
         }
     }

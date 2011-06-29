@@ -352,7 +352,8 @@ bool ContactsSortFilterProxyModel::isRequestsOnly() const
 void ContactsSortFilterProxyModel::setBlockedOnly(bool toggle)
 {
     mBlockedOnly = toggle;
-    invalidate();
+    invalidateFilter();
+    emit rowCountChanged();
 }
 
 bool ContactsSortFilterProxyModel::isBlockedOnly() const

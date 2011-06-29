@@ -47,6 +47,9 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
                      << Tp::Contact::FeatureSimplePresence
                      << Tp::Contact::FeatureAvatarData
                      << Tp::Contact::FeatureCapabilities;
+
+    connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            SLOT(onDataChanged()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()
@@ -129,8 +132,6 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
 
                     //filter blocked contacts
                     if (!mBlockedOnly && contact->isBlocked()) {
-                        return false;
-                    } else if (mBlockedOnly && !contact->isBlocked()) {
                         return false;
                     }
 
@@ -376,4 +377,12 @@ void ContactsSortFilterProxyModel::clearSkippedContacts()
 {
     mSkippedContacts.clear();
     invalidate();
+}
+
+void ContactsSortFilterProxyModel::onDataChanged()
+{
+    if (mActive) {
+        invalidate();
+        emit rowCountChanged();
+    }
 }

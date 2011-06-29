@@ -1649,7 +1649,8 @@ int IMAccountsModel::actualContactsCount(const QString &accountId) const
                 // otherwise you'll end up with an empty contacts list and the Add Friend items will not be shown
                 if (!contact->isBlocked()
                         && !contact->isSubscriptionRejected()
-                        && contact->subscriptionState() != Tp::Contact::PresenceStateNo) {
+                        && (contact->subscriptionState() != Tp::Contact::PresenceStateNo
+                            && contact->publishState() != Tp::Contact::PresenceStateNo)) {
                     // if at least one contact complies, just return the count
                     // it's only important to know there is at least one contact that is going to be displayed
                     return account->connection()->contactManager()->allKnownContacts().count();

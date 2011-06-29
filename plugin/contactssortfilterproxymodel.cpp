@@ -119,9 +119,12 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     }
 
                     // filter rejected subscription requests
-                    if (contact->isSubscriptionRejected() || contact->subscriptionState() == Tp::Contact::PresenceStateNo) {
+                    if (contact->isSubscriptionRejected()
+                            || (contact->subscriptionState() == Tp::Contact::PresenceStateNo
+                                && contact->publishState() == Tp::Contact::PresenceStateNo)) {
                         return false;
                     }
+
 
                     // filter requests
                     if (!mRequestsOnly && contact->publishState() == Tp::Contact::PresenceStateAsk) {
@@ -331,7 +334,7 @@ bool ContactsSortFilterProxyModel::isShowOffline() const
 void ContactsSortFilterProxyModel::setContactsOnly(bool toggle)
 {
     mContactsOnly = toggle;
-    invalidate();
+    invalidateFilter();
 }
 
 bool ContactsSortFilterProxyModel::isContactsOnly() const
@@ -370,13 +373,13 @@ QString ContactsSortFilterProxyModel::accountId() const
 void ContactsSortFilterProxyModel::skipContacts(const QStringList &contactsList)
 {
     mSkippedContacts = contactsList;
-    invalidate();
+    invalidateFilter();
 }
 
 void ContactsSortFilterProxyModel::clearSkippedContacts()
 {
     mSkippedContacts.clear();
-    invalidate();
+    invalidateFilter();
 }
 
 void ContactsSortFilterProxyModel::onDataChanged()

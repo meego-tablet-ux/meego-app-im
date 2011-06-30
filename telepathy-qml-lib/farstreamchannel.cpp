@@ -507,6 +507,7 @@ void FarstreamChannel::initAudioOutput()
         gst_object_ref(mGstAudioOutputSink);
     }
 
+    g_object_set(G_OBJECT(mGstAudioOutputActualSink), "async", FALSE, NULL);
     createGhostPad(mGstAudioOutput, gst_element_get_static_pad(mGstAudioOutputSink, "sink"), SINK_GHOST_PAD_NAME);
 
     if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
@@ -1751,8 +1752,8 @@ void FarstreamChannel::onSrcPadAddedContent(TfContent *content, uint handle, FsS
     }
 
     gst_element_set_locked_state (bin, FALSE);
-    if (!gst_element_sync_state_with_parent (bin)) {
-        self->setError("GStreamer could not sync bin state with its parent");
+    if (gst_element_set_state (bin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
+        self->setError("GStreamer could not set output bin state to PLAYING");
         return;
     }
 

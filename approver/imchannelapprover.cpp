@@ -17,6 +17,7 @@
 #include <TelepathyQt4/ConnectionFactory>
 #include <TelepathyQt4/ContactFactory>
 #include <TelepathyQt4/ClientRegistrar>
+#include <TelepathyQt4/ReceivedMessage>
 #include <TelepathyQt4Yell/ChannelFactory>
 #include <MGConfItem>
 #include <mremoteaction.h>
@@ -27,7 +28,8 @@ IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
   mApplicationRunning(false),
   mAutoApproveCalls(autoApproveCalls),
   mPendingCall(false),
-  mProtocolsModel(0)
+  mProtocolsModel(0),
+  mNotificationManager(this)
 {
     mProtocolsModel = new IMProtocolsModel(this);
     if (!mProtocolsModel) {
@@ -52,6 +54,10 @@ IMChannelApprover::IMChannelApprover(bool autoApproveCalls)
 
     bool appRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.freedesktop.Telepathy.Client.MeeGoIM").value();
     setApplicationRunning(appRunning);
+
+    // make the notification manager always behave like the application was in background
+    // meaning all events are going to be notified
+    mNotificationManager.setApplicationActive(false);
 }
 
 IMChannelApprover::~IMChannelApprover()
@@ -211,6 +217,11 @@ void IMChannelApprover::setApplicationRunning(bool running)
             // TODO: check what to do when the MeegoIM handler is not available
         }
     }
+
+    // if the application is now running, it is the one handling notifications
+    if (mApplicationRunning) {
+        mNotificationManager.clear();
+    }
 }
 
 void IMChannelApprover::registerApprover()
@@ -256,6 +267,13 @@ void IMChannelApprover::onTextChannelReady(Tp::PendingOperation *op)
         return;
     }
     QString accountId = textChannel->property("accountId").toString();
+
+    foreach (Tp::ReceivedMessage message, textChannel->messageQueue()) {
+        onMessageReceived(accountId, message);
+    }
+
+    connect(textChannel.data(), SIGNAL(messageReceived(Tp::ReceivedMessage)),
+            this, SLOT(onMessageReceived(Tp::ReceivedMessage)));
 
     emit textChannelAvailable(accountId, textChannel);
 }
@@ -364,7 +382,7 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
     }
 
     QString accountId = callChannel->property("accountId").toString();
-    QString contactId = callChannel->initiatorContact()->id();
+    Tp::ContactPtr contact = callChannel->initiatorContact();
 
     // check if it was a video call
     int initialVideo = callChannel->immutableProperties().value("org.freedesktop.Telepathy.Channel.Type.Call.DRAFT.InitialVideo",0).toInt();
@@ -373,20 +391,28 @@ void IMChannelApprover::onCallChannelStateChanged(Tpy::CallState state)
     if (mApplicationRunning) {
         if (initialVideo) {
             reportMissedVideoCalls(accountId,
-                                   QStringList() << contactId,
+                                   QStringList() << contact->id(),
                                    QStringList() << QDateTime::currentDateTime().toString());
         } else {
             reportMissedAudioCalls(accountId,
-                                   QStringList() << contactId,
+                                   QStringList() << contact->id(),
                                    QStringList() << QDateTime::currentDateTime().toString());
         }
     } else {
         if (initialVideo) {
-            mMissedVideoCalls[accountId].contacts.append(contactId);
+            mMissedVideoCalls[accountId].contacts.append(contact->id());
             mMissedVideoCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+            mNotificationManager.notifyMissedVideoCall(accountId,
+                                                       contact->id(),
+                                                       contact->alias(),
+                                                       QDateTime::currentDateTime());
         } else {
-            mMissedAudioCalls[accountId].contacts.append(contactId);
+            mMissedAudioCalls[accountId].contacts.append(contact->id());
             mMissedAudioCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+            mNotificationManager.notifyMissedCall(accountId,
+                                                  contact->id(),
+                                                  contact->alias(),
+                                                  QDateTime::currentDateTime());
         }
     }
 }
@@ -408,7 +434,29 @@ void IMChannelApprover::onFileTransferChannelReady(Tp::PendingOperation *op)
         qDebug() << "IMChannelApprover::onFileTransferChannelReady: stream invalid";
         return;
     }
+
     QString accountId = fileTransferChannel->property("accountId").toString();
+
+    // if the application is not running, notify the incoming file transfer
+    if (!mApplicationRunning) {
+        Tp::ContactPtr contact;
+        foreach(Tp::ContactPtr channelContact, fileTransferChannel->groupContacts().toList()) {
+            if(contact != fileTransferChannel->groupSelfContact()) {
+                contact = channelContact;
+                break;
+            }
+        }
+
+        if(contact.isNull()) {
+            return;
+        }
+
+        mNotificationManager.notifyIncomingFileTransfer(accountId,
+                                                        contact->id(),
+                                                        contact->alias(),
+                                                        QDateTime::currentDateTime(),
+                                                        fileTransferChannel->fileName());
+    }
 
     emit fileTransferChannelAvailable(accountId, fileTransferChannel);
 }
@@ -473,6 +521,7 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
     mPendingCall = false;
 
     int initialVideo = 0;
+    QString contactAlias;
 
     // look for the channel in the pending dispatch operations and approve it
     foreach (Tp::ChannelDispatchOperationPtr dispatchOperation, mDispatchOps) {
@@ -491,6 +540,7 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
             if (contact->id() == contactId) {
                 callChannel->hangup(Tpy::CallStateChangeReasonUserRequested, QString(), QString());
                 callChannel->requestClose();
+                contactAlias = callChannel->initiatorContact()->alias();
                 mDispatchOps.removeAll(dispatchOperation);
 
                 // check if it was a video call
@@ -515,9 +565,17 @@ void IMChannelApprover::rejectCall(const QString &accountId, const QString &cont
         if (initialVideo) {
             mMissedVideoCalls[accountId].contacts.append(contactId);
             mMissedVideoCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+            mNotificationManager.notifyMissedVideoCall(accountId,
+                                                       contactId,
+                                                       contactAlias,
+                                                       QDateTime::currentDateTime());
         } else {
             mMissedAudioCalls[accountId].contacts.append(contactId);
             mMissedAudioCalls[accountId].times.append(QDateTime::currentDateTime().toString());
+            mNotificationManager.notifyMissedCall(accountId,
+                                                  contactId,
+                                                  contactAlias,
+                                                  QDateTime::currentDateTime());
         }
     }
 }
@@ -565,5 +623,36 @@ void IMChannelApprover::reportMissedVideoCalls(const QString &accountId, const Q
                               "com.meego.app.im");
 
     meegoAppIM.call("reportMissedVideoCalls", accountId, contacts, times);
+}
+
+void IMChannelApprover::onMessageReceived(const Tp::ReceivedMessage &message)
+{
+    QString accountId = sender()->property("accountId").toString();
+    onMessageReceived(accountId, message);
+}
+
+void IMChannelApprover::onMessageReceived(const QString &accountId, const Tp::ReceivedMessage &message)
+{
+    if (mApplicationRunning) {
+        return;
+    }
+
+    Tp::ContactPtr contact = message.sender();
+
+    // do not log old messages
+    if (message.isRescued() || message.isScrollback()) {
+        return;
+    }
+
+    // do not log delivery reports
+    if(message.messageType() == Tp::ChannelTextMessageTypeDeliveryReport) {
+        return;
+    }
+
+    mNotificationManager.notifyPendingMessage(accountId,
+                                              contact->id(),
+                                              contact->alias(),
+                                              message.received(),
+                                              message.text());
 }
 

@@ -26,21 +26,8 @@ IMFeedModel::IMFeedModel(PanelsChannelObserver *observer, Tp::AccountPtr account
     : McaFeedModel(parent),
       mObserver(observer),
       mAccount(account),
-      mAccountId(account->uniqueIdentifier()),
-      mNotificationManager(this),
-      mPlaceNotifications(true),
-      mIMServiceWatcher(this)
+      mAccountId(account->uniqueIdentifier())
 {
-    mNotificationManager.setApplicationActive(false);
-    mIMServiceWatcher.setConnection(QDBusConnection::sessionBus());
-    mIMServiceWatcher.setWatchMode(QDBusServiceWatcher::WatchForRegistration | QDBusServiceWatcher::WatchForUnregistration);
-    mIMServiceWatcher.addWatchedService("org.freedesktop.Telepathy.Client.MeeGoIM");
-    connect(&mIMServiceWatcher,
-            SIGNAL(serviceRegistered(QString)),
-            SLOT(onServiceRegistered()));
-    connect(&mIMServiceWatcher,
-            SIGNAL(serviceUnregistered(QString)),
-            SLOT(onServiceUnregistered()));
     if(observer) {
         connect(observer,
                 SIGNAL(newTextChannel(QString,Tp::TextChannelPtr)),
@@ -245,15 +232,6 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
             this, SLOT(performAction(QString,QString)));
 
     insertItem(item);
-
-    if (mPlaceNotifications) {
-        mNotificationManager.notifyPendingMessage(mAccountId,
-                                                  contact->id(),
-                                                  contact->alias(),
-                                                  message.sent(),
-                                                  message.text());
-    }
-
 }
 
 void IMFeedModel::onNewTextChannel(const QString &accountId, const Tp::TextChannelPtr &textChannel)
@@ -351,21 +329,6 @@ void IMFeedModel::onPresencePublicationRequested(const Tp::Contacts &contacts)
                 this, SLOT(performAction(QString,QString)));
         insertItem(item);
     }
-}
-
-void IMFeedModel::onServiceRegistered()
-{
-    mPlaceNotifications = false;
-    // remove all notifications
-    mNotificationManager.clear();
-    emit applicationRunningChanged(true);
-}
-
-void IMFeedModel::onServiceUnregistered()
-{
-    // if the application quits, we should continue placing notifications
-    mPlaceNotifications = true;
-    emit applicationRunningChanged(false);
 }
 
 Tp::AccountPtr IMFeedModel::account(void) const

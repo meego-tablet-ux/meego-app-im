@@ -13,7 +13,6 @@
 
 #include "imfeedmodelitem.h"
 #include "../telepathy-qml-lib/panelschannelobserver.h"
-#include "../telepathy-qml-lib/notificationmanager.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/Channel>
@@ -105,8 +104,6 @@ protected slots:
                                    const Tp::Contacts &contactsRemoved,
                                    const Tp::Channel::GroupMemberChangeDetails &details);
     void onPublishStateChanged(Tp::Contact::PresenceState state);
-    void onServiceRegistered();
-    void onServiceUnregistered();
 
     void onConnectionChanged(const Tp::ConnectionPtr &conn);
     void onConnectionStatusChanged(const Tp::ConnectionStatus status);
@@ -127,9 +124,6 @@ private:
     QString mServiceIcon;
     QString mServiceName;
     QList<IMFeedModelItem *> mItems;
-    NotificationManager mNotificationManager;
-    bool mPlaceNotifications;
-    QDBusServiceWatcher mIMServiceWatcher;
 };
 
 #endif  // __emailmodel_h

@@ -68,6 +68,11 @@ protected:
     void reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
     void reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
 
+protected slots:
+    void onMessageReceived(const Tp::ReceivedMessage &message);
+    void onMessageReceived(const QString &accountId,
+                           const Tp::ReceivedMessage &message);
+
 private:
     QList<Tp::ChannelDispatchOperationPtr> mDispatchOps;
     bool mApplicationRunning;
@@ -80,6 +85,7 @@ private:
     IMProtocolsModel *mProtocolsModel;
     QMap<QString, MissedCalls> mMissedAudioCalls;
     QMap<QString, MissedCalls> mMissedVideoCalls;
+    NotificationManager mNotificationManager;
 };
 
 #endif // IMCHANNELAPPROVER_H

@@ -143,6 +143,9 @@ protected:
     Tpy::ContactModelItem *itemForFileTransferAgent(FileTransferAgent *agent) const;
     Tp::ContactPtr contactFromChannelId(const Tp::AccountPtr &account, const QString &channelPath, const QString &contactId) const;
 
+protected Q_SLOTS:
+    virtual void onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes);
+
 private Q_SLOTS:
     void onChatCreated();
     void onRequestedGroupChatCreated();
@@ -158,6 +161,7 @@ private Q_SLOTS:
     void onSetPrivacyProperty(QDBusPendingCallWatcher *watcher);
     void onAccountCountChanged();
     void onAcceptCallFinished(CallAgent *agent);
+    void onHierarchicalChanged();
 
 private:
     Tpl::LoggerPtr mLogger;

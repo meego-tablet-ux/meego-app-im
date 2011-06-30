@@ -1693,3 +1693,26 @@ void IMAccountsModel::reportMissedVideoCall(const QString &accountId, const QStr
     agent->reportMissedVideoCall(time);
 }
 
+void IMAccountsModel::onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes)
+{
+    Tpy::AccountsModel::onItemsAdded(parent, nodes);
+
+    // just check for case adding an account
+    if (parent->parent() == 0 && nodes.size() == 1) {
+        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *> (nodes.at(0));
+        if (accountItem) {
+            connect(accountItem,
+                    SIGNAL(displayNameChanged(QString)),
+                    SLOT(onHierarchicalChanged()));
+        }
+    }
+}
+
+void IMAccountsModel::onHierarchicalChanged()
+{
+    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *> (sender());
+    if (accountItem) {
+        QModelIndex accountIndex = index(accountItem);
+        emit hierarchicalDataChanged(accountIndex, accountIndex);
+    }
+}

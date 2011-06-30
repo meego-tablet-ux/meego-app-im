@@ -269,6 +269,8 @@ Window {
         onAcceptCallFinished: {
             window.fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, window.currentContactId);
 
+            window.contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
+
             // and start the conversation
             window.showMessageScreen();
             accountsModel.startChat(window.currentAccountId, window.currentContactId);

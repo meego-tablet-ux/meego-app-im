@@ -129,18 +129,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#e6e6e6"
-
-        BorderImage {
-            source: "image://themedimage/widgets/common/menu/menu-background-shadow"
-            anchors.margins: -4
-            anchors.fill: parent
-            border.left: 11
-            border.top: 11
-            border.bottom: 11
-            border.right: 11
-            visible: window.fullScreen
-        }
+        color: "black"
     }
 
     VideoItem {

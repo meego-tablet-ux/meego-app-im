@@ -600,6 +600,14 @@ void CallAgent::onChannelAvailable(Tp::ChannelPtr channel)
 
     mIsRequested = mCallChannel->isRequested();
 
+    // If we just cancelled the request, we might still get notification of the new channel.
+    // If we do, we just close it as it is not needed anymore.
+    if (mCallStatus == CallStatusNoCall && mCallChannel->isRequested()) {
+        qDebug() << "CallAgent::onChannelAvailable: Requested channel available, but we cancelled it, ending";
+        endCall();
+        return;
+    }
+
     if (!mCallChannel->isRequested() && mCallChannel->state() == Tpy::CallStatePendingReceiver) {
         QVariantMap props = channel->immutableProperties();
         //int initialVideo = props.value("InitialVideo",0).toInt();

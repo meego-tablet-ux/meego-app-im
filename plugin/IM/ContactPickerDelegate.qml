@@ -106,6 +106,8 @@ Item {
                 PresenceIcon {
                     id: presence
                     status: (mainChatWindow.accountItem != undefined? model.presenceType : -1)
+                    customizer: (mainChatWindow.accountItem != undefined?
+                                     protocolsModel.customizerForId(mainChatWindow.accountItem.data(AccountsModel.IconRole)) : null)
                     anchors.verticalCenter: message.verticalCenter
                     anchors.topMargin: 5
                 }

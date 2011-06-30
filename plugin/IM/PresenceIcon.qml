@@ -13,6 +13,8 @@ Item {
     height:  12
     width: 12
     property int status: 0
+    property variant customizer: protocolsModel.customizerForId(mainChatWindow.accountItem.data(AccountsModel.IconRole));
+
 
     onStatusChanged: {
         if (status >= 0) {
@@ -30,7 +32,10 @@ Item {
 
         function statusIcon(type) {
             var icon;
-            var customizer = protocolsModel.customizerForId(mainChatWindow.accountItem.data(AccountsModel.IconRole));
+
+            if (customizer == undefined) {
+                return "";
+            }
 
             switch (type) {
             case TelepathyTypes.ConnectionPresenceTypeAvailable:

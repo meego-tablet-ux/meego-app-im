@@ -126,15 +126,17 @@ Window {
     }
 
     onBookMenuTriggered: {
-        if(bookMenuPayload[index] != "") {
-            currentAccountId = bookMenuPayload[index];
-            accountItem = accountsModel.accountItemForId(currentAccountId);
-            window.switchBook(accountScreenContent);
-            componentsLoaded();
-            window.addPage(contactsScreenContent);
-        } else {
-            window.switchBook(accountScreenContent);
-            componentsLoaded();
+        if (index >= 0 && index < bookMenuPayload.length) {
+            if(bookMenuPayload[index] != "") {
+                currentAccountId = bookMenuPayload[index];
+                accountItem = accountsModel.accountItemForId(currentAccountId);
+                window.switchBook(accountScreenContent);
+                componentsLoaded();
+                showContactsScreen();
+            } else {
+                window.switchBook(accountScreenContent);
+                componentsLoaded();
+            }
         }
     }
 
@@ -285,8 +287,6 @@ Window {
             reloadFilterModel();
         }
     }
-
-    bookMenuModel: accountFilterModel
 
     function buildComponentStrings()
     {
@@ -448,25 +448,25 @@ Window {
     function reloadFilterModel()
     {
         // do not do anything if accountsSortedModel is not created yet
-        if (typeof(accountsSortedModel) == "undefined") {
-            return;
-        }
 
         accountFilterModel = [];
         var accountsList = new Array();
         var payload = new Array();
-        for (var i = 0; i < accountsSortedModel.length; ++i) {
-            var accName = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
-            if (accName != "") {
-                accountsList[accountsList.length] = accName;
-                payload[payload.length] = accountsSortedModel.dataByRow(i, AccountsModel.IdRole );
+        if (typeof(accountsSortedModel) != "undefined") {
+            for (var i = 0; i < accountsSortedModel.length; ++i) {
+                var accName = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
+                if (accName != "") {
+                    accountsList[accountsList.length] = accName;
+                    payload[payload.length] = accountsSortedModel.dataByRow(i, AccountsModel.IdRole );
+                }
             }
         }
         accountsList[accountsList.length] = Constants.mainAccountSwitcher;
         payload[payload.length] = "";
 
         accountFilterModel = accountsList;
-        bookMenuPayload = payload;
+
+        setBookMenuData(accountFilterModel, payload);
     }
 
     function presenceStatusText(type)

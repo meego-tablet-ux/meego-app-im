@@ -15,20 +15,22 @@ Item {
     property int status: 0
 
     onStatusChanged: {
-        iconImage.source = iconImage.statusIcon(status);
+        if (status >= 0) {
+            iconImage.source = iconImage.statusIcon(status);
+        }
     }
 
     Image {
         id: iconImage
         height: parent.height
         width: parent.width
-        source: statusIcon(parent.status)
+        source: (status >= 0 ? statusIcon(parent.status) : "")
         anchors.verticalCenter: parent.verticalCenter
         smooth: true
 
         function statusIcon(type) {
             var icon;
-            var customizer = protocolsModel.customizerForId(window.accountItem.data(AccountsModel.IconRole));
+            var customizer = protocolsModel.customizerForId(mainChatWindow.accountItem.data(AccountsModel.IconRole));
 
             switch (type) {
             case TelepathyTypes.ConnectionPresenceTypeAvailable:

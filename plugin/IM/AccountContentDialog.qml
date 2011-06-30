@@ -32,9 +32,9 @@ AppPage {
         target: accountContent
         onFinished: {
             spinner.hide();
-            window.popPage();
+            mainChatWindow.popPage();
             // this second call is for the settings module
-            window.popPage();
+            mainChatWindow.popPage();
         }
 
         onAccountCreationAborted: {
@@ -132,7 +132,7 @@ AppPage {
                             bgSourceUp: "image://themedimage/widgets/common/button/button-negative"
                             bgSourceDn: "image://themedimage/widgets/common/button/button-negative-pressed"
 
-                            onClicked: window.popPage();
+                            onClicked: mainChatWindow.popPage();
                         }
                     }
                 }

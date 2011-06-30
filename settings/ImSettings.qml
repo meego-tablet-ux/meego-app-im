@@ -16,12 +16,14 @@ import "../constants.js" as Constants
 AppPage {
     id: container
     pageTitle: qsTr("Instant Messaging Settings")
-    anchors.fill: parent
+    height: childrenRect.height
 
     //property alias window: scene
 
     property QtObject appModel : null
     property bool modelsLoaded: false
+
+    property alias mainChatWindow: container
 
     function createAppModel() {
         if (appModel == null) {
@@ -92,226 +94,215 @@ AppPage {
         }
     }
 
-    Flickable {
+    Column {
+        id: contentColumn
         anchors.top: infoBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        flickableDirection: Flickable.VerticalFlick
-        contentHeight: contentColumn.height
-        clip: true
+        height: childrenRect.height
 
-        interactive: contentHeight > height
+        Image {
+            id: accountSettingsLabel
+            width: parent.width
+            source: "image://themedimage/widgets/common/header/header-small"
 
-        Column {
-            id: contentColumn
+            Text{
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                text: qsTr("Accounts");
+                font.pixelSize: theme_fontPixelSizeLarge
+                height: parent.height
+                width: parent.width
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Repeater {
+                id: accountsView
+                model: typeof(accountsSortedModel) != 'undefined' ? accountsSortedModel : null
+
+                AccountSetupDelegate {
+                    parent: contentColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                }
+        }
+
+        Item {
             anchors.left: parent.left
+            anchors.right: parent.right
+            height: childrenRect.height + 20
+            Button {
+                id: addAccountButton
+                y: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                text: (accountsView.count > 0 ? qsTr("Add another account") :
+                                                qsTr("Add an account"))
+                textColor: theme_buttonFontColor
+                bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
+
+                onClicked: window.addPage(accountSetupComponent)
+            }
+        }
+
+        Image {
+            id: generalSettingsLabel
+            width: parent.width
+            source: "image://themedimage/widgets/common/header/header-small"
+
+            Text{
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                text: qsTr("General Settings");
+                font.pixelSize: theme_fontPixelSizeLarge
+                height: parent.height
+                width: parent.width
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Item {
+            width: 10
+            height: 10
+        }
+
+        Item {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
             anchors.right: parent.right
             height: childrenRect.height
 
-            Image {
-                id: accountSettingsLabel
-                width: parent.width
-                source: "image://themedimage/widgets/common/header/header-small"
-
-                Text{
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    text: qsTr("Accounts");
-                    font.pixelSize: theme_fontPixelSizeLarge
-                    height: parent.height
-                    width: parent.width
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Repeater {
-                    id: accountsView
-                    model: typeof(accountsSortedModel) != 'undefined' ? accountsSortedModel : null
-
-                    AccountSetupDelegate {
-                        parent: contentColumn
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                    }
-            }
-
-            Item {
+            Text {
                 anchors.left: parent.left
-                anchors.right: parent.right
-                height: childrenRect.height + 20
-                Button {
-                    id: addAccountButton
-                    y: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    text: (accountsView.count > 0 ? qsTr("Add another account") :
-                                                    qsTr("Add an account"))
-                    textColor: theme_buttonFontColor
-                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
-                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
-
-                    onClicked: window.addPage(accountSetupComponent)
-                }
+                text: qsTr("Show offline contacts")
+                font.pixelSize: theme_fontPixelSizeLarge
             }
 
-            Image {
-                id: generalSettingsLabel
-                width: parent.width
-                source: "image://themedimage/widgets/common/header/header-small"
-
-                Text{
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    text: qsTr("General Settings");
-                    font.pixelSize: theme_fontPixelSizeLarge
-                    height: parent.height
-                    width: parent.width
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Item {
-                width: 10
-                height: 10
-            }
-
-            Item {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
-                anchors.right: parent.right
-                height: childrenRect.height
-
-                Text {
-                    anchors.left: parent.left
-                    text: qsTr("Show offline contacts")
-                    font.pixelSize: theme_fontPixelSizeLarge
-                }
-
-                ToggleButton {
-                    id: offlineContactsToggle
-                    on: settingsHelper.showOfflineContacts
-                    onToggled: settingsHelper.showOfflineContacts = isOn;
-                    anchors.margins: 10
-                    anchors.right: parent.right
-                }
-            }
-
-            Item {
-                width: 10
-                height: 10
-            }
-
-            /*Text {
-                    anchors.margins: 10
-                    text: qsTr("Audio alert on new message")
-                    font.pixelSize: theme_fontPixelSizeLarge
-                }
-
-                ToggleButton {
-                    id: audioAlertToggle
-                    on: settingsHelper.enableAudioAlerts
-                    onToggled: settingsHelper.enableAudioAlerts = isOn;
-                }*/
-
-            Item {
-                anchors.left: parent.left
-                anchors.leftMargin: 10
-                anchors.right: parent.right
-                height: childrenRect.height
-
-                Text {
-                    anchors.left: parent.left
-                    text: qsTr("Notification on new message")
-                    font.pixelSize: theme_fontPixelSizeLarge
-                }
-
-                ToggleButton {
-                    id: notificationToggle
-                    on: settingsHelper.enableNotifications;
-                    onToggled: settingsHelper.enableNotifications = isOn;
-                    anchors.margins: 10
-                    anchors.right: parent.right
-                }
-            }
-                /*Text {
-                    anchors.margins: 10
-                    text: qsTr("Vibrate on new message")
-                    font.pixelSize: theme_fontPixelSizeLarge
-                }
-
-                ToggleButton {
-                    id: vibrateToggle
-                    on: settingsHelper.enableVibrate
-                    onToggled: settingsHelper.enableVibrate = isOn;
-                }*/
-            Item {
-                width: 10
-                height: 10
-            }
-
-            Item {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: childrenRect.height + 20
-                Button {
-                    id: clearHistoryButton
-                    y: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    text: qsTr("Clear chat history")
-                    textColor: theme_buttonFontColor
-                    bgSourceUp: "image://themedimage/widgets/common/button/button-default"
-                    bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
-
-                    onClicked: accountsModel.clearHistory();
-                }
-            }
-
-            Item {
-                width: 10
-                height: 10
-            }
-
-            Image {
-                id: blockedContactsLabel
-                width: parent.width
-                source: "image://themedimage/widgets/common/header/header-small"
-
-                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
-
-                Text{
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    text: qsTr("Blocked contacts");
-                    font.pixelSize: theme_fontPixelSizeLarge
-                    height: parent.height
-                    width: parent.width
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-
-            Item {
-                id: blockSpacer
-                width: 10
-                height: 10
-            }
-
-            ContactPickerView {
-                id: blockedList
+            ToggleButton {
+                id: offlineContactsToggle
+                on: settingsHelper.showOfflineContacts
+                onToggled: settingsHelper.showOfflineContacts = isOn;
                 anchors.margins: 10
-                width: parent.width
-                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            width: 10
+            height: 10
+        }
+
+        /*Text {
+                anchors.margins: 10
+                text: qsTr("Audio alert on new message")
+                font.pixelSize: theme_fontPixelSizeLarge
             }
 
-            Item {
-                width: 10
-                height: 10
-                visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
+            ToggleButton {
+                id: audioAlertToggle
+                on: settingsHelper.enableAudioAlerts
+                onToggled: settingsHelper.enableAudioAlerts = isOn;
+            }*/
+
+        Item {
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            height: childrenRect.height
+
+            Text {
+                anchors.left: parent.left
+                text: qsTr("Notification on new message")
+                font.pixelSize: theme_fontPixelSizeLarge
             }
+
+            ToggleButton {
+                id: notificationToggle
+                on: settingsHelper.enableNotifications;
+                onToggled: settingsHelper.enableNotifications = isOn;
+                anchors.margins: 10
+                anchors.right: parent.right
+            }
+        }
+            /*Text {
+                anchors.margins: 10
+                text: qsTr("Vibrate on new message")
+                font.pixelSize: theme_fontPixelSizeLarge
+            }
+
+            ToggleButton {
+                id: vibrateToggle
+                on: settingsHelper.enableVibrate
+                onToggled: settingsHelper.enableVibrate = isOn;
+            }*/
+        Item {
+            width: 10
+            height: 10
+        }
+
+        Item {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: childrenRect.height + 20
+            Button {
+                id: clearHistoryButton
+                y: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                text: qsTr("Clear chat history")
+                textColor: theme_buttonFontColor
+                bgSourceUp: "image://themedimage/widgets/common/button/button-default"
+                bgSourceDn: "image://themedimage/widgets/common/button/button-default-pressed"
+
+                onClicked: accountsModel.clearHistory();
+            }
+        }
+
+        Item {
+            width: 10
+            height: 10
+        }
+
+        Image {
+            id: blockedContactsLabel
+            width: parent.width
+            source: "image://themedimage/widgets/common/header/header-small"
+
+            visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
+
+            Text{
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                text: qsTr("Blocked contacts");
+                font.pixelSize: theme_fontPixelSizeLarge
+                height: parent.height
+                width: parent.width
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Item {
+            id: blockSpacer
+            width: 10
+            height: 10
+        }
+
+        ContactPickerView {
+            id: blockedList
+            anchors.margins: 10
+            width: parent.width
+            visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
+        }
+
+        Item {
+            width: 10
+            height: 10
+            visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
         }
     }
 

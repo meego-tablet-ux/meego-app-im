@@ -100,7 +100,7 @@ Item {
         component += accountContentFactory.contentForType(type) + "{";
         component += "            id: accountContent;";
         component += "            onAccountCreationAborted: { signInButton.enabled = true; }";
-        component += "            onFinished: window.popPage();";
+        component += "            onFinished: mainChatWindow.popPage();";
         component += "            Button {";
         component += "                id: signInButton;";
         component += "                text: \"" + IMConstants.accountFactoryAddAccount + "\";"

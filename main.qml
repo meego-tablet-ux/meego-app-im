@@ -26,7 +26,7 @@ Window {
     disableToolBarSearch: false
 
     property int animationDuration: 250
-
+    property alias mainChatWindow: window
     property string currentAccountId: ""
     property int    currentAccountStatus: -1 // will get filled when accountItem gets filled
     property string currentAccountName: "" // will get filled when accountItem gets filled

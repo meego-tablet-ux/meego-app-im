@@ -172,15 +172,6 @@ void CallAgent::endCall()
         setErrorString(tr("Error ending call"));
     }
 
-    op = mCallChannel->requestClose();
-    if (op) {
-        setCallStatus(CallStatusHangingUp);
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(onRequestCloseFinished(Tp::PendingOperation*)));
-    } else {
-        setErrorString(tr("Error ending call"));
-    }
-
     disconnect(mCallChannel.data(),
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
                this,

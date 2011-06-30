@@ -39,19 +39,13 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
         addModel(mLoggerConversationModel);
         connect(mLoggerConversationModel,
                 SIGNAL(backFetched(int)),
-                SLOT(onBackFetched()));
+                SLOT(onBackFetched(int)));
         connect(mLoggerConversationModel,
                 SIGNAL(backFetchable()),
                 SIGNAL(backFetchable()));
         connect(mLoggerConversationModel,
                 SIGNAL(backFetched(int)),
                 SIGNAL(backFetched(int)));
-        connect(mLoggerConversationModel,
-                SIGNAL(backFetchable()),
-                SLOT(continueSearch()));
-        connect(mLoggerConversationModel,
-                SIGNAL(backFetched(int)),
-                SLOT(continueSearch()));
         // messages in the queue will be reported from both conversation models (logger and session)
         // so basically we will delete the ones in the logger when loaded
         mNumDuplicatedMessages = channel->messageQueue().count();
@@ -685,7 +679,7 @@ void IMConversationModel::continueSearch()
     }
 }
 
-void IMConversationModel::onBackFetched()
+void IMConversationModel::onBackFetched(int numItems)
 {
     qDebug() << "IMConversationModel::onBackFetched" << mNumDuplicatedMessages;
     if (mLoggerConversationModel && mNumDuplicatedMessages > 0) {
@@ -698,6 +692,11 @@ void IMConversationModel::onBackFetched()
         mLoggerConversationModel->removeRows(numRow, numToDelete);
         qDebug() << "after " << mLoggerConversationModel->rowCount();
         mNumDuplicatedMessages -= numToDelete;
+    }
+
+    // if there is a search going on then update search
+    if (!mSearchString.isEmpty() && numItems > 0) {
+        continueSearch();
     }
 }
 

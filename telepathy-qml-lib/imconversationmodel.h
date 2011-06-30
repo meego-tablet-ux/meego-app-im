@@ -102,7 +102,7 @@ protected Q_SLOTS:
     void onItemChanged();
     void calculateMatches();
     void continueSearch();
-    void onBackFetched();
+    void onBackFetched(int numItems);
 
 protected:
     QString contactColor(const QString &id) const;

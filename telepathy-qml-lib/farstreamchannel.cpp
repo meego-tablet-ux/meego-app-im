@@ -327,27 +327,8 @@ void FarstreamChannel::initAudioInput()
         return;
     }
 
-    /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
-       READY as they can't connect to the pulse daemon. This will cause the
-       entire pipeline to fail to set to PLAYING. So we try to get pulsesrc to
-       READY temporarily here, and if it doesn't work, replace it with audiotestsrc
-       and volume, such that we'll get audio data at zero volume - silence. */
-    GstStateChangeReturn scr = gst_element_set_state(source, GST_STATE_READY);
-    if (scr == GST_STATE_CHANGE_FAILURE) {
-        qDebug() << "Audio source \"" AUDIO_SOURCE_ELEMENT "\" failed to get to READY, replacing with a fake audio source";
-        gst_bin_remove(GST_BIN(mGstAudioInput), source);
-        source = NULL;
-        source = addElementToBin(mGstAudioInput, source, "audiotestsrc");
-        g_object_set(source, "is-live", 1, NULL);
-        g_object_set(source, "wave", "silence", NULL);
-    }
-    else {
-        // put things back how we found them
-        gst_element_set_state(source, GST_STATE_NULL);
-
-        if (!strcmp(AUDIO_SOURCE_ELEMENT, "pulsesrc")) {
-            setPhoneMediaRole(source);
-        }
+    if (!strcmp(AUDIO_SOURCE_ELEMENT, "pulsesrc")) {
+        setPhoneMediaRole(source);
     }
 
     mGstAudioInputVolume = addElementToBin(mGstAudioInput, source, "volume");
@@ -480,27 +461,7 @@ void FarstreamChannel::initAudioOutput()
     else {
         mGstAudioOutputVolume = NULL;
     }
-    GstElement *previous_source = source;
     pushElement(mGstAudioOutput, source, AUDIO_SINK_ELEMENT, false, &mGstAudioOutputActualSink ,false);
-
-    /* Pulseaudio enjoys dying. When it does, pulsesrc/pulsesink can't go to
-       READY as they can't connect to the pulse daemon. This will cause the
-       entire pipeline to fail to set to PLAYING. So we try to get pulsesink
-       to READY temporarily here, and replace it by fakesink if it fails, so
-       the pipeline can run happily */
-    GstStateChangeReturn scr = gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_READY);
-    if (scr == GST_STATE_CHANGE_FAILURE) {
-        qDebug() << "Audio sink \"" AUDIO_SINK_ELEMENT "\" failed to get to READY, replacing with a fake audio sink";
-        if (previous_source)
-          gst_element_unlink(previous_source, mGstAudioOutputActualSink);
-        gst_bin_remove(GST_BIN(mGstAudioOutput), mGstAudioOutputActualSink);
-        source = previous_source;
-        pushElement(mGstAudioOutput, source, "fakesink", false, &mGstAudioOutputActualSink, false);
-    }
-    else {
-        // restore sink as we created it
-        gst_element_set_state(mGstAudioOutputActualSink, GST_STATE_NULL);
-    }
 
     if (!mGstAudioOutputSink) {
         mGstAudioOutputSink = mGstAudioOutputActualSink;

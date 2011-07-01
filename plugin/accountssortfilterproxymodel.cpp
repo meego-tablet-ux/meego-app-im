@@ -25,6 +25,19 @@ AccountsSortFilterProxyModel::~AccountsSortFilterProxyModel()
 {
 }
 
+bool AccountsSortFilterProxyModel::filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const
+{
+    return true;
+}
+
+bool AccountsSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    if (!sourceParent.isValid()) {
+        return true;
+    }
+    return false;
+}
+
 bool AccountsSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::DisplayNameRole).toString();

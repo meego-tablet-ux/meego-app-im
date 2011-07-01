@@ -1,5 +1,6 @@
 #include "textfile.h"
 #include <QFile>
+#include <QTextStream>
 
 TextFile::TextFile(QObject *parent) :
     QObject(parent),
@@ -27,7 +28,8 @@ void TextFile::setSource(const QString &file)
         return;
     }
 
-    mText = f.readAll();
+    QTextStream stream(&f);
+    mText = stream.readAll();
     mValid = !mText.isEmpty();
     emit sourceChanged();
     emit textChanged();

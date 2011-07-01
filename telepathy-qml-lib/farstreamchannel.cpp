@@ -468,7 +468,7 @@ void FarstreamChannel::initAudioOutput()
         gst_object_ref(mGstAudioOutputSink);
     }
 
-    g_object_set(G_OBJECT(mGstAudioOutputActualSink), "async", FALSE, NULL);
+    g_object_set(G_OBJECT(mGstAudioOutput), "async-handling", TRUE, NULL);
     createGhostPad(mGstAudioOutput, gst_element_get_static_pad(mGstAudioOutputSink, "sink"), SINK_GHOST_PAD_NAME);
 
     if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {

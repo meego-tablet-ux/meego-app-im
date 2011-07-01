@@ -36,7 +36,6 @@ public:
 public Q_SLOTS:
     void onAccountManagerReady();
     void onAccountsModelReady(IMAccountsModel *model);
-    void onTelepathyManagerFinished();
 
 Q_SIGNALS:
     void accountsModelCreated();
@@ -52,6 +51,7 @@ private Q_SLOTS:
     void onNetworkStatusChanged();
     void onHandlerRegistered();
     void onApproverRegistered();
+    void onNewAccount(const QString &accountId);
 
 private:
     QDeclarativeContext *mRootContext;
@@ -65,6 +65,8 @@ private:
     IMGroupChatModel *mGroupChatModel;
     IMProtocolsModel *mProtocolsModel;
     ContextProperty *mNetworkStateProperty;
+    QString mLastUsedAccount;
+    bool mLastUsedAccountSignalEmitted;
 };
 
 #endif // COMPONENTS_H

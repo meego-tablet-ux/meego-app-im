@@ -181,7 +181,7 @@ Window {
         target: null;
         id: contactsModelConnections;
         onOpenLastUsedAccount: {
-            // If there command line parameters,those take precedence over opening the last
+            // If there are command line parameters,those take precedence over opening the last
             // used account or save/restore
             parseWindowParameters(mainWindow.call);
             if(cmdCommand == "") {

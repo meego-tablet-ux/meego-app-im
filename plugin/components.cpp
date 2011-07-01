@@ -61,6 +61,7 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     Tpl::init();
 
+    mLastUsedAccountSignalEmitted = false;
     mTpManager = new TelepathyManager(this);
     connect(mTpManager, SIGNAL(accountManagerReady()), SLOT(onAccountManagerReady()));
 
@@ -88,6 +89,10 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     // create the notification manager
     mRootContext->setContextProperty(QString::fromLatin1("settingsHelper"),
                                       SettingsHelper::self());
+
+    // get last used account
+    QSettings settings("MeeGo", "meego-app-im");
+    mLastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
 
     // get the network status and load it
     mNetworkStateProperty = new ContextProperty("Internet.NetworkState", this);
@@ -120,6 +125,9 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
 {
     mAccountsModel = model;
     mAccountsModel->setTelepathyManager(mTpManager);
+    connect(mAccountsModel, SIGNAL(newAccountItem(QString)),
+            SLOT(onNewAccount(QString)));
+
     Tpy::FlatModelProxy *flatModel = new Tpy::FlatModelProxy(model);
     mMergedModel = new MergedModel(this);
     mMergedModel->addModel(flatModel);
@@ -157,14 +165,6 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
 
 }
 
-void Components::onTelepathyManagerFinished()
-{
-    // get last used account
-    QSettings settings("MeeGo", "meego-app-im");
-    QString lastUsedAccount = settings.value("LastUsed/Account", QString()).toString();
-    loadLastUsedAccount(lastUsedAccount, mAccountsModel);
-}
-
 /**
   * This method checks whether the last used account is connected. If it is connected
   * it will trigger a signal to open the list of contacts for that account.
@@ -173,6 +173,10 @@ void Components::onTelepathyManagerFinished()
   */
 void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *model)
 {
+    // disconnect the signal. One way or the other, this should only be called once
+    disconnect(mAccountsModel, SIGNAL(newAccountItem(QString)),
+               this, SLOT(onNewAccount(QString)));
+
     // locate the account object matching the id
     for (int i = 0; i < model->accountCount(); ++i) {
         QModelIndex index = model->index(i, 0, QModelIndex());
@@ -188,7 +192,10 @@ void Components::loadLastUsedAccount(const QString accountId, IMAccountsModel *m
         }
     }
 
-    // send a signal with an empty accountId otherwise
+    // send a signal with an empty accountId otherwise.
+    // this is needed in case there are command line parameters
+    // which would not be processed otherwise
+    mLastUsedAccountSignalEmitted = true;
     mContactsModel->filterByLastUsedAccount(QString());
 }
 
@@ -231,6 +238,20 @@ void Components::onHandlerRegistered()
                 SIGNAL(textChannelAvailable(QString,Tp::TextChannelPtr)),
                 mGroupChatModel,
                 SLOT(onTextChannelAvailable(QString,Tp::TextChannelPtr)));
+    }
+}
+
+void Components::onNewAccount(const QString &accountId)
+{
+    // only do this if not emitted yet
+    if (!mLastUsedAccountSignalEmitted) {
+        // if the setting is empty, emit now
+        if (mLastUsedAccount.isEmpty()) {
+            loadLastUsedAccount(mLastUsedAccount, mAccountsModel);
+        } else if (accountId == mLastUsedAccount) {
+            // only emit if it matches the saved setting
+            loadLastUsedAccount(accountId, mAccountsModel);
+        }
     }
 }
 

@@ -1364,6 +1364,7 @@ void FarstreamChannel::addBin(GstElement *bin)
         return;
     }
 
+    gst_element_set_locked_state (bin, TRUE);
 }
 
 void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, FarstreamChannel *self)

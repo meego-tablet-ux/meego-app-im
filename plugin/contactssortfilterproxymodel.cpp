@@ -50,6 +50,8 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
 
     connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             SLOT(onDataChanged()));
+    connect(this, SIGNAL(rowCountChanged()),
+            SLOT(onRowCountChanged()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()
@@ -387,5 +389,15 @@ void ContactsSortFilterProxyModel::onDataChanged()
     if (mActive) {
         invalidate();
         emit rowCountChanged();
+    }
+}
+
+void ContactsSortFilterProxyModel::onRowCountChanged()
+{
+    if (mActive) {
+        beginResetModel();
+        invalidate();
+        emit rowCountChanged();
+        beginResetModel();
     }
 }

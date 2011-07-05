@@ -66,6 +66,7 @@ protected:
 
 protected Q_SLOTS:
     void onDataChanged();
+    void onRowCountChanged();
 
 private:
     TelepathyManager *mManager;

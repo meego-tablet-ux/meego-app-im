@@ -167,7 +167,7 @@ AppPage {
         anchors.fill: parent
         // if the messages roll over the main bar, uncomment this line to
         // force clipping
-        //clip: true
+        clip: true
 
         Image {
             anchors.fill: parent

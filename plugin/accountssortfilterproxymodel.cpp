@@ -27,11 +27,14 @@ AccountsSortFilterProxyModel::~AccountsSortFilterProxyModel()
 
 bool AccountsSortFilterProxyModel::filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const
 {
+    Q_UNUSED(sourceColumn);
+    Q_UNUSED(sourceParent);
     return true;
 }
 
 bool AccountsSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
+    Q_UNUSED(sourceRow);
     if (!sourceParent.isValid()) {
         return true;
     }

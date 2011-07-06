@@ -397,7 +397,6 @@ void ContactsSortFilterProxyModel::onRowCountChanged()
     if (mActive) {
         beginResetModel();
         invalidate();
-        emit rowCountChanged();
         beginResetModel();
     }
 }

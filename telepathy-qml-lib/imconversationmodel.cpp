@@ -609,11 +609,13 @@ void IMConversationModel::olderMatch(void)
 
 void IMConversationModel::calculateMatches(void)
 {
-    // clear current matches (otherwise they keep selected)
+    // get the current matches to clear them later
+    // if cleared now, they could be refreshed before the new matches are found
+    QList<QModelIndex> oldMatches;
     int lastIndex = -1;
     foreach(QModelIndex index, mMatchesFound) {
         if (lastIndex != index.row()) {
-            emit dataChanged(index, index);
+            oldMatches.append(index);
         }
         lastIndex = index.row();
     }
@@ -645,6 +647,11 @@ void IMConversationModel::calculateMatches(void)
             emit dataChanged(index, index);
         }
         lastIndex = index.row();
+    }
+
+    // emit dataChanged for old matches
+    foreach(QModelIndex index, oldMatches) {
+        emit dataChanged(index, index);
     }
 
     emit numMatchesFoundChanged();

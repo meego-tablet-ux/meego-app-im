@@ -526,7 +526,7 @@ Window {
                 contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
                 startConversation(currentContactId);
             } else if(cmdCommand == "show-contacts") {
-                addPage(contactsScreenContent);
+                showContactsScreen();
             }
         }
     }

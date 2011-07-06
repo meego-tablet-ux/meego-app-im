@@ -21,7 +21,7 @@ class IMFeedModelItem : public QObject
     Q_OBJECT
 
 public:
-    IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact, QString message, QDateTime time, McaActions *actions, int type, QString token);
+    IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact, QString message, QDateTime time, McaActions *actions, int type, QString token, QString channelPath = QString::null);
     ~IMFeedModelItem();
 
     QString contactName(void) const;
@@ -33,6 +33,7 @@ public:
     McaActions *actions(void);
     QString uniqueId(void) const;
     qreal relevance(void) const;
+    QString channelPath(void) const;
 
 Q_SIGNALS:
     void itemChanged(IMFeedModelItem* item);
@@ -49,6 +50,7 @@ private:
     McaActions *mActions;
     QString mUniqueId;
     qreal mRelevance;
+    QString mChannelPath;
 };
 
 #endif // IMFEEDMODELITEM_H

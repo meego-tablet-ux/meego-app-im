@@ -50,6 +50,7 @@ public:
 
     enum FeedType {
         MessageType = 0,
+        GroupMessageType,
         RequestType,
         InformationType,
         CallType,
@@ -69,6 +70,7 @@ protected slots:
     void onNewFileTransferChannel(const QString &accountId, const Tp::IncomingFileTransferChannelPtr &fileTransferChannel);
 
     void onMessageReceived(const Tp::ReceivedMessage &message);
+    void onMessageReceived(const Tp::ReceivedMessage &message, Tp::TextChannelPtr &textChannel);
     void onInformationReceived();
     void onContactUpgraded(Tp::PendingOperation *op);
 

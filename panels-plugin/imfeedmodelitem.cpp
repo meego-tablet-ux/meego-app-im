@@ -9,7 +9,14 @@
 #include "imfeedmodelitem.h"
 #include "imfeedmodel.h"
 
-IMFeedModelItem::IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact, QString message, QDateTime time, McaActions *actions, int type, QString token)
+IMFeedModelItem::IMFeedModelItem(Tp::AccountPtr account,
+                                 Tp::ContactPtr contact,
+                                 QString message,
+                                 QDateTime time,
+                                 McaActions *actions,
+                                 int type,
+                                 QString token,
+                                 QString channelPath)
     : mItemType(type),
       mAccount(account),
       mContact(contact),
@@ -17,7 +24,8 @@ IMFeedModelItem::IMFeedModelItem(Tp::AccountPtr account, Tp::ContactPtr contact,
       mTimestamp(time),
       mActions(actions),
       mUniqueId(token),
-      mRelevance(0)
+      mRelevance(0),
+      mChannelPath(channelPath)
 {
     // if it is a request, assign more relevance to it
     if (type == IMFeedModel::RequestType) {
@@ -91,6 +99,11 @@ McaActions *IMFeedModelItem::actions()
 qreal IMFeedModelItem::relevance(void) const
 {
     return mRelevance;
+}
+
+QString IMFeedModelItem::channelPath() const
+{
+    return mChannelPath;
 }
 
 void IMFeedModelItem::onContactChanged()

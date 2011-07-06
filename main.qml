@@ -41,6 +41,7 @@ Window {
     property string cmdCommand: ""
     property string cmdAccountId: ""
     property string cmdContactId: ""
+    property string cmdGroupChatId: ""
     property variant accountFilterModel: [ ]
 
     property QtObject contactsScreenContent: null
@@ -498,7 +499,9 @@ Window {
         var cmd = parameters[0];
         var cdata = parameters[1];
 
-        if (cmd == "show-chat" || cmd == "show-contacts") {
+        if (cmd == "show-chat" ||
+            cmd == "show-group-chat" ||
+            cmd == "show-contacts") {
             cmdCommand = cmd;
             var parsedParameter = cdata;
             if (parsedParameter.indexOf("&") > 0) {
@@ -511,13 +514,18 @@ Window {
             if (cmd == "show-chat") {
                 //also get the contact id to open a chat with
                 cmdContactId = parsedParameter.substr(parsedParameter.indexOf("&") + 1, parsedParameter.length - 1);
+            } else if (cmd == "show-group-chat") {
+                // get the group chat id to open
+                cmdGroupChatId = parsedParameter.substr(parsedParameter.indexOf("&") + 1, parsedParameter.length - 1);
             }
         }
     }
 
     function openPageByCommand()
     {
-        if(cmdCommand == "show-chat" || cmdCommand == "show-contacts") {
+        if(cmdCommand == "show-chat" ||
+           cmdCommand == "show-group-chat" ||
+           cmdCommand == "show-contacts") {
             currentAccountId = cmdAccountId;
             accountItem = accountsModel.accountItemForId(currentAccountId);
 
@@ -525,6 +533,8 @@ Window {
                 currentContactId = cmdContactId;
                 contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
                 startConversation(currentContactId);
+            } else if(cmdCommand == "show-group-chat") {
+                startGroupConversation(cmdGroupChatId);
             } else if(cmdCommand == "show-contacts") {
                 showContactsScreen();
             }

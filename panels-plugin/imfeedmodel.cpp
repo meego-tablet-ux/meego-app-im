@@ -87,7 +87,9 @@ QVariant IMFeedModel::data(const QModelIndex &index, int role) const
         // Types defined currently are "content", "picture", and "request";
         //   see emailmodel.h for more information.
         int type = item->itemType();
-        if (type == MessageType || type == InformationType) {
+        if (type == MessageType ||
+            type == GroupMessageType ||
+            type == InformationType) {
             return QString("content");
         } else if (type == RequestType) {
             return QString("request");
@@ -174,6 +176,11 @@ void IMFeedModel::performAction(QString action, QString uniqueid)
                        parameter = QString(mAccountId + "&" + item->contactId());
                        break;
                    }
+                   case GroupMessageType: {
+                       cmd = QString("show-group-chat");
+                       parameter = QString(mAccountId + "&" + item->channelPath());
+                       break;
+                   }
                    case RequestType:
                    case InformationType:
                    default:
@@ -197,7 +204,21 @@ void IMFeedModel::performAction(QString action, QString uniqueid)
 
 void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
 {
+    Tp::TextChannelPtr textChannel(qobject_cast<Tp::TextChannel*>(sender()));
+    onMessageReceived(message, textChannel);
+}
+
+void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message, Tp::TextChannelPtr &textChannel)
+{
+    FeedType type = MessageType;
+    QString channelPath;
     Tp::ContactPtr contact = message.sender();
+
+    if (textChannel->targetHandleType() == Tp::HandleTypeGroup ||
+        textChannel->targetHandleType() == Tp::HandleTypeRoom) {
+        type = GroupMessageType;
+        channelPath = textChannel->objectPath();
+    }
 
     // do not log old messages
     if (message.isRescued() || message.isScrollback()) {
@@ -227,7 +248,7 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message)
     }
 
     IMFeedModelItem *item = new IMFeedModelItem(mAccount, contact, message.text(), message.sent(),
-                                                new McaActions(), MessageType, token);
+                                                new McaActions(), type, token, textChannel->objectPath());
     connect(item->actions(), SIGNAL(standardAction(QString,QString)),
             this, SLOT(performAction(QString,QString)));
 
@@ -358,7 +379,7 @@ void IMFeedModel::onTextChannelReady(Tp::PendingOperation *op)
     // display messages already in queue
     qDebug("message queue: %d", textChannel->messageQueue().count());
     foreach (Tp::ReceivedMessage message, textChannel->messageQueue()) {
-        onMessageReceived(message);
+        onMessageReceived(message, textChannel);
     }
 
     //connect to incoming messages

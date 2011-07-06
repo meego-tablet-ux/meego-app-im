@@ -70,7 +70,6 @@ void Components::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     AccountsModelFactory *accountFactory = new AccountsModelFactory(mTpManager);
     connect(accountFactory, SIGNAL(modelCreated(IMAccountsModel*)),SLOT(onAccountsModelReady(IMAccountsModel*)));
-    connect(mTpManager, SIGNAL(finished()), SLOT(onTelepathyManagerFinished()));
 
     mRootContext = engine->rootContext();
     Q_ASSERT(mRootContext);

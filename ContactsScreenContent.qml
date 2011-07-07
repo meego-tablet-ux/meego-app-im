@@ -178,6 +178,7 @@ AppPage {
             }
             visible: (!showAccountOffline)
 
+            cacheBuffer: 600
             model: contactsModel
             delegate: ContactDelegate {}
             header: requestsViewComponent

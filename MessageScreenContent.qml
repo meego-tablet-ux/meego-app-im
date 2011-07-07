@@ -234,6 +234,7 @@ AppPage {
                 margins: 10
             }
 
+            cacheBuffer: 600
             delegate: MessageDelegate { }
             highlightFollowsCurrentItem: true
             currentIndex: count - 1

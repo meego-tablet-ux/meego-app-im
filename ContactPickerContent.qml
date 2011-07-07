@@ -90,6 +90,7 @@ AppPage {
                 bottom: buttonRowImage.top
             }
 
+            cacheBuffer: 600
             model: contactsModel
             delegate: ContactPickerDelegate {}
             clip: true

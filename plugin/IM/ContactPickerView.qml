@@ -43,6 +43,7 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             interactive: false
+            cacheBuffer: 600
 
             section.property: "parentDisplayName"
             section.criteria: ViewSection.FullString

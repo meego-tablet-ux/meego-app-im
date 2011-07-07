@@ -9,10 +9,12 @@
 #include "imgroupchatmodel.h"
 
 #include "imaccountsmodel.h"
+#include "../telepathy-qml-lib/notificationmanager.h"
 #include <TelepathyQt4Yell/Models/AccountsModel>
+#include <TelepathyQt4/ReceivedMessage>
 
 IMGroupChatModel::IMGroupChatModel(QObject *parent) :
-    QAbstractListModel(parent)
+    QAbstractListModel(parent), mNotificationManager(0)
 {
     QHash<int, QByteArray> roles;
     roles[Tpy::AccountsModel::ItemRole] = "item";
@@ -90,6 +92,11 @@ int IMGroupChatModel::rowCount(const QModelIndex &parent) const
     return mChildren.count();
 }
 
+void IMGroupChatModel::setNotificationManager(NotificationManager *manager)
+{
+    mNotificationManager = manager;
+}
+
 void IMGroupChatModel::onTextChannelAvailable(const QString &accountId, Tp::TextChannelPtr channel)
 {
     if(channel->isConference()) {
@@ -107,12 +114,17 @@ void IMGroupChatModel::onTextChannelAvailable(const QString &accountId, Tp::Text
         IMGroupChatModelItem *item = new IMGroupChatModelItem(accountId, channel);
         connect(item, SIGNAL(changed(IMGroupChatModelItem*)),
                 SLOT(onItemChanged(IMGroupChatModelItem*)));
+        connect(item, SIGNAL(pendingMessagesChanged()),
+                SLOT(onPendingMessagesChanged()));
         connect(channel.data(), SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                 SLOT(onChannelInvalidated()));
 
         beginInsertRows(QModelIndex(), mChildren.count(), mChildren.count());
         mChildren.append(item);
         endInsertRows();
+
+        // if there are pending messages, notify them
+        onPendingMessagesChanged(item);
     }
 }
 
@@ -145,4 +157,40 @@ void IMGroupChatModel::onItemChanged(IMGroupChatModelItem *item)
         beginResetModel();
         endResetModel();
     }
+}
+
+void IMGroupChatModel::onPendingMessagesChanged()
+{
+
+    IMGroupChatModelItem *item = qobject_cast<IMGroupChatModelItem*>(sender());
+    if (!item) {
+        return;
+    }
+    onPendingMessagesChanged(item);
+}
+
+void IMGroupChatModel::onPendingMessagesChanged(IMGroupChatModelItem *item)
+{
+    QList<Tp::ReceivedMessage> messages = item->pendingMessages();
+
+    if (!mNotificationManager || !messages.count()) {
+        return;
+    }
+    Tp::ReceivedMessage message = messages.last();
+
+    // do not log old messages
+    if (message.isRescued() || message.isScrollback()) {
+        return;
+    }
+
+    // do not log delivery reports
+    if(message.messageType() == Tp::ChannelTextMessageTypeDeliveryReport) {
+        return;
+    }
+
+    mNotificationManager->notifyPendingGroupMessage(item->accountId(),
+                                                    item->channel()->objectPath(),
+                                                    message.sender()->alias(),
+                                                    message.sent(),
+                                                    message.text());
 }

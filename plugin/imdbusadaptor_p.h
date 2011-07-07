@@ -9,8 +9,8 @@
  * before re-generating it.
  */
 
-#ifndef IMDBUSADAPTOR_P_H_1309016497
-#define IMDBUSADAPTOR_P_H_1309016497
+#ifndef IMDBUSADAPTOR_P_H_1310042484
+#define IMDBUSADAPTOR_P_H_1310042484
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -38,6 +38,10 @@ class IMDBusAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"contactId\"/>\n"
 "    </method>\n"
+"    <method name=\"showGroupChat\">\n"
+"      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
+"      <arg direction=\"in\" type=\"s\" name=\"groupChatId\"/>\n"
+"    </method>\n"
 "    <method name=\"reportMissedAudioCalls\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"accountId\"/>\n"
 "      <arg direction=\"in\" type=\"as\" name=\"contacts\"/>\n"
@@ -64,6 +68,7 @@ public Q_SLOTS: // METHODS
     void reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
     void reportMissedVideoCalls(const QString &accountId, const QStringList &contacts, const QStringList &times);
     void showChat(const QString &accountId, const QString &contactId);
+    void showGroupChat(const QString &accountId, const QString &groupChatId);
     bool userBusyCalling();
 Q_SIGNALS: // SIGNALS
     void chatOpenRequested(const QString &accountId, const QString &contactId);

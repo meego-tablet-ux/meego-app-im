@@ -57,6 +57,12 @@ void IMDBusAdaptor::showChat(const QString &accountId, const QString &contactId)
     QMetaObject::invokeMethod(parent(), "showChat", Q_ARG(QString, accountId), Q_ARG(QString, contactId));
 }
 
+void IMDBusAdaptor::showGroupChat(const QString &accountId, const QString &groupChatId)
+{
+    // handle method call com.meego.app.im.showGroupChat
+    QMetaObject::invokeMethod(parent(), "showGroupChat", Q_ARG(QString, accountId), Q_ARG(QString, groupChatId));
+}
+
 bool IMDBusAdaptor::userBusyCalling()
 {
     // handle method call com.meego.app.im.userBusyCalling

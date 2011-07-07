@@ -14,6 +14,7 @@
 #include <QAbstractListModel>
 #include <TelepathyQt4/TextChannel>
 
+class NotificationManager;
 
 class IMGroupChatModel : public QAbstractListModel
 {
@@ -24,6 +25,8 @@ public:
     int rowCount(const QModelIndex & parent) const;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 
+    void setNotificationManager(NotificationManager *manager);
+
 signals:
 
 public Q_SLOTS:
@@ -32,12 +35,15 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void onChannelInvalidated();
     void onItemChanged(IMGroupChatModelItem *);
+    void onPendingMessagesChanged();
+    void onPendingMessagesChanged(IMGroupChatModelItem *item);
 
 protected:
     QModelIndex index(IMGroupChatModelItem *item);
 
 private:
     QList<IMGroupChatModelItem *> mChildren;
+    NotificationManager *mNotificationManager;
 
 };
 

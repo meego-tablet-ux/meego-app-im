@@ -29,6 +29,9 @@ IMGroupChatModelItem::IMGroupChatModelItem(const QString &accountId, const Tp::T
             SIGNAL(messageReceived(Tp::ReceivedMessage)),
             SLOT(onChanged()));
     connect(mTextChannel.data(),
+            SIGNAL(messageReceived(Tp::ReceivedMessage)),
+            SIGNAL(pendingMessagesChanged()));
+    connect(mTextChannel.data(),
             SIGNAL(groupFlagsChanged(Tp::ChannelGroupFlags,Tp::ChannelGroupFlags,Tp::ChannelGroupFlags)),
             SLOT(onChanged()));
     connect(mTextChannel.data(),
@@ -155,4 +158,9 @@ Tp::TextChannelPtr IMGroupChatModelItem::channel() const
 QString IMGroupChatModelItem::accountId() const
 {
     return mAccountId;
+}
+
+QList<Tp::ReceivedMessage> IMGroupChatModelItem::pendingMessages() const
+{
+    return mTextChannel->messageQueue();
 }

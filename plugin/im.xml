@@ -10,6 +10,10 @@
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contactId" type="s" direction="in"/>
     </method>
+    <method name="showGroupChat">
+      <arg name="accountId" type="s" direction="in"/>
+      <arg name="groupChatId" type="s" direction="in"/>
+    </method>
     <method name="reportMissedAudioCalls">
       <arg name="accountId" type="s" direction="in"/>
       <arg name="contacts" type="as" direction="in"/>

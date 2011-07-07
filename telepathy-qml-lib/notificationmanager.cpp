@@ -20,7 +20,7 @@ NotificationItem::~NotificationItem()
 NotificationManager::NotificationManager(QObject *parent) :
     QObject(parent), mChatActive(0), mApplicationActive(true)
 {
-    mAppWindow = QApplication::topLevelWidgets()[0];
+
 }
 
 QString NotificationManager::currentAccount() const
@@ -31,6 +31,11 @@ QString NotificationManager::currentAccount() const
 QString NotificationManager::currentContact() const
 {
     return mCurrentContact;
+}
+
+QString NotificationManager::currentGroupChat() const
+{
+    return mCurrentGroupChat;
 }
 
 bool NotificationManager::chatActive() const
@@ -54,6 +59,13 @@ void NotificationManager::setCurrentContact(const QString &contact)
 {
     mCurrentContact = contact;
     qDebug() << "NOTIFICATION: current contact is" << contact;
+    processNotifications();
+}
+
+void NotificationManager::setCurrentGroupChat(const QString &groupChat)
+{
+    mCurrentGroupChat = groupChat;
+    qDebug() << "NOTIFICATION: current group chat is" << groupChat;
     processNotifications();
 }
 
@@ -84,6 +96,21 @@ void NotificationManager::notifyPendingMessage(const QString &accountId,
     placeNotification(NotificationItem::PendingChatMessage,
                       accountId,
                       contactId,
+                      contactAlias,
+                      time,
+                      message);
+}
+
+void NotificationManager::notifyPendingGroupMessage(const QString &accountId,
+                                                    const QString &groupChatId,
+                                                    const QString &contactAlias,
+                                                    const QDateTime &time,
+                                                    const QString &message)
+{
+    qDebug() << "Notifying a group chat message for the chat id" << groupChatId;
+    placeNotification(NotificationItem::PendingGroupChatMessage,
+                      accountId,
+                      groupChatId,
                       contactAlias,
                       time,
                       message);
@@ -146,7 +173,8 @@ void NotificationManager::processNotifications()
         QList<NotificationItem>::iterator it = mNotifications.begin();
         while (it != mNotifications.end()) {
             if ((*it).accountId == mCurrentAccount &&
-                    (*it).contactId == mCurrentContact) {
+                ((*it).chatId == mCurrentContact ||
+                 (*it).chatId == mCurrentGroupChat)) {
                 (*it).item->remove();
                 it = mNotifications.erase(it);
             } else {
@@ -177,7 +205,7 @@ void NotificationManager::processNotifications()
 
 void NotificationManager::placeNotification(NotificationItem::NotificationType type,
                                             const QString &accountId,
-                                            const QString &contactId,
+                                            const QString &chatId,
                                             const QString &contactAlias,
                                             const QDateTime &time,
                                             const QString &message)
@@ -196,7 +224,7 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
     QList<NotificationItem>::iterator it = mNotifications.begin();
     while (it != mNotifications.end()) {
         if ((*it).accountId == accountId &&
-                (*it).contactId == contactId) {
+                (*it).chatId == chatId) {
             eventCount = (*it).item->count();
 
             (*it).item->remove();
@@ -215,7 +243,9 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
         // if there is an active chat, we should not place notifications of that chat
         if (mChatActive &&
             accountId == mCurrentAccount &&
-            contactId == mCurrentContact) {
+            (chatId == mCurrentContact ||
+             chatId == mCurrentGroupChat))
+        {
             return;
         }
         // now if there is no chat active, we should only place
@@ -230,18 +260,24 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
     NotificationItem notification;
     notification.type = type;
     notification.accountId = accountId;
-    notification.contactId = contactId;
+    notification.chatId = chatId;
     notification.message = message;
     notification.item = QSharedPointer<MNotification>(new MNotification(MNotification::ImEvent,
                                                                         contactAlias,
                                                                         message));
 
+    QString command = "showChat";
     QList<QVariant> args;
-    args << accountId << contactId;
+    args << accountId << chatId;
+
+    if (type == NotificationItem::PendingGroupChatMessage) {
+        command = "showGroupChat";
+    }
+
     notification.item->setAction(MRemoteAction("com.meego.app.im",
                                                "/com/meego/app/im",
                                                "com.meego.app.im",
-                                               "showChat",
+                                               command,
                                                args));
 
     notification.item->setCount(eventCount);
@@ -250,6 +286,7 @@ void NotificationManager::placeNotification(NotificationItem::NotificationType t
     switch (type) {
     case NotificationItem::IncomingFileTransfer:
     case NotificationItem::PendingChatMessage:
+    case NotificationItem::PendingGroupChatMessage:
         notification.item->setImage(icon + "message-unread");
         break;
     case NotificationItem::MissedCall:

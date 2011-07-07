@@ -22,9 +22,11 @@ public:
 
     Tp::TextChannelPtr channel() const;
     QString accountId() const;
+    QList<Tp::ReceivedMessage> pendingMessages() const;
 
 Q_SIGNALS:
     void changed(IMGroupChatModelItem *);
+    void pendingMessagesChanged();
 
 public Q_SLOTS:
     void onChanged();

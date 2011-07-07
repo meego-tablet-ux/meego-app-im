@@ -132,6 +132,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     mMergedModel->addModel(flatModel);
 
     mGroupChatModel = new IMGroupChatModel(this);
+    mGroupChatModel->setNotificationManager(mNotificationManager);
     mMergedModel->addModel(mGroupChatModel);
 
     // initialize the accounts sorted model

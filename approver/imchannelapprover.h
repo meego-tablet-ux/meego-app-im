@@ -70,7 +70,7 @@ protected:
 
 protected slots:
     void onMessageReceived(const Tp::ReceivedMessage &message);
-    void onMessageReceived(const QString &accountId,
+    void onMessageReceived(const Tp::TextChannelPtr &textChannel,
                            const Tp::ReceivedMessage &message);
 
 private:

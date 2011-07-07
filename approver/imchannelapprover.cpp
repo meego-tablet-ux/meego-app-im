@@ -269,7 +269,7 @@ void IMChannelApprover::onTextChannelReady(Tp::PendingOperation *op)
     QString accountId = textChannel->property("accountId").toString();
 
     foreach (Tp::ReceivedMessage message, textChannel->messageQueue()) {
-        onMessageReceived(accountId, message);
+        onMessageReceived(textChannel, message);
     }
 
     connect(textChannel.data(), SIGNAL(messageReceived(Tp::ReceivedMessage)),
@@ -627,16 +627,17 @@ void IMChannelApprover::reportMissedVideoCalls(const QString &accountId, const Q
 
 void IMChannelApprover::onMessageReceived(const Tp::ReceivedMessage &message)
 {
-    QString accountId = sender()->property("accountId").toString();
-    onMessageReceived(accountId, message);
+    Tp::TextChannelPtr channel(qobject_cast<Tp::TextChannel*>(sender()));
+    onMessageReceived(channel, message);
 }
 
-void IMChannelApprover::onMessageReceived(const QString &accountId, const Tp::ReceivedMessage &message)
+void IMChannelApprover::onMessageReceived(const Tp::TextChannelPtr &textChannel, const Tp::ReceivedMessage &message)
 {
     if (mApplicationRunning) {
         return;
     }
 
+    QString accountId = textChannel->property("accountId").toString();
     Tp::ContactPtr contact = message.sender();
 
     // do not log old messages
@@ -649,10 +650,20 @@ void IMChannelApprover::onMessageReceived(const QString &accountId, const Tp::Re
         return;
     }
 
-    mNotificationManager.notifyPendingMessage(accountId,
-                                              contact->id(),
-                                              contact->alias(),
-                                              message.received(),
-                                              message.text());
+    if (textChannel->targetHandleType() == Tp::HandleTypeGroup ||
+        textChannel->targetHandleType() == Tp::HandleTypeRoom) {
+        mNotificationManager.notifyPendingGroupMessage(accountId,
+                                                       textChannel->objectPath(),
+                                                       contact->alias(),
+                                                       message.received(),
+                                                       message.text());
+
+    } else {
+        mNotificationManager.notifyPendingMessage(accountId,
+                                                  contact->id(),
+                                                  contact->alias(),
+                                                  message.received(),
+                                                  message.text());
+    }
 }
 

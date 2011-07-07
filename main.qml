@@ -54,8 +54,8 @@ Window {
     property string contactPickerContentString: ""
 
     // this property will be set right before opening the conversation screen
-    // TODO: check how can we do that on group chat
     property string currentContactId: ""
+    property string currentGroupChatId: ""
 
     property string currentScreen: ""
 
@@ -89,9 +89,15 @@ Window {
             console.log("Chat open requested for account " + accountId + " and contact " + contactId);
             currentAccountId = accountId;
             accountItem = accountsModel.accountItemForId(currentAccountId);
-            currentContactId = contactId;
-            contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
-            startConversation(currentContactId);
+            startConversation(contactId);
+            window.raise();
+        }
+
+        onGroupChatOpenRequested: {
+            console.log("Chat open requested for account " + accountId + " and group chat id " + groupChatId);
+            currentAccountId = accountId;
+            accountItem = accountsModel.accountItemForId(currentAccountId);
+            startGroupConversation(groupChatId);
             window.raise();
         }
     }
@@ -109,6 +115,11 @@ Window {
 
     onCurrentContactIdChanged: {
         notificationManager.currentContact = currentContactId;
+        appState.invalidate();
+    }
+
+    onCurrentGroupChatIdChanged: {
+        notificationManager.currentGroupChat = currentGroupChatId;
         appState.invalidate();
     }
 
@@ -255,6 +266,7 @@ Window {
         onRequestedGroupChatCreated: {
             window.chatAgent = agent;
 
+            window.currentGroupChatId = agent.channelPath;
             window.currentContactId = "";
             window.contactItem = undefined;
             window.callAgent = undefined;
@@ -344,6 +356,7 @@ Window {
         contactItem = accountsModel.contactItemForId(window.currentAccountId, window.currentContactId);
         callAgent = accountsModel.callAgent(window.currentAccountId, contactId);
         fileTransferAgent = accountsModel.fileTransferAgent(window.currentAccountId, contactId);
+        currentGroupChatId = "";
 
         // and start the conversation
         if (notificationManager.chatActive) {
@@ -358,6 +371,7 @@ Window {
     function startGroupConversation(channelPath)
     {
         console.log("window.startGroupConversation: channelPath=" + channelPath);
+        window.currentGroupChatId = channelPath;
         window.currentContactId = "";
         window.contactItem = undefined;
         window.callAgent = undefined;

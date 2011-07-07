@@ -38,6 +38,11 @@ void IMDBus::showChat(const QString &accountId, const QString &contactId)
     emit chatOpenRequested(accountId, contactId);
 }
 
+void IMDBus::showGroupChat(const QString &accountId, const QString &groupChatId)
+{
+    emit groupChatOpenRequested(accountId, groupChatId);
+}
+
 void IMDBus::reportMissedAudioCalls(const QString &accountId, const QStringList &contacts, const QStringList &times)
 {
     // if we dont have an instance of Accounts Model we cant report missed calls

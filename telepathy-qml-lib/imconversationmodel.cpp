@@ -649,9 +649,19 @@ void IMConversationModel::calculateMatches(void)
         lastIndex = index.row();
     }
 
-    // emit dataChanged for old matches
+    // refresh old matches
     foreach(QModelIndex index, oldMatches) {
-        emit dataChanged(index, index);
+        bool emitted = false;
+        foreach(QModelIndex newIndex, mMatchesFound) {
+            if (index.row() == newIndex.row()) {
+                emitted = true;
+            }
+        }
+
+        // only refresh those rows that haven't been already refreshed
+        if (!emitted) {
+            emit dataChanged(index, index);
+        }
     }
 
     emit numMatchesFoundChanged();

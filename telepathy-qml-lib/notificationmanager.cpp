@@ -160,6 +160,11 @@ void NotificationManager::notifyIncomingFileTransfer(const QString &accountId,
 
 void NotificationManager::processNotifications()
 {
+    if (!SettingsHelper::self()->enableNotifications()) {
+        clear();
+        return;
+    }
+
     // if the application is not active, we should notify everything
     // so not removing anything from the list
     if (!mApplicationActive) {

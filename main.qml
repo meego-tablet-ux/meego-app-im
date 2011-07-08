@@ -163,11 +163,16 @@ Window {
 
     Connections {
         target: mainWindow
+
+        // This could conflic with onOpenLastUsedAccount if the startup
+        // is fast enough to actually get this call on start, and not having
+        // to parse the commands later
         onCall: {
             parseWindowParameters(parameters);
 
             // only actually do something if the models are loaded
-            if (accountsModel != undefined) {
+            // and there is actually a command to execute
+            if (cmdCommand.length > 0 && accountsModel != undefined) {
                 // first return to the main account list then execute the command line parameters
                 window.switchBook(accountScreenContent);
                 componentsLoaded();

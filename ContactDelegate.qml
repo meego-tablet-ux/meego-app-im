@@ -48,7 +48,7 @@ Item {
         id: mainArea
         width: parent.width
         active: contactDelegate.active
-        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
+        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.contactId == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
 
         MouseArea {
             id: mouseArea
@@ -80,120 +80,6 @@ Item {
                 contextMenuLoader.item.blocked = model.blocked;
                 contextMenuLoader.item.canReportAbuse = model.canReportAbuse;
                 contextMenuLoader.item.show();
-            }
-        }
-
-        Loader {
-            id: contextMenuLoader
-        }
-
-        Component {
-            id: contextMenuComponent
-            ContextMenu {
-                id: contextMenu
-
-                property string contactId : ""
-                property bool chatOpened : false
-                property bool textChat : false
-                property bool audioCall : false
-                property bool videoCall : false
-                property bool canBlockContacts : false
-                property bool blocked : false
-                property bool canReportAbuse : false
-
-                content: Column {
-                    id: menuContent
-
-                    height: childrenRect.height
-                    width: 200
-
-                    MenuItem {
-                        id: textChatItem
-                        text: (contextMenu.chatOpened ? Constants.contactReturnToChat :
-                                                        Constants.contactOpenChat)
-                        visible: contextMenu.textChat
-                        onClicked: {
-                            window.startConversation(contextMenu.contactId, window);
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: textChatItem.visible }
-
-                    MenuItem {
-                        id: callItem
-                        text: Constants.contactCall
-                        visible: contextMenu.audioCall
-                        onClicked: {
-                            window.startAudioCall(contextMenu.contactId, window);
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: callItem.visible }
-
-                    MenuItem {
-                        id: videoCallItem
-                        text: Constants.contactVideoCall
-                        visible: contextMenu.videoCall
-                        onClicked: {
-                            window.startVideoCall(contextMenu.contactId, window);
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: videoCallItem.visible }
-
-                    MenuItem {
-                        id: blockItem
-                        text: (contextMenu.blocked ? Constants.contactUnblock :
-                                               Constants.contactBlock)
-                        visible: contextMenu.canBlockContacts
-                        onClicked: {
-                            if (contextMenu.blocked) {
-                            accountsModel.unblockContact(window.currentAccountId, contextMenu.contactId);
-                            } else {
-                                accountsModel.blockContact(window.currentAccountId, contextMenu.contactId);
-                            }
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: blockItem.visible }
-
-                    MenuItem {
-                        id: abuseItem
-                        text: qsTr("Report abuse")
-                        visible: contextMenu.canReportAbuse && !contextMenu.blocked
-                        onClicked: {
-                            accountsModel.blockContact(window.currentAccountId, contextMenu.contactId, true);
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: abuseItem.visible }
-
-                    MenuItem {
-                        id: endChatItem
-                        text: Constants.contactEndChat
-                        visible: contextMenu.chatOpened
-                        onClicked: {
-                            accountsModel.endChat(window.currentAccountId, contextMenu.contactId);
-                            accountsModel.endCall(window.currentAccountId, contextMenu.contactId);
-                            contextMenu.hide();
-                        }
-                    }
-
-                    MenuItemSeparator { visible: endChatItem.visible }
-
-                    MenuItem {
-                        text: Constants.contactDeleteContact
-                        onClicked: {
-                            accountsModel.removeContact(window.currentAccountId, contextMenu.contactId);
-                            contextMenu.hide();
-                        }
-                    }
-                }
             }
         }
 

@@ -203,6 +203,121 @@ AppPage {
             anchors.margins: 10
             anchors.left: parent.left
         }
+
+
+        Loader {
+            id: contextMenuLoader
+        }
+
+        Component {
+            id: contextMenuComponent
+            ContextMenu {
+                id: contextMenu
+
+                property string contactId : ""
+                property bool chatOpened : false
+                property bool textChat : false
+                property bool audioCall : false
+                property bool videoCall : false
+                property bool canBlockContacts : false
+                property bool blocked : false
+                property bool canReportAbuse : false
+
+                content: Column {
+                    id: menuContent
+
+                    height: childrenRect.height
+                    width: 200
+
+                    MenuItem {
+                        id: textChatItem
+                        text: (contextMenu.chatOpened ? Constants.contactReturnToChat :
+                                                        Constants.contactOpenChat)
+                        visible: contextMenu.textChat
+                        onClicked: {
+                            window.startConversation(contextMenu.contactId, window);
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: textChatItem.visible }
+
+                    MenuItem {
+                        id: callItem
+                        text: Constants.contactCall
+                        visible: contextMenu.audioCall
+                        onClicked: {
+                            window.startAudioCall(contextMenu.contactId, window);
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: callItem.visible }
+
+                    MenuItem {
+                        id: videoCallItem
+                        text: Constants.contactVideoCall
+                        visible: contextMenu.videoCall
+                        onClicked: {
+                            window.startVideoCall(contextMenu.contactId, window);
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: videoCallItem.visible }
+
+                    MenuItem {
+                        id: blockItem
+                        text: (contextMenu.blocked ? Constants.contactUnblock :
+                                               Constants.contactBlock)
+                        visible: contextMenu.canBlockContacts
+                        onClicked: {
+                            if (contextMenu.blocked) {
+                            accountsModel.unblockContact(window.currentAccountId, contextMenu.contactId);
+                            } else {
+                                accountsModel.blockContact(window.currentAccountId, contextMenu.contactId);
+                            }
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: blockItem.visible }
+
+                    MenuItem {
+                        id: abuseItem
+                        text: qsTr("Report abuse")
+                        visible: contextMenu.canReportAbuse && !contextMenu.blocked
+                        onClicked: {
+                            accountsModel.blockContact(window.currentAccountId, contextMenu.contactId, true);
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: abuseItem.visible }
+
+                    MenuItem {
+                        id: endChatItem
+                        text: Constants.contactEndChat
+                        visible: contextMenu.chatOpened
+                        onClicked: {
+                            accountsModel.endChat(window.currentAccountId, contextMenu.contactId);
+                            accountsModel.endCall(window.currentAccountId, contextMenu.contactId);
+                            contextMenu.hide();
+                        }
+                    }
+
+                    MenuItemSeparator { visible: endChatItem.visible }
+
+                    MenuItem {
+                        text: Constants.contactDeleteContact
+                        onClicked: {
+                            accountsModel.removeContact(window.currentAccountId, contextMenu.contactId);
+                            contextMenu.hide();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     function hideActionMenu()

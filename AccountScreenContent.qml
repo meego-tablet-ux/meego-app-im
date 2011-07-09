@@ -176,6 +176,74 @@ AppPage {
         }
     }
 
+    Loader {
+        id: contextMenuLoader
+    }
+
+    Component {
+        id: contextMenuComponent
+        ContextMenu {
+            id: contextMenu
+
+            property alias model : actionMenu.model
+            property alias payload : actionMenu.payload
+
+            // if we don't change the parent here, the maximum height of the context menu is that of the account row,
+            // and not of the whole list
+            parent: accountsListView
+            content:  ActionMenu {
+                id: actionMenu
+
+                onTriggered: {
+                    if (index == 0)
+                    {
+                        if(payload.data(AccountsModel.ConnectionStatusRole) != TelepathyTypes.ConnectionStatusDisconnected) {
+                            payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                                                "offline", // i18n ok
+                                                payload.data(AccountsModel.RequestedPresenceStatusMessageRole));
+                        } else {
+                            var icon = payload.data(AccountsModel.IconRole);
+                            var id = payload.data(AccountsModel.IdRole);
+                            var serviceName = protocolsModel.titleForId(icon);
+
+                            // if the protocol only allows to have one account connected at a time,
+                            // ask the user if he really wants to do that
+                            if (protocolsModel.isSingleInstance(icon) &&
+                                accountFactory.otherAccountsOnline(icon, id)) {
+                                // show the dialog asking the user if he really wants to connect the account
+
+                                confirmationDialogItem.title = Constants.multipleAccountsTitle;
+                                confirmationDialogItem.text = Constants.multipleAccountsText.arg(serviceName);
+                                confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
+                                confirmationDialogItem.accountId = id;
+                                confirmationDialogItem.show();
+                            } else {
+                                if(payload.data(AccountsModel.AutomaticPresenceTypeRole) != TelepathyTypes.ConnectionPresenceTypeOffline) {
+                                    payload.setRequestedPresence(payload.data(AccountsModel.AutomaticPresenceTypeRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                } else {
+                                    payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
+                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                }
+                            }
+                        }
+
+                    }
+                    else if (index == 1)
+                    {
+                        // Account settings
+                        var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
+                        createAppModel();
+                        appModel.launch(cmd);
+                    }
+                    contextMenu.hide();
+                }
+            }
+        }
+    }
+
     function showInfoBar(accountId)
     {
         var text = "";

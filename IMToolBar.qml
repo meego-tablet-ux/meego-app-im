@@ -299,9 +299,13 @@ BottomToolBar {
                 hasBackground: false
 
                 onClicked: {
-                    smileyContextMenu.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
+                    if (smileyContextMenuLoader.item == null) {
+                        smileyContextMenuLoader.sourceComponent = smileyContextMenuComponent;
+                    }
+
+                    smileyContextMenuLoader.item.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
                                                   insertSmileyButton.mapToItem(window, insertSmileyButton.x, insertSmileyButton.y).y + 10);
-                    smileyContextMenu.show();
+                    smileyContextMenuLoader.item.show();
                 }
                 opacity: !window.fullScreen ? 1 : 0
                 visible: opacity > 0
@@ -326,9 +330,13 @@ BottomToolBar {
                 icon: "image://themedimage/icons/actionbar/document-attach"
                 iconDown: icon + "-active"
                 onClicked: {
-                    sendFileContextMenu.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
+                    if (sendFileContextMenuLoader.item == null) {
+                        sendFileContextMenuLoader.sourceComponent = sendFileContextMenuComponent;
+                    }
+
+                    sendFileContextMenuLoader.item.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
                                                     sendFileButton.mapToItem(window, sendFileButton.x, sendFileButton.y).y + 10);
-                    sendFileContextMenu.show();
+                    sendFileContextMenuLoader.item.show();
                 }
                 opacity: (!window.fullScreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
                 visible: opacity > 0
@@ -348,45 +356,60 @@ BottomToolBar {
             }
         ]
 
-        ContextMenu {
-            id: smileyContextMenu
-
-            content: SmileyGridView {
-                id: smileyGrid
-                height: 200
-                width: 200
-
-                onSmileyClicked: {
-                    toolBar.smileyClicked(sourceName);
-                    smileyContextMenu.hide();
-                }
-            }
-
-            forceFingerMode: 3
-            width: 200
-            height: 200
+        Loader {
+            id: smileyContextMenuLoader
         }
 
-        ContextMenu {
-            id: sendFileContextMenu
+        Component {
+            id:  smileyContextMenuComponent
+            ContextMenu {
+                id: smileyContextMenu
 
-            content: SendFileView {
-                id: sendFileView
+                content: SmileyGridView {
+                    id: smileyGrid
+                    height: 200
+                    width: 200
 
-                onFileSelected: {
-                    fileTransferAgent.sendFile(fileName);
-                    sendFileContextMenu.hide();
+                    onSmileyClicked: {
+                        toolBar.smileyClicked(sourceName);
+                        smileyContextMenu.hide();
+                    }
                 }
-                onCancelled: {
-                    sendFileContextMenu.hide();
-                }
+
+                forceFingerMode: 3
+                width: 200
+                height: 200
             }
+        }
 
-            forceFingerMode: 3
 
-            Component.onCompleted: {
-                if (sendFileContextMenu.content == null)
-                    sendFileButton.visible = false
+        Loader {
+            id: sendFileContextMenuLoader
+        }
+
+        Component {
+            id: sendFileContextMenuComponent
+            ContextMenu {
+                id: sendFileContextMenu
+
+                content: SendFileView {
+                    id: sendFileView
+
+                    onFileSelected: {
+                        fileTransferAgent.sendFile(fileName);
+                        sendFileContextMenu.hide();
+                    }
+                    onCancelled: {
+                        sendFileContextMenu.hide();
+                    }
+                }
+
+                forceFingerMode: 3
+
+                Component.onCompleted: {
+                    if (sendFileContextMenu.content == null)
+                        sendFileButton.visible = false
+                }
             }
         }
 
@@ -417,6 +440,7 @@ BottomToolBar {
                 volumeControl.mute = window.callAgent.mutedCall;
             }
         }
+
         Loader {
             id: volumeLoader
         }

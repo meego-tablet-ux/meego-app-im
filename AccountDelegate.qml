@@ -35,7 +35,7 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        color: (mouseArea.pressed || contextMenu.visible? theme_buttonFontColorActive : theme_commonBoxColor)
+        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
 
         Image {
             id: serviceIcon
@@ -101,63 +101,74 @@ Item {
             // onRejected:
         }
 
-        ContextMenu {
-            id: contextMenu
+        Loader {
+            id: contextMenuLoader
+        }
 
-            // if we don't change the parent here, the maximum height of the context menu is that of the account row,
-            // and not of the whole list
-            parent: accountsListView
-            content:  ActionMenu {
-                id: actionMenu
+        Component {
+            id: contextMenuComponent
+            ContextMenu {
+                id: contextMenu
 
-                onTriggered: {
-                    if (index == 0)
-                    {
-                        if(payload.data(AccountsModel.ConnectionStatusRole) != TelepathyTypes.ConnectionStatusDisconnected) {
-                            payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
-                                                "offline", // i18n ok
-                                                payload.data(AccountsModel.RequestedPresenceStatusMessageRole));
-                        } else {
-                            var icon = payload.data(AccountsModel.IconRole);
-                            var id = payload.data(AccountsModel.IdRole);
-                            var serviceName = protocolsModel.titleForId(icon);
+                property alias model : actionMenu.model
+                property alias payload : actionMenu.payload
 
-                            // if the protocol only allows to have one account connected at a time,
-                            // ask the user if he really wants to do that
-                            if (protocolsModel.isSingleInstance(icon) &&
-                                accountFactory.otherAccountsOnline(icon, id)) {
-                                // show the dialog asking the user if he really wants to connect the account
+                // if we don't change the parent here, the maximum height of the context menu is that of the account row,
+                // and not of the whole list
+                parent: accountsListView
+                content:  ActionMenu {
+                    id: actionMenu
 
-                                confirmationDialogItem.title = Constants.multipleAccountsTitle;
-                                confirmationDialogItem.text = Constants.multipleAccountsText.arg(serviceName);
-                                confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
-                                confirmationDialogItem.accountId = id;
-                                confirmationDialogItem.show();
+                    onTriggered: {
+                        if (index == 0)
+                        {
+                            if(payload.data(AccountsModel.ConnectionStatusRole) != TelepathyTypes.ConnectionStatusDisconnected) {
+                                payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeOffline,
+                                                    "offline", // i18n ok
+                                                    payload.data(AccountsModel.RequestedPresenceStatusMessageRole));
                             } else {
-                                if(payload.data(AccountsModel.AutomaticPresenceTypeRole) != TelepathyTypes.ConnectionPresenceTypeOffline) {
-                                    payload.setRequestedPresence(payload.data(AccountsModel.AutomaticPresenceTypeRole),
-                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
-                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                var icon = payload.data(AccountsModel.IconRole);
+                                var id = payload.data(AccountsModel.IdRole);
+                                var serviceName = protocolsModel.titleForId(icon);
+
+                                // if the protocol only allows to have one account connected at a time,
+                                // ask the user if he really wants to do that
+                                if (protocolsModel.isSingleInstance(icon) &&
+                                    accountFactory.otherAccountsOnline(icon, id)) {
+                                    // show the dialog asking the user if he really wants to connect the account
+
+                                    confirmationDialogItem.title = Constants.multipleAccountsTitle;
+                                    confirmationDialogItem.text = Constants.multipleAccountsText.arg(serviceName);
+                                    confirmationDialogItem.instanceReason = "account-delegate-single-instance"; // i18n ok
+                                    confirmationDialogItem.accountId = id;
+                                    confirmationDialogItem.show();
                                 } else {
-                                    payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
-                                                                 payload.data(AccountsModel.AutomaticPresenceRole),
-                                                                 payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                    if(payload.data(AccountsModel.AutomaticPresenceTypeRole) != TelepathyTypes.ConnectionPresenceTypeOffline) {
+                                        payload.setRequestedPresence(payload.data(AccountsModel.AutomaticPresenceTypeRole),
+                                                                     payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                     payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                    } else {
+                                        payload.setRequestedPresence(TelepathyTypes.ConnectionPresenceTypeAvailable,
+                                                                     payload.data(AccountsModel.AutomaticPresenceRole),
+                                                                     payload.data(AccountsModel.AutomaticPresenceStatusMessageRole));
+                                    }
                                 }
                             }
-                        }
 
+                        }
+                        else if (index == 1)
+                        {
+                            // Account settings
+                            var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
+                            createAppModel();
+                            appModel.launch(cmd);
+                        }
+                        contextMenu.hide();
                     }
-                    else if (index == 1)
-                    {
-                        // Account settings
-                        var cmd = "/usr/bin/meego-qml-launcher --app meego-ux-settings --opengl --fullscreen --cmd showPage --cdata \"IM\"";  //i18n ok
-                        createAppModel();
-                        appModel.launch(cmd);
-                    }
-                    contextMenu.hide();
                 }
             }
         }
+
 
         CallCountIcon {
             id: chatIcon
@@ -189,6 +200,10 @@ Item {
             }
 
             onPressAndHold: {
+                if (contextMenuLoader.item == null) {
+                    contextMenuLoader.sourceComponent = contextMenuComponent;
+                }
+
                 menu.clear();
 
                 if(model.connectionStatus != TelepathyTypes.ConnectionStatusDisconnected) {
@@ -199,11 +214,10 @@ Item {
                 menu.append({"modelData":Constants.accountSettings});
 
                 var map = mapToItem(window, mouseX, mouseY);
-                contextMenu.setPosition( map.x, map.y);
-                actionMenu.model = menu;
-                actionMenu.payload = model.item;
-                contextMenu.show();
-
+                contextMenuLoader.item.setPosition( map.x, map.y);
+                contextMenuLoader.item.model = menu;
+                contextMenuLoader.item.payload = model.item;
+                contextMenuLoader.item.show();
             }
         }
     }

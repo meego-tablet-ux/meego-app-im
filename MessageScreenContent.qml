@@ -16,7 +16,7 @@ AppPage {
     id: messageScreenPage
     anchors.fill: parent
     enableCustomActionMenu: true
-    actionMenuOpen: messageContentMenu.visible
+    actionMenuOpen: messageContentMenuLoader.item == null || messageContentMenuLoader.item.visible
 
     property string contactId: window.currentContactId
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
@@ -43,8 +43,12 @@ AppPage {
     }
 
     onActionMenuIconClicked: {
-        messageContentMenu.setPosition( mouseX, mouseY);
-        messageContentMenu.show();
+        if (messageContentMenuLoader.item == null) {
+            messageContentMenuLoader.sourceComponent = messageContentMenuComponent;
+        }
+
+        messageContentMenuLoader.item.setPosition( mouseX, mouseY);
+        messageContentMenuLoader.item.show();
     }
 
     onActivated: {
@@ -384,14 +388,21 @@ AppPage {
         }
     }
 
-    ContextMenu {
-        id: messageContentMenu
+    Loader {
+        id: messageContentMenuLoader
+    }
 
-        width: 200
-        forceFingerMode: 2
+    Component {
+        id: messageContentMenuComponent
+        ContextMenu {
+            id: messageContentMenu
 
-        content: MessageContentMenu {
-            currentPage: messageScreenPage;
+            width: 200
+            forceFingerMode: 2
+
+            content: MessageContentMenu {
+                currentPage: messageScreenPage;
+            }
         }
     }
 
@@ -505,7 +516,9 @@ AppPage {
 
     function hideActionMenu()
     {
-        messageContentMenu.hide();
+        if (messageContentMenuLoader.item != null) {
+            messageContentMenuLoader.item.hide();
+        }
     }
 
     function closeConversation()

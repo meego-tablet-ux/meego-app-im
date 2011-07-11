@@ -28,6 +28,7 @@ Column {
         addContactHelper.resetHelper();
         state = "";
         addAFriendInput.text = "";
+        alreadyAdding = false;
     }
 
     id: column

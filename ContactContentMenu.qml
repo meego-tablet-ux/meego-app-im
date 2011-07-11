@@ -548,7 +548,7 @@ Column {
         }
 
         onStateChanged: {
-            if (state = "sent") {
+            if (state == "sent") {
                 sentTimer.running = true;
             }
         }

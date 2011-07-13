@@ -48,7 +48,7 @@ Item {
         id: mainArea
         width: parent.width
         active: contactDelegate.active
-        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.contactId == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
+        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.contactId == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
 
         MouseArea {
             id: mouseArea

@@ -34,7 +34,7 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.model.id == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
+        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item != null && contextMenuLoader.item.accountId == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
 
         Image {
             id: serviceIcon
@@ -133,6 +133,8 @@ Item {
                 if (contextMenuLoader.item == null) {
                     contextMenuLoader.sourceComponent = contextMenuComponent;
                 }
+
+                contextMenuLoader.item.accountId = model.id;
 
                 menu.clear();
 

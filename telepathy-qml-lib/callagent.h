@@ -220,6 +220,7 @@ protected Q_SLOTS:
     void beginSetVideoSendFalse();
     void beginAudioCall();
     void beginVideoCall();
+    void onVideoItemDestroyed(QObject *obj);
 
 protected:
     Tp::AccountPtr mAccount;

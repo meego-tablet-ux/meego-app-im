@@ -328,6 +328,7 @@ AppPage {
     function setInfoBarMessage()
     {
         var text = "";
+        var useTimer = true;
 
         if (!networkOnline) {
             text = Constants.noNetworkText;
@@ -338,13 +339,16 @@ AppPage {
         } else if (showLoadingContacts) { // if not, check whether contacts are loading
             text = Constants.contactScreenLoading;
             showAddFriendsItem = false;
+            useTimer = false;
         } else if (showAddFriends && !showLoadingContacts) {
             // check whether the contact list is really empty
             if (accountsModel.actualContactsCount(window.currentAccountId) == 0) {
                 text = Constants.contactScreenNoFriends;
                 showAddFriendsItem = true;
             } else {
+                text = Constants.contactScreenLoading;
                 showAddFriendsItem = false;
+                useTimer = false;
             }
         } else {
             showAddFriendsItem = false;
@@ -357,7 +361,11 @@ AppPage {
             infoBarTimer.stop();
         } else {
             infoBar.show();
-            infoBarTimer.restart();
+            if (useTimer) {
+                infoBarTimer.restart();
+            } else {
+                infoBarTimer.stop();
+            }
         }
     }
 

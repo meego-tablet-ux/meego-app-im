@@ -186,9 +186,19 @@ Window {
         id: accountItemConnections
 
         onChanged: {
-            currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
             currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
             notificationManager.currentAccount = currentAccountId;
+        }
+
+        onConnectionStatusChanged: {
+            currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
+
+            // as the filter is nullified if the account is disconnected
+            // when the account gets connected, call the filter again
+            if (status == TelepathyTypes.ConnectionStatusConnected) {
+                contactsModel.filterByAccountId(currentAccountId);
+                contactRequestModel.filterByAccountId(currentAccountId);
+            }
         }
     }
 

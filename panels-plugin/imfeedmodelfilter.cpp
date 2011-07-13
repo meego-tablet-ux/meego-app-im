@@ -26,7 +26,6 @@ IMFeedModelFilter::IMFeedModelFilter(IMFeedModel *source, QObject *parent):
 
 IMFeedModelFilter::~IMFeedModelFilter()
 {
-    delete m_source;
 }
 
 void IMFeedModelFilter::setSearchText(const QString &text)

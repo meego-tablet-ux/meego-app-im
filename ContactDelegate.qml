@@ -67,7 +67,6 @@ Item {
             onPressAndHold: {
                 if (contextMenuLoader.item == null) {
                     contextMenuLoader.sourceComponent = contextMenuComponent;
-                    contextMenuLoader.parent = mainArea;
                 }
                 var map = mapToItem(window, mouseX, mouseY);
                 contextMenuLoader.item.setPosition( map.x, map.y);

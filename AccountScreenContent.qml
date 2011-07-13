@@ -21,7 +21,7 @@ AppPage {
 
     Component.onCompleted: {
         window.reloadFilterModel();
-        showInfoBar("");
+        showInfoBar();
     }
 
     onActivated: {
@@ -34,7 +34,7 @@ AppPage {
             modelsLoaded = true;
             accountsRepeater.model = accountsSortedModel;
             accountsModelConnections.target = accountsModel;
-            showInfoBar("");
+            showInfoBar();
         }
     }
 
@@ -45,7 +45,7 @@ AppPage {
         id: accountsModelConnections
 
         onAccountConnectionStatusChanged: {
-            showInfoBar(accountId);
+            showInfoBar();
         }
     }
 
@@ -244,7 +244,7 @@ AppPage {
         }
     }
 
-    function showInfoBar(accountId)
+    function showInfoBar()
     {
         var text = "";
 
@@ -252,40 +252,23 @@ AppPage {
             text = Constants.noNetworkText;
         } else if (!modelsLoaded) {
             text = Constants.accountsLoading;
-        } else if (accountId == "") {
+        } else {
             // check account status
             for (var i = 0; i < accountsModel.accountCount; ++i) {
                 var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
                 var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
-                if (status == TelepathyTypes.ConnectionStatusDisconnected) {
+                if (status != TelepathyTypes.ConnectionStatusConnected) {
                     var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
                     var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
                     var accountText = accountStatusMessage(status, reason, accountName);
                     if (accountText != "") {
-                        if (text != "") {
-                            text += "<br\>";
+                        // make sure the text is not duplicated
+                        if (text.indexOf(accountText) == -1) {
+                            if (text != "") {
+                                text += "<br\>";
+                            }
+                            text += accountText;
                         }
-                        text += accountText;
-                    }
-                }
-            }
-        } else if (accountId != "") {
-            // we access it by row because we need to display the service name
-            // having the id, we could just get the id, but then the display name would not be the service name we need
-            for (var i = 0; i < accountsModel.accountCount; ++i) {
-                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
-                if (accountId == id) {
-                    var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
-                    var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
-                    var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);
-
-                    // calculate the error message and add it to the current one
-                    var accountText = accountStatusMessage(status, reason, accountName);
-                    if (accountText != "") {
-                        if (text != "") {
-                            text += "<br\>";
-                        }
-                        text += accountText;
                     }
                 }
             }

@@ -185,6 +185,12 @@ AppPage {
             clip: true
 
             interactive: contentHeight > height
+
+            onContentHeightChanged: {
+                if (count > 0) {
+                    positionViewAtIndex(0, ListView.End);
+                }
+            }
         }
 
         Title {

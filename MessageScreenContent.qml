@@ -35,11 +35,6 @@ AppPage {
             accountsModel.disconnectGroupConversationModel(window.currentAccountId,
                                                            window.chatAgent.channelPath);
         }
-
-        if(window.callAgent != undefined) {
-            window.callAgent.setOutgoingVideo(null);
-            window.callAgent.setIncomingVideo(null);
-        }
     }
 
     onActionMenuIconClicked: {

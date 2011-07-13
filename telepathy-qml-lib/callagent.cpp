@@ -745,6 +745,20 @@ void CallAgent::setupFarstreamChannel(FarstreamChannel *channel)
     }
 }
 
+void CallAgent::onVideoItemDestroyed(QObject *obj)
+{
+    qDebug() << "CallAgent::onVideoItemDestroyed: " << obj;
+
+    if (obj == mOutgoingVideo) {
+        qDebug() << "CallAgent::onVideoItemDestroyed: reset outgoing video item";
+        mOutgoingVideo = 0;
+    }
+    else if (obj == mIncomingVideo) {
+        qDebug() << "CallAgent::onVideoItemDestroyed: reset incoming video item";
+        mIncomingVideo = 0;
+    }
+}
+
 void CallAgent::handleReadyChannel()
 {
     qDebug() << "CallAgent::handleReadyChannel:";
@@ -978,6 +992,9 @@ void CallAgent::setIncomingVideo(QObject *item)
     qDebug() << "CallAgent::setIncomingVideo: this=" << (void *) this << " item=" << (void *) item;
 
     mIncomingVideo = qobject_cast<QmlGstVideoItem *>(item);
+    if (mIncomingVideo) {
+        connect(item, SIGNAL(destroyed(QObject*)), SLOT(onVideoItemDestroyed(QObject*)));
+    }
     if (mFarstreamChannel) {
         mFarstreamChannel->setIncomingVideo(mIncomingVideo);
     }
@@ -994,6 +1011,9 @@ void CallAgent::setOutgoingVideo(QObject *item)
     qDebug() << "CallAgent::setOutgoingVideo: this=" << (void *) this << " item=" << (void *) item;
 
     mOutgoingVideo = qobject_cast<QmlGstVideoItem*>(item);
+    if (mOutgoingVideo) {
+        connect(item, SIGNAL(destroyed(QObject*)), SLOT(onVideoItemDestroyed(QObject*)));
+    }
     if (mFarstreamChannel) {
         mFarstreamChannel->setOutgoingVideo(mOutgoingVideo);
     }

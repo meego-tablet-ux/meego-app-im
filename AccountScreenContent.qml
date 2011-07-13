@@ -187,6 +187,7 @@ AppPage {
 
             property alias model : actionMenu.model
             property alias payload : actionMenu.payload
+            property string accountId : ""
 
             // if we don't change the parent here, the maximum height of the context menu is that of the account row,
             // and not of the whole list

@@ -34,7 +34,6 @@ ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *man
       mStringFilter(""),
       mShowOffline(SettingsHelper::self()->showOfflineContacts()),
       mContactsOnly(false),
-      mRequestsOnly(false),
       mBlockedOnly(false),
       mActive(active)
 {
@@ -127,11 +126,8 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                         return false;
                     }
 
-
-                    // filter requests
-                    if (!mRequestsOnly && contact->publishState() == Tp::Contact::PresenceStateAsk) {
-                        return false;
-                    } else if (mRequestsOnly && contact->publishState() != Tp::Contact::PresenceStateAsk) {
+                    // filter requests if set to show only contacts
+                    if (mContactsOnly && contact->publishState() == Tp::Contact::PresenceStateAsk) {
                         return false;
                     }
 
@@ -153,7 +149,7 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
 
                     // filter offline and unknown state if set
                     // if requests only, do not filter
-                    if (!mShowOffline && !mRequestsOnly) {
+                    if (!mShowOffline && contact->publishState() != Tp::Contact::PresenceStateAsk) {
                         Tp::ConnectionPresenceType status = contact->presence().type();
                         if (status == Tp::ConnectionPresenceTypeError
                                 || status == Tp::ConnectionPresenceTypeHidden
@@ -184,7 +180,7 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     if(groupChatItem) {
 
                         // in some cases, only contacts or requests should be shown
-                        if(mContactsOnly || mRequestsOnly || mBlockedOnly) {
+                        if(mContactsOnly || mBlockedOnly) {
                             return false;
                         }
 
@@ -213,6 +209,18 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
 bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
                                             const QModelIndex &right) const
 {
+    // evaluate friend requests
+    int leftPublish = sourceModel()->data(left, IMAccountsModel::PublishStateRole).toInt();
+    int rightPublish = sourceModel()->data(right, IMAccountsModel::PublishStateRole).toInt();
+
+    if (leftPublish != rightPublish) {
+        if (leftPublish ==  Tp::Contact::PresenceStateAsk) {
+            return true;
+        } else if (rightPublish ==  Tp::Contact::PresenceStateAsk) {
+            return false;
+        }
+    }
+
     // evaluate pending messages
     int leftPending = sourceModel()->data(left, IMAccountsModel::PendingMessagesRole).toInt();
     int rightPending = sourceModel()->data(right, IMAccountsModel::PendingMessagesRole).toInt();
@@ -342,17 +350,6 @@ void ContactsSortFilterProxyModel::setContactsOnly(bool toggle)
 bool ContactsSortFilterProxyModel::isContactsOnly() const
 {
     return mContactsOnly;
-}
-
-void ContactsSortFilterProxyModel::setRequestsOnly(bool toggle)
-{
-    mRequestsOnly = toggle;
-    invalidate();
-}
-
-bool ContactsSortFilterProxyModel::isRequestsOnly() const
-{
-    return mRequestsOnly;
 }
 
 void ContactsSortFilterProxyModel::setBlockedOnly(bool toggle)

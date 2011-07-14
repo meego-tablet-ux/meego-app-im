@@ -16,7 +16,9 @@ Item {
     id: mainArea
 
     property int itemHeight: theme_commonBoxHeight
-    property variant contactItem: model.item
+    property variant contactItem
+    property string aliasName: ""
+    property string avatar: ""
 
     width: parent.width
     height: itemHeight
@@ -27,18 +29,18 @@ Item {
     }
 
     Avatar {
-        id: avatar
+        id: avatarItem
 
         anchors.left: parent.left
         anchors.top:  parent.top
         anchors.bottom: parent.bottom
 
-        source: model.avatar
+        source: avatar
     }
 
     Column {
         anchors.margins: 10
-        anchors.left: avatar.right
+        anchors.left: avatarItem.right
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: acceptButton.left
 
@@ -55,7 +57,7 @@ Item {
             id: displayText
 
             // TODO: check width and display alias or username accordingly
-            text: model.aliasName
+            text: aliasName
             elide: Text.ElideRight
             color: theme_fontColorNormal
             width: parent.width

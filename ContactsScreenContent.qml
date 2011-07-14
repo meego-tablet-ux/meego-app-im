@@ -19,7 +19,7 @@ AppPage {
     enableCustomActionMenu: true
     actionMenuOpen: contactContentMenu.visible
     
-    property int count: listView.count + contactRequestModel.rowCount
+    property int count: listView.count
     property int accountStatus: 0
     property int contactListState: 0
     property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
@@ -41,7 +41,6 @@ AppPage {
 
     onAccountStatusChanged: {
         contactsModel.filterByAccountId(currentAccountId);
-        contactRequestModel.filterByAccountId(currentAccountId);
         setInfoBarMessage();
     }
 
@@ -144,29 +143,6 @@ AppPage {
             }
         }
 
-        Component {
-            id: requestsViewComponent
-
-            ListView {
-                id: requestsView
-                interactive: false
-                property int itemHeight: theme_commonBoxHeight;
-
-                height: itemHeight * count
-
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
-                visible: listView.visible
-                model: contactRequestModel
-                delegate: ContactRequestDelegate {
-                    itemHeight: requestsView.itemHeight
-                }
-            }
-
-        }
-
         ListView {
             id: listView
 
@@ -180,8 +156,7 @@ AppPage {
 
             cacheBuffer: 600
             model: contactsModel
-            delegate: ContactDelegate {}
-            header: requestsViewComponent
+            delegate: AbstractContactDelegate {}
             clip: true
 
             interactive: contentHeight > height

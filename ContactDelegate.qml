@@ -18,28 +18,44 @@ Item {
     width: parent.width
     height: childrenRect.height
     property bool tabDiv: false
-    property bool active: (model.presenceType == TelepathyTypes.ConnectionPresenceTypeAvailable
-                           || model.presenceType == TelepathyTypes.ConnectionPresenceTypeBusy
-                           || model.presenceType == TelepathyTypes.ConnectionPresenceTypeAway
-                           || model.presenceType == TelepathyTypes.ConnectionPresenceTypeExtendedAway)
+    property bool active: (presenceType == TelepathyTypes.ConnectionPresenceTypeAvailable
+                           || presenceType == TelepathyTypes.ConnectionPresenceTypeBusy
+                           || presenceType == TelepathyTypes.ConnectionPresenceTypeAway
+                           || presenceType == TelepathyTypes.ConnectionPresenceTypeExtendedAway)
 
-    property variant avatarList: model.avatarsList
+    property variant avatarList: []
+    property string contactId: ""
+    property string aliasName: ""
+    property string presenceMessage: ""
+    property int presenceType: 0
+    property string avatar: ""
+    property bool chatOpened : false
+    property bool textChat : false
+    property bool audioCall : false
+    property bool videoCall : false
+    property bool canBlockContacts : false
+    property bool blocked : false
+    property bool canReportAbuse : false
+    property int messageCount: 0
+    property int missedAudioCalls: 0
+    property int missedVideoCalls: 0
+    property bool openChat: false
 
     Component.onCompleted: {
-        if(model.presenceMessage != "") {
-            message.text = model.presenceMessage;
+        if(presenceMessage != "") {
+            message.text = presenceMessage;
         } else {
-            message.text = window.presenceStatusText(model.presenceType);
+            message.text = window.presenceStatusText(presenceType);
         }
     }
 
     Connections {
         target: model
         onPresenceTypeChanged: {
-            if(model.presenceMessage != "") {
-                message.text = model.presenceMessage;
+            if(presenceMessage != "") {
+                message.text = presenceMessage;
             } else {
-                message.text = window.presenceStatusText(model.presenceType);
+                message.text = window.presenceStatusText(presenceType);
             }
         }
     }
@@ -48,7 +64,7 @@ Item {
         id: mainArea
         width: parent.width
         active: contactDelegate.active
-        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.contactId == model.id && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
+        color: (mouseArea.pressed || (contextMenuLoader.item != null && contextMenuLoader.item.contactId == contactId && contextMenuLoader.item.visible) ? theme_buttonFontColorActive : theme_commonBoxColor)
 
         MouseArea {
             id: mouseArea
@@ -56,12 +72,10 @@ Item {
 
             anchors.fill: parent
             onClicked: {
-                contactDelegate.ListView.view.currentIndex = index;
-
-                if(contactDelegate.avatarList == undefined) {
-                    window.startConversation(model.id);
+                if(avatarList == undefined) {
+                    window.startConversation(contactId);
                 } else {
-                    window.startGroupConversation(model.id);
+                    window.startGroupConversation(contactId);
                 }
             }
             onPressAndHold: {
@@ -70,32 +84,32 @@ Item {
                 }
                 var map = mapToItem(window, mouseX, mouseY);
                 contextMenuLoader.item.setPosition( map.x, map.y);
-                contextMenuLoader.item.contactId = model.id;
-                contextMenuLoader.item.chatOpened = model.chatOpened;
-                contextMenuLoader.item.textChat = model.textChat;
-                contextMenuLoader.item.audioCall = model.audioCall;
-                contextMenuLoader.item.videoCall = model.videoCall;
-                contextMenuLoader.item.canBlockContacts = model.canBlockContacts;
-                contextMenuLoader.item.blocked = model.blocked;
-                contextMenuLoader.item.canReportAbuse = model.canReportAbuse;
+                contextMenuLoader.item.contactId = contactId;
+                contextMenuLoader.item.chatOpened = chatOpened;
+                contextMenuLoader.item.textChat = textChat;
+                contextMenuLoader.item.audioCall = audioCall;
+                contextMenuLoader.item.videoCall = videoCall;
+                contextMenuLoader.item.canBlockContacts = canBlockContacts;
+                contextMenuLoader.item.blocked = blocked;
+                contextMenuLoader.item.canReportAbuse = canReportAbuse;
                 contextMenuLoader.item.show();
             }
         }
 
 
         Avatar {
-            id: avatar
+            id: avatarItem
             active: contactDelegate.active
-            source: model.avatar
+            source: avatar
             anchors.left: parent.left
             anchors.top:  parent.top
             anchors.bottom: parent.bottom
             anchors.margins: -1
-            visible: (model.avatar != "MULTIPLE")
+            visible: (avatar != "MULTIPLE")
         }
 
         AvatarsGroupList {
-            id: avatasListView
+            id: avatarListView
 
             anchors {
                 left: mainArea.left;
@@ -114,11 +128,11 @@ Item {
         Column {
             id: nameColumn
 
-            visible: (model.avatar != "MULTIPLE")
+            visible: (avatar != "MULTIPLE")
             anchors { 
-                left: avatar.right;
+                left: avatarItem.right;
                 right: chatIcon.left
-                verticalCenter: avatar.verticalCenter
+                verticalCenter: avatarItem.verticalCenter
                 margins: 10
             }
             height: childrenRect.height
@@ -126,7 +140,7 @@ Item {
             Text {
                 id: displayText
                 // TODO: check width and display alias or username accordingly
-                text: model.aliasName
+                text: aliasName
                 width: parent.width
                 elide: Text.ElideRight
                 color: theme_fontColorNormal
@@ -140,7 +154,7 @@ Item {
 
                 PresenceIcon {
                     id: presence
-                    status: model.presenceType
+                    status: presenceType
                     anchors.verticalCenter: message.verticalCenter
                     anchors.topMargin: 5
                 }
@@ -159,10 +173,10 @@ Item {
         CallCountIcon {
             id: chatIcon
 
-            messageCount: model.pendingMessages
-            missedAudioCalls: model.missedAudioCalls
-            missedVideoCalls: model.missedVideoCalls
-            openChat: model.chatOpened
+            messageCount: pendingMessages
+            missedAudioCalls: missedAudioCalls
+            missedVideoCalls: missedVideoCalls
+            openChat: chatOpened
 
             anchors.margins: 10
             anchors.right: mainArea.right

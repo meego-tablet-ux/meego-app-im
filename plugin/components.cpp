@@ -139,15 +139,11 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     AccountsSortFilterProxyModel *accountsSortedModel = new AccountsSortFilterProxyModel(model, this);
 
     mContactsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, false, this);
-    mRequestsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, this);
-    mRequestsModel->setRequestsOnly(true);
 
     // the load order is inverted so that signals emitted by the accountsModel can guarantee that the
     // contactsModel is present
     mRootContext->setContextProperty(QString::fromLatin1("contactsModel"), mContactsModel);
     emit contactsModelCreated();
-    mRootContext->setContextProperty(QString::fromLatin1("contactRequestModel"), mRequestsModel);
-    emit requestsModelCreated();
     mRootContext->setContextProperty(QString::fromLatin1("accountsModel"), model);
     mRootContext->setContextProperty(QString::fromLatin1("accountsSortedModel"), accountsSortedModel);
     emit accountsModelCreated();

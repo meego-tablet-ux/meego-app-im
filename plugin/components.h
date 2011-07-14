@@ -41,7 +41,6 @@ Q_SIGNALS:
     void accountsModelCreated();
     void contactsModelCreated();
     void chatModelCreated();
-    void requestsModelCreated();
     void networkStatusChanged(bool online);
 
 protected:
@@ -59,7 +58,6 @@ private:
     ChannelHandler *mChannelHandler;
     IMAccountsModel *mAccountsModel;
     ContactsSortFilterProxyModel *mContactsModel;
-    ContactsSortFilterProxyModel *mRequestsModel;
     MergedModel *mMergedModel;
     NotificationManager *mNotificationManager;
     IMGroupChatModel *mGroupChatModel;

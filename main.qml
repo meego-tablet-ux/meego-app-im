@@ -56,8 +56,9 @@ Window {
     // this property will be set right before opening the conversation screen
     property string currentContactId: ""
     property string currentGroupChatId: ""
-
     property string currentScreen: ""
+
+    property bool restoreStateEnabled: false
 
     signal componentsLoaded
 
@@ -226,6 +227,7 @@ Window {
             } else {
                 openPageByCommand();
             }
+            restoreStateEnabled = true;
         }
     }
 
@@ -647,10 +649,12 @@ Window {
         id: appState
 
         onSaveRequired: {
-            setValue("currentAccountId", currentAccountId);
-            setValue("currentContactId", currentContactId);
-            setValue("currentScreen", currentScreen);
-            sync();
+            if (restoreStateEnabled) {
+                setValue("currentAccountId", currentAccountId);
+                setValue("currentContactId", currentContactId);
+                setValue("currentScreen", currentScreen);
+                sync();
+            }
         }
     }
 
@@ -785,13 +789,14 @@ Window {
         currentScreen = appState.value("currentScreen");
 
         if(currentScreen == "chat" && currentContactId != "") {
+            showContactsScreen();
             contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
             startConversation(currentContactId);
-        } else if (currentScreen = "contacts") {
-            addPage(contactsScreenContent);
+        } else if (currentScreen == "contacts") {
+            showContactsScreen();
+        } else if (currentScreen == "accounts") {
+            // no need to do this as it is opened by default
         }
-        // by default the application opens in the accounts list, so nothing has to be done
-        // if currentScreen == "accounts"
     }
 
     function accountStatusMessage(status)

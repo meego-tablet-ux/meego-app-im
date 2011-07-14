@@ -27,8 +27,6 @@ public:
     Q_INVOKABLE bool isShowOffline(void) const;
     Q_INVOKABLE void setContactsOnly(bool toggle);
     Q_INVOKABLE bool isContactsOnly() const;
-    Q_INVOKABLE void setRequestsOnly(bool toggle);
-    Q_INVOKABLE bool isRequestsOnly() const;
     Q_INVOKABLE void setBlockedOnly(bool toggle);
     Q_INVOKABLE bool isBlockedOnly() const;
     Q_INVOKABLE QString accountId() const;
@@ -79,7 +77,6 @@ private:
     Tp::Features mContactFeatures;
     bool mShowOffline;
     bool mContactsOnly;
-    bool mRequestsOnly;
     bool mBlockedOnly;
     QStringList mSkippedContacts;
     bool mActive;

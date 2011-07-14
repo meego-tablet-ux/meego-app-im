@@ -104,7 +104,6 @@ Window {
 
     onCurrentAccountIdChanged: {
         contactsModel.filterByAccountId(currentAccountId);
-        contactRequestModel.filterByAccountId(currentAccountId);
         accountItem = accountsModel.accountItemForId(window.currentAccountId);
         currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
         currentAccountName = accountItem.data(AccountsModel.DisplayNameRole);
@@ -197,7 +196,6 @@ Window {
             // when the account gets connected, call the filter again
             if (status == TelepathyTypes.ConnectionStatusConnected) {
                 contactsModel.filterByAccountId(currentAccountId);
-                contactRequestModel.filterByAccountId(currentAccountId);
             }
         }
     }

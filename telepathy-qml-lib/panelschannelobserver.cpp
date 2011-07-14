@@ -68,26 +68,32 @@ void PanelsChannelObserver::observeChannels(const Tp::MethodInvocationContextPtr
     context->setFinished();
 }
 
-void PanelsChannelObserver::emitExistingChannels()
+void PanelsChannelObserver::emitExistingChannels(const QString &accountId)
 {
     foreach (Tp::TextChannelPtr channel, mTextChannels) {
         if (!channel.isNull() && channel->isValid()) {
-            QString accountId = channel->property("accountId").toString();
-            emit newTextChannel(accountId, channel);
+            QString channelAccountId = channel->property("accountId").toString();
+            if (channelAccountId == accountId) {
+                emit newTextChannel(accountId, channel);
+            }
         }
     }
 
     foreach (Tpy::CallChannelPtr channel, mCallChannels) {
         if (!channel.isNull() && channel->isValid()) {
-            QString accountId = channel->property("accountId").toString();
-            emit newCallChannel(accountId, channel);
+            QString channelAccountId = channel->property("accountId").toString();
+            if (channelAccountId == accountId) {
+                emit newCallChannel(accountId, channel);
+            }
         }
     }
 
     foreach (Tp::IncomingFileTransferChannelPtr channel, mFileTransferChannels) {
         if (!channel.isNull() && channel->isValid()) {
-            QString accountId = channel->property("accountId").toString();
-            emit newFileTransferChannel(accountId, channel);
+            QString channelAccountId = channel->property("accountId").toString();
+            if (channelAccountId == accountId) {
+                emit newFileTransferChannel(accountId, channel);
+            }
         }
     }
 }

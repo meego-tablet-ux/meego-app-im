@@ -38,7 +38,7 @@ public:
                     const QList<Tp::ChannelRequestPtr> &requestsSatisfied,
                     const Tp::AbstractClientObserver::ObserverInfo &observerInfo);
 
-    void emitExistingChannels();
+    void emitExistingChannels(const QString &accountId);
 
 Q_SIGNALS:
     void newTextChannel(const QString &accountId, const Tp::TextChannelPtr &channel);

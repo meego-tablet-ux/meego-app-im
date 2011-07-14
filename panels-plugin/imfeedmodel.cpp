@@ -50,7 +50,7 @@ IMFeedModel::IMFeedModel(PanelsChannelObserver *observer, Tp::AccountPtr account
     }
 
     // get existing channels
-    mObserver->emitExistingChannels();
+    mObserver->emitExistingChannels(mAccountId);
 }
 
 IMFeedModel::~IMFeedModel()

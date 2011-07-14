@@ -286,12 +286,7 @@ Window {
             window.contactItem = undefined;
             window.callAgent = undefined;
 
-            // reuse the existing message screen if possible
-            if (notificationManager.chatActive) {
-                window.pageStack.currentPage.initPage();
-            } else {
-                window.showMessageScreen();
-            }
+            window.showMessageScreen();
 
             accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         }
@@ -360,8 +355,13 @@ Window {
             messageScreenContent = Qt.createQmlObject(messageScreenContentString, window);
         }
 
-        addPage(messageScreenContent);
-        fastPageSwitch = false;
+        // reuse the existing message screen if possible
+        var currentPage = window.pageStack.currentPage;
+        if (currentPage != null && typeof(currentPage.isMessageScreen)!="undefined" && currentPage.isMessageScreen) {
+            window.pageStack.currentPage.initPage();
+        } else {
+            addPage(messageScreenContent);
+        }
     }
 
     function startConversation(contactId)
@@ -374,10 +374,6 @@ Window {
         currentGroupChatId = "";
 
         // and start the conversation
-        if (notificationManager.chatActive) {
-            fastPageSwitch = true;
-            window.popPage();
-        }
         accountsModel.startChat(window.currentAccountId, contactId);
         chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, contactId);
         window.showMessageScreen();
@@ -394,10 +390,6 @@ Window {
         window.chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, channelPath);
 
         // and start the conversation
-        if (notificationManager.chatActive) {
-            fastPageSwitch = true;
-            window.popPage();
-        }
         window.showMessageScreen();
         accountsModel.startGroupChat(window.currentAccountId, window.chatAgent.channelPath)
         console.log("window.startGroupConversation: finished");
@@ -405,11 +397,6 @@ Window {
 
     function acceptCall(accountId, contactId)
     {
-        if (notificationManager.chatActive) {
-            fastPageSwitch = true;
-            window.popPage();
-        }
-
         // set the current contact property
         window.callAgent = window.incomingCallAgent
         //window.callAgent.useResourcePolicy = false;
@@ -436,10 +423,6 @@ Window {
         callAgent.audioCall();
 
         // and start the conversation
-        if (notificationManager.chatActive) {
-            fastPageSwitch = true;
-            window.popPage();
-        }
         window.showMessageScreen();
     }
 
@@ -459,10 +442,6 @@ Window {
         callAgent.videoCall();
 
         // and start the conversation
-        if (notificationManager.chatActive) {
-            fastPageSwitch = true;
-            window.popPage()
-        }
         window.showMessageScreen();
     }
 

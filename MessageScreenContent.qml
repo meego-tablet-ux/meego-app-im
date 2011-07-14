@@ -22,6 +22,7 @@ AppPage {
     property string contactName: (window.contactItem != undefined? window.contactItem.data(AccountsModel.AliasRole) : "")
     property bool modelLoaded: (conversationView.model != undefined)
     property int accountStatus: 0
+    property bool isMessageScreen: true
 
     Component.onCompleted: {
         initPage();

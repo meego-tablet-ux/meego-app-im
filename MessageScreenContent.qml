@@ -388,6 +388,10 @@ AppPage {
         id: messageContentMenuLoader
     }
 
+    TopItem {
+        id: messageTopItem
+    }
+
     Component {
         id: messageContentMenuComponent
         ContextMenu {

@@ -145,7 +145,7 @@ Item {
                 }
                 menu.append({"modelData":Constants.accountSettings});
 
-                var map = mapToItem(window, mouseX, mouseY);
+                var map = mapToItem(topItem.topItem, mouseX, mouseY);
                 contextMenuLoader.item.setPosition( map.x, map.y);
                 contextMenuLoader.item.model = menu;
                 contextMenuLoader.item.payload = model.item;

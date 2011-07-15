@@ -303,8 +303,10 @@ BottomToolBar {
                         smileyContextMenuLoader.sourceComponent = smileyContextMenuComponent;
                     }
 
-                    smileyContextMenuLoader.item.setPosition(insertSmileyButton.mapToItem(toolBar, insertSmileyButton.x, insertSmileyButton.y).x + insertSmileyButton.width / 2,
-                                                  insertSmileyButton.mapToItem(window, insertSmileyButton.x, insertSmileyButton.y).y + 10);
+                    var map = insertSmileyButton.mapToItem(messageTopItem, insertSmileyButton.x, insertSmileyButton.y)
+
+                    smileyContextMenuLoader.item.setPosition(map.x + insertSmileyButton.width / 2,
+                                                  map.y + insertSmileyButton.height * 2);
                     smileyContextMenuLoader.item.show();
                 }
                 opacity: !window.fullScreen ? 1 : 0
@@ -334,8 +336,9 @@ BottomToolBar {
                         sendFileContextMenuLoader.sourceComponent = sendFileContextMenuComponent;
                     }
 
-                    sendFileContextMenuLoader.item.setPosition(sendFileButton.mapToItem(toolBar, sendFileButton.x, sendFileButton.y).x + sendFileButton.width / 2,
-                                                    sendFileButton.mapToItem(window, sendFileButton.x, sendFileButton.y).y + 10);
+                    var map = sendFileButton.mapToItem(messageTopItem, sendFileButton.x, sendFileButton.y)
+                    sendFileContextMenuLoader.item.setPosition(map.x + sendFileButton.width / 2,
+                                                    map.y + sendFileButton.height * 2);
                     sendFileContextMenuLoader.item.show();
                 }
                 opacity: (!window.fullScreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0

@@ -180,6 +180,10 @@ AppPage {
         id: contextMenuLoader
     }
 
+    TopItem {
+        id: topItem
+    }
+
     Component {
         id: contextMenuComponent
         ContextMenu {

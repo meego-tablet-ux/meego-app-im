@@ -164,7 +164,7 @@ private:
 
     void createGhostPad(GstElement *bin, GstPad *pad, const char *name);
     void addBin(GstElement*);
-    void removeBin(GstElement*);
+    void removeBin(GstElement *bin, bool mayNotBeThere = false);
 };
 
 #endif // FARSIGHTCHANNEL_H

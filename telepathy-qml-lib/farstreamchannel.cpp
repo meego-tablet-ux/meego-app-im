@@ -1449,7 +1449,7 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
     }
 }
 
-void FarstreamChannel::removeBin(GstElement *bin)
+void FarstreamChannel::removeBin(GstElement *bin, bool mayNotBeThere)
 {
     if (!bin)
         return;
@@ -1464,7 +1464,12 @@ void FarstreamChannel::removeBin(GstElement *bin)
     TRACE();
     GstPad *pad = gst_element_get_static_pad(bin, "sink");
     if (!pad) {
-        setError("GStreamer get sink element source pad failed");
+        if (mayNotBeThere) {
+          qDebug() << "No pad sink found, and bin might not be there, done";
+        }
+        else {
+          setError("GStreamer get sink element source pad failed");
+        }
         return;
     }
 
@@ -1509,11 +1514,11 @@ void FarstreamChannel::onContentRemoved(TfChannel *tfc, TfContent * content, Far
     if (media_type == TP_MEDIA_STREAM_TYPE_AUDIO) {
         qDebug() << "Audio content removed";
         self->removeBin(self->mGstAudioInput);
-        self->removeBin(self->mGstAudioOutput);
+        self->removeBin(self->mGstAudioOutput, true);
     } else if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO) {
         qDebug() << "Video content removed";
         self->removeBin(self->mGstVideoInput);
-        self->removeBin(self->mGstVideoOutput);
+        self->removeBin(self->mGstVideoOutput, true);
     } else {
         Q_ASSERT(false);
         return;

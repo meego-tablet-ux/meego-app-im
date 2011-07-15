@@ -184,6 +184,10 @@ AppPage {
             id: contextMenuLoader
         }
 
+        TopItem {
+            id: contactsTopItem
+        }
+
         Component {
             id: contextMenuComponent
             ContextMenu {

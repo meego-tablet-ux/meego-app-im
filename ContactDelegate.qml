@@ -82,7 +82,7 @@ Item {
                 if (contextMenuLoader.item == null) {
                     contextMenuLoader.sourceComponent = contextMenuComponent;
                 }
-                var map = mapToItem(window, mouseX, mouseY);
+                var map = mapToItem(contactsTopItem.topItem, mouseX, mouseY);
                 contextMenuLoader.item.setPosition( map.x, map.y);
                 contextMenuLoader.item.contactId = contactId;
                 contextMenuLoader.item.chatOpened = chatOpened;

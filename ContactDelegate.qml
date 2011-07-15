@@ -41,6 +41,9 @@ Item {
     property int missedVideoCalls: 0
     property bool openChat: false
 
+    // TODO: do NOT move this string to its proper place until the string freeze ends
+    property string reportAbuseText: qsTr("Report abuse")
+
     Component.onCompleted: {
         if(presenceMessage != "") {
             message.text = presenceMessage;

@@ -263,8 +263,14 @@ AppPage {
                     MenuItemSeparator { visible: blockItem.visible }
 
                     MenuItem {
+                        // TODO: this is a hack to avoid breaking the string freeze
+                        ContactDelegate {
+                            id: contactDelegate
+                            visible: false
+                        }
+
                         id: abuseItem
-                        text: qsTr("Report abuse")
+                        text: contactDelegate.reportAbuseText
                         visible: contextMenu.canReportAbuse && !contextMenu.blocked
                         onClicked: {
                             accountsModel.blockContact(window.currentAccountId, contextMenu.contactId, true);

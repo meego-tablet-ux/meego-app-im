@@ -1449,7 +1449,7 @@ void FarstreamChannel::onContentAdded(TfChannel *tfc, TfContent * content, Farst
     }
 }
 
-void FarstreamChannel::removeBin(GstElement *bin, bool mayNotBeThere)
+void FarstreamChannel::removeBin(GstElement *bin, bool isSink)
 {
     if (!bin)
         return;
@@ -1462,22 +1462,28 @@ void FarstreamChannel::removeBin(GstElement *bin, bool mayNotBeThere)
     }
 
     TRACE();
-    GstPad *pad = gst_element_get_static_pad(bin, "sink");
+    GstPad *pad = gst_element_get_static_pad(bin, isSink ? SINK_GHOST_PAD_NAME : SRC_GHOST_PAD_NAME);
     if (!pad) {
-        if (mayNotBeThere) {
-          qDebug() << "No pad sink found, and bin might not be there, done";
-        }
-        else {
-          setError("GStreamer get sink element source pad failed");
-        }
+        setError("GStreamer get sink element source pad failed");
         return;
     }
 
     TRACE();
-    bool resUnlink = gst_pad_unlink(gst_pad_get_peer (pad), pad);
-    if (!resUnlink) {
-        setError("GStreamer could not unlink output bin pad");
-        return;
+    GstPad *peer = gst_pad_get_peer (pad);
+    if (!peer) {
+        if (isSink) {
+          qDebug() << "Pad has no peer, but it's from a sink which may not have been added, done";
+        }
+        else {
+          setError("Pad has no peer");
+        }
+    }
+    else {
+        bool resUnlink = gst_pad_unlink(peer, pad);
+        if (!resUnlink) {
+            setError("GStreamer could not unlink output bin pad");
+            return;
+        }
     }
 
     TRACE();

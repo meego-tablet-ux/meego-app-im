@@ -180,6 +180,7 @@ void CallAgent::endCall()
 
     if (mResourceSetCall) {
         qDebug() << "Releasing resources";
+        ensureResourceSetConfiguration(true);
         bool ret = mResourceSetCall->release();
         qDebug() << "mResourceSetCall->release() -> " << ret;
     }
@@ -1636,6 +1637,7 @@ void CallAgent::freeResourceSets()
     qDebug() << "CallAgent::freeResourceSets";
 
     if (mResourceSetCall) {
+        ensureResourceSetConfiguration(true);
         mResourceSetCall->release();
         delete mResourceSetCall;
         mResourceSetCall = 0;

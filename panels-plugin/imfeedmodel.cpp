@@ -247,7 +247,7 @@ void IMFeedModel::onMessageReceived(const Tp::ReceivedMessage &message, Tp::Text
                 SLOT(onContactUpgraded(Tp::PendingOperation*)));
     }
 
-    IMFeedModelItem *item = new IMFeedModelItem(mAccount, contact, message.text(), message.sent(),
+    IMFeedModelItem *item = new IMFeedModelItem(mAccount, contact, message.text(), message.received(),
                                                 new McaActions(), type, token, textChannel->objectPath());
     connect(item->actions(), SIGNAL(standardAction(QString,QString)),
             this, SLOT(performAction(QString,QString)));

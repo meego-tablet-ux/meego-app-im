@@ -102,7 +102,7 @@ Column {
         showAcceptButton: true
         showCancelButton: true
         fogClickable: false
-        fogMaskVisible: false
+        fogMaskVisible: true
         anchors.horizontalCenter: parent.left
         anchors.verticalCenter: parent.top
 

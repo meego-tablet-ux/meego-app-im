@@ -134,12 +134,54 @@ void CallAgent::beginCall(bool withVideo)
             SLOT(onPendingChanelRequestCreated(Tp::ChannelRequestPtr)));
 }
 
+void CallAgent::ensureResourceSetConfiguration(bool video)
+{
+    qDebug() << "Ensuring resources are setup for " << (video ? "audio/video" : "audio");
+
+    if (!mResourceSetCall) {
+        qDebug() << "Resources not created, creating now";
+        setupResourceSets();
+        connectResourceSets();
+    }
+
+    if (mResourceSetCall) {
+        if (video) {
+            mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
+            mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
+        } else {
+            mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
+            mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
+        }
+        bool ret = mResourceSetCall->update();
+        qDebug() << "mResourceSetCall->update() -> " << ret;
+    }
+    else qWarning() << "No resources could be created";
+}
+
+void CallAgent::startOperationWithResources(const QString &slot, bool video)
+{
+    ensureResourceSetConfiguration(video);
+    if (mResourceSetCall) {
+        mOnAcquireInvoke = slot;
+        mWaitingForResources = true;
+        /* only set status when we're not started anything yet */
+        if (mCallStatus == CallStatusNoCall)
+            setCallStatus(CallStatusResourcing);
+        qDebug() << "Acquiring resources to call " << slot;
+        bool ret = mResourceSetCall->acquire();
+        qDebug() << "mResourceSetCall acquire " << ret;
+    }
+    else qWarning() << "No resources, cannot setup for calling " << slot;
+}
+
 void CallAgent::endCall()
 {
     qDebug() << "CallAgent::endCall: ";
 
     if (mResourceSetCall) {
-        mResourceSetCall->release();
+        qDebug() << "Releasing resources";
+        bool ret = mResourceSetCall->release();
+        qDebug() << "mResourceSetCall->release() -> " << ret;
     }
 
     if (mPendingChannelRequest != 0) {
@@ -233,24 +275,7 @@ void CallAgent::acceptCall()
 
     int initialVideo = mCallChannel->immutableProperties().value("InitialVideo",0).toInt();
 
-    if (!mResourceSetCall) {
-        setupResourceSets();
-        connectResourceSets();
-    }
-
-    if (mResourceSetCall) {
-        if (initialVideo) {
-            mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
-            mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
-        } else {
-            mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
-            mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
-        }
-        mResourceSetCall->update();
-        mOnAcquireInvoke = SLOT(beginAcceptCall());
-        mWaitingForResources = true;
-        mResourceSetCall->acquire();
-    }
+    startOperationWithResources(SLOT(beginAcceptCall()), initialVideo!=0);
 }
 
 void CallAgent::requestSendingAudio(Tpy::CallContentPtr content, bool send)
@@ -460,18 +485,7 @@ void CallAgent::setVideoSend(bool send)
         return;
     }
 
-    if (send) {
-        mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
-        mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
-        mOnAcquireInvoke = SLOT(beginSetVideoSendTrue());
-    } else {
-        mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
-        mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
-        mOnAcquireInvoke = SLOT(beginSetVideoSendFalse());
-    }
-    mResourceSetCall->update();
-    mWaitingForResources = true;
-    mResourceSetCall->acquire();
+    startOperationWithResources(send ? SLOT(beginSetVideoSendTrue()) : SLOT(beginSetVideoSendFalse()), send);
 }
 
 void CallAgent::setHoldCall(bool hold)
@@ -647,22 +661,8 @@ void CallAgent::audioCall()
         return;
     }
 
-    if (!mResourceSetCall) {
-        setupResourceSets();
-        connectResourceSets();
-    }
-
-    if (mResourceSetCall) {
-        mResourceSetCall->deleteResource(ResourcePolicy::VideoPlaybackType);
-        mResourceSetCall->deleteResource(ResourcePolicy::VideoRecorderType);
-        bool ret = mResourceSetCall->update();
-        qDebug() << "mResourceSetCall update " << ret;
-        mOnAcquireInvoke = SLOT(beginAudioCall());
-        mWaitingForResources = true;
-        setCallStatus(CallStatusResourcing);
-        ret = mResourceSetCall->acquire();
-        qDebug() << "mResourceSetCall acquire " << ret;
-    }
+    ensureResourceSetConfiguration(false);
+    startOperationWithResources(SLOT(beginAudioCall()), false);
 }
 
 void CallAgent::beginVideoCall()
@@ -680,24 +680,7 @@ void CallAgent::videoCall()
         return;
     }
 
-    if (!mResourceSetCall) {
-        setupResourceSets();
-        connectResourceSets();
-    }
-
-    if (mResourceSetCall) {
-        bool ret = mResourceSetCall->addResource(ResourcePolicy::VideoPlaybackType);
-        qDebug() << "mResourceSetCall addResource VideoPlaybackType " << ret;
-        mResourceSetCall->addResource(ResourcePolicy::VideoRecorderType);
-        qDebug() << "mResourceSetCall addResource VideoRecorderType " << ret;
-        ret = mResourceSetCall->update();
-        qDebug() << "mResourceSetCall update " << ret;
-        mOnAcquireInvoke = SLOT(beginVideoCall());
-        mWaitingForResources = true;
-        setCallStatus(CallStatusResourcing);
-        ret = mResourceSetCall->acquire();
-        qDebug() << "mResourceSetCall acquire " << ret;
-    }
+    startOperationWithResources(SLOT(beginVideoCall()), true);
 }
 
 bool CallAgent::existingCall() const
@@ -1717,6 +1700,7 @@ void CallAgent::onResourceSetCallGranted()
     mWaitingForResources = false;
     if (!mOnAcquireInvoke.isEmpty()) {
         QTimer::singleShot(0, this, qPrintable(mOnAcquireInvoke));
+        mOnAcquireInvoke = QString();
     }
 }
 
@@ -1725,6 +1709,7 @@ void CallAgent::onResourceSetCallLost()
     qDebug() << "CallAgent::onResourceSetCallLost";
 
     mWaitingForResources = false;
+    mOnAcquireInvoke = QString();
     setErrorString(tr("Call resources were lost"));
     endCall();
 }
@@ -1734,6 +1719,7 @@ void CallAgent::onResourceSetCallDenied()
     qDebug() << "CallAgent::onResourceSetCallDenied";
 
     mWaitingForResources = false;
+    mOnAcquireInvoke = QString();
     setErrorString(tr("Call resources not granted"));
     endCall();
 }
@@ -1743,6 +1729,7 @@ void CallAgent::onResourceSetCallError(quint32 error,const char *message)
     qDebug() << "CallAgent::onResourceSetCallError: error=" << error << " msg=" << message;
 
     mWaitingForResources = false;
+    mOnAcquireInvoke = QString();
     setErrorString(tr("Error acquiring call resources"));
     endCall();
 }

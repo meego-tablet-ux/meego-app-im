@@ -269,6 +269,8 @@ protected:
 
     static const char *streamType(Tp::MediaStreamType streamType);
 
+    void ensureResourceSetConfiguration(bool video);
+    void startOperationWithResources(const QString &slot, bool video);
     void setupResourceSets();
     void freeResourceSets();
     void connectResourceSets();

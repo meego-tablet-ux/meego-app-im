@@ -703,6 +703,26 @@ Window {
         id: photoPickerLoader
     }
 
+    property alias avatarPhotoPicker : avatarPhotoPickerLoader.item
+
+    function createAvatarPhotoPicker() {
+        if (avatarPhotoPickerLoader.item == null) {
+            console.log("creating AvatarPhotoPicker");
+            avatarPhotoPickerLoader.sourceComponent = avatarPhotoPickerComponent;
+        }
+    }
+
+    Component {
+        id: avatarPhotoPickerComponent
+        PhotoPicker {
+            parent: pageStack.currentPage
+        }
+    }
+
+    Loader {
+        id: avatarPhotoPickerLoader
+    }
+
     property alias videoPicker : videoPickerLoader.item
 
     function createVideoPicker() {

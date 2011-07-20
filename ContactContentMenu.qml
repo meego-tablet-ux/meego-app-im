@@ -304,6 +304,19 @@ Column {
                         }
                     }
                 }
+
+                onVisibleChanged: {
+                    if (visible) {
+                        var n, count = statusModel.count;
+                        for (n=0;n<count;++n) {
+                            console.log("Checking presence "+statusModel.get(n).type);
+                            if (!window.accountItem.isPresenceSupported(statusModel.get(n).type)) {
+                                statusModel.remove(n--);
+                                --count;
+                            }
+                        }
+                    }
+                }
             }
 
             TextEntry {

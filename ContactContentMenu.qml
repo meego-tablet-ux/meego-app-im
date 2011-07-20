@@ -69,7 +69,7 @@ Column {
     }
 
     Connections {
-        target: (visible? photoPicker : null )
+        target: avatarPhotoPicker
 
         onPhotoSelected: {
             createAccountHelper();
@@ -114,8 +114,8 @@ Column {
             anchors.fill: avatarImage
 
             onClicked: {
-                createPhotoPicker();
-                photoPicker.show();
+                createAvatarPhotoPicker();
+                avatarPhotoPicker.show();
             }
         }
     }

@@ -51,6 +51,8 @@ ExpandingBox {
     Text {
         id: accountTypeName
         anchors.left: serviceIcon.right
+        anchors.right: parent.right
+        anchors.rightMargin: 30
         anchors.verticalCenter: serviceIcon.verticalCenter
         anchors.margins: 10
         text: model.displayName

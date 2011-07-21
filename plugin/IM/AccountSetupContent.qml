@@ -72,7 +72,10 @@ Item {
                             anchors.margins: 10
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: serviceIcon.right
+                            anchors.right: parent.right
+                            anchors.rightMargin: 30
                             text: model.title
+                            elide: Text.ElideRight
                             font.pixelSize: theme_fontPixelSizeLargest
                             font.bold: true
                         }

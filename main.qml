@@ -293,7 +293,8 @@ Window {
             // and start the conversation
             window.showMessageScreen();
             accountsModel.startChat(window.currentAccountId, window.currentContactId);
-            chatAgent = agent;
+            callAgent = agent;
+            chatAgent = accountsModel.chatAgentByKey(window.currentAccountId, window.currentContactId);
         }
 
         onPasswordRequestRequired: {

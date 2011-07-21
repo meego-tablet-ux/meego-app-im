@@ -173,7 +173,7 @@ AppPage {
             id: addAFriendItem
 
             visible: showAddFriendsItem
-            width: 200
+            width: parent.width / 2
             anchors.top: friendsTitle.bottom
             anchors.margins: 10
             anchors.left: parent.left

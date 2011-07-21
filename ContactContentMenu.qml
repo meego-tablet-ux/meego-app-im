@@ -30,7 +30,6 @@ Column {
         } else {
             statusMessage.text = window.presenceStatusText(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         }
-        statusRadioGroup.select(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
         avatarSerial = accountFactory.avatarSerial;
     }
 
@@ -177,6 +176,7 @@ Column {
         text: Constants.contactUpdateStatus
 
         onClicked: {
+            statusRadioGroup.select(window.accountItem.data(AccountsModel.CurrentPresenceTypeRole));
             if(statusMenu.visible == false) {
                 statusMenu.opacity = 1;
                 customMessageBox.focus = true;
@@ -297,7 +297,7 @@ Column {
                             Text {
                                 id: statusText
                                 anchors.verticalCenter: statusRadioButton.verticalCenter
-                                text: qsTr(model.text)
+                                text: model.text
                                 font.pixelSize: theme_contextMenuFontPixelSize
                                 color: theme_contextMenuFontColor
                             }

@@ -231,7 +231,10 @@ AppPage {
                 left: parent.left
                 right: parent.right
                 bottom: window.fullScreen ? imToolBar.top : textBar.top
-                margins: 10
+                topMargin: 10 - window.contentVerticalShift
+                leftMargin: 10
+                rightMargin: 10
+                bottomMargin: 10
             }
 
             cacheBuffer: 600

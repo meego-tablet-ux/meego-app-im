@@ -1479,7 +1479,7 @@ void FarstreamChannel::removeBin(GstElement *bin, bool isSink)
         }
     }
     else {
-        bool resUnlink = gst_pad_unlink(peer, pad);
+        bool resUnlink = GST_PAD_IS_SRC (pad) ? gst_pad_unlink (pad, peer) : gst_pad_unlink(peer, pad);
         if (!resUnlink) {
             setError("GStreamer could not unlink output bin pad");
             return;

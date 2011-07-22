@@ -76,8 +76,9 @@ BottomToolBar {
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    messageScreenPage.loadVideoWindow();
-                    var videoWindow = messageScreenPage.getVideoWindow();
+                    messageScreenPage.loadVideoWindow(videoCallButton);
+                }
+                function onVideoWindowLoaded(videoWindow) {
                     videoWindow.opacity = 1;
                     window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);
@@ -144,8 +145,9 @@ BottomToolBar {
                 iconDown: icon + "-active"
                 hasBackground: false
                 onClicked: {
-                    messageScreenPage.loadVideoWindow();
-                    var videoWindow = messageScreenPage.getVideoWindow();
+                    messageScreenPage.loadVideoWindow(audioCallButton);
+                }
+                function onVideoWindowLoaded(videoWindow) {
                     videoWindow.opacity = 1;
                     window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
                     window.callAgent.onOrientationChanged(window.orientation);

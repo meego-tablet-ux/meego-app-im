@@ -364,6 +364,16 @@ AppPage {
 
         Loader {
             id: videoWindowLoader
+            property variant caller: null
+            onStatusChanged: {
+                if (videoWindowLoader.status == Loader.Ready) {
+                    var c = caller;
+                    caller = null;
+                    if (c != null) {
+                        c.onVideoWindowLoaded(videoWindowLoader.item);
+                    }
+                }
+            }
         }
 
         IMToolBar {
@@ -542,10 +552,14 @@ AppPage {
         window.popPage();
     }
 
-    function loadVideoWindow()
+    function loadVideoWindow(caller)
     {
         if (videoWindowLoader.item == null) {
+            videoWindowLoader.caller = caller;
             videoWindowLoader.sourceComponent = videoWindowComponent;
+        }
+        else {
+            caller.onVideoWindowLoaded(videoWindowLoader.item);
         }
     }
 
@@ -555,6 +569,9 @@ AppPage {
     }
 
     function getVideoWindow() {
+        if (videoWindowLoader.item == null) {
+            console.log("WARNING: videoWindowLoader is NULL");
+        }
         return videoWindowLoader.item;
     }
 
@@ -595,14 +612,16 @@ AppPage {
             callAgentConnections.target = window.callAgent;
             var status = window.callAgent.callStatus;
             if (status != CallAgent.CallStatusNoCall) {
-                messageScreenPage.loadVideoWindow();
-                var videoWindow = messageScreenPage.getVideoWindow();
-                videoWindow.opacity = 1;
-                window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
-                window.callAgent.onOrientationChanged(window.orientation);
-                window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
+                messageScreenPage.loadVideoWindow(messageScreenPage);
             }
             window.callAgent.resetMissedCalls();
         }
+    }
+
+    function onVideoWindowLoaded(videoWindow) {
+        videoWindow.opacity = 1;
+        window.callAgent.setOutgoingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoOutgoing : videoWindow.videoIncoming);
+        window.callAgent.onOrientationChanged(window.orientation);
+        window.callAgent.setIncomingVideo(videoWindow.cameraWindowSmall ? videoWindow.videoIncoming : videoWindow.videoOutgoing);
     }
 }

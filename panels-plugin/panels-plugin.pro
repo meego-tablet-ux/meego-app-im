@@ -19,13 +19,15 @@ SOURCES += imfeedmodel.cpp \
            imservmodel.cpp \
            implugin.cpp \
     imfeedmodelitem.cpp \
-    imfeedmodelfilter.cpp
+    imfeedmodelfilter.cpp \
+    imfeedproxymodel.cpp
 
 HEADERS += imfeedmodel.h \
            imservmodel.h \
            implugin.h \
     imfeedmodelitem.h \
-    imfeedmodelfilter.h
+    imfeedmodelfilter.h \
+    imfeedproxymodel.h
 
 clientfiles.files = *.client
 clientfiles.path = $$INSTALL_ROOT/usr/share/telepathy/clients/

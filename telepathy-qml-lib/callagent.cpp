@@ -1544,6 +1544,7 @@ void CallAgent::onAcceptCallFinished(Tp::PendingOperation *op)
         setErrorString(tr("Call could not be accepted %1 - %2")
                        .arg(op->errorName())
                        .arg(op->errorMessage()));
+        endCall();
         return;
     }
     emit acceptCallFinished(this);

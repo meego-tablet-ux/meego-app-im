@@ -13,6 +13,7 @@
 #include "implugin.h"
 
 #include "imfeedmodelfilter.h"
+#include "imfeedproxymodel.h"
 #include "imservmodel.h"
 
 #include <TelepathyQt4/ContactManager>
@@ -25,9 +26,9 @@
 IMPlugin::IMPlugin(QObject *parent)
     : QObject(parent),
       McaFeedPlugin(),
-      m_tpManager(0),
-      m_protocolsModel(0),
-      m_serviceModel(0)
+      mTpManager(0),
+      mProtocolsModel(0),
+      mServiceModel(0)
 {
     Tp::registerTypes();
     Tpy::registerTypes();
@@ -35,18 +36,20 @@ IMPlugin::IMPlugin(QObject *parent)
     qDebug() << "IMPlugin constructor";
 
     initializeChannelObserver();
-    m_protocolsModel = new IMProtocolsModel(this);
-    m_tpManager = TelepathyManager::instance();
-    m_tpManager->setProtocolNames(m_protocolsModel->protocolNames());
+    mProtocolsModel = new IMProtocolsModel(this);
+    mTpManager = TelepathyManager::instance();
+    mTpManager->setProtocolNames(mProtocolsModel->protocolNames());
 
-    m_serviceModel = new IMServiceModel(m_tpManager, m_protocolsModel, this);
+    mServiceModel = new IMServiceModel(mTpManager, mProtocolsModel, this);
 
-    connect(m_tpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
-            m_serviceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
+    connect(mTpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
+            SLOT(onAccountAvailable(Tp::AccountPtr)));
+    connect(mTpManager, SIGNAL(accountAvailable(Tp::AccountPtr)),
+            mServiceModel, SLOT(onAccountAvailable(Tp::AccountPtr)));
 
     // install translation catalogs
     loadTranslator();
-    qApp->installTranslator(&appTranslator);
+    qApp->installTranslator(&mAppTranslator);
 }
 
 IMPlugin::~IMPlugin()
@@ -59,7 +62,7 @@ IMPlugin::~IMPlugin()
 
 QAbstractItemModel *IMPlugin::serviceModel()
 {
-    return m_serviceModel;
+    return mServiceModel;
 }
 
 QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
@@ -69,14 +72,23 @@ QAbstractItemModel *IMPlugin::createFeedModel(const QString &service)
         initializeChannelObserver();
     }
 
-    foreach (Tp::AccountPtr account, m_tpManager->accounts()) {
-        if (!account.isNull() && account->isValid() && account->uniqueIdentifier() == service) {
-            IMFeedModel *model = new IMFeedModel(mObserver, account, this);
-
-            mFeedModels[service] = model;
-            return model;
+    // create the model if not present
+    if (!mFeedModels.contains(service)) {
+        foreach (Tp::AccountPtr account, mTpManager->accounts()) {
+            if (!account.isNull() && account->isValid()
+                    && account->uniqueIdentifier() == service) {
+                onAccountAvailable(account);
+                break;
+            }
         }
     }
+
+    // check once again, just in case the requested service is not a valid account id
+    if (mFeedModels.contains(service)) {
+        IMFeedProxyModel *proxyModel = new IMFeedProxyModel(mFeedModels[service], this);
+        return proxyModel;
+    }
+
     qDebug() << "IMPlugin::createFeedModel: Invalid service requested: " << service;
     return 0;
 }
@@ -129,8 +141,35 @@ McaSearchableFeed *IMPlugin::createSearchModel(const QString &service, const QSt
 
 void IMPlugin::loadTranslator()
 {
-    appTranslator.load("meego-app-im_" + QLocale::system().name() + ".qm",
+    mAppTranslator.load("meego-app-im_" + QLocale::system().name() + ".qm",
                        QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+}
+
+void IMPlugin::onAccountAvailable(Tp::AccountPtr account)
+{
+    connect(account.data(), SIGNAL(removed()),
+            SLOT(onAccountRemoved()));
+
+    QString accountId = account->uniqueIdentifier();
+    if (!mFeedModels.contains(accountId)) {
+        IMFeedModel *model = new IMFeedModel(mObserver, account, this);
+        mFeedModels[accountId] = model;
+    }
+}
+
+void IMPlugin::onAccountRemoved()
+{
+    Tp::Account *account = qobject_cast<Tp::Account *>(sender());
+
+    // make sure we are not acting on a null object
+    if (account) {
+        QString id = account->uniqueIdentifier();
+        if (mFeedModels.contains(id)) {
+            IMFeedModel *model = mFeedModels.value(id);
+            delete model;
+            mFeedModels.remove(id);
+        }
+    }
 }
 
 Q_EXPORT_PLUGIN2(im_panels_plugin, IMPlugin)

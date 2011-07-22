@@ -60,15 +60,17 @@ protected:
 
 private Q_SLOTS:
     void loadTranslator();
+    void onAccountAvailable(Tp::AccountPtr account);
+    void onAccountRemoved();
 
 private:
-    TelepathyManager *m_tpManager;
-    IMProtocolsModel *m_protocolsModel;
+    TelepathyManager *mTpManager;
+    IMProtocolsModel *mProtocolsModel;
     PanelsChannelObserver *mObserver;
-    IMServiceModel* m_serviceModel;
+    IMServiceModel* mServiceModel;
     Tp::ClientRegistrarPtr mClientRegistrar;
     QMap<QString, IMFeedModel *> mFeedModels;
-    QTranslator appTranslator;
+    QTranslator mAppTranslator;
 };
 
 #endif  // __implugin_h

@@ -33,7 +33,7 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
         return;
     }
 
-    QDeclarativeEngine *mEngine = new QDeclarativeEngine(parent);
+    mEngine = new QDeclarativeEngine(parent);
     if (!mEngine) {
         qWarning() << "Error, declarative engine could not be created";
     }
@@ -82,7 +82,7 @@ IMProtocolsModel::IMProtocolsModel(QObject *parent) :
 
 IMProtocolsModel::~IMProtocolsModel()
 {
-    if (mEngine && 0 != mEngine->parent()) {
+    if (mEngine) {
         delete mEngine;
         mEngine = 0;
     }

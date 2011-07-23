@@ -805,18 +805,35 @@ Window {
 
     function restoreState()
     {
-        currentAccountId = appState.value("currentAccountId");
-        currentContactId = appState.value("currentContactId");
-        currentScreen = appState.value("currentScreen");
+        var accountId = appState.value("currentAccountId");
+        var contactId = appState.value("currentContactId");
+        currentScreen  = appState.value("currentScreen");
 
-        if(currentScreen == "chat" && currentContactId != "") {
+        if (currentScreen == "accounts" && currentScreen == "") {
+            // no need to do anything as it is opened by default
+            return;
+        }
+
+        // verify parameters needed for contacts and chat screen
+        if (accountId == "" || accountsModel.accountItemForId(accountId) == null) {
+            return;
+        }
+
+        currentAccountId = accountId;
+
+        // for either option, the contacts screen has to be shown anyway
+        if (currentScreen == "contacts" || currentScreen == "chat") {
             showContactsScreen();
-            contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
-            startConversation(currentContactId);
-        } else if (currentScreen == "contacts") {
-            showContactsScreen();
-        } else if (currentScreen == "accounts") {
-            // no need to do this as it is opened by default
+        }
+
+        if(currentScreen == "chat" && contactId != "") {
+            // if contact null, stay on the contacts screen
+            contactItem = accountsModel.contactItemForId(currentAccountId, contactId);
+            if (contactItem != null) {
+                // if contact item is valid, open the contacts and then the message screen
+                currentContactId = contactId;
+                startConversation(currentContactId);
+            }
         }
     }
 

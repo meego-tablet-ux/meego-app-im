@@ -89,7 +89,6 @@ Window {
         onChatOpenRequested: {
             console.log("Chat open requested for account " + accountId + " and contact " + contactId);
             currentAccountId = accountId;
-            accountItem = accountsModel.accountItemForId(currentAccountId);
             startConversation(contactId);
             window.raise();
         }
@@ -97,13 +96,13 @@ Window {
         onGroupChatOpenRequested: {
             console.log("Chat open requested for account " + accountId + " and group chat id " + groupChatId);
             currentAccountId = accountId;
-            accountItem = accountsModel.accountItemForId(currentAccountId);
             startGroupConversation(groupChatId);
             window.raise();
         }
     }
 
     onCurrentAccountIdChanged: {
+        console.log("onCurrentAccountIdChanged " + currentAccountId);
         contactsModel.filterByAccountId(currentAccountId);
         accountItem = accountsModel.accountItemForId(window.currentAccountId);
         currentAccountStatus = accountItem.data(AccountsModel.ConnectionStatusRole);
@@ -134,19 +133,17 @@ Window {
     Component.onCompleted: {
         buildComponentStrings();
         notificationManager.applicationActive = isActiveWindow;
-        switchBook(accountScreenContent);
+        showAccountsScreen();
     }
 
     onBookMenuTriggered: {
         if (index >= 0 && index < bookMenuPayload.length) {
             if(bookMenuPayload[index] != "") {
-                currentAccountId = bookMenuPayload[index];
-                accountItem = accountsModel.accountItemForId(currentAccountId);
-                window.switchBook(accountScreenContent);
+                showAccountsScreen();
                 componentsLoaded();
-                showContactsScreen();
+                showContactsScreen(bookMenuPayload[index]);
             } else {
-                window.switchBook(accountScreenContent);
+                showAccountsScreen();
                 componentsLoaded();
             }
         }
@@ -174,7 +171,7 @@ Window {
             // and there is actually a command to execute
             if (cmdCommand.length > 0 && accountsModel != undefined) {
                 // first return to the main account list then execute the command line parameters
-                window.switchBook(accountScreenContent);
+                showAccountsScreen();
                 componentsLoaded();
                 openPageByCommand();
             }
@@ -218,10 +215,7 @@ Window {
                     // only open last used account if there are no unread messages
                     if (!accountsModel.existingUnreadMessages()
                             && accountId != "") {
-                        currentAccountId = accountId;
-                        accountItem = accountsModel.accountItemForId(window.currentAccountId);
-                        currentAccountId = accountItem.data(AccountsModel.IdRole);
-                        showContactsScreen();
+                        showContactsScreen(accountId);
                     }
                 }
             } else {
@@ -340,17 +334,43 @@ Window {
         contactPickerContentString = contactPicker;
     }
 
-    function showContactsScreen()
+    function showAccountsScreen()
     {
+        console.log("showAccountsScreen");
+
+        if (window.currentScreen == "accounts") { // i18n ok
+            console.log("accounts screen page was not added, already in");
+            return;
+        }
+
+        window.switchBook(accountScreenContent);
+    }
+
+    function showContactsScreen(id)
+    {
+        console.log("showContactsScreen " + id);
+
+        if (window.currentScreen == "contacts") { // i18n ok
+            console.log("contacts screen page was not added, already in");
+            return;
+        }
+
         if (contactsScreenContent == null) {
             contactsScreenContent = Qt.createQmlObject(contactsScreenContentString, window);
         }
 
+        window.currentAccountId = id;
         addPage(contactsScreenContent);
     }
 
     function showMessageScreen()
     {
+        console.log("showMessageScreen");
+
+        if (window.currentScreen == "chat") { // i18n ok
+            console.log("message screen page was not added, already in");
+            return;
+        }
         if (messageScreenContent == null) {
             messageScreenContent = Qt.createQmlObject(messageScreenContentString, window);
         }
@@ -462,7 +482,8 @@ Window {
         var accountsList = new Array();
         var payload = new Array();
         if (typeof(accountsSortedModel) != "undefined") {
-            for (var i = 0; i < accountsSortedModel.length; ++i) {
+            var numAccounts = accountsSortedModel.length;
+            for (var i = 0; i < numAccounts; ++i) {
                 var accName = accountsSortedModel.dataByRow(i, AccountsModel.DisplayNameRole);
                 if (accName != "") {
                     accountsList[accountsList.length] = accName;
@@ -534,17 +555,17 @@ Window {
         if(cmdCommand == "show-chat" ||
            cmdCommand == "show-group-chat" ||
            cmdCommand == "show-contacts") {
-            currentAccountId = cmdAccountId;
-            accountItem = accountsModel.accountItemForId(currentAccountId);
 
             if(cmdCommand == "show-chat") {
+                currentAccountId = cmdAccountId;
                 currentContactId = cmdContactId;
                 contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
                 startConversation(currentContactId);
             } else if(cmdCommand == "show-group-chat") {
+                currentAccountId = cmdAccountId;
                 startGroupConversation(cmdGroupChatId);
             } else if(cmdCommand == "show-contacts") {
-                showContactsScreen();
+                showContactsScreen(cmdAccountId);
             }
         }
     }
@@ -804,17 +825,16 @@ Window {
 
     function restoreState()
     {
-        currentAccountId = appState.value("currentAccountId");
-        currentContactId = appState.value("currentContactId");
-        currentScreen = appState.value("currentScreen");
+        var accountId = appState.value("currentAccountId");
+        var contactId = appState.value("currentContactId");
+        var screen = appState.value("currentScreen");
 
-        if(currentScreen == "chat" && currentContactId != "") {
-            showContactsScreen();
-            contactItem = accountsModel.contactItemForId(currentAccountId, currentContactId);
-            startConversation(currentContactId);
-        } else if (currentScreen == "contacts") {
-            showContactsScreen();
-        } else if (currentScreen == "accounts") {
+        if(screen == "chat" && contactId != "") {
+            showContactsScreen(accountId);
+            startConversation(contactId);
+        } else if (screen == "contacts") {
+            showContactsScreen(accountId);
+        } else if (screen == "accounts") {
             // no need to do this as it is opened by default
         }
     }

@@ -19,13 +19,12 @@ AppPage {
     enableCustomActionMenu: true
     actionMenuOpen: contactContentMenu.visible
     
-    property int count: listView.count
     property int accountStatus: 0
     property int contactListState: 0
-    property bool showAccountOffline: (accountStatus == TelepathyTypes.ConnectionStatusDisconnected
+    property bool showAccountOffline: (pageActive && accountStatus == TelepathyTypes.ConnectionStatusDisconnected
                                        || accountStatus == TelepathyTypes.ConnectionStatusConnecting)
-    property bool showLoadingContacts: (!showAccountOffline && contactListState != TelepathyTypes.ContactListStateSuccess)
-    property bool showAddFriends: !count && !showAccountOffline && !window.showToolBarSearch
+    property bool showLoadingContacts: (pageActive && !showAccountOffline && contactListState != TelepathyTypes.ContactListStateSuccess)
+    property bool showAddFriends: pageActive && !listView.count && !showAccountOffline && !window.showToolBarSearch
                                   && contactListState == TelepathyTypes.ContactListStateSuccess
     property bool showAddFriendsItem: false
     property int requestedStatusType: 0
@@ -61,7 +60,8 @@ AppPage {
         setInfoBarMessage();
     }
 
-    onActivated: {
+    onActivating: {
+        console.log("onActivating ContactsScreenContent");
         window.currentScreen = "contacts"; // i18n ok
     }
 

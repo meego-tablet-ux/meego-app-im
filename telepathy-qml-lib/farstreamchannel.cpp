@@ -328,6 +328,8 @@ void FarstreamChannel::initAudioInput()
     }
 
     if (!strcmp(AUDIO_SOURCE_ELEMENT, "pulsesrc")) {
+        g_object_set(source, "buffer-time", (gint64)20000, NULL);
+        g_object_set(source, "latency-time", (gint64)10000, NULL);
         setPhoneMediaRole(source);
     }
 
@@ -472,6 +474,8 @@ void FarstreamChannel::initAudioOutput()
     createGhostPad(mGstAudioOutput, gst_element_get_static_pad(mGstAudioOutputSink, "sink"), SINK_GHOST_PAD_NAME);
 
     if (!strcmp(AUDIO_SINK_ELEMENT, "pulsesink")) {
+        g_object_set(mGstAudioOutputActualSink, "buffer-time", (gint64)50000, NULL);
+        g_object_set(mGstAudioOutputActualSink, "latency-time", (gint64)25000, NULL);
         setPhoneMediaRole(mGstAudioOutputActualSink);
     }
 

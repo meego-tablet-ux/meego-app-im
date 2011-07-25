@@ -24,7 +24,8 @@ AppPage {
         showInfoBar();
     }
 
-    onActivated: {
+    onActivating: {
+        console.log("Activating AccountScreenContent");
         window.currentScreen = "accounts"; // i18n ok
     }
 
@@ -261,7 +262,6 @@ AppPage {
             // check account status
             for (var i = 0; i < accountsModel.accountCount; ++i) {
                 var status = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusRole);
-                var id = accountsModel.dataByRow(i, AccountsModel.IdRole);
                 if (status != TelepathyTypes.ConnectionStatusConnected) {
                     var reason = accountsModel.dataByRow(i, AccountsModel.ConnectionStatusReasonRole);
                     var accountName =  accountsModel.dataByRow(i, AccountsModel.DisplayNameRole);

@@ -47,12 +47,14 @@ AppPage {
         messageContentMenuLoader.item.show();
     }
 
-    onActivated: {
+    onActivating: {
+        console.log("MessageScreenContent onActivating");
         notificationManager.chatActive = true;
         window.currentScreen = "chat"; // i18n ok
     }
 
-    onDeactivated: {
+    onDeactivating: {
+        console.log("MessageScreenContent onDeactivating");
         notificationManager.chatActive = false;
     }
 

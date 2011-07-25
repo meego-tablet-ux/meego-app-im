@@ -125,8 +125,7 @@ Item {
 
             anchors.fill: parent
             onClicked: {
-                window.currentAccountId = model.id;
-                window.showContactsScreen();
+                window.showContactsScreen(model.id);
             }
 
             onPressAndHold: {

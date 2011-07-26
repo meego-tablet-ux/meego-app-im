@@ -11,7 +11,6 @@ import MeeGo.Components 0.1
 import MeeGo.Settings 0.1
 import MeeGo.App.IM 0.1
 import TelepathyQML 0.1
-import "../constants.js" as Constants
 
 AppPage {
     id: container
@@ -77,7 +76,7 @@ AppPage {
 
     InfoBar {
         id: infoBar
-        text: Constants.accountsLoading
+        text: accountsLoading
 
         anchors.top: parent.top
         anchors.left: parent.left
@@ -327,9 +326,9 @@ AppPage {
         var text = "";
 
         if (!networkOnline) {
-            text = Constants.noNetworkText;
+            text = noNetworkText;
         } else if (!modelsLoaded) {
-            text = Constants.accountsLoading;
+            text = accountsLoading;
         } else if (accountId == "") {
             // check account status
             for (var i = 0; i < accountsModel.accountCount; ++i) {
@@ -387,13 +386,13 @@ AppPage {
                 case TelepathyTypes.ConnectionStatusReasonRequested:
                     return "";
                 case TelepathyTypes.ConnectionStatusReasonNetworkError:
-                    return Constants.noNetworkText;
+                    return noNetworkText;
                 case TelepathyTypes.ConnectionStatusReasonAuthenticationFailed:
-                    return Constants.errorLoginAccount.arg(accountName)
+                    return qsTr("Sorry, there was a problem logging in to %1. Please go to Settings and retype your username and password.").arg(accountName);
                 case TelepathyTypes.ConnectionStatusReasonEncryptionError:
-                    return Constants.errorEncryptionAccountDeselect.arg(accountName);
+                    return qsTr("Sorry, there was a problem logging in to %1. Deselecting the 'Encryption required' option in Advanced settings should solve this problem.").arg(accountName);
                 case TelepathyTypes.ConnectionStatusReasonNameInUse:
-                    return Constants.errorLogoutAccountConnectedElse.arg(accountName);
+                    return qsTr("It looks like you have logged in to %1 from somewhere else, so we have logged you out from this tablet. Try logging in again").arg(accountName);
                 case TelepathyTypes.ConnectionStatusReasonCertUntrusted:
                 case TelepathyTypes.ConnectionStatusReasonCertExpired:
                 case TelepathyTypes.ConnectionStatusReasonCertNotActivated:
@@ -404,15 +403,17 @@ AppPage {
                 case TelepathyTypes.ConnectionStatusReasonCertRevoked:
                 case TelepathyTypes.ConnectionStatusReasonCertInsecure:
                 case TelepathyTypes.ConnectionStatusReasonCertLimitExceeded:
-                    return Constants.errorSslAccountError.arg(accountName);
+                    return qsTr("Sorry, there was a problem logging in to %1. Selecting the 'Ignore SSL certificate errors' option in the account Advanced settings should solve this problem.").arg(accountName);
                 case TelepathyTypes.ConnectionStatusReasonNoneSpecified:
                 default:
-                    return Constants.errorLoginAccountTryLater.arg(accountName);
+                    return qsTr("Sorry, there was a problem logging in to %1. Please try again later.").arg(accountName);
             }
-        } else if (status == TelepathyTypes.ConnectionStatusConnecting) {
-            return Constants.contactScreenAccountConnecting;
         } else {
             return "";
         }
     }
+
+    property string noNetworkText: qsTr("Sorry, we can't login because it is not connected to a network. Go to Wireless & Network settings and connect to an available network");
+    property string accountsLoading: qsTr("Loading accounts...");
+
 }

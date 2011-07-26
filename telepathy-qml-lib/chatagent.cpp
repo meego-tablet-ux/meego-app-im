@@ -244,6 +244,7 @@ void ChatAgent::handleReadyChannel()
         }
     }
 
+    emit pendingConversationsChanged();
 }
 
 void ChatAgent::onGroupHandleOwnersChanged(const Tp::HandleOwnerMap &owners, const Tp::UIntList &added, const Tp::UIntList &removed)

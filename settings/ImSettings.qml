@@ -177,12 +177,13 @@ AppPage {
             height: childrenRect.height
 
             Text {
+                id: offlineContactsText
                 anchors.left: parent.left
                 anchors.right: offlineContactsToggle.left
                 anchors.rightMargin: 10
                 text: qsTr("Show offline contacts")
                 font.pixelSize: theme_fontPixelSizeLarge
-                elide: Text.ElideRight
+                wrapMode: Text.Wrap
             }
 
             ToggleButton {
@@ -191,6 +192,7 @@ AppPage {
                 onToggled: settingsHelper.showOfflineContacts = isOn;
                 anchors.margins: 10
                 anchors.right: parent.right
+                anchors.verticalCenter: offlineContactsText.verticalCenter
             }
         }
 
@@ -221,12 +223,13 @@ AppPage {
             height: childrenRect.height
 
             Text {
+                id: notificationText
                 anchors.left: parent.left
                 anchors.right: notificationToggle.left
                 anchors.rightMargin: 10
                 text: qsTr("Notification on new message")
                 font.pixelSize: theme_fontPixelSizeLarge
-                elide: Text.ElideRight
+                wrapMode: Text.Wrap
             }
 
             ToggleButton {
@@ -235,6 +238,7 @@ AppPage {
                 onToggled: settingsHelper.enableNotifications = isOn;
                 anchors.margins: 10
                 anchors.right: parent.right
+                anchors.verticalCenter: notificationText.verticalCenter
             }
         }
             /*Text {

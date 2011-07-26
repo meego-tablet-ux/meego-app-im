@@ -12,6 +12,8 @@
 #include <QSortFilterProxyModel>
 #include "../telepathy-qml-lib/telepathymanager.h"
 
+class ContactsSortProxyModel;
+
 class ContactsSortFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
@@ -19,7 +21,7 @@ class ContactsSortFilterProxyModel : public QSortFilterProxyModel
     Q_PROPERTY(QString accountId READ accountId NOTIFY accountIdChanged)
 
 public:
-    ContactsSortFilterProxyModel(TelepathyManager *manager, QAbstractItemModel *model, const bool active = true, QObject *parent = 0);
+    ContactsSortFilterProxyModel(TelepathyManager *manager, QAbstractItemModel *model, QObject *parent = 0);
     ~ContactsSortFilterProxyModel();
 
     Q_INVOKABLE bool  haveConnection() const;
@@ -37,9 +39,9 @@ public:
     Q_INVOKABLE void clearSkippedContacts();
 
 public Q_SLOTS:
-    void filterByConnection(Tp::ConnectionPtr connection);
-    void filterByAccountId(const QString id);
-    void filterByString(const QString filter);
+    void filterByConnection(const Tp::ConnectionPtr &connection);
+    void filterByAccountId(const QString &id);
+    void filterByString(const QString &filter);
 
 Q_SIGNALS:
     void rowCountChanged();
@@ -49,7 +51,6 @@ Q_SIGNALS:
 protected:
     bool filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const;
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
 
     /**
       * This should only use the setting provided by QSettings
@@ -57,14 +58,10 @@ protected:
       */
     void setShowOffline();
 
-    /**
-      * This method returns an order according to the presence type
-      */
-    int presenceOrder(const int type) const;
-
 protected Q_SLOTS:
     void onDataChanged();
     void onRowCountChanged();
+    void startup();
 
 private:
     TelepathyManager *mManager;
@@ -72,9 +69,7 @@ private:
     Tp::ConnectionPtr mConnection;
     QString mServiceName;
     QString mAccountId;
-    bool mHaveConnection;
     QString mStringFilter;
-    Tp::Features mContactFeatures;
     bool mShowOffline;
     bool mContactsOnly;
     bool mBlockedOnly;

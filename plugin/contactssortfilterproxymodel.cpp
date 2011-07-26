@@ -24,37 +24,26 @@
 
 ContactsSortFilterProxyModel::ContactsSortFilterProxyModel(TelepathyManager *manager,
                                                            QAbstractItemModel *model,
-                                                           const bool active,
                                                            QObject *parent)
     : QSortFilterProxyModel(parent),
       mManager(manager),
       mModel(model),
       mServiceName(""),
-      mHaveConnection(false),
       mStringFilter(""),
       mShowOffline(SettingsHelper::self()->showOfflineContacts()),
       mContactsOnly(false),
-      mBlockedOnly(false),
-      mActive(active)
+      mBlockedOnly(false)
 {
-    setSourceModel(mModel);
-    setDynamicSortFilter(true);
-    sort(0, Qt::AscendingOrder);
-
-    mContactFeatures << Tp::Contact::FeatureAlias
-                     << Tp::Contact::FeatureAvatarToken
-                     << Tp::Contact::FeatureSimplePresence
-                     << Tp::Contact::FeatureAvatarData
-                     << Tp::Contact::FeatureCapabilities;
-
-    connect(mModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-            SLOT(onDataChanged()));
-    connect(this, SIGNAL(rowCountChanged()),
-            SLOT(onRowCountChanged()));
+    QTimer::singleShot(0, this, SLOT(startup()));
 }
 
 ContactsSortFilterProxyModel::~ContactsSortFilterProxyModel()
 {
+}
+
+void ContactsSortFilterProxyModel::startup()
+{
+    setSourceModel(mModel);
 }
 
 bool ContactsSortFilterProxyModel::filterAcceptsColumn(int, const QModelIndex &) const
@@ -76,11 +65,13 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
 
             if (contactItem) {
                 Tp::ContactPtr contact = contactItem->contact();
-                if(!contact->isBlocked()) {
+                if(contact.isNull() || !contact->isBlocked()) {
                     return false;
                 }
 
-                if (contact == contact->manager()->connection()->selfContact()) {
+                if (contact->manager().isNull() ||
+                    contact->manager()->connection().isNull() ||
+                    contact == contact->manager()->connection()->selfContact()) {
                     return false;
                 }
 
@@ -88,7 +79,7 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     return false;
                 }
 
-                if (filtered and !mStringFilter.isEmpty()) {
+                if (filtered && !mStringFilter.isEmpty()) {
                     if (contact->alias().contains(mStringFilter, Qt::CaseInsensitive) ||
                             contact->id().contains(mStringFilter, Qt::CaseInsensitive)) {
                         filtered = true;
@@ -206,93 +197,18 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
     return filtered;
 }
 
-bool ContactsSortFilterProxyModel::lessThan(const QModelIndex &left,
-                                            const QModelIndex &right) const
-{
-    // evaluate friend requests
-    int leftPublish = sourceModel()->data(left, IMAccountsModel::PublishStateRole).toInt();
-    int rightPublish = sourceModel()->data(right, IMAccountsModel::PublishStateRole).toInt();
-
-    if (leftPublish != rightPublish) {
-        if (leftPublish ==  Tp::Contact::PresenceStateAsk) {
-            return true;
-        } else if (rightPublish ==  Tp::Contact::PresenceStateAsk) {
-            return false;
-        }
-    }
-
-    // evaluate pending messages
-    int leftPending = sourceModel()->data(left, IMAccountsModel::PendingMessagesRole).toInt();
-    int rightPending = sourceModel()->data(right, IMAccountsModel::PendingMessagesRole).toInt();
-
-    if (leftPending != rightPending) {
-        return !(leftPending < rightPending);
-    }
-
-    // if any has an open chat
-    bool leftOpenChat = sourceModel()->data(left, IMAccountsModel::ChatOpenedRole).toInt();
-    bool rightOpenChat = sourceModel()->data(right, IMAccountsModel::ChatOpenedRole).toInt();
-
-    // the logic is inverted here because 1 means a chat is open and that takes higher priority
-    if (leftOpenChat != rightOpenChat) {
-        return !(leftOpenChat < rightOpenChat);
-    }
-
-    // evaluate presence
-    int leftType = sourceModel()->data(left, Tpy::AccountsModel::PresenceTypeRole).toInt();
-    int rightType = sourceModel()->data(right, Tpy::AccountsModel::PresenceTypeRole).toInt();
-
-    // order by presence type
-    int leftOrderedType = presenceOrder(leftType);
-    int rightOrderedType = presenceOrder(rightType);
-
-    if (leftOrderedType != rightOrderedType) {
-        return (leftOrderedType < rightOrderedType);
-    }
-
-    // compare the alias
-    QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toString();
-    QString rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toString();
-
-    if (leftAlias != rightAlias) {
-        meego::Locale locale;
-        return locale.lessThan(leftAlias, rightAlias);
-    }
-
-    QString leftId = sourceModel()->data(left, Tpy::AccountsModel::IdRole).toString();
-    QString rightId = sourceModel()->data(right, Tpy::AccountsModel::IdRole).toString();
-    return (leftId < rightId);
-}
-
-int ContactsSortFilterProxyModel::presenceOrder(const int type) const
-{
-    switch(type) {
-    case Tp::ConnectionPresenceTypeAvailable:
-    case Tp::ConnectionPresenceTypeAway:
-    case Tp::ConnectionPresenceTypeExtendedAway:
-    case Tp::ConnectionPresenceTypeBusy:
-        return type; // return as-is
-    case Tp::ConnectionPresenceTypeOffline:
-        return (Tp::ConnectionPresenceTypeBusy + 1); // offline should be right after busy
-    default:
-        // anything else should be last in no particular order
-        return Tp::ConnectionPresenceTypeError;
-    }
-}
-
-void ContactsSortFilterProxyModel::filterByConnection(Tp::ConnectionPtr connection)
+void ContactsSortFilterProxyModel::filterByConnection(const Tp::ConnectionPtr &connection)
 {
     mConnection = connection;
     invalidate();
 }
 
-void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
+void ContactsSortFilterProxyModel::filterByAccountId(const QString &id)
 {
     foreach (Tp::AccountPtr accountPtr, mManager->accounts()) {
         if (accountPtr->uniqueIdentifier() == id) {
             mAccountId = id;
             mServiceName = accountPtr->serviceName();
-            mHaveConnection = !accountPtr->connection().isNull();
             filterByConnection(accountPtr->connection());
             emit accountIdChanged(mAccountId);
             // saved the account id in the settings
@@ -302,7 +218,6 @@ void ContactsSortFilterProxyModel::filterByAccountId(const QString id)
         }
     }
     mConnection = Tp::ConnectionPtr();
-    mHaveConnection = false;
     invalidate();
 }
 
@@ -316,7 +231,7 @@ bool ContactsSortFilterProxyModel::haveConnection() const
     return (mConnection && mConnection->isValid() && mConnection->status() == Tp::ConnectionStatusConnected);
 }
 
-void ContactsSortFilterProxyModel::filterByString(const QString filter)
+void ContactsSortFilterProxyModel::filterByString(const QString &filter)
 {
     // only set the filter if it's different to current filter
     if (filter != mStringFilter) {
@@ -327,7 +242,6 @@ void ContactsSortFilterProxyModel::filterByString(const QString filter)
 
 void ContactsSortFilterProxyModel::filterByLastUsedAccount(const QString &accountId)
 {
-    mActive = true;
     emit openLastUsedAccount(accountId);
 }
 
@@ -379,21 +293,4 @@ void ContactsSortFilterProxyModel::clearSkippedContacts()
 {
     mSkippedContacts.clear();
     invalidateFilter();
-}
-
-void ContactsSortFilterProxyModel::onDataChanged()
-{
-    if (mActive) {
-        invalidate();
-        emit rowCountChanged();
-    }
-}
-
-void ContactsSortFilterProxyModel::onRowCountChanged()
-{
-    if (mActive) {
-        beginResetModel();
-        invalidate();
-        endResetModel();
-    }
 }

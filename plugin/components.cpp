@@ -10,6 +10,7 @@
 #include "accountsmodelfactory.h"
 #include "accountssortfilterproxymodel.h"
 #include "contactssortfilterproxymodel.h"
+#include "contactssortproxymodel.h"
 #include "accounthelper.h"
 #include "imaccountsmodel.h"
 #include "imavatarimageprovider.h"
@@ -138,7 +139,13 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     // initialize the accounts sorted model
     AccountsSortFilterProxyModel *accountsSortedModel = new AccountsSortFilterProxyModel(model, this);
 
-    mContactsModel = new ContactsSortFilterProxyModel(mTpManager, mMergedModel, false, this);
+    ContactsSortProxyModel *sortedContactsModel = new ContactsSortProxyModel(mTpManager, mMergedModel, this);
+    if (!sortedContactsModel) {
+        qWarning() << "Error creating sorted contacts model";
+        return;
+    }
+
+    mContactsModel = new ContactsSortFilterProxyModel(mTpManager, sortedContactsModel, this);
 
     // the load order is inverted so that signals emitted by the accountsModel can guarantee that the
     // contactsModel is present

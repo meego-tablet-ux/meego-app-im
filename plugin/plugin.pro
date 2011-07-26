@@ -24,6 +24,7 @@ INSTALLS += plugin service
 SOURCES += components.cpp \
     accounthelper.cpp \
     contactssortfilterproxymodel.cpp \
+    contactssortproxymodel.cpp \
     accountsmodelfactory.cpp \
     imaccountsmodel.cpp \
     imavatarimageprovider.cpp \
@@ -37,6 +38,7 @@ SOURCES += components.cpp \
 HEADERS += components.h \
     accounthelper.h \
     contactssortfilterproxymodel.h \
+    contactssortproxymodel.h \
     accountsmodelfactory.h \
     imaccountsmodel.h \
     imavatarimageprovider.h \

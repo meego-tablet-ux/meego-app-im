@@ -368,10 +368,6 @@ Window {
     {
         console.log("showMessageScreen");
 
-        if (window.currentScreen == "chat") { // i18n ok
-            console.log("message screen page was not added, already in");
-            return;
-        }
         if (messageScreenContent == null) {
             messageScreenContent = Qt.createQmlObject(messageScreenContentString, window);
         }

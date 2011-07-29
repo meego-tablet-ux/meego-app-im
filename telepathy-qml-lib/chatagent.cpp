@@ -286,6 +286,9 @@ void ChatAgent::endChat()
         return;
     }
 
+    // change state to gone before requesting to close the channel
+    requestChatState(Tp::ChannelChatStateGone);
+
     disconnect(mTextChannel.data(), SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                this, SLOT(onChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
@@ -529,5 +532,22 @@ void ChatAgent::onConnectionInvalidated(Tp::DBusProxy *proxy)
     Tp::Connection *conn = qobject_cast<Tp::Connection *>(proxy);
     if (conn) {
         disconnect(conn, 0, this, 0);
+    }
+}
+
+void ChatAgent::requestChatState(int state)
+{
+    if(!mTextChannel.isNull() && mTextChannel->isValid()) {
+        connect(mTextChannel->requestChatState((Tp::ChannelChatState) state),
+                SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(onRequestChatStateFinished(Tp::PendingOperation*)));
+    }
+}
+
+void ChatAgent::onRequestChatStateFinished(Tp::PendingOperation *op)
+{
+    if (!op || op->isError()) {
+        qWarning() << "Cannot set chat state: " << op->errorMessage();
+        return;
     }
 }

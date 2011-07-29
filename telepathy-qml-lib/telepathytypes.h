@@ -24,6 +24,7 @@ class TelepathyTypes : public QObject
     Q_ENUMS(FileTransferState)
     Q_ENUMS(FileTransferStateChangeReason)
     Q_ENUMS(ContactListState)
+    Q_ENUMS(ChannelChatState)
 public:
 
     enum ConnectionPresenceType {
@@ -93,6 +94,14 @@ public:
         ContactListStateWaiting = Tp::ContactListStateWaiting,
         ContactListStateFailure = Tp::ContactListStateFailure,
         ContactListStateSuccess = Tp::ContactListStateSuccess
+    };
+
+    enum ChannelChatState {
+        ChannelChatStateGone = Tp::ChannelChatStateGone,
+        ChannelChatStateInactive = Tp::ChannelChatStateInactive,
+        ChannelChatStateActive = Tp::ChannelChatStateActive,
+        ChannelChatStatePaused = Tp::ChannelChatStatePaused,
+        ChannelChatStateComposing = Tp::ChannelChatStateComposing
     };
 
     explicit TelepathyTypes(QObject *parent = 0);

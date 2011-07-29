@@ -52,16 +52,23 @@ AppPage {
         notificationManager.chatActive = true;
         window.currentScreen = "chat"; // i18n ok
         var videoWindow = messageScreenPage.getVideoWindow();
-        if (videoWindow != null)
+        if (videoWindow != null) {
             videoWindow.activate();
+        }
+
+        if (window.chatAgent != undefined) {
+            window.chatAgent.requestChatState(TelepathyTypes.ChannelChatStateActive);
+        }
     }
 
     onDeactivating: {
         console.log("MessageScreenContent onDeactivating");
         notificationManager.chatActive = false;
         var videoWindow = messageScreenPage.getVideoWindow();
-        if (videoWindow != null)
+        if (videoWindow != null) {
             videoWindow.deactivate();
+        }
+        window.chatAgent.requestChatState(TelepathyTypes.ChannelChatStateInactive);
     }
 
     // small trick to reload the data() role values when the item changes
@@ -333,6 +340,19 @@ AppPage {
                         var parsedText = messageScreenPage.parseChatText(textEdit.text);
                         return (parsedText.trim() == "");
                     }
+
+                    Keys.onPressed: {
+                        window.chatAgent.requestChatState(TelepathyTypes.ChannelChatStateComposing);
+                        stateTimer.restart();
+                    }
+
+                    Timer {
+                        id: stateTimer
+                        interval: 10000
+                        onTriggered: {
+                            window.chatAgent.requestChatState(TelepathyTypes.ChannelChatStatePaused);
+                        }
+                    }
                 }
             }
 
@@ -598,6 +618,7 @@ AppPage {
             }
 
             if (conversationView.model != undefined) {
+                window.chatAgent.requestChatState(TelepathyTypes.ChannelChatStateActive);
                 conversationView.positionViewAtIndex(conversationView.count - 1, ListView.End);
                 conversationModelConnections.target = conversationView.model;
                 textEdit.focus = true;

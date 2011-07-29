@@ -61,6 +61,8 @@ public:
     Tp::ContactPtr channelContact(const QString &contactId) const;
     Tp::ContactPtr contactByChannelHandle(const uint &handle) const;
 
+    Q_INVOKABLE void requestChatState(int state);
+
     //void setTextChannel(Tp::TextChannelPtr textChannel);
     //Tp::TextChannelPtr textChannel() const;
 
@@ -98,6 +100,7 @@ private Q_SLOTS:
     void onConnectionStatusChanged(Tp::ConnectionStatus status);
     void onAccountConnectionChanged(const Tp::ConnectionPtr &conn);
     void onConnectionInvalidated(Tp::DBusProxy *proxy);
+    void onRequestChatStateFinished(Tp::PendingOperation *op);
 
 private:
     Tp::AccountPtr mAccount;

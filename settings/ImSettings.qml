@@ -340,7 +340,7 @@ AppPage {
                     var accountText = accountStatusMessage(status, reason, accountName);
                     if (accountText != "") {
                         if (text != "") {
-                            text += "<br\>";
+                            text += "<br/>";
                         }
                         text += accountText;
                     }

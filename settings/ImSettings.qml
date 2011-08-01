@@ -287,7 +287,7 @@ AppPage {
             width: parent.width
             source: "image://themedimage/widgets/common/header/header-small"
 
-            visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
+            visible: blockedList.height > 0
 
             Text{
                 anchors.left: parent.left
@@ -311,7 +311,6 @@ AppPage {
             id: blockedList
             anchors.margins: 10
             width: parent.width
-            visible: typeof(contactsModel) != 'undefined' ? contactsModel.rowCount > 0 : false
         }
 
         Item {

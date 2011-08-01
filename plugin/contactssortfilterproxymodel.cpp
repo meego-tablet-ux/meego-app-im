@@ -192,7 +192,6 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                 }
             }
         }
-
     }
     return filtered;
 }
@@ -259,6 +258,7 @@ void ContactsSortFilterProxyModel::setContactsOnly(bool toggle)
 {
     mContactsOnly = toggle;
     invalidateFilter();
+    emit rowCountChanged();
 }
 
 bool ContactsSortFilterProxyModel::isContactsOnly() const
@@ -287,10 +287,12 @@ void ContactsSortFilterProxyModel::skipContacts(const QStringList &contactsList)
 {
     mSkippedContacts = contactsList;
     invalidateFilter();
+    emit rowCountChanged();
 }
 
 void ContactsSortFilterProxyModel::clearSkippedContacts()
 {
     mSkippedContacts.clear();
     invalidateFilter();
+    emit rowCountChanged();
 }

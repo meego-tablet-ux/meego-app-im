@@ -39,7 +39,7 @@ Item {
             model: typeof(contactsModel) != 'undefined' ? contactsModel : null
             delegate: ContactPickerDelegate {}
 
-            height: typeof(contactsModel) != 'undefined' ? 121 * contactsModel.rowCount : 0
+            height: childrenRect.height
             anchors.left: parent.left
             anchors.right: parent.right
             interactive: false

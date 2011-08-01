@@ -59,6 +59,15 @@ bool ContactsSortProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &
 bool ContactsSortProxyModel::lessThan(const QModelIndex &left,
                                       const QModelIndex &right) const
 {
+    // first evaluate parent display names
+    QString leftParentName = sourceModel()->data(left, IMAccountsModel::ParentDisplayNameRole).toString();
+    QString rightParentName = sourceModel()->data(right, IMAccountsModel::ParentDisplayNameRole).toString();
+
+    if (leftParentName != rightParentName) {
+        static meego::Locale locale;
+        return locale.lessThan(leftParentName, rightParentName);
+    }
+
     // evaluate friend requests
     int leftPublish = sourceModel()->data(left, IMAccountsModel::PublishStateRole).toInt();
     int rightPublish = sourceModel()->data(right, IMAccountsModel::PublishStateRole).toInt();

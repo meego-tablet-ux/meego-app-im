@@ -57,6 +57,7 @@ public slots:
 private slots:
     void onPendingContactsFinished(Tp::PendingOperation *op);
     void onPresenceSubscriptionFinished(Tp::PendingOperation *op);
+    void onPresencePublicationFinished(Tp::PendingOperation *op);
 
 private:
     Tp::AccountPtr account();

@@ -150,6 +150,11 @@ void AddContactHelper::onPendingContactsFinished(Tp::PendingOperation *op)
 
     connect(op2, SIGNAL(finished(Tp::PendingOperation*)),
             SLOT(onPresenceSubscriptionFinished(Tp::PendingOperation*)));
+
+    foreach(Tp::ContactPtr contact, pendingContacts->contacts()) {
+        connect(contact->authorizePresencePublication(), SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(onPresencePublicationFinished(Tp::PendingOperation*)));
+    }
 }
 
 void AddContactHelper::onPresenceSubscriptionFinished(Tp::PendingOperation *op)
@@ -166,6 +171,15 @@ void AddContactHelper::onPresenceSubscriptionFinished(Tp::PendingOperation *op)
     }
 
     setState(StateSent);
+}
+
+void AddContactHelper::onPresencePublicationFinished(Tp::PendingOperation *op)
+{
+    qDebug() << "AddContactHelper::onPresencePublicationFinished";
+
+    if (!op || op->isError()) {
+        qDebug() << "AddContactHelper::onPresencePublicationFinished: error: " << op->errorMessage();
+    }
 }
 
 void AddContactHelper::setError(const QString &error, AddContactHelper::State state)

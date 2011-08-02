@@ -19,6 +19,53 @@ BottomToolBar {
     signal chatTextEnterPressed
     signal smileyClicked(string sourceName)
 
+    Connections {
+        target: window.contactItem
+        onCapabilitiesChanged: {
+            //console.log("AudioCallRole " + window.contactItem.data(AccountsModel.AudioCallCapabilityRole) + " " + audioCallButtonOpacity());
+            //console.log("VideoCallRole" + window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) + " " + videoCallButtonOpacity());
+            //console.log("FileTransferRole " + window.contactItem.data(AccountsModel.FileTransferCapabilityRole) + " " + sendFileButtonOpacity());
+            videoCallButton.opacity = videoCallButtonOpacity();
+            videoOnOffButton.opacity = videoOnOffButtonOpacity();
+            audioCallButton.opacity = audioCallButtonOpacity();
+            sendFileButton.opacity = sendFileButtonOpacity();
+        }
+    }
+
+    function videoCallButtonOpacity() {
+        return (window.callAgent == undefined && !window.chatAgent.isConference) ||
+                (!window.callAgent.existingCall &&
+                window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                window.callAgent != undefined &&
+                window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                window.chatAgent != undefined &&
+                !window.chatAgent.isConference) ? 1 : 0
+    }
+
+    function videoOnOffButtonOpacity() {
+        return (window.contactItem !== undefined &&
+                window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
+                window.callAgent != undefined && window.callAgent.existingCall &&
+                window.callAgent.callStatus != CallAgent.CallStatusNoCall &&
+                !(window.chatAgent != undefined && window.chatAgent.isConference)) ? 1 : 0;
+    }
+
+    function audioCallButtonOpacity() {
+        return (window.contactItem !== undefined &&
+                window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                window.callAgent != undefined &&
+                window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
+                window.chatAgent != undefined &&
+                !window.chatAgent.isConference) ? 1 : 0;
+    }
+
+    function sendFileButtonOpacity() {
+        return (!window.fullScreen &&
+                window.contactItem != undefined &&
+                window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0;
+    }
+
+
     // Bottom row to initiate calls & chat
     content: BottomToolBarRow {
         id: bottomRow
@@ -30,7 +77,7 @@ BottomToolBar {
                 width: 120
                 active: window.callAgent != undefined &&
                         window.contactItem != undefined &&
-                        window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
+                        //window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
                         window.callAgent.callStatus != CallAgent.CallStatusNoCall
                 opacity: window.callAgent != undefined &&
                          window.callAgent.callStatus != CallAgent.CallStatusNoCall ? 1 : 0
@@ -63,13 +110,7 @@ BottomToolBar {
             IconButton {
                 id: videoCallButton
                 width: 60
-                opacity: (window.callAgent == undefined && !window.chatAgent.isConference) ||
-                         (!window.callAgent.existingCall &&
-                        window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
-                        window.callAgent != undefined &&
-                        window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                        window.chatAgent != undefined &&
-                        !window.chatAgent.isConference) ? 1 : 0
+                opacity: videoCallButtonOpacity()
                 visible: opacity > 0
 
                 icon: "image://themedimage/icons/actionbar/turn-video-on"
@@ -102,11 +143,7 @@ BottomToolBar {
             IconButton {
                 id: videoOnOffButton
                 width: 60
-                opacity: window.contactItem !== undefined &&
-                        window.contactItem.data(AccountsModel.VideoCallWithAudioCapabilityRole) &&
-                        window.callAgent != undefined && window.callAgent.existingCall &&
-                        window.callAgent.callStatus != CallAgent.CallStatusNoCall &&
-                        !(window.chatAgent != undefined && window.chatAgent.isConference) ? 1 : 0
+                opacity: videoOnOffButtonOpacity()
                 visible: opacity > 0
 
                 icon: window.callAgent.videoSentOrAboutTo ?
@@ -133,12 +170,7 @@ BottomToolBar {
             IconButton {
                 id: audioCallButton
                 width: 60
-                opacity: window.contactItem !== undefined &&
-                         window.contactItem.data(AccountsModel.AudioCallCapabilityRole) &&
-                         window.callAgent != undefined &&
-                         window.callAgent.callStatus == CallAgent.CallStatusNoCall &&
-                         window.chatAgent != undefined &&
-                         !window.chatAgent.isConference ? 1 : 0
+                opacity: audioCallButtonOpacity()
                 visible: opacity > 0
 
                 icon: "image://themedimage/icons/actionbar/call-audio-start"
@@ -343,7 +375,7 @@ BottomToolBar {
                                                     map.y + sendFileButton.height * 2);
                     sendFileContextMenuLoader.item.show();
                 }
-                opacity: (!window.fullScreen && window.contactItem != undefined && window.contactItem.data(AccountsModel.FileTransferCapabilityRole)) ? 1 : 0
+                opacity: sendFileButtonOpacity()
                 visible: opacity > 0
 
                 hasBackground: false

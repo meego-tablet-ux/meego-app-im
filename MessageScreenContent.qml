@@ -51,11 +51,17 @@ AppPage {
         console.log("MessageScreenContent onActivating");
         notificationManager.chatActive = true;
         window.currentScreen = "chat"; // i18n ok
+        var videoWindow = messageScreenPage.getVideoWindow();
+        if (videoWindow != null)
+            videoWindow.activate();
     }
 
     onDeactivating: {
         console.log("MessageScreenContent onDeactivating");
         notificationManager.chatActive = false;
+        var videoWindow = messageScreenPage.getVideoWindow();
+        if (videoWindow != null)
+            videoWindow.deactivate();
     }
 
     // small trick to reload the data() role values when the item changes

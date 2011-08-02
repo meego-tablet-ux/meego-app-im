@@ -80,6 +80,17 @@ Item {
         return height;
     }
 
+    function deactivate() {
+    }
+
+    function activate() {
+        if(window.callAgent != undefined) {
+            videoIncomingItem.onActivated();
+            if (window.callAgent.videoSentOrAboutTo)
+                videoOutgoingItem.onActivated();
+        }
+    }
+
     Component.onDestruction: {
         if(window.callAgent != undefined) {
             window.callAgent.setOutgoingVideo(null);

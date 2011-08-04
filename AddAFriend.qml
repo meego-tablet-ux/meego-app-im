@@ -36,6 +36,12 @@ Column {
     spacing: theme_fontPixelSizeLarge
     height: childrenRect.height + 5
 
+    onStateChanged: {
+        if (state == "error") {
+            errorTimer.running = true;
+        }
+    }
+
     Text {
         id: addAFriendMessage
         width: parent.width
@@ -80,6 +86,16 @@ Column {
                  addContactHelper.state == AddContactHelper.StateError
         onClicked: {
             addAFriendInput.addFriend();
+        }
+    }
+
+    Timer {
+        id: errorTimer
+
+        interval: 3000
+        running: false
+        onTriggered: {
+            resetHelper();
         }
     }
 

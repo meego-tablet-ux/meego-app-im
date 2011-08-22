@@ -13,6 +13,7 @@ SOURCES = abstract-conversation-model.cpp \
           custom-event-item.cpp \
           event-item.cpp \
           flat-model-proxy.cpp \
+          logger-conversation-model.cpp \
           session-conversation-model.cpp \
           text-event-item.cpp \
           tree-node.cpp
@@ -27,6 +28,7 @@ HEADERS = abstract-conversation-model.h \
           event-item.h \
           flat-model-proxy.h \
           global.h \
+          logger-conversation-model.h \
           session-conversation-model.h \
           text-event-item.h \
           tree-node.h
@@ -37,7 +39,7 @@ CONFIG += qt link_pkgconfig create_prl
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
 
-PKGCONFIG += TelepathyQt4 TelepathyQt4Yell
+PKGCONFIG += TelepathyQt4 TelepathyQt4Yell TelepathyLoggerQt4 QtGLib-2.0
 #LIBS += -ltelepathy-qt4yell-models -ltelepathy-qt4-yell-farstream -ltelepathy-logger-qt4-models -ltelepathy-logger-qt4
 
 INSTALLS += target

@@ -18,12 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/SessionConversationModel>
+#include "SessionConversationModel"
 
-#include "TelepathyQt4Yell/Models/_gen/session-conversation-model.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/session-conversation-model.moc.hpp"
 
-#include <TelepathyQt4Yell/Models/TextEventItem>
-#include <TelepathyQt4Yell/Models/CustomEventItem>
+#include "TextEventItem"
+#include "CustomEventItem"
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Connection>
@@ -34,10 +34,7 @@
 #include <QPixmap>
 #include <QtAlgorithms>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT SessionConversationModel::Private
+struct TELEPATHY_MODELS_NO_EXPORT SessionConversationModel::Private
 {
     Private(const Tp::ContactPtr &self, const Tp::TextChannelPtr &channel)
         : mSelf(self),
@@ -203,6 +200,4 @@ int SessionConversationModel::numPendingMessages() const
     }
 
     return 0;
-}
-
 }

@@ -18,16 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/EventItem>
+#include "EventItem"
 
-#include "TelepathyQt4Yell/Models/_gen/event-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/event-item.moc.hpp"
 
 #include <TelepathyQt4/Contact>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT EventItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT EventItem::Private
 {
     Private(const Tp::ContactPtr &sender,
             const Tp::ContactPtr &receiver,
@@ -84,6 +81,4 @@ Tp::ContactPtr EventItem::receiver() const
 QDateTime EventItem::dateTime() const
 {
     return mPriv->mDateTime;
-}
-
 }

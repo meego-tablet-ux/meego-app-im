@@ -18,16 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/CallEventItem>
+#include "CallEventItem"
 
-#include "TelepathyQt4Yell/Models/_gen/call-event-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/call-event-item.moc.hpp"
 
 #include <TelepathyQt4/Contact>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT CallEventItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT CallEventItem::Private
 {
     Private(QTime duration, const Tp::ContactPtr &endActor,
             Tpy::CallStateChangeReason endReason, const QString &detailedEndReason)
@@ -118,6 +115,4 @@ bool CallEventItem::rejectedCall() const
             endReason() == Tpy::CallStateChangeReasonUserRequested &&
             duration().elapsed() <= 0 &&
             detailedEndReason() == TP_QT4_ERROR_REJECTED);
-}
-
 }

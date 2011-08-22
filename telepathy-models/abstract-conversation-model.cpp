@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/AbstractConversationModel>
+#include "AbstractConversationModel"
 
-#include "TelepathyQt4Yell/Models/_gen/abstract-conversation-model.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/abstract-conversation-model.moc.hpp"
 
-#include <TelepathyQt4Yell/Models/CallEventItem>
-#include <TelepathyQt4Yell/Models/CustomEventItem>
-#include <TelepathyQt4Yell/Models/TextEventItem>
+#include "CallEventItem"
+#include "CustomEventItem"
+#include "TextEventItem"
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/PendingReady>
@@ -35,10 +35,7 @@
 #include <QtAlgorithms>
 #include <QMetaObject>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT AbstractConversationModel::Private
+struct TELEPATHY_MODELS_NO_EXPORT AbstractConversationModel::Private
 {
     Private()
     {
@@ -50,7 +47,7 @@ struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT AbstractConversationModel::Private
 /**
  * \class AbstractConversationModel
  * \ingroup models
- * \headerfile TelepathyQt4Yell/abstract-conversation-model.h <TelepathyQt4Yell/AbstractConversationModel>
+ * \headerfile abstract-conversation-model.h "AbstractConversationModel"
  *
  * \brief An abstraction model for events in a channel
  *
@@ -304,7 +301,7 @@ QModelIndex AbstractConversationModel::index(const EventItem *item) const
 void AbstractConversationModel::insertItems(QList<const EventItem *> items, int index)
 {
     beginInsertRows(QModelIndex(), index, index + items.count() - 1);
-    const Tpy::EventItem *item;
+    const EventItem *item;
     int i = 0;
     foreach (item, items) {
         mPriv->mItems.insert(index + i++, item);
@@ -325,4 +322,3 @@ bool AbstractConversationModel::removeRows(int row, int count, const QModelIndex
     return false;
 }
 
-}

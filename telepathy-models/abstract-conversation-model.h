@@ -18,26 +18,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _TelepathyQt4Yell_Models_abstract_conversation_model_h_HEADER_GUARD_
-#define _TelepathyQt4Yell_Models_abstract_conversation_model_h_HEADER_GUARD_
+#ifndef _Telepathy_Models_abstract_conversation_model_h_HEADER_GUARD_
+#define _Telepathy_Models_abstract_conversation_model_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_QT4_YELL_MODELS_HEADER
-#error IN_TELEPATHY_QT4_YELL_MODELS_HEADER
+#ifndef IN_TELEPATHY_MODELS_HEADER
+#error IN_TELEPATHY_MODELS_HEADER
 #endif
 
-#include <TelepathyQt4Yell/Models/Global>
+#include "Global"
 
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
 
 #include <QAbstractListModel>
 
-namespace Tpy
-{
-
 class EventItem;
 
-class TELEPATHY_QT4_YELL_MODELS_EXPORT AbstractConversationModel : public QAbstractListModel
+class TELEPATHY_MODELS_EXPORT AbstractConversationModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_DISABLE_COPY(AbstractConversationModel)
@@ -88,6 +85,4 @@ private:
     Private *mPriv;
 };
 
-}
-
-#endif // _TelepathyQt4Yell_Models_abstract_conversation_model_h_HEADER_GUARD_
+#endif // _Telepathy_Models_abstract_conversation_model_h_HEADER_GUARD_

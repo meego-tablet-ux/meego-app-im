@@ -18,14 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/TextEventItem>
+#include "TextEventItem"
 
-#include "TelepathyQt4Yell/Models/_gen/text-event-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/text-event-item.moc.hpp"
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT TextEventItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT TextEventItem::Private
 {
     Private(const QString &message, Tp::ChannelTextMessageType messageType)
         : mMessageText(message),
@@ -76,6 +73,4 @@ QString TextEventItem::messageText() const
 Tp::ChannelTextMessageType TextEventItem::messageType() const
 {
     return mPriv->mMessageType;
-}
-
 }

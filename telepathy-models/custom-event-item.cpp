@@ -18,14 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/CustomEventItem>
+#include "CustomEventItem"
 
-#include "TelepathyQt4Yell/Models/_gen/custom-event-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/custom-event-item.moc.hpp"
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT CustomEventItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT CustomEventItem::Private
 {
     Private(const QString &customEventText, CustomEventItem::CustomEventType customEventType)
         : mCustomEventText(customEventText),
@@ -77,6 +74,4 @@ QString CustomEventItem::customEventText() const
 CustomEventItem::CustomEventType CustomEventItem::customEventType() const
 {
     return mPriv->mCustomEventType;
-}
-
 }

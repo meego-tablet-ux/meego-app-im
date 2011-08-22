@@ -22,10 +22,6 @@
 #ifndef _Telepathy_Models_global_h_HEADER_GUARD_
 #define _Telepathy_Models_global_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_MODELS_HEADER
-#error IN_TELEPATHY_MODELS_HEADER
-#endif
-
 #include <QtGlobal>
 
 //#ifdef BUILDING_TELEPATHY_QT4_YELL_MODELS

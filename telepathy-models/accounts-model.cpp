@@ -18,20 +18,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 
-#include "TelepathyQt4Yell/Models/_gen/accounts-model.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/accounts-model.moc.hpp"
 
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/PendingReady>
 
-#include <TelepathyQt4Yell/Models/AccountsModelItem>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model-item.h"
+#include "contact-model-item.h"
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT AccountsModel::Private
+struct TELEPATHY_MODELS_NO_EXPORT AccountsModel::Private
 {
     Private(const Tp::AccountManagerPtr &am)
     {
@@ -102,14 +99,14 @@ void AccountsModel::initialize()
 {
     mPriv->mTree = new TreeNode;
     connect(mPriv->mTree,
-            SIGNAL(changed(Tpy::TreeNode*)),
-            SLOT(onItemChanged(Tpy::TreeNode*)));
+            SIGNAL(changed(TreeNode*)),
+            SLOT(onItemChanged(TreeNode*)));
     connect(mPriv->mTree,
-            SIGNAL(childrenAdded(Tpy::TreeNode*,QList<Tpy::TreeNode*>)),
-            SLOT(onItemsAdded(Tpy::TreeNode*,QList<Tpy::TreeNode*>)));
+            SIGNAL(childrenAdded(TreeNode*,QList<TreeNode*>)),
+            SLOT(onItemsAdded(TreeNode*,QList<TreeNode*>)));
     connect(mPriv->mTree,
-            SIGNAL(childrenRemoved(Tpy::TreeNode*,int,int)),
-            SLOT(onItemsRemoved(Tpy::TreeNode*,int,int)));
+            SIGNAL(childrenRemoved(TreeNode*,int,int)),
+            SLOT(onItemsRemoved(TreeNode*,int,int)));
     connect(mPriv->mAccountSet.data(),
             SIGNAL(accountAdded(const Tp::AccountPtr)),
             SLOT(onNewAccount(Tp::AccountPtr)));
@@ -206,7 +203,7 @@ void AccountsModel::onItemChanged(TreeNode *node)
   * \param parent model item parent of the nodes
   * \param nodes list of nodes added to the model
   */
-void AccountsModel::onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes)
+void AccountsModel::onItemsAdded(TreeNode *parent, const QList<TreeNode *> &nodes)
 {
     QModelIndex parentIndex = index(parent);
     int currentSize = rowCount(parentIndex);
@@ -446,6 +443,4 @@ Tp::AccountPtr AccountsModel::accountForContactItem(ContactModelItem *contactIte
     } else {
         return Tp::AccountPtr();
     }
-}
-
 }

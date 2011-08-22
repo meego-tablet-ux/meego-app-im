@@ -18,25 +18,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/AccountsModelItem>
+#include "accounts-model-item.h"
 
-#include "TelepathyQt4Yell/Models/_gen/accounts-model-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/accounts-model-item.moc.hpp"
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
-#include <TelepathyQt4Yell/Models/AvatarImageProvider>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model.h"
+#include "avatar-image-provider.h"
+#include "contact-model-item.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/ContactManager>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT AccountsModelItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT AccountsModelItem::Private
 {
     Private(const Tp::AccountPtr &account)
         : mAccount(account),
-          mAccountCaps(mAccount->capabilities().allClassSpecs())
+          mAccountCaps(mAccount->capabilities())
     {
     }
 
@@ -552,8 +549,6 @@ void AccountsModelItem::addKnownContacts()
 
 void AccountsModelItem::onCapabilitiesChanged()
 {
-    mPriv->mAccountCaps = mPriv->mAccount->capabilities().allClassSpecs();
+    mPriv->mAccountCaps = mPriv->mAccount->capabilities();
     emit capabilitiesChanged(mPriv->mAccountCaps);
-}
-
 }

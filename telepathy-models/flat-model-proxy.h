@@ -18,21 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _TelepathyQt4Yell_Models_flat_model_proxy_h_HEADER_GUARD_
-#define _TelepathyQt4Yell_Models_flat_model_proxy_h_HEADER_GUARD_
+#ifndef _Telepathy_Models_flat_model_proxy_h_HEADER_GUARD_
+#define _Telepathy_Models_flat_model_proxy_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_QT4_YELL_MODELS_HEADER
-#error IN_TELEPATHY_QT4_YELL_MODELS_HEADER
-#endif
-
-#include <TelepathyQt4Yell/Models/Global>
+#include "global.h"
 
 #include <QAbstractProxyModel>
 
-namespace Tpy
-{
-
-class TELEPATHY_QT4_YELL_MODELS_EXPORT FlatModelProxy : public QAbstractProxyModel
+class TELEPATHY_MODELS_EXPORT FlatModelProxy : public QAbstractProxyModel
 {
     Q_OBJECT
     Q_DISABLE_COPY(FlatModelProxy)
@@ -68,6 +61,4 @@ private:
     Private *mPriv;
 };
 
-}
-
-#endif // _TelepathyQt4Yell_Models_flat_model_proxy_h_HEADER_GUARD_
+#endif // _Telepathy_Models_flat_model_proxy_h_HEADER_GUARD_

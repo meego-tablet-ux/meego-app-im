@@ -18,12 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "SessionConversationModel"
+#include "session-conversation-model.h"
 
 //#include "TelepathyQt4Yell/Models/_gen/session-conversation-model.moc.hpp"
 
-#include "TextEventItem"
-#include "CustomEventItem"
+#include "text-event-item.h"
+#include "custom-event-item.h"
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Connection>

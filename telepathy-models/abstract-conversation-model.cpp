@@ -22,9 +22,9 @@
 
 //#include "TelepathyQt4Yell/Models/_gen/abstract-conversation-model.moc.hpp"
 
-#include "CallEventItem"
-#include "CustomEventItem"
-#include "TextEventItem"
+#include "call-event-item.h"
+#include "custom-event-item.h"
+#include "text-event-item.h"
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/PendingReady>

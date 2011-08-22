@@ -18,14 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/TreeNode>
+#include "tree-node.h"
 
-#include "TelepathyQt4Yell/Models/_gen/tree-node.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/tree-node.moc.hpp"
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT TreeNode::Private
+struct TELEPATHY_MODELS_NO_EXPORT TreeNode::Private
 {
     Private() :
         mParent(0)
@@ -161,6 +158,4 @@ void TreeNode::remove()
         mPriv->mParent->mPriv->mChildren.removeOne(this);
     }
     deleteLater();
-}
-
 }

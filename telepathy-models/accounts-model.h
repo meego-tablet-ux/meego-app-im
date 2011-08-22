@@ -18,15 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _TelepathyQt4Yell_Models_accounts_model_h_HEADER_GUARD_
-#define _TelepathyQt4Yell_Models_accounts_model_h_HEADER_GUARD_
+#ifndef _Telepathy_Models_accounts_model_h_HEADER_GUARD_
+#define _Telepathy_Models_accounts_model_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_QT4_YELL_MODELS_HEADER
-#error IN_TELEPATHY_QT4_YELL_MODELS_HEADER
-#endif
-
-#include <TelepathyQt4Yell/Models/AccountsModelItem>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model-item.h"
+#include "contact-model-item.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/AccountManager>
@@ -36,10 +32,7 @@
 
 #include <QAbstractListModel>
 
-namespace Tpy
-{
-
-class TELEPATHY_QT4_YELL_MODELS_EXPORT AccountsModel : public QAbstractItemModel
+class TELEPATHY_MODELS_EXPORT AccountsModel : public QAbstractItemModel
 {
     Q_OBJECT
     Q_DISABLE_COPY(AccountsModel)
@@ -112,7 +105,7 @@ public:
     Tp::AccountPtr accountForIndex(const QModelIndex &index) const;
     Tp::AccountPtr accountForContactIndex(const QModelIndex &index) const;
     Tp::ContactPtr contactForIndex(const QModelIndex &index) const;
-    Tp::AccountPtr accountForContactItem(Tpy::ContactModelItem* contactItem) const;
+    Tp::AccountPtr accountForContactItem(ContactModelItem* contactItem) const;
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
@@ -134,9 +127,9 @@ Q_SIGNALS:
 protected Q_SLOTS:
     void onLoadAccounts();
     void onNewAccount(const Tp::AccountPtr &account);
-    void onItemChanged(Tpy::TreeNode *node);
-    virtual void onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes);
-    void onItemsRemoved(Tpy::TreeNode *parent, int first, int last);
+    void onItemChanged(TreeNode *node);
+    virtual void onItemsAdded(TreeNode *parent, const QList<TreeNode *> &nodes);
+    void onItemsRemoved(TreeNode *parent, int first, int last);
 
 protected:
     void initialize();
@@ -147,6 +140,4 @@ private:
     Private *mPriv;
 };
 
-}
-
-#endif // _TelepathyQt4Yell_Models_accounts_model_h_HEADER_GUARD_
+#endif // _Telepathy_Models_accounts_model_h_HEADER_GUARD_

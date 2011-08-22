@@ -18,15 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/FlatModelProxy>
+#include "flat-model-proxy.h"
 
-#include "TelepathyQt4Yell/Models/_gen/flat-model-proxy.moc.hpp"
-#include <TelepathyQt4Yell/Models/AccountsModel>
+//#include "TelepathyQt4Yell/Models/_gen/flat-model-proxy.moc.hpp"
 
-namespace Tpy
-{
+#include "accounts-model.h"
 
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT FlatModelProxy::Private
+struct TELEPATHY_MODELS_NO_EXPORT FlatModelProxy::Private
 {
     int offsetOf(const FlatModelProxy *model, int index) const;
 };
@@ -81,7 +79,7 @@ FlatModelProxy::FlatModelProxy(QAbstractItemModel *source)
             SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             SLOT(onDataChanged(QModelIndex,QModelIndex)));
 
-    Tpy::AccountsModel *accountsModel = qobject_cast<Tpy::AccountsModel *> (source);
+    AccountsModel *accountsModel = qobject_cast<AccountsModel *> (source);
     if (accountsModel) {
         connect(accountsModel,
                 SIGNAL(hierarchicalDataChanged(QModelIndex,QModelIndex)),
@@ -208,6 +206,4 @@ void FlatModelProxy::onHierarchicalDataChanged(const QModelIndex &first, const Q
         // do not do normal dataChanged, since dataChanged it was already triggered separately
         //onDataChanged(first, last);
     }
-}
-
 }

@@ -21,12 +21,8 @@
 #ifndef _Telepathy_Models_call_event_item_h_HEADER_GUARD_
 #define _Telepathy_Models_call_event_item_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_MODELS_HEADER
-#error IN_TELEPATHY_MODELS_HEADER
-#endif
-
-#include "EventItem"
-#include "Global"
+#include "event-item.h"
+#include "global.h"
 
 #include <TelepathyQt4Yell/Constants>
 #include <TelepathyQt4/Types>

@@ -18,15 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/AvatarImageProvider>
+#include "avatar-image-provider.h"
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/AccountManager>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT AvatarImageProvider::Private
+struct TELEPATHY_MODELS_NO_EXPORT AvatarImageProvider::Private
 {
     Private(const Tp::AccountManagerPtr &am)
         : mAM(am)
@@ -69,6 +66,4 @@ QImage AvatarImageProvider::requestImage(const QString &id, QSize *size, const Q
         }
     }
     return image;
-}
-
 }

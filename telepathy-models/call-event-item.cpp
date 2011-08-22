@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "CallEventItem"
+#include "call-event-item.h"
 
 //#include "TelepathyQt4Yell/Models/_gen/call-event-item.moc.hpp"
 

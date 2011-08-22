@@ -18,11 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "contact-model-item.h"
 
-#include "TelepathyQt4Yell/Models/_gen/contact-model-item.moc.hpp"
+//#include "TelepathyQt4Yell/Models/_gen/contact-model-item.moc.hpp"
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 #include <TelepathyQt4Yell/CallChannel>
 #include <TelepathyQt4Yell/ContactCapabilities>
 #include <TelepathyQt4Yell/RequestableChannelClassSpec>
@@ -33,15 +33,11 @@
 
 #include <QImage>
 
-namespace Tpy
-{
-
-struct TELEPATHY_QT4_YELL_MODELS_NO_EXPORT ContactModelItem::Private
+struct TELEPATHY_MODELS_NO_EXPORT ContactModelItem::Private
 {
     Private(const Tp::ContactPtr &contact)
         : mContact(contact),
-          mContactCaps(contact->capabilities().allClassSpecs(),
-              contact->capabilities().isSpecificToContact())
+          mContactCaps(contact->capabilities())
     {
     }
 
@@ -229,7 +225,9 @@ Tp::ContactPtr ContactModelItem::contact() const
 
 void ContactModelItem::onCapabilitiesChanged()
 {
-    mPriv->mContactCaps.updateRequestableChannelClasses(mPriv->mContact->capabilities().allClassSpecs().bareClasses());
+    // TODO: double check this, the original code is the commented one
+    //mPriv->mContactCaps.updateRequestableChannelClasses(mPriv->mContact->capabilities().allClassSpecs().bareClasses());
+    mPriv->mContactCaps = mPriv->mContact->capabilities();
     emit capabilitiesChanged();
 }
 
@@ -243,6 +241,4 @@ void ContactModelItem::remove(const QString &message)
     contacts << mPriv->mContact;
     mPriv->mContact->manager()->removeContacts(contacts, message);
     onChanged();
-}
-
 }

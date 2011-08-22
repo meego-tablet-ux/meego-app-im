@@ -31,7 +31,7 @@ HEADERS = abstract-conversation-model.h \
           text-event-item.h \
           tree-node.h
 
-QT += dbus #network
+QT += dbus declarative #network
 CONFIG += qt link_pkgconfig create_prl
 
 OBJECTS_DIR = .obj

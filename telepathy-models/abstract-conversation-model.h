@@ -21,11 +21,7 @@
 #ifndef _Telepathy_Models_abstract_conversation_model_h_HEADER_GUARD_
 #define _Telepathy_Models_abstract_conversation_model_h_HEADER_GUARD_
 
-#ifndef IN_TELEPATHY_MODELS_HEADER
-#error IN_TELEPATHY_MODELS_HEADER
-#endif
-
-#include "Global"
+#include "global.h"
 
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>

@@ -11,7 +11,7 @@
 
 #include <QObject>
 #include <TelepathyQt4/Account>
-#include <TelepathyQt4Yell/Models/AccountsModelItem>
+#include "accounts-model-item.h"
 
 class AddContactHelper : public QObject
 {

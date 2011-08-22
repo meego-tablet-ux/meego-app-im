@@ -9,7 +9,7 @@
 
 #include "simplecontactslistmodel.h"
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 
 SimpleContactsListModel::SimpleContactsListModel(const QList<Tp::ContactPtr> contacts, QObject *parent):
     QAbstractListModel(parent)
@@ -17,32 +17,32 @@ SimpleContactsListModel::SimpleContactsListModel(const QList<Tp::ContactPtr> con
     beginInsertRows(QModelIndex(), 0, contacts.count() - 1);
     // create the contact model items and fill up the list
     foreach(Tp::ContactPtr contact, contacts) {
-        Tpy::ContactModelItem *item = new Tpy::ContactModelItem(contact);
+        ContactModelItem *item = new ContactModelItem(contact);
         mItems.append(item);
     }
     endInsertRows();
 
     QHash<int, QByteArray> roles;
-    roles[Tpy::AccountsModel::ItemRole] = "item";
-    roles[Tpy::AccountsModel::IdRole] = "id";
-    roles[Tpy::AccountsModel::ValidRole] = "valid";
-    roles[Tpy::AccountsModel::EnabledRole] = "enabled";
-    roles[Tpy::AccountsModel::ConnectionManagerNameRole] = "connectionManager";
-    roles[Tpy::AccountsModel::ProtocolNameRole] = "protocol";
-    roles[Tpy::AccountsModel::DisplayNameRole] = "displayName";
-    roles[Tpy::AccountsModel::IconRole] = "icon";
-    roles[Tpy::AccountsModel::NicknameRole] = "nickname";
-    roles[Tpy::AccountsModel::AliasRole] = "aliasName";
-    roles[Tpy::AccountsModel::AvatarRole] = "avatar";
-    roles[Tpy::AccountsModel::PresenceStatusRole] = "presenceStatus";
-    roles[Tpy::AccountsModel::PresenceTypeRole] = "presenceType";
-    roles[Tpy::AccountsModel::PresenceMessageRole] = "presenceMessage";
-    roles[Tpy::AccountsModel::TextChatCapabilityRole] = "textChat";
-    roles[Tpy::AccountsModel::MediaCallCapabilityRole] = "mediaCall";
-    roles[Tpy::AccountsModel::AudioCallCapabilityRole] = "audioCall";
-    roles[Tpy::AccountsModel::VideoCallCapabilityRole] = "videoCall";
-    roles[Tpy::AccountsModel::VideoCallWithAudioCapabilityRole] = "videoCallWithAudio";
-    roles[Tpy::AccountsModel::UpgradeCallCapabilityRole] = "upgradeCall";
+    roles[AccountsModel::ItemRole] = "item";
+    roles[AccountsModel::IdRole] = "id";
+    roles[AccountsModel::ValidRole] = "valid";
+    roles[AccountsModel::EnabledRole] = "enabled";
+    roles[AccountsModel::ConnectionManagerNameRole] = "connectionManager";
+    roles[AccountsModel::ProtocolNameRole] = "protocol";
+    roles[AccountsModel::DisplayNameRole] = "displayName";
+    roles[AccountsModel::IconRole] = "icon";
+    roles[AccountsModel::NicknameRole] = "nickname";
+    roles[AccountsModel::AliasRole] = "aliasName";
+    roles[AccountsModel::AvatarRole] = "avatar";
+    roles[AccountsModel::PresenceStatusRole] = "presenceStatus";
+    roles[AccountsModel::PresenceTypeRole] = "presenceType";
+    roles[AccountsModel::PresenceMessageRole] = "presenceMessage";
+    roles[AccountsModel::TextChatCapabilityRole] = "textChat";
+    roles[AccountsModel::MediaCallCapabilityRole] = "mediaCall";
+    roles[AccountsModel::AudioCallCapabilityRole] = "audioCall";
+    roles[AccountsModel::VideoCallCapabilityRole] = "videoCall";
+    roles[AccountsModel::VideoCallWithAudioCapabilityRole] = "videoCallWithAudio";
+    roles[AccountsModel::UpgradeCallCapabilityRole] = "upgradeCall";
     setRoleNames(roles);
 }
 
@@ -67,7 +67,7 @@ QVariant SimpleContactsListModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    Tpy::ContactModelItem *item = mItems[index.row()];
+    ContactModelItem *item = mItems[index.row()];
 
     switch(role) {
         default: {

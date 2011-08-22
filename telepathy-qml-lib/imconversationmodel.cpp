@@ -11,8 +11,8 @@
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/ReceivedMessage>
-#include <TelepathyQt4Yell/Models/CustomEventItem>
-#include <TelepathyQt4Yell/Models/CallEventItem>
+#include "custom-event-item.h"
+#include "call-event-item.h"
 #include "filetransferitem.h"
 
 IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
@@ -32,7 +32,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
 {
     // if the contact is null, it means we are in 1-to-1 chat
     if (!contact.isNull()) {
-        mLoggerConversationModel = new Tpl::LoggerConversationModel(account, contact, this);
+        mLoggerConversationModel = new LoggerConversationModel(account, contact, this);
     }
 
     if (mLoggerConversationModel) {
@@ -51,7 +51,7 @@ IMConversationModel::IMConversationModel(const Tp::AccountPtr &account,
         mNumDuplicatedMessages = channel->messageQueue().count();
     }
 
-    mSessionConversationModel = new Tpy::SessionConversationModel(self, channel, parent);
+    mSessionConversationModel = new SessionConversationModel(self, channel, parent);
     if (mSessionConversationModel) {
         addModel(mSessionConversationModel);
         connect(channel.data(),
@@ -106,12 +106,12 @@ QVariant IMConversationModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    const Tpy::EventItem *eventItem = qobject_cast<const Tpy::EventItem*>(
-                MergedModel::data(index, Tpy::SessionConversationModel::ItemRole).value<QObject*>());
+    const EventItem *eventItem = qobject_cast<const EventItem*>(
+                MergedModel::data(index, SessionConversationModel::ItemRole).value<QObject*>());
     const FileTransferItem *fileTransferItem = qobject_cast<const FileTransferItem*>(eventItem);
 
     switch (role) {
-    case Tpy::AbstractConversationModel::MessageTextRole: {
+    case AbstractConversationModel::MessageTextRole: {
         QString text = MergedModel::data(index, role).toString();
 
         text = text.replace(QString("&"), QString("&amp;"));
@@ -235,8 +235,8 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     if(!mContactsList.contains(contact->id())) {
         mContactsList.append(contact->id());
         QString joinMessage = tr("%1 joined the chat").arg(contact->alias());
-        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
-            QDateTime::currentDateTime(), joinMessage, Tpy::CustomEventItem::CustomEventUserDefined, this);
+        CustomEventItem *item = new CustomEventItem(contact, mSelf,
+            QDateTime::currentDateTime(), joinMessage, CustomEventItem::CustomEventUserDefined, this);
         mSessionConversationModel->addItem(item);
     }
 
@@ -259,8 +259,8 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     }
     case Tp::ChannelChatStateGone: {
         QString goneMessage = tr("%1 left the chat").arg(contact->alias());
-        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
-            QDateTime::currentDateTime(), goneMessage, Tpy::CustomEventItem::CustomEventUserLeftChat, this);
+        CustomEventItem *item = new CustomEventItem(contact, mSelf,
+            QDateTime::currentDateTime(), goneMessage, CustomEventItem::CustomEventUserLeftChat, this);
         mSessionConversationModel->addItem(item);
         mContactsList.removeOne(contact->id());
         break;
@@ -282,7 +282,7 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
     }
 
     // if we have a previous running chat item from the contact, delete it
-    foreach(Tpy::EventItem *item, mChatRunningItems) {
+    foreach(EventItem *item, mChatRunningItems) {
         if(item->sender() == contact) {
             qDebug("previous running item found, deleting");
             mChatRunningItems.removeOne(item);
@@ -293,8 +293,8 @@ void IMConversationModel::onChatStateChanged(const Tp::ContactPtr &contact, Tp::
 
     // add the event message
     if (!message.isEmpty()) {
-        Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, mSelf,
-            QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
+        CustomEventItem *item = new CustomEventItem(contact, mSelf,
+            QDateTime::currentDateTime(), message, CustomEventItem::CustomEventUserDefined, this);
         // remember running messages
         if (running) {
             mChatRunningItems.append(item);
@@ -309,7 +309,7 @@ void IMConversationModel::onItemChanged()
         return;
     }
 
-    Tpy::EventItem *item = qobject_cast<Tpy::EventItem*>(sender());
+    EventItem *item = qobject_cast<EventItem*>(sender());
     if(!item) {
         return;
     }
@@ -396,8 +396,8 @@ void IMConversationModel::notifyCallStatusChanged(CallAgent *callAgent, CallAgen
         }
 
         if (running) {
-            Tpy::CustomEventItem *item = new Tpy::CustomEventItem(sender, receiver,
-                QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
+            CustomEventItem *item = new CustomEventItem(sender, receiver,
+                QDateTime::currentDateTime(), message, CustomEventItem::CustomEventUserDefined, this);
             mCallRunningItem = item;
             mSessionConversationModel->addItem(item);
        } else {
@@ -411,7 +411,7 @@ void IMConversationModel::notifyCallStatusChanged(CallAgent *callAgent, CallAgen
             }
             Tpy::CallStateChangeReason endReason = (Tpy::CallStateChangeReason) callAgent->stateReason().reason;
             QString detailedEndReason = callAgent->stateReason().DBusReason;
-            Tpy::CallEventItem *item = new Tpy::CallEventItem(sender, receiver,
+            CallEventItem *item = new CallEventItem(sender, receiver,
                 callAgent->startTime(), callAgent->updateCallDuration(),
                 endActor, endReason, detailedEndReason, this);
             mSessionConversationModel->addItem(item);
@@ -435,8 +435,8 @@ void IMConversationModel::notifyCallError(Tp::ContactPtr contact, const QString 
 
     // FIXME sender ?
     Tp::ContactPtr receiver;
-    Tpy::CustomEventItem *item = new Tpy::CustomEventItem(contact, receiver,
-        QDateTime::currentDateTime(), message, Tpy::CustomEventItem::CustomEventUserDefined, this);
+    CustomEventItem *item = new CustomEventItem(contact, receiver,
+        QDateTime::currentDateTime(), message, CustomEventItem::CustomEventUserDefined, this);
     mLoggerConversationModel->addItem(item);
 }
 
@@ -623,7 +623,7 @@ void IMConversationModel::calculateMatches(void)
     mMatchesFound.clear();
     for(int i = rowCount(QModelIndex()) - 1;i >= 0;i--) {
         QModelIndex rowIndex = index(i,0,QModelIndex());
-        QString text = MergedModel::data(rowIndex, Tpy::AbstractConversationModel::MessageTextRole).toString();
+        QString text = MergedModel::data(rowIndex, AbstractConversationModel::MessageTextRole).toString();
         int fromIndex = -1;
         // NOTE matched are counted backwards in the string
         do {

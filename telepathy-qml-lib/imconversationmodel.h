@@ -9,12 +9,12 @@
 #ifndef IMCONVERSATIONMODEL_H
 #define IMCONVERSATIONMODEL_H
 
-#include <TelepathyLoggerQt4/Models/LoggerConversationModel>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
-#include <TelepathyQt4Yell/Models/SessionConversationModel>
-#include <TelepathyQt4Yell/Models/EventItem>
+#include "logger-conversation-model.h"
+#include "session-conversation-model.h"
+#include "event-item.h"
 #include "mergedmodel.h"
 #include "callagent.h"
 
@@ -111,12 +111,12 @@ private:
     QString mSearchString;
     QList<Tp::ContactPtr> mContactsTyping;
     QDateTime mContactsTypingTime;
-    QList<Tpy::EventItem*> mChatRunningItems;
-    Tpy::EventItem *mCallRunningItem;
+    QList<EventItem*> mChatRunningItems;
+    EventItem *mCallRunningItem;
     QStringList mContactsList;
     QStringList mBubbleColor;
-    Tpl::LoggerConversationModel *mLoggerConversationModel;
-    Tpy::SessionConversationModel *mSessionConversationModel;
+    LoggerConversationModel *mLoggerConversationModel;
+    SessionConversationModel *mSessionConversationModel;
     Tp::ContactPtr mSelf;
     Tp::AccountPtr mAccount;
     int mNumDuplicatedMessages;

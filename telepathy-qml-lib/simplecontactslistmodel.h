@@ -10,7 +10,7 @@
 #define SIMPLECONTACTSLISTMODEL_H
 
 #include <TelepathyQt4/Contact>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "contact-model-item.h"
 
 #include <QAbstractListModel>
 
@@ -29,7 +29,7 @@ Q_SIGNALS:
     void rowCountChanged();
 
 private:
-    QList<Tpy::ContactModelItem *> mItems;
+    QList<ContactModelItem *> mItems;
 };
 
 #endif // SIMPLECONTACTSLISTMODEL_H

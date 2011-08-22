@@ -15,7 +15,7 @@ FileTransferItem::FileTransferItem(Tp::ContactPtr sender,
                                    FileTransferAgent *agent,
                                    Tp::FileTransferChannelPtr channel,
                                    QObject *parent)
-: Tpy::EventItem(sender, receiver, dateTime, parent),
+: EventItem(sender, receiver, dateTime, parent),
   mChannel(channel), mAgent(agent)
 {
     mIncomingChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);

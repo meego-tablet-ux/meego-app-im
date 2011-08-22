@@ -23,7 +23,7 @@ AddContactHelper::~AddContactHelper()
 
 void AddContactHelper::setAccountItem(QObject *accountItem)
 {
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem *>(accountItem);
+    AccountsModelItem *item = qobject_cast<AccountsModelItem *>(accountItem);
     if(item) {
     qDebug() << "AddContactHelper::setAccountItem: accountId=" << item->account()->uniqueIdentifier();
 
@@ -77,7 +77,7 @@ void AddContactHelper::sendRequest()
         return;
     }
 
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem *>(accountItem());
+    AccountsModelItem *item = qobject_cast<AccountsModelItem *>(accountItem());
     if (!item) {
         setError();
         return;
@@ -128,7 +128,7 @@ void AddContactHelper::onPendingContactsFinished(Tp::PendingOperation *op)
         return;
     }
 
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem *>(accountItem());
+    AccountsModelItem *item = qobject_cast<AccountsModelItem *>(accountItem());
     if (!item) {
         setError();
         return;

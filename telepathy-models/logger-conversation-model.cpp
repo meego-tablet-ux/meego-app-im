@@ -131,11 +131,13 @@ void LoggerConversationModel::fetchMoreBack()
 
 bool LoggerConversationModel::canFetchMore(const QModelIndex & index) const
 {
+    Q_UNUSED(index);
     return false;
 }
 
 void LoggerConversationModel::fetchMore(const QModelIndex & index)
 {
+    Q_UNUSED(index);
 }
 
 void LoggerConversationModel::fetchDate(const QDate &date) const

@@ -283,6 +283,7 @@ QObject *AccountsModel::contactItemForId(const QString &accountId, const QString
   */
 int AccountsModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 

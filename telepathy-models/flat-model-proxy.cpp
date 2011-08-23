@@ -105,6 +105,7 @@ QModelIndex FlatModelProxy::mapToSource(const QModelIndex &index) const
 
 QModelIndex FlatModelProxy::index(int row, int column, const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     int count = 0;
     for (int i = 0; i < sourceModel()->rowCount(QModelIndex()); i++) {
         QModelIndex sourceIndex = sourceModel()->index(i, 0, QModelIndex());
@@ -119,11 +120,13 @@ QModelIndex FlatModelProxy::index(int row, int column, const QModelIndex &parent
 
 QModelIndex FlatModelProxy::parent(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     return QModelIndex();
 }
 
 int FlatModelProxy::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 1;
 }
 
@@ -134,6 +137,7 @@ int FlatModelProxy::rowCount() const
 
 int FlatModelProxy::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return mPriv->offsetOf(this, sourceModel()->rowCount(QModelIndex()));
 }
 
@@ -161,6 +165,8 @@ void FlatModelProxy::onRowsAboutToBeRemoved(const QModelIndex &index, int first,
 
 void FlatModelProxy::onRowsInserted(const QModelIndex &index, int first, int last)
 {
+    Q_UNUSED(first);
+    Q_UNUSED(last);
     if (index.isValid()) {
         endInsertRows();
     }
@@ -168,6 +174,8 @@ void FlatModelProxy::onRowsInserted(const QModelIndex &index, int first, int las
 
 void FlatModelProxy::onRowsRemoved(const QModelIndex &index, int first, int last)
 {
+    Q_UNUSED(first);
+    Q_UNUSED(last);
     if (index.isValid()) {
         endRemoveRows();
     }

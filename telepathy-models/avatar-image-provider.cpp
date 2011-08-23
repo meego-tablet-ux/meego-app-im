@@ -44,6 +44,7 @@ void AvatarImageProvider::registerProvider(QDeclarativeEngine *engine, const Tp:
 
 QImage AvatarImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    Q_UNUSED(requestedSize);
     QString path = QString::fromLatin1(TELEPATHY_ACCOUNT_OBJECT_PATH_BASE "/") + id;
     Tp::AccountPtr account = mPriv->mAM->accountForPath(path);
     QImage image;

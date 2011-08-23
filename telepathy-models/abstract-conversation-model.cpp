@@ -234,6 +234,7 @@ QVariant AbstractConversationModel::data(const QModelIndex &index, int role) con
   */
 int AbstractConversationModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return mPriv->mItems.count();
 }
 

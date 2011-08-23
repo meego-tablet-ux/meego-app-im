@@ -6,7 +6,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-#include "AbstractConversationModel"
+#include "abstract-conversation-model.h"
 
 //#include "TelepathyQt4Yell/Models/_gen/abstract-conversation-model.moc.hpp"
 

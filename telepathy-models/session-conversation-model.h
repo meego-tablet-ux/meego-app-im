@@ -13,7 +13,7 @@
 
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/Types>
-#include "AbstractConversationModel"
+#include "abstract-conversation-model.h"
 
 #include <QAbstractListModel>
 

@@ -8,13 +8,13 @@
 
 #include "accountssortfilterproxymodel.h"
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 
 AccountsSortFilterProxyModel::AccountsSortFilterProxyModel(IMAccountsModel *model, QObject *parent)
     : QSortFilterProxyModel(parent)
 {
     setSourceModel(model);
-    setSortRole(Tpy::AccountsModel::DisplayNameRole);
+    setSortRole(AccountsModel::DisplayNameRole);
     setDynamicSortFilter(true);
     sort(0, Qt::AscendingOrder);
     invalidate();
@@ -43,8 +43,8 @@ bool AccountsSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelI
 
 bool AccountsSortFilterProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-    QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::DisplayNameRole).toString();
-    QString rightAlias = sourceModel()->data(right, Tpy::AccountsModel::DisplayNameRole).toString();
+    QString leftAlias = sourceModel()->data(left, AccountsModel::DisplayNameRole).toString();
+    QString rightAlias = sourceModel()->data(right, AccountsModel::DisplayNameRole).toString();
     return (leftAlias.toUpper() < rightAlias.toUpper());
 }
 

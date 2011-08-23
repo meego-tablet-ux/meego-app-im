@@ -10,8 +10,8 @@
 #define IMACCOUNTSMODEL_H
 
 #include <TelepathyQt4/Types>
-#include <TelepathyQt4Yell/Models/AccountsModel>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model.h"
+#include "contact-model-item.h"
 #include <TelepathyQt4/TextChannel>
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
@@ -34,13 +34,13 @@ typedef QHash<QString, ServerAuthAgent*> ServerAuthAgentHash;
 
 class NotificationManager;
 
-class IMAccountsModel : public Tpy::AccountsModel
+class IMAccountsModel : public AccountsModel
 {
     Q_OBJECT
     Q_ENUMS(IMAccountRoles)
 public:
     enum IMAccountRoles {
-        PendingMessagesRole = Tpy::AccountsModel::CustomRole,
+        PendingMessagesRole = AccountsModel::CustomRole,
         ChatOpenedRole,
         LastPendingMessageRole,
         LastPendingMessageSentRole,
@@ -138,13 +138,13 @@ public Q_SLOTS:
     void onNetworkStatusChanged(bool isOnline);
 
 protected:
-    Tpy::ContactModelItem *itemForChatAgent(ChatAgent *agent) const;
-    Tpy::ContactModelItem *itemForCallAgent(CallAgent *agent) const;
-    Tpy::ContactModelItem *itemForFileTransferAgent(FileTransferAgent *agent) const;
+    ContactModelItem *itemForChatAgent(ChatAgent *agent) const;
+    ContactModelItem *itemForCallAgent(CallAgent *agent) const;
+    ContactModelItem *itemForFileTransferAgent(FileTransferAgent *agent) const;
     Tp::ContactPtr contactFromChannelId(const Tp::AccountPtr &account, const QString &channelPath, const QString &contactId) const;
 
 protected Q_SLOTS:
-    virtual void onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes);
+    virtual void onItemsAdded(TreeNode *parent, const QList<TreeNode *> &nodes);
 
 private Q_SLOTS:
     void onChatCreated();

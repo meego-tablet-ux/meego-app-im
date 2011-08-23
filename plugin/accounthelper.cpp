@@ -15,7 +15,7 @@
 #include <TelepathyQt4/Types>
 #include <TelepathyQt4/ProtocolParameter>
 
-#include <TelepathyQt4Yell/Models/AccountsModelItem>
+#include "accounts-model-item.h"
 #include <QUrl>
 #include <QImage>
 
@@ -260,7 +260,7 @@ void AccountHelper::createAccount()
 void AccountHelper::setAccount(QObject *object)
 {
     qDebug() << __PRETTY_FUNCTION__ << this;
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(object);
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(object);
     mAccount = accountItem->account();
     emit onlineChanged();
 

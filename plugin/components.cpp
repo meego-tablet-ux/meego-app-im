@@ -28,7 +28,7 @@
 #include <TelepathyQt4/Connection>
 #include <TelepathyQt4/ChannelFactory>
 #include <TelepathyQt4/Debug>
-#include <TelepathyQt4Yell/Models/FlatModelProxy>
+#include "flat-model-proxy.h"
 #include <TelepathyQt4Yell/Types>
 #include <TelepathyQt4Yell/CallChannel>
 
@@ -109,7 +109,7 @@ void Components::registerTypes(const char *uri)
     qmlRegisterType<IMDBus>(uri, 0, 1, "IMDBus");
     qmlRegisterType<ResourceSetManager>(uri, 0, 1, "ResourceSetManager");
     qmlRegisterUncreatableType<IMAccountsModel>(uri, 0, 1, "IMAccountsModel", "This is a read-only type");
-    qmlRegisterUncreatableType<Tpy::ContactModelItem>(uri, 0, 1,"ContactModelItem", "This is a read-only type");
+    qmlRegisterUncreatableType<ContactModelItem>(uri, 0, 1,"ContactModelItem", "This is a read-only type");
     qmlRegisterUncreatableType<TelepathyManager>(uri, 0, 1, "TelepathyManager", "This is a read-only type");
     qmlRegisterUncreatableType<ChatAgent>(uri, 0, 1, "ChatAgent", "This is a read-only type");
     qmlRegisterUncreatableType<SimpleContactsListModel>(uri, 0, 1, "SimpleContactsListModel", "This is a read-only type");
@@ -128,7 +128,7 @@ void Components::onAccountsModelReady(IMAccountsModel *model)
     connect(mAccountsModel, SIGNAL(newAccountItem(QString)),
             SLOT(onNewAccount(QString)));
 
-    Tpy::FlatModelProxy *flatModel = new Tpy::FlatModelProxy(model);
+    FlatModelProxy *flatModel = new FlatModelProxy(model);
     mMergedModel = new MergedModel(this);
     mMergedModel->addModel(flatModel);
 

@@ -9,9 +9,9 @@
 #ifndef IMAVATARIMAGEPROVIDER_H
 #define IMAVATARIMAGEPROVIDER_H
 
-#include <TelepathyQt4Yell/Models/AvatarImageProvider>
+#include "avatar-image-provider.h"
 
-class IMAvatarImageProvider : public Tpy::AvatarImageProvider
+class IMAvatarImageProvider : public AvatarImageProvider
 {
 public:
     explicit IMAvatarImageProvider(const Tp::AccountManagerPtr &am);

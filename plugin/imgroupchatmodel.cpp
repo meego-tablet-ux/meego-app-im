@@ -10,48 +10,48 @@
 
 #include "imaccountsmodel.h"
 #include "../telepathy-qml-lib/notificationmanager.h"
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 #include <TelepathyQt4/ReceivedMessage>
 
 IMGroupChatModel::IMGroupChatModel(QObject *parent) :
     QAbstractListModel(parent), mNotificationManager(0)
 {
     QHash<int, QByteArray> roles;
-    roles[Tpy::AccountsModel::ItemRole] = "item";
-    roles[Tpy::AccountsModel::IdRole] = "id";
-    roles[Tpy::AccountsModel::ValidRole] = "valid";
-    roles[Tpy::AccountsModel::EnabledRole] = "enabled";
-    roles[Tpy::AccountsModel::ConnectionManagerNameRole] = "connectionManager";
-    roles[Tpy::AccountsModel::ProtocolNameRole] = "protocol";
-    roles[Tpy::AccountsModel::DisplayNameRole] = "displayName";
-    roles[Tpy::AccountsModel::IconRole] = "icon";
-    roles[Tpy::AccountsModel::NicknameRole] = "nickname";
-    roles[Tpy::AccountsModel::ConnectsAutomaticallyRole] = "connectsAutomatically";
-    roles[Tpy::AccountsModel::ChangingPresenceRole] = "changingPresence";
-    roles[Tpy::AccountsModel::AutomaticPresenceRole] = "automaticPresence";
-    roles[Tpy::AccountsModel::CurrentPresenceRole] = "status";
-    roles[Tpy::AccountsModel::CurrentPresenceTypeRole] = "statusType";
-    roles[Tpy::AccountsModel::CurrentPresenceStatusMessageRole] = "statusMessage";
-    roles[Tpy::AccountsModel::RequestedPresenceRole] = "requestedStatus";
-    roles[Tpy::AccountsModel::RequestedPresenceTypeRole] = "requestedStatusType";
-    roles[Tpy::AccountsModel::RequestedPresenceStatusMessageRole] = "requestedStausMessage";
-    roles[Tpy::AccountsModel::ConnectionStatusRole] = "connectionStatus";
-    roles[Tpy::AccountsModel::ConnectionStatusReasonRole] = "connectionStatusReason";
-    roles[Tpy::AccountsModel::AliasRole] = "aliasName";
-    roles[Tpy::AccountsModel::AvatarRole] = "avatar";
-    roles[Tpy::AccountsModel::PresenceStatusRole] = "presenceStatus";
-    roles[Tpy::AccountsModel::PresenceTypeRole] = "presenceType";
-    roles[Tpy::AccountsModel::PresenceMessageRole] = "presenceMessage";
-    roles[Tpy::AccountsModel::SubscriptionStateRole] = "subscriptionState";
-    roles[Tpy::AccountsModel::PublishStateRole] = "publishState";
-    roles[Tpy::AccountsModel::BlockedRole] = "blocked";
-    roles[Tpy::AccountsModel::GroupsRole] = "groups";
-    roles[Tpy::AccountsModel::TextChatCapabilityRole] = "textChat";
-    roles[Tpy::AccountsModel::MediaCallCapabilityRole] = "mediaCall";
-    roles[Tpy::AccountsModel::AudioCallCapabilityRole] = "audioCall";
-    roles[Tpy::AccountsModel::VideoCallCapabilityRole] = "videoCall";
-    roles[Tpy::AccountsModel::VideoCallWithAudioCapabilityRole] = "videoCallWithAudio";
-    roles[Tpy::AccountsModel::UpgradeCallCapabilityRole] = "upgradeCall";
+    roles[AccountsModel::ItemRole] = "item";
+    roles[AccountsModel::IdRole] = "id";
+    roles[AccountsModel::ValidRole] = "valid";
+    roles[AccountsModel::EnabledRole] = "enabled";
+    roles[AccountsModel::ConnectionManagerNameRole] = "connectionManager";
+    roles[AccountsModel::ProtocolNameRole] = "protocol";
+    roles[AccountsModel::DisplayNameRole] = "displayName";
+    roles[AccountsModel::IconRole] = "icon";
+    roles[AccountsModel::NicknameRole] = "nickname";
+    roles[AccountsModel::ConnectsAutomaticallyRole] = "connectsAutomatically";
+    roles[AccountsModel::ChangingPresenceRole] = "changingPresence";
+    roles[AccountsModel::AutomaticPresenceRole] = "automaticPresence";
+    roles[AccountsModel::CurrentPresenceRole] = "status";
+    roles[AccountsModel::CurrentPresenceTypeRole] = "statusType";
+    roles[AccountsModel::CurrentPresenceStatusMessageRole] = "statusMessage";
+    roles[AccountsModel::RequestedPresenceRole] = "requestedStatus";
+    roles[AccountsModel::RequestedPresenceTypeRole] = "requestedStatusType";
+    roles[AccountsModel::RequestedPresenceStatusMessageRole] = "requestedStausMessage";
+    roles[AccountsModel::ConnectionStatusRole] = "connectionStatus";
+    roles[AccountsModel::ConnectionStatusReasonRole] = "connectionStatusReason";
+    roles[AccountsModel::AliasRole] = "aliasName";
+    roles[AccountsModel::AvatarRole] = "avatar";
+    roles[AccountsModel::PresenceStatusRole] = "presenceStatus";
+    roles[AccountsModel::PresenceTypeRole] = "presenceType";
+    roles[AccountsModel::PresenceMessageRole] = "presenceMessage";
+    roles[AccountsModel::SubscriptionStateRole] = "subscriptionState";
+    roles[AccountsModel::PublishStateRole] = "publishState";
+    roles[AccountsModel::BlockedRole] = "blocked";
+    roles[AccountsModel::GroupsRole] = "groups";
+    roles[AccountsModel::TextChatCapabilityRole] = "textChat";
+    roles[AccountsModel::MediaCallCapabilityRole] = "mediaCall";
+    roles[AccountsModel::AudioCallCapabilityRole] = "audioCall";
+    roles[AccountsModel::VideoCallCapabilityRole] = "videoCall";
+    roles[AccountsModel::VideoCallWithAudioCapabilityRole] = "videoCallWithAudio";
+    roles[AccountsModel::UpgradeCallCapabilityRole] = "upgradeCall";
     roles[IMAccountsModel::PendingMessagesRole] = "pendingMessages";
     roles[IMAccountsModel::ChatOpenedRole] = "chatOpened";
     roles[IMAccountsModel::LastPendingMessageRole] = "lastPendingMessage";

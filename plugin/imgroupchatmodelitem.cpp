@@ -10,7 +10,7 @@
 
 #include "imaccountsmodel.h"
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/ReceivedMessage>
 
@@ -55,15 +55,15 @@ QVariant IMGroupChatModelItem::data(int role) const
 {
     switch(role)
     {
-        case Tpy::AccountsModel::ItemRole:
+        case AccountsModel::ItemRole:
             return QVariant::fromValue(
                 const_cast<QObject *>(
                     static_cast<const QObject *>(this)));
-        case Tpy::AccountsModel::IdRole: {
+        case AccountsModel::IdRole: {
             return mTextChannel->objectPath();
     }
         case Qt::DisplayRole:
-        case Tpy::AccountsModel::AliasRole: {
+        case AccountsModel::AliasRole: {
             QString alias;
             int contactsCount = mTextChannel->groupContacts().count();
             if(mTextChannel->groupContacts().contains(mTextChannel->groupSelfContact())) {
@@ -81,9 +81,9 @@ QVariant IMGroupChatModelItem::data(int role) const
             }
             return QVariant(presenceList);
         }
-        case Tpy::AccountsModel::PresenceTypeRole:
+        case AccountsModel::PresenceTypeRole:
             return QVariant(Tp::ConnectionPresenceTypeAvailable);
-        case Tpy::AccountsModel::AvatarRole: {
+        case AccountsModel::AvatarRole: {
             return QVariant(QLatin1String("MULTIPLE"));
         }
         case IMAccountsModel::AvatarsListRole: {
@@ -100,21 +100,21 @@ QVariant IMGroupChatModelItem::data(int role) const
         }
         case IMAccountsModel::IsGroupChatRole:
             return QVariant(mTextChannel->isConference());
-        case Tpy::AccountsModel::PresenceMessageRole:
+        case AccountsModel::PresenceMessageRole:
             return QVariant(QString());
-        case Tpy::AccountsModel::PresenceStatusRole:
+        case AccountsModel::PresenceStatusRole:
             return Tp::ConnectionPresenceTypeAvailable;
-        case Tpy::AccountsModel::TextChatCapabilityRole:
+        case AccountsModel::TextChatCapabilityRole:
             return true;
-        case Tpy::AccountsModel::MediaCallCapabilityRole:
+        case AccountsModel::MediaCallCapabilityRole:
             return false;
-        case Tpy::AccountsModel::AudioCallCapabilityRole:
+        case AccountsModel::AudioCallCapabilityRole:
             return false;
-        case Tpy::AccountsModel::VideoCallCapabilityRole:
+        case AccountsModel::VideoCallCapabilityRole:
             return false;
-        case Tpy::AccountsModel::VideoCallWithAudioCapabilityRole:
+        case AccountsModel::VideoCallWithAudioCapabilityRole:
             return false;
-        case Tpy::AccountsModel::UpgradeCallCapabilityRole:
+        case AccountsModel::UpgradeCallCapabilityRole:
             return false;
         case IMAccountsModel::ChatOpenedRole:
             return true;
@@ -122,7 +122,7 @@ QVariant IMGroupChatModelItem::data(int role) const
             return 0;
         case IMAccountsModel::MissedVideoCallsRole:
             return 0;
-        case Tpy::AccountsModel::FileTransferCapabilityRole:
+        case AccountsModel::FileTransferCapabilityRole:
             return false;
         default:
             break;

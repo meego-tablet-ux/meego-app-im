@@ -5,8 +5,8 @@ CONFIG += qt plugin link_pkgconfig mobility
 PKGCONFIG += TelepathyQt4 TelepathyQt4Yell TelepathyQt4YellFarstream qt-gst-qml-sink \
              QtGLib-2.0 glib-2.0 TelepathyLoggerQt4 contextsubscriber-1.0 mlite libresourceqt1 \
              icu-i18n icu-uc meegolocale
-LIBS += -ltelepathy-qt4-yell-models -L../telepathy-qml-lib -ltelepathy-qml -ltelepathy-qt4-yell-farstream -ltelepathy-logger-qt4
-INCLUDEPATH += /usr/include/mlite
+LIBS += -L../telepathy-models -ltelepathy-models -L../telepathy-qml-lib -ltelepathy-qml -ltelepathy-qt4-yell-farstream -ltelepathy-logger-qt4
+INCLUDEPATH += /usr/include/mlite ../telepathy-models
 TARGET = $$qtLibraryTarget($$TARGET)
 DESTDIR = $$TARGET
 OBJECTS_DIR = .obj

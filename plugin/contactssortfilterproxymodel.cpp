@@ -15,8 +15,8 @@
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Connection>
 #include <TelepathyQt4/ContactManager>
-#include <TelepathyQt4Yell/Models/AccountsModel>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model.h"
+#include "contact-model-item.h"
 
 #include <meegolocale.h>
 
@@ -60,8 +60,8 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
         // verify the index is valid before doing anything else
         QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
         if (index.isValid()) {
-            Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem *>(
-                        index.data(Tpy::AccountsModel::ItemRole).value<QObject *>());
+            ContactModelItem *contactItem = qobject_cast<ContactModelItem *>(
+                        index.data(AccountsModel::ItemRole).value<QObject *>());
 
             if (contactItem) {
                 Tp::ContactPtr contact = contactItem->contact();
@@ -99,8 +99,8 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
 
             // verify the index is valid before doing anything else
             if (index.isValid()) {
-                Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem *>(
-                            index.data(Tpy::AccountsModel::ItemRole).value<QObject *>());
+                ContactModelItem *contactItem = qobject_cast<ContactModelItem *>(
+                            index.data(AccountsModel::ItemRole).value<QObject *>());
 
                 if (contactItem) {
                     Tp::ContactPtr contact = contactItem->contact();
@@ -166,7 +166,7 @@ bool ContactsSortFilterProxyModel::filterAcceptsRow(int sourceRow,
                     }
                 } else {
                     IMGroupChatModelItem *groupChatItem = qobject_cast<IMGroupChatModelItem *>(
-                                index.data(Tpy::AccountsModel::ItemRole).value<QObject *>());
+                                index.data(AccountsModel::ItemRole).value<QObject *>());
 
                     if(groupChatItem) {
 

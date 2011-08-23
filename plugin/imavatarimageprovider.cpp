@@ -10,7 +10,7 @@
 #include <TelepathyQt4/AccountManager>
 
 IMAvatarImageProvider::IMAvatarImageProvider(const Tp::AccountManagerPtr &am) :
-    Tpy::AvatarImageProvider(am)
+    AvatarImageProvider(am)
 {
 }
 
@@ -22,5 +22,5 @@ void IMAvatarImageProvider::registerProvider(QDeclarativeEngine *engine, const T
 QImage IMAvatarImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
     QString realId = id.split("?")[0];
-    return Tpy::AvatarImageProvider::requestImage(realId, size, requestedSize);
+    return AvatarImageProvider::requestImage(realId, size, requestedSize);
 }

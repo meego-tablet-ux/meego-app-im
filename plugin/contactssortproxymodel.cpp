@@ -16,8 +16,8 @@
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Connection>
 #include <TelepathyQt4/ContactManager>
-#include <TelepathyQt4Yell/Models/AccountsModel>
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "accounts-model.h"
+#include "contact-model-item.h"
 
 #include <meegolocale.h>
 
@@ -114,8 +114,8 @@ bool ContactsSortProxyModel::lessThan(const QModelIndex &left,
     }
 
     // evaluate presence
-    int leftType = sourceModel()->data(left, Tpy::AccountsModel::PresenceTypeRole).toInt();
-    int rightType = sourceModel()->data(right, Tpy::AccountsModel::PresenceTypeRole).toInt();
+    int leftType = sourceModel()->data(left, AccountsModel::PresenceTypeRole).toInt();
+    int rightType = sourceModel()->data(right, AccountsModel::PresenceTypeRole).toInt();
 
     // order by presence type
     int leftOrderedType = presenceOrder(leftType);
@@ -126,16 +126,16 @@ bool ContactsSortProxyModel::lessThan(const QModelIndex &left,
     }
 
     // compare the alias
-    QString leftAlias = sourceModel()->data(left, Tpy::AccountsModel::AliasRole).toString();
-    QString rightAlias = sourceModel()->data(right, Tpy::AccountsModel::AliasRole).toString();
+    QString leftAlias = sourceModel()->data(left, AccountsModel::AliasRole).toString();
+    QString rightAlias = sourceModel()->data(right, AccountsModel::AliasRole).toString();
 
     if (leftAlias != rightAlias) {
         static meego::Locale locale;
         return locale.lessThan(leftAlias, rightAlias);
     }
 
-    QString leftId = sourceModel()->data(left, Tpy::AccountsModel::IdRole).toString();
-    QString rightId = sourceModel()->data(right, Tpy::AccountsModel::IdRole).toString();
+    QString leftId = sourceModel()->data(left, AccountsModel::IdRole).toString();
+    QString rightId = sourceModel()->data(right, AccountsModel::IdRole).toString();
     return (leftId < rightId);
 }
 

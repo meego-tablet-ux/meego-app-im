@@ -11,7 +11,7 @@
 
 #include <QSortFilterProxyModel>
 #include "../telepathy-qml-lib/telepathymanager.h"
-#include <TelepathyQt4Yell/Models/ContactModelItem>
+#include "contact-model-item.h"
 
 class IMGroupChatModelItem;
 

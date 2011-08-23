@@ -12,7 +12,7 @@
 #include <QtDeclarative/qdeclarative.h>
 #include <QtDebug>
 
-#include <TelepathyQt4Yell/Models/AccountsModel>
+#include "accounts-model.h"
 #include "telepathytypes.h"
 #include "callagent.h"
 #include "addcontacthelper.h"
@@ -32,8 +32,8 @@ void Components::registerTypes(const char *uri)
 {
     qmlRegisterType<TelepathyTypes>(uri, 0, 1, "TelepathyTypes");
     qmlRegisterType<AddContactHelper>(uri, 0, 1, "AddContactHelper");
-    qmlRegisterUncreatableType<Tpy::AccountsModel>(uri, 0, 1, "AccountsModel", "This is a read-only type");
-    qmlRegisterUncreatableType<Tpy::AccountsModelItem>(uri, 0, 1, "AccountsModelItem", "This is a read-only type");
+    qmlRegisterUncreatableType<AccountsModel>(uri, 0, 1, "AccountsModel", "This is a read-only type");
+    qmlRegisterUncreatableType<AccountsModelItem>(uri, 0, 1, "AccountsModelItem", "This is a read-only type");
     qmlRegisterUncreatableType<CallAgent>(uri, 0, 1, "CallAgent", "Cannot be instanced from QML");
 }
 

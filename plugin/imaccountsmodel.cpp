@@ -7,8 +7,8 @@
  */
 
 #include "imaccountsmodel.h"
-#include <TelepathyQt4Yell/Models/ContactModelItem>
-#include <TelepathyQt4Yell/Models/AbstractConversationModel>
+#include "contact-model-item.h"
+#include "abstract-conversation-model.h"
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/Contact>
 #include <TelepathyQt4/PendingChannel>
@@ -33,7 +33,7 @@
 
 IMAccountsModel::IMAccountsModel(const Tp::AccountManagerPtr &am,
                                  QObject *parent)
- : Tpy::AccountsModel(am, parent),
+ : AccountsModel(am, parent),
    mLogger(Tpl::Logger::create()),
    mNotificationManager(0),
    mTelepathyManager(0)
@@ -103,8 +103,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             // in case the parent is not valid, we need to count the children's pending conversations
-            int messages = pendingMessagesByAccount(Tpy::AccountsModel::data(index, IdRole).toString());
-            messages += fileTransfersByAccount(Tpy::AccountsModel::data(index, IdRole).toString());
+            int messages = pendingMessagesByAccount(AccountsModel::data(index, IdRole).toString());
+            messages += fileTransfersByAccount(AccountsModel::data(index, IdRole).toString());
             return messages;
         }
 
@@ -124,8 +124,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             // account index
-            return (openedChatByAccount(Tpy::AccountsModel::data(index, IdRole).toString())
-                    || fileTransfersByAccount(Tpy::AccountsModel::data(index, IdRole).toString()));
+            return (openedChatByAccount(AccountsModel::data(index, IdRole).toString())
+                    || fileTransfersByAccount(AccountsModel::data(index, IdRole).toString()));
         }
 
         case LastPendingMessageRole: {
@@ -162,9 +162,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
             // account index
             uint numCalls = 0;
-            int count = Tpy::AccountsModel::rowCount(index);
+            int count = AccountsModel::rowCount(index);
             for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
+                QModelIndex child = AccountsModel::index(i, 0, index);
                 numCalls += data(child, MissedVideoCallsRole).toUInt();
             }
             return numCalls;
@@ -182,9 +182,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
             // account index
             uint numCalls = 0;
-            int count = Tpy::AccountsModel::rowCount(index);
+            int count = AccountsModel::rowCount(index);
             for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
+                QModelIndex child = AccountsModel::index(i, 0, index);
                 numCalls += data(child, MissedAudioCallsRole).toUInt();
             }
             return numCalls;
@@ -202,9 +202,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
             // account index
             bool existingCall = false;
-            int count = Tpy::AccountsModel::rowCount(index);
+            int count = AccountsModel::rowCount(index);
             for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
+                QModelIndex child = AccountsModel::index(i, 0, index);
                 existingCall = existingCall || data(child, ExistingCallRole).toBool();
             }
             return existingCall;
@@ -222,9 +222,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
             // account index
             bool incomingVideoCall = false;
-            int count = Tpy::AccountsModel::rowCount(index);
+            int count = AccountsModel::rowCount(index);
             for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
+                QModelIndex child = AccountsModel::index(i, 0, index);
                 incomingVideoCall = incomingVideoCall || data(child, IncomingVideoCallRole).toBool();
             }
             return incomingVideoCall;
@@ -242,9 +242,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
             // account index
             bool incomingAudioCall = false;
-            int count = Tpy::AccountsModel::rowCount(index);
+            int count = AccountsModel::rowCount(index);
             for (int i = 0; i < count; ++i) {
-                QModelIndex child = Tpy::AccountsModel::index(i, 0, index);
+                QModelIndex child = AccountsModel::index(i, 0, index);
                 incomingAudioCall = incomingAudioCall || data(child, IncomingAudioCallRole).toBool();
             }
             return incomingAudioCall;
@@ -259,8 +259,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
         // it will display the account name only in case there is more than one account for the service
 
         case AccountsModel::DisplayNameRole: {
-            return accountDisplayName(Tpy::AccountsModel::data(index, AccountsModel::IconRole).toString(),
-                                      Tpy::AccountsModel::data(index, AccountsModel::DisplayNameRole).toString());
+            return accountDisplayName(AccountsModel::data(index, AccountsModel::IconRole).toString(),
+                                      AccountsModel::data(index, AccountsModel::DisplayNameRole).toString());
         }
 
         // always return false as this is only for group chat items
@@ -270,9 +270,9 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
         case GroupChatCapableRole: {
             // contact index
             if (index.parent().isValid()) {
-                Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(
-                            contactItemForId(Tpy::AccountsModel::data(index.parent(), IdRole).toString(),
-                                             Tpy::AccountsModel::data(index, IdRole).toString()));
+                ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(
+                            contactItemForId(AccountsModel::data(index.parent(), IdRole).toString(),
+                                             AccountsModel::data(index, IdRole).toString()));
                 if(contactItem) {
                     Tp::ContactPtr contact = contactItem->contact();
                     if(!contact->manager()->connection().isNull()) {
@@ -283,8 +283,8 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
             }
 
             // account index
-            Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                        accountItemForId(Tpy::AccountsModel::data(index, IdRole).toString()));
+            AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(
+                        accountItemForId(AccountsModel::data(index, IdRole).toString()));
             if(accountItem) {
                 Tp::AccountPtr account = accountItem->account();
                 if(!account->connection().isNull()) {
@@ -295,16 +295,16 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
         }
 
         case CanBlockContactsRole: {
-            Tpy::AccountsModelItem *accountItem;
+            AccountsModelItem *accountItem;
 
             if (index.parent().isValid()) {
                 // contact index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index.parent(), IdRole).toString()));
+                accountItem = qobject_cast<AccountsModelItem*>(
+                            accountItemForId(AccountsModel::data(index.parent(), IdRole).toString()));
             } else {
                 // account index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index, IdRole).toString()));
+                accountItem = qobject_cast<AccountsModelItem*>(
+                            accountItemForId(AccountsModel::data(index, IdRole).toString()));
             }
 
             if(accountItem) {
@@ -326,23 +326,23 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
 
         case ParentIdRole: {
             if (index.parent().isValid()) {
-                return Tpy::AccountsModel::data(index.parent(), IdRole).toString();
+                return AccountsModel::data(index.parent(), IdRole).toString();
             }
 
             return QString();
         }
 
         case CanReportAbuseRole: {
-            Tpy::AccountsModelItem *accountItem;
+            AccountsModelItem *accountItem;
 
             if (index.parent().isValid()) {
                 // contact index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index.parent(), IdRole).toString()));
+                accountItem = qobject_cast<AccountsModelItem*>(
+                            accountItemForId(AccountsModel::data(index.parent(), IdRole).toString()));
             } else {
                 // account index
-                accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                            accountItemForId(Tpy::AccountsModel::data(index, IdRole).toString()));
+                accountItem = qobject_cast<AccountsModelItem*>(
+                            accountItemForId(AccountsModel::data(index, IdRole).toString()));
             }
 
             if (accountItem) {
@@ -355,7 +355,7 @@ QVariant IMAccountsModel::data(const QModelIndex &index, int role) const
         }
 
         default:
-            return Tpy::AccountsModel::data(index, role);
+            return AccountsModel::data(index, role);
     }
 }
 
@@ -401,7 +401,7 @@ void IMAccountsModel::addContactsToChat(const QString &accountId, const QString 
 
     QList<Tp::ContactPtr> contactsList;
     foreach(QString contactId, contactsStringList) {
-        Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+        ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
         if(contactItem) {
             contactsList.append(contactItem->contact());
         }
@@ -424,7 +424,7 @@ void IMAccountsModel::addContactsToChat(const QString &accountId, const QString 
         }
 
         // retrieve account object
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+        AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
         if(!accountItem) {
             return;
         }
@@ -443,7 +443,7 @@ void IMAccountsModel::endChat(const QString &accountId, const QString &contactId
         mChatAgents[key]->endChat();
     }
 
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (contactItem && contactItem->parent()) {
         onItemChanged(contactItem);
         onItemChanged(contactItem->parent());
@@ -457,7 +457,7 @@ void IMAccountsModel::endCall(const QString &accountId, const QString &contactId
         mCallAgents[key]->endCall();
     }
 
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (contactItem && contactItem->parent()) {
         onItemChanged(contactItem);
         onItemChanged(contactItem->parent());
@@ -468,7 +468,7 @@ int IMAccountsModel::accountsOfType(const QString &type) const
 {
     int count = 0;
     for (int i = 0; i < rowCount(); ++i) {
-        if (index(i, 0).data(Tpy::AccountsModel::IconRole).toString() == type) {
+        if (index(i, 0).data(AccountsModel::IconRole).toString() == type) {
             count++;
         }
     }
@@ -480,8 +480,8 @@ QStringList IMAccountsModel::accountIdsOfType(const QString &type) const
 {
     QStringList ids;
     for (int i = 0; i < rowCount(); ++i) {
-        if (index(i, 0).data(Tpy::AccountsModel::IconRole).toString() == type) {
-            ids.append(index(i,0).data(Tpy::AccountsModel::IdRole).toString());
+        if (index(i, 0).data(AccountsModel::IconRole).toString() == type) {
+            ids.append(index(i,0).data(AccountsModel::IdRole).toString());
         }
     }
 
@@ -491,8 +491,8 @@ QStringList IMAccountsModel::accountIdsOfType(const QString &type) const
 bool IMAccountsModel::existsConnectsAutomaticallyByType(const QString &type) const
 {
     for (int i = 0; i < rowCount(); ++i) {
-        if (index(i, 0).data(Tpy::AccountsModel::IconRole).toString() == type
-                && index(i,0).data(Tpy::AccountsModel::ConnectsAutomaticallyRole).toBool()) {
+        if (index(i, 0).data(AccountsModel::IconRole).toString() == type
+                && index(i,0).data(AccountsModel::ConnectsAutomaticallyRole).toBool()) {
             return true;
         }
     }
@@ -506,7 +506,7 @@ void IMAccountsModel::onChatCreated()
         return;
     }
 
-    Tpy::ContactModelItem *contactItem = itemForChatAgent(agent);
+    ContactModelItem *contactItem = itemForChatAgent(agent);
     if (contactItem && contactItem->parent()) {
         QString accountId = contactItem->parent()->data(IdRole).toString();
         QString contactId = contactItem->data(IdRole).toString();
@@ -532,7 +532,7 @@ void IMAccountsModel::onPendingMessagesChanged()
 {
     ChatAgent *agent = qobject_cast<ChatAgent*>(sender());
 
-    Tpy::ContactModelItem *contactItem = itemForChatAgent(agent);
+    ContactModelItem *contactItem = itemForChatAgent(agent);
     if (contactItem && contactItem->parent()) {
         onItemChanged(contactItem);
         onItemChanged(contactItem->parent());
@@ -557,7 +557,7 @@ void IMAccountsModel::onPendingFileTransfersChanged()
 {
     FileTransferAgent *agent = qobject_cast<FileTransferAgent*>(sender());
 
-    Tpy::ContactModelItem *contactItem = itemForFileTransferAgent(agent);
+    ContactModelItem *contactItem = itemForFileTransferAgent(agent);
     if (contactItem && contactItem->parent()) {
         onItemChanged(contactItem);
         onItemChanged(contactItem->parent());
@@ -581,7 +581,7 @@ void IMAccountsModel::onMissedCallsChanged()
 {
     CallAgent *agent = qobject_cast<CallAgent*>(sender());
 
-    Tpy::ContactModelItem *contactItem = itemForCallAgent(agent);
+    ContactModelItem *contactItem = itemForCallAgent(agent);
     if (contactItem && contactItem->parent()) {
         // the changed signals don't need to be emitted here, they are already
         // emitted in onCallAgentChanged()
@@ -661,13 +661,13 @@ void IMAccountsModel::disconnectGroupConversationModel(const QString &accountId,
     }
 }
 
-Tpy::ContactModelItem *IMAccountsModel::itemForChatAgent(ChatAgent *agent) const
+ContactModelItem *IMAccountsModel::itemForChatAgent(ChatAgent *agent) const
 {
     if (agent && !agent->contact().isNull() && !agent->account().isNull()) {
         QString contactId = agent->contact()->id();
         QString accountId = agent->account()->uniqueIdentifier();
-        Tpy::ContactModelItem *contactItem;
-        contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+        ContactModelItem *contactItem;
+        contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
         return contactItem;
     }
 
@@ -739,8 +739,8 @@ ChatAgent* IMAccountsModel::chatAgentByIndex(const QModelIndex &index) const
 {
     // if it is a contact
     if (index.isValid() && index.parent().isValid()) {
-        return chatAgentByKey(Tpy::AccountsModel::data(index.parent(), IdRole).toString(),
-                              Tpy::AccountsModel::data(index, IdRole).toString());
+        return chatAgentByKey(AccountsModel::data(index.parent(), IdRole).toString(),
+                              AccountsModel::data(index, IdRole).toString());
     }
     return 0;
 }
@@ -756,14 +756,14 @@ ChatAgent *IMAccountsModel::chatAgentByKey(const QString &account, const QString
     return 0;
 }
 
-Tpy::ContactModelItem *IMAccountsModel::itemForCallAgent(CallAgent *agent) const
+ContactModelItem *IMAccountsModel::itemForCallAgent(CallAgent *agent) const
 {
     Tp::AccountPtr account = agent->account();
     if (account.isNull()) {
         return 0;
     }
 
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem*>(
+    AccountsModelItem *item = qobject_cast<AccountsModelItem*>(
                 accountItemForId(account->uniqueIdentifier()));
     if (!item || item->account().isNull()) {
         qDebug() << "IMAccountsModel::itemForCallAgent: account not found for " << account->uniqueIdentifier();
@@ -772,7 +772,7 @@ Tpy::ContactModelItem *IMAccountsModel::itemForCallAgent(CallAgent *agent) const
 
     Tp::ContactPtr contact = agent->contact();
     for (int i = 0; i < item->size(); ++ i) {
-        Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(item->childAt(i));
+        ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(item->childAt(i));
         if (contactItem && contactItem->contact() == contact) {
             return contactItem;
         }
@@ -781,14 +781,14 @@ Tpy::ContactModelItem *IMAccountsModel::itemForCallAgent(CallAgent *agent) const
     return 0;
 }
 
-Tpy::ContactModelItem *IMAccountsModel::itemForFileTransferAgent(FileTransferAgent *agent) const
+ContactModelItem *IMAccountsModel::itemForFileTransferAgent(FileTransferAgent *agent) const
 {
     Tp::AccountPtr account = agent->account();
     if (account.isNull()) {
         return 0;
     }
 
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem*>(
+    AccountsModelItem *item = qobject_cast<AccountsModelItem*>(
                 accountItemForId(account->uniqueIdentifier()));
     if (!item || item->account().isNull()) {
         qDebug() << "IMAccountsModel::itemForCallAgent: account not found for " << account->uniqueIdentifier();
@@ -797,7 +797,7 @@ Tpy::ContactModelItem *IMAccountsModel::itemForFileTransferAgent(FileTransferAge
 
     Tp::ContactPtr contact = agent->contact();
     for (int i = 0; i < item->size(); ++ i) {
-        Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(item->childAt(i));
+        ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(item->childAt(i));
         if (contactItem && contactItem->contact() == contact) {
             return contactItem;
         }
@@ -828,10 +828,10 @@ void IMAccountsModel::onTextChannelAvailable(const QString &accountId, Tp::TextC
         }
 
         // if contact is not known, add it
-        Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem *>(contactItemForId(accountId, contact->id()));
+        ContactModelItem *contactItem = qobject_cast<ContactModelItem *>(contactItemForId(accountId, contact->id()));
         if(!contactItem) {
-            Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *>(accountItemForId(accountId));
-            Tpy::ContactModelItem *newContactItem = new Tpy::ContactModelItem(contact);
+            AccountsModelItem *accountItem = qobject_cast<AccountsModelItem *>(accountItemForId(accountId));
+            ContactModelItem *newContactItem = new ContactModelItem(contact);
             accountItem->addChild(newContactItem);
         }
 
@@ -860,13 +860,13 @@ void IMAccountsModel::onTextChannelAvailable(const QString &accountId, Tp::TextC
 
 ChatAgent *IMAccountsModel::chatAgent(const QString &accountId, const QString &contactId, bool createIfNotExists)
 {
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (!contactItem || contactItem->contact().isNull()) {
         qDebug() << "IMAccountsModel::chatAgent: contact not found";
         return 0;
     }
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(contactItem->parent());
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(contactItem->parent());
     if (!accountItem || accountItem->account().isNull()) {
         qDebug() << "IMAccountsModel::chatAgent: parent of contact item not found";
         return 0;
@@ -881,7 +881,7 @@ ChatAgent *IMAccountsModel::chatAgent(const QString &accountId, const QString &c
 
 ChatAgent *IMAccountsModel::chatAgent(const QString &accountId, const Tp::TextChannelPtr &channel, bool createIfNotExists)
 {
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (!accountItem || accountItem->account().isNull()) {
         qDebug() << "IMAccountsModel::chatAgent: account item not found";
         return 0;
@@ -895,13 +895,13 @@ ChatAgent *IMAccountsModel::chatAgent(const QString &accountId, const Tp::TextCh
 
 CallAgent* IMAccountsModel::callAgent(const QString &accountId, const QString &contactId, bool createIfNotExists)
 {
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (!contactItem || contactItem->contact().isNull()) {
         qDebug() << "IMAccountsModel::callAgent: contact not found";
         return 0;
     }
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(contactItem->parent());
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(contactItem->parent());
     if (!accountItem || accountItem->account().isNull()) {
         qDebug() << "IMAccountsModel::callAgent: parent of contact item not found";
         return 0;
@@ -946,8 +946,8 @@ CallAgent *IMAccountsModel::callAgentByIndex(const QModelIndex &index) const
 {
     // if it is a contact
     if (index.isValid() && index.parent().isValid()) {
-        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "&";
-        key += Tpy::AccountsModel::data(index, IdRole).toString();
+        QString key = AccountsModel::data(index.parent(), IdRole).toString() + "&";
+        key += AccountsModel::data(index, IdRole).toString();
         if (mCallAgents.contains(key)) {
             return mCallAgents[key];
         }
@@ -957,13 +957,13 @@ CallAgent *IMAccountsModel::callAgentByIndex(const QModelIndex &index) const
 
 FileTransferAgent* IMAccountsModel::fileTransferAgent(const QString &accountId, const QString &contactId, bool createIfNotExists)
 {
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (!contactItem || contactItem->contact().isNull()) {
         qDebug() << "IMAccountsModel::callAgent: contact not found";
         return 0;
     }
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(contactItem->parent());
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(contactItem->parent());
     if (!accountItem || accountItem->account().isNull()) {
         qDebug() << "IMAccountsModel::callAgent: parent of contact item not found";
         return 0;
@@ -1007,8 +1007,8 @@ FileTransferAgent* IMAccountsModel::fileTransferAgentByIndex(const QModelIndex &
 {
     // if it is a contact
     if (index.isValid() && index.parent().isValid()) {
-        QString key = Tpy::AccountsModel::data(index.parent(), IdRole).toString() + "&";
-        key += Tpy::AccountsModel::data(index, IdRole).toString();
+        QString key = AccountsModel::data(index.parent(), IdRole).toString() + "&";
+        key += AccountsModel::data(index, IdRole).toString();
         if (mFileTransferAgents.contains(key)) {
             return mFileTransferAgents[key];
         }
@@ -1051,10 +1051,10 @@ void IMAccountsModel::onCallChannelAvailable(const QString &accountId, Tpy::Call
     }
 
     // if contact is not known, add it
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem *>(contactItemForId(accountId, contact->id()));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem *>(contactItemForId(accountId, contact->id()));
     if(!contactItem) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *>(accountItemForId(accountId));
-        Tpy::ContactModelItem *newContactItem = new Tpy::ContactModelItem(contact);
+        AccountsModelItem *accountItem = qobject_cast<AccountsModelItem *>(accountItemForId(accountId));
+        ContactModelItem *newContactItem = new ContactModelItem(contact);
         accountItem->addChild(newContactItem);
     }
 
@@ -1148,7 +1148,7 @@ void IMAccountsModel::onOutgoingFileTransferChannelAvailable(const QString &acco
 
 void IMAccountsModel::onServerAuthChannelAvailable(const QString &accountId, Tp::ChannelPtr channel)
 {
-    Tpy::AccountsModelItem *item = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem *item = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (!item) {
         return;
     }
@@ -1163,7 +1163,7 @@ void IMAccountsModel::onCallAgentChanged()
 {
     CallAgent *agent = qobject_cast<CallAgent*>(sender());
 
-    Tpy::ContactModelItem *contactItem = itemForCallAgent(agent);
+    ContactModelItem *contactItem = itemForCallAgent(agent);
     if (contactItem) {
         onItemChanged(contactItem);
         onItemChanged(contactItem->parent());
@@ -1242,7 +1242,7 @@ QString IMAccountsModel::startPrivateChat(const QString &accountId, const QStrin
 {
     qDebug() << "Starting chat with special id: " << accountId << channelPath << contactId;
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if(!accountItem) {
         return QString();
     }
@@ -1297,7 +1297,7 @@ void IMAccountsModel::addContactFromGroupChat(const QString &accountId, const QS
 {
     qDebug() << "adding contact with special id: " << accountId << channelPath << contactId;
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if(!accountItem) {
         return;
     }
@@ -1319,7 +1319,7 @@ bool IMAccountsModel::isContactKnown(const QString &accountId, const QString &ch
 {
     qDebug() << "checking subscription status of contact with special id: " << accountId << channelPath << contactId;
 
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if(!accountItem) {
         return false;
     }
@@ -1361,7 +1361,7 @@ bool IMAccountsModel::isAccountRegistered(const QString &cm, const QString &prot
 {
     for (int i = 0; i < rowCount(); ++i) {
         QObject *obj = index(i).data(ItemRole).value<QObject*>();
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(obj);
+        AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(obj);
         if (!accountItem) {
             continue;
         }
@@ -1378,7 +1378,7 @@ bool IMAccountsModel::isAccountRegistered(const QString &cm, const QString &prot
 
 void IMAccountsModel::blockContact(const QString &accountId, const QString &contactId, const bool reportAbuse)
 {
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if(contactItem) {
         Tp::ContactPtr contact = contactItem->contact();
         if(!contact->isBlocked()) {
@@ -1397,7 +1397,7 @@ void IMAccountsModel::blockContact(const QString &accountId, const QString &cont
 
 void IMAccountsModel::unblockContact(const QString &accountId, const QString &contactId)
 {
-    Tpy::ContactModelItem *contactItem = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *contactItem = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if(contactItem) {
         Tp::ContactPtr contact = contactItem->contact();
         if(contact->isBlocked()) {
@@ -1410,7 +1410,7 @@ void IMAccountsModel::unblockContact(const QString &accountId, const QString &co
 void IMAccountsModel::removeContact(const QString &accountId, const QString &contactId)
 {
     qDebug() << "IMAccountsModel::removeContact:" << accountId << contactId;
-    Tpy::ContactModelItem *item = qobject_cast<Tpy::ContactModelItem*>(contactItemForId(accountId, contactId));
+    ContactModelItem *item = qobject_cast<ContactModelItem*>(contactItemForId(accountId, contactId));
     if (!item) {
         return;
     }
@@ -1445,8 +1445,8 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
     if(isOnline) {
         // reconnect when network is back online
         for (int i = 0; i < rowCount(); ++i) {
-            Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                        accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
+            AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(
+                        accountItemForId(index(i, 0).data(AccountsModel::IdRole).toString()));
 
             // this may not work if AutomaticPresence returns null while the account is offline
             accountItem->setRequestedPresence(
@@ -1457,8 +1457,8 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
     } else {
         // disconnect all accounts when network is offline
         for (int i = 0; i < rowCount(); ++i) {
-            Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
-                        accountItemForId(index(i, 0).data(Tpy::AccountsModel::IdRole).toString()));
+            AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(
+                        accountItemForId(index(i, 0).data(AccountsModel::IdRole).toString()));
             if(accountItem) {
                 accountItem->setRequestedPresence(Tp::ConnectionPresenceTypeOffline, QString(), QString());
             }
@@ -1470,7 +1470,7 @@ void IMAccountsModel::onNetworkStatusChanged(bool isOnline)
 QStringList IMAccountsModel::channelContacts(const QString &accountId, const QString &channelPath) const
 {
     QStringList contactsList;
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem*>(
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem*>(
                 accountItemForId(accountId));
 
     if(accountItem) {
@@ -1579,7 +1579,7 @@ void IMAccountsModel::clearHistory()
 
 void IMAccountsModel::clearAccountHistory(const QString &accountId)
 {
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem* accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         mLogger->clearAccount(accountItem->account());
         foreach(ChatAgent *agent, chatAgentsByAccount(accountId)) {
@@ -1590,7 +1590,7 @@ void IMAccountsModel::clearAccountHistory(const QString &accountId)
 
 void IMAccountsModel::clearContactHistory(const QString &accountId, const QString &contactId)
 {
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem* accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tpl::LoggerPtr logger = Tpl::Logger::create();
         mLogger->clearContact(accountItem->account(), contactId);
@@ -1604,7 +1604,7 @@ void IMAccountsModel::clearContactHistory(const QString &accountId, const QStrin
 
 void IMAccountsModel::clearGroupChatHistory(const QString &accountId, const QString &channelPath)
 {
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem* accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         ChatAgent *chatAgent = chatAgentByKey(accountId, channelPath);
         if(chatAgent) {
@@ -1634,7 +1634,7 @@ bool IMAccountsModel::existingUnreadMessages() const
 
 int IMAccountsModel::actualContactsCount(const QString &accountId) const
 {
-    Tpy::AccountsModelItem* accountItem = qobject_cast<Tpy::AccountsModelItem*>(accountItemForId(accountId));
+    AccountsModelItem* accountItem = qobject_cast<AccountsModelItem*>(accountItemForId(accountId));
     if (accountItem) {
         Tp::AccountPtr account = accountItem->account();
         if (!account->connection().isNull()
@@ -1693,13 +1693,13 @@ void IMAccountsModel::reportMissedVideoCall(const QString &accountId, const QStr
     agent->reportMissedVideoCall(time);
 }
 
-void IMAccountsModel::onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeNode *> &nodes)
+void IMAccountsModel::onItemsAdded(TreeNode *parent, const QList<TreeNode *> &nodes)
 {
-    Tpy::AccountsModel::onItemsAdded(parent, nodes);
+    AccountsModel::onItemsAdded(parent, nodes);
 
     // just check for case adding an account
     if (parent->parent() == 0 && nodes.size() == 1) {
-        Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *> (nodes.at(0));
+        AccountsModelItem *accountItem = qobject_cast<AccountsModelItem *> (nodes.at(0));
         if (accountItem) {
             connect(accountItem,
                     SIGNAL(displayNameChanged(QString)),
@@ -1710,7 +1710,7 @@ void IMAccountsModel::onItemsAdded(Tpy::TreeNode *parent, const QList<Tpy::TreeN
 
 void IMAccountsModel::onHierarchicalChanged()
 {
-    Tpy::AccountsModelItem *accountItem = qobject_cast<Tpy::AccountsModelItem *> (sender());
+    AccountsModelItem *accountItem = qobject_cast<AccountsModelItem *> (sender());
     if (accountItem) {
         QModelIndex accountIndex = index(accountItem);
         emit hierarchicalDataChanged(accountIndex, accountIndex);
